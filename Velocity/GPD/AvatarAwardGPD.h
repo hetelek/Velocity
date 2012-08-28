@@ -18,7 +18,7 @@ public:
     vector<struct AvatarAward> avatarAwards;
 
     // Description: get the gender of the avatar award passed in
-    AssetGender GetAssetGender(struct AvatarAward *award);
+    static AssetGender GetAssetGender(struct AvatarAward *award);
 
     // Description: unlock all of the avatar awards in this gpd
     void UnlockAllAwards();
