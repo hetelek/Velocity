@@ -705,6 +705,8 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, State current, State to
             entry->achievementsUnlockedOnline++;
 
         entry->gamerscoreUnlocked += gamerscore;
+        dashGPD->gamerscoreUnlocked.int32 += gamerscore;
+        dashGPD->achievementsUnlocked.int32++;
     }
     else if (toSet == StateLocked)
     {
@@ -713,6 +715,8 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, State current, State to
             entry->achievementsUnlockedOnline--;
 
         entry->gamerscoreUnlocked -= gamerscore;
+        dashGPD->gamerscoreUnlocked.int32 -= gamerscore;
+        dashGPD->achievementsUnlocked.int32--;
     }
 
     entry->flags |= (SyncAchievement | DownloadAchievementImage);
