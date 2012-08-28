@@ -502,6 +502,10 @@ void ProfileEditor::on_btnUnlockAllAchvs_clicked()
         if (item->text(2) != "Unlocked Online")
             item->setText(2, "Unlocked Offline");
     }
+
+    games.at(index).titleEntry->achievementsUnlocked = games.at(index).titleEntry->achievementCount;
+    games.at(index).titleEntry->gamerscoreUnlocked = games.at(index).titleEntry->totalGamerscore;
+    games.at(index).titleEntry->flags |= (SyncAchievement | DownloadAchievementImage);
 }
 
 void ProfileEditor::on_btnExtractGPD_clicked()
@@ -536,21 +540,35 @@ void ProfileEditor::on_cmbxAchState_currentIndexChanged(const QString &arg1)
     // update the list text
     ui->achievementsList->topLevelItem(ui->achievementsList->currentIndex().row())->setText(2, arg1);
 
+    GameGPD *gpd = games.at(ui->gamesList->currentIndex().row()).gpd;
+
     // update the achievement entry
     if (arg1 == "Locked")
     {
-        games.at(ui->gamesList->currentIndex().row()).gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags &= 0xFFFCFFFF;
+        // update the title entry
+        updateAchievement(games.at(ui->gamesList->currentIndex().row()).titleEntry, getStateFromFlags(gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags),
+                          StateLocked, gpd->achievements.at(ui->achievementsList->currentIndex().row()).gamerscore);
+
+        gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags &= 0xFFFCFFFF;
         ui->dteAchTimestamp->setEnabled(false);
     }
     else if (arg1 == "Unlocked Offline")
     {
-        games.at(ui->gamesList->currentIndex().row()).gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags &= 0xFFFCFFFF;
-        games.at(ui->gamesList->currentIndex().row()).gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags |= Unlocked;
+        // update the title entry
+        updateAchievement(games.at(ui->gamesList->currentIndex().row()).titleEntry, getStateFromFlags(gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags),
+                          StateUnlockedOffline, gpd->achievements.at(ui->achievementsList->currentIndex().row()).gamerscore);
+
+        gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags &= 0xFFFCFFFF;
+        gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags |= Unlocked;
         ui->dteAchTimestamp->setEnabled(false);
     }
     else
     {
-        games.at(ui->gamesList->currentIndex().row()).gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags |= (Unlocked | UnlockedOnline);
+        // update the title entry
+        updateAchievement(games.at(ui->gamesList->currentIndex().row()).titleEntry, getStateFromFlags(gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags),
+                          StateUnlockedOnline, gpd->achievements.at(ui->achievementsList->currentIndex().row()).gamerscore);
+
+        gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags |= (Unlocked | UnlockedOnline);
         ui->dteAchTimestamp->setEnabled(true);
     }
 
@@ -656,7 +674,7 @@ void ProfileEditor::on_cmbxAwState_currentIndexChanged(const QString &arg1)
 
 void ProfileEditor::updateAvatarAward(TitleEntry *entry, State current, State toSet, AssetGender g)
 {
-    if (toSet == StateLocked)
+    if (current == StateLocked)
     {
         entry->avatarAwardsEarned++;
 
@@ -665,7 +683,7 @@ void ProfileEditor::updateAvatarAward(TitleEntry *entry, State current, State to
         else if (g == Female)
             entry->femaleAvatarAwardsEarned++;
     }
-    else if (current == StateLocked)
+    else if (toSet == StateLocked)
     {
         entry->avatarAwardsEarned--;
 
@@ -676,6 +694,28 @@ void ProfileEditor::updateAvatarAward(TitleEntry *entry, State current, State to
     }
 
     entry->flags |= (DownloadAvatarAward | SyncAvatarAward);
+}
+
+void ProfileEditor::updateAchievement(TitleEntry *entry, State current, State toSet, DWORD gamerscore)
+{
+    if (current == StateLocked)
+    {
+        entry->achievementsUnlocked++;
+        if (toSet == StateUnlockedOnline)
+            entry->achievementsUnlockedOnline++;
+
+        entry->gamerscoreUnlocked += gamerscore;
+    }
+    else if (toSet == StateLocked)
+    {
+        entry->achievementsUnlocked--;
+        if (current == StateUnlockedOnline)
+            entry->achievementsUnlockedOnline--;
+
+        entry->gamerscoreUnlocked -= gamerscore;
+    }
+
+    entry->flags |= (SyncAchievement | DownloadAchievementImage);
 }
 
 State ProfileEditor::getStateFromFlags(DWORD flags)
