@@ -221,7 +221,7 @@ private:
 
     void addToQueue(SettingEntryType type, UINT64 id);
 
-    void updateAvatarAward(TitleEntry *entry, State current, State toSet, AssetGender g);
+    void updateAvatarAward(TitleEntry *entry, AvatarAwardGPD *gpd, struct AvatarAward *award, State toSet);
 
     void updateAchievement(TitleEntry *entry, AchievementEntry *chiev, State toSet, GameGPD *gpd);
 

@@ -334,7 +334,7 @@ void ProfileEditor::replyFinishedBoxArt(QNetworkReply *aReply)
 
 void ProfileEditor::on_achievementsList_itemSelectionChanged()
 {
-    if (ui->achievementsList->currentIndex().row() < 0 || ui->gamesList->currentIndex().row() < 0)
+    if (ui->achievementsList->currentIndex().row() < 0 || ui->gamesList->currentIndex().row() < 0 || ui->achievementsList->currentIndex().row() >= games.at(ui->gamesList->currentIndex().row()).gpd->achievements.size())
         return;
 
     AchievementEntry entry = games.at(ui->gamesList->currentIndex().row()).gpd->achievements.at(ui->achievementsList->currentIndex().row());
@@ -506,6 +506,9 @@ void ProfileEditor::on_btnUnlockAllAchvs_clicked()
     games.at(index).titleEntry->achievementsUnlocked = games.at(index).titleEntry->achievementCount;
     games.at(index).titleEntry->gamerscoreUnlocked = games.at(index).titleEntry->totalGamerscore;
     games.at(index).titleEntry->flags |= (SyncAchievement | DownloadAchievementImage);
+
+    ui->lblGameAchvs->setText("Achievements: " + QString::number(games.at(index).titleEntry->achievementsUnlocked) + " out of " + QString::number(games.at(index).titleEntry->achievementCount) + " unlocked");
+    ui->lblGameGamerscore->setText("Gamerscore: " + QString::number(games.at(index).titleEntry->gamerscoreUnlocked) + " out of " + QString::number(games.at(index).titleEntry->totalGamerscore) + " unlocked");
 }
 
 void ProfileEditor::on_btnExtractGPD_clicked()
@@ -548,7 +551,6 @@ void ProfileEditor::on_cmbxAchState_currentIndexChanged(const QString &arg1)
         // update the title entry
         updateAchievement(games.at(ui->gamesList->currentIndex().row()).titleEntry, &gpd->achievements.at(ui->achievementsList->currentIndex().row()), StateLocked, gpd);
 
-        gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags &= 0xFFFCFFFF;
         ui->dteAchTimestamp->setEnabled(false);
     }
     else if (arg1 == "Unlocked Offline")
@@ -556,8 +558,6 @@ void ProfileEditor::on_cmbxAchState_currentIndexChanged(const QString &arg1)
         // update the title entry
         updateAchievement(games.at(ui->gamesList->currentIndex().row()).titleEntry, &gpd->achievements.at(ui->achievementsList->currentIndex().row()), StateUnlockedOffline, gpd);
 
-        gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags &= 0xFFFCFFFF;
-        gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags |= Unlocked;
         ui->dteAchTimestamp->setEnabled(false);
     }
     else
@@ -565,7 +565,6 @@ void ProfileEditor::on_cmbxAchState_currentIndexChanged(const QString &arg1)
         // update the title entry
         updateAchievement(games.at(ui->gamesList->currentIndex().row()).titleEntry, &gpd->achievements.at(ui->achievementsList->currentIndex().row()), StateUnlockedOnline, gpd);
 
-        gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags |= (Unlocked | UnlockedOnline);
         ui->dteAchTimestamp->setEnabled(true);
     }
 
@@ -623,6 +622,8 @@ void ProfileEditor::on_btnUnlockAllAwards_clicked()
     aaGames.at(index).titleEntry->maleAvatarAwardsEarned = aaGames.at(index).titleEntry->maleAvatarAwardCount;
     aaGames.at(index).titleEntry->femaleAvatarAwardsEarned = aaGames.at(index).titleEntry->femaleAvatarAwardCount;
     aaGames.at(index).titleEntry->flags |= (DownloadAvatarAward | SyncAvatarAward);
+
+    ui->lblAwGameAwards->setText("Awards: " + QString::number(aaGames.at(index).titleEntry->avatarAwardsEarned) + " out of " + QString::number(aaGames.at(index).titleEntry->avatarAwardCount) + " unlocked");
 }
 
 void ProfileEditor::on_cmbxAwState_currentIndexChanged(const QString &arg1)
@@ -640,37 +641,33 @@ void ProfileEditor::on_cmbxAwState_currentIndexChanged(const QString &arg1)
     if (arg1 == "Locked")
     {
         // update the title entry
-        updateAvatarAward(aaGames.at(ui->aaGamelist->currentIndex().row()).titleEntry, getStateFromFlags(gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row()).flags),
-                          StateLocked, AvatarAwardGPD::GetAssetGender(&gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row())));
-
-        gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row()).flags &= 0xFFFCFFFF;
+        updateAvatarAward(aaGames.at(ui->aaGamelist->currentIndex().row()).titleEntry, gpd, &gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row()), StateLocked);
         ui->dteAchTimestamp->setEnabled(false);
     }
     else if (arg1 == "Unlocked Offline")
     {
         // update the title entry
-        updateAvatarAward(aaGames.at(ui->aaGamelist->currentIndex().row()).titleEntry, getStateFromFlags(gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row()).flags),
-                          StateUnlockedOffline, AvatarAwardGPD::GetAssetGender(&gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row())));
+        updateAvatarAward(aaGames.at(ui->aaGamelist->currentIndex().row()).titleEntry, gpd, &gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row()), StateUnlockedOffline);
 
-        gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row()).flags &= 0xFFFCFFFF;
-        gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row()).flags |= Unlocked;
         ui->dteAchTimestamp->setEnabled(false);
     }
     else
     {
         // update the title entry
-        updateAvatarAward(aaGames.at(ui->aaGamelist->currentIndex().row()).titleEntry, getStateFromFlags(gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row()).flags),
-                          StateUnlockedOnline, AvatarAwardGPD::GetAssetGender(&gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row())));
+        updateAvatarAward(aaGames.at(ui->aaGamelist->currentIndex().row()).titleEntry, gpd, &gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row()), StateUnlockedOnline);
 
-        gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row()).flags |= (Unlocked | UnlockedOnline);
         ui->dteAchTimestamp->setEnabled(true);
     }
 
     aaGames.at(ui->aaGamelist->currentIndex().row()).updated = true;
 }
 
-void ProfileEditor::updateAvatarAward(TitleEntry *entry, State current, State toSet, AssetGender g)
+void ProfileEditor::updateAvatarAward(TitleEntry *entry, AvatarAwardGPD *gpd, struct AvatarAward *award, State toSet)
 {
+    AssetGender g = AvatarAwardGPD::GetAssetGender(award);
+    State current = getStateFromFlags(award->flags);
+
+    // update title entry
     if (current == StateLocked)
     {
         entry->avatarAwardsEarned++;
@@ -688,7 +685,20 @@ void ProfileEditor::updateAvatarAward(TitleEntry *entry, State current, State to
             entry->maleAvatarAwardsEarned--;
         else if (g == Female)
             entry->femaleAvatarAwardsEarned--;
+
+        award->flags &= 0xFFFCFFFF;
     }
+
+    if (toSet == StateUnlockedOffline)
+    {
+        award->flags &= 0xFFFCFFFF;
+        award->flags |= Unlocked;
+    }
+    else if (toSet == StateUnlockedOnline)
+        award->flags |= (Unlocked | UnlockedOnline);
+
+    // write the entry back to the gpd
+    gpd->WriteAvatarAward(award);
 
     entry->flags |= (DownloadAvatarAward | SyncAvatarAward);
 }
@@ -753,7 +763,17 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
 
             gpd->WriteSettingEntry(settingAchievements);
             gpd->WriteSettingEntry(settingGamerscore);
+
+            entry->flags &= 0xFFFCFFFF;
         }
+
+        if (toSet == StateUnlockedOffline)
+        {
+            entry->flags &= 0xFFFCFFFF;
+            entry->flags |= Unlocked;
+        }
+        else if (toSet == StateUnlockedOnline)
+            entry->flags |= (Unlocked | UnlockedOnline);
 
         entry->flags |= (SyncAchievement | DownloadAchievementImage);
 
