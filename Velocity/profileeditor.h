@@ -223,7 +223,7 @@ private:
 
     void updateAvatarAward(TitleEntry *entry, State current, State toSet, AssetGender g);
 
-    void updateAchievement(TitleEntry *entry, State current, State toSet, DWORD gamerscore, GameGPD *gpd);
+    void updateAchievement(TitleEntry *entry, AchievementEntry *chiev, State toSet, GameGPD *gpd);
 
     State getStateFromFlags(DWORD flags);
 };

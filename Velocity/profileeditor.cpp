@@ -546,8 +546,7 @@ void ProfileEditor::on_cmbxAchState_currentIndexChanged(const QString &arg1)
     if (arg1 == "Locked")
     {
         // update the title entry
-        updateAchievement(games.at(ui->gamesList->currentIndex().row()).titleEntry, getStateFromFlags(gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags),
-                          StateLocked, gpd->achievements.at(ui->achievementsList->currentIndex().row()).gamerscore, gpd);
+        updateAchievement(games.at(ui->gamesList->currentIndex().row()).titleEntry, &gpd->achievements.at(ui->achievementsList->currentIndex().row()), StateLocked, gpd);
 
         gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags &= 0xFFFCFFFF;
         ui->dteAchTimestamp->setEnabled(false);
@@ -555,8 +554,7 @@ void ProfileEditor::on_cmbxAchState_currentIndexChanged(const QString &arg1)
     else if (arg1 == "Unlocked Offline")
     {
         // update the title entry
-        updateAchievement(games.at(ui->gamesList->currentIndex().row()).titleEntry, getStateFromFlags(gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags),
-                          StateUnlockedOffline, gpd->achievements.at(ui->achievementsList->currentIndex().row()).gamerscore, gpd);
+        updateAchievement(games.at(ui->gamesList->currentIndex().row()).titleEntry, &gpd->achievements.at(ui->achievementsList->currentIndex().row()), StateUnlockedOffline, gpd);
 
         gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags &= 0xFFFCFFFF;
         gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags |= Unlocked;
@@ -565,8 +563,7 @@ void ProfileEditor::on_cmbxAchState_currentIndexChanged(const QString &arg1)
     else
     {
         // update the title entry
-        updateAchievement(games.at(ui->gamesList->currentIndex().row()).titleEntry, getStateFromFlags(gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags),
-                          StateUnlockedOnline, gpd->achievements.at(ui->achievementsList->currentIndex().row()).gamerscore, gpd);
+        updateAchievement(games.at(ui->gamesList->currentIndex().row()).titleEntry, &gpd->achievements.at(ui->achievementsList->currentIndex().row()), StateUnlockedOnline, gpd);
 
         gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags |= (Unlocked | UnlockedOnline);
         ui->dteAchTimestamp->setEnabled(true);
@@ -696,7 +693,7 @@ void ProfileEditor::updateAvatarAward(TitleEntry *entry, State current, State to
     entry->flags |= (DownloadAvatarAward | SyncAvatarAward);
 }
 
-void ProfileEditor::updateAchievement(TitleEntry *entry, State current, State toSet, DWORD gamerscore, GameGPD *gpd)
+void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev, State toSet, GameGPD *gpd)
 {
     try
     {
@@ -723,18 +720,20 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, State current, State to
             gpd->CreateSettingEntry(&settingAchievements, GamercardTitleAchievementsEarned);
         }
 
+        State current = getStateFromFlags(chiev->flags);
+
         if (current == StateLocked)
         {
             entry->achievementsUnlocked++;
             if (toSet == StateUnlockedOnline)
                 entry->achievementsUnlockedOnline++;
 
-            entry->gamerscoreUnlocked += gamerscore;
-            dashGPD->gamerscoreUnlocked.int32 += gamerscore;
+            entry->gamerscoreUnlocked += chiev->gamerscore;
+            dashGPD->gamerscoreUnlocked.int32 += chiev->gamerscore;
             dashGPD->achievementsUnlocked.int32++;
 
             settingAchievements.int32++;
-            settingGamerscore.int32 += gamerscore;
+            settingGamerscore.int32 += chiev->gamerscore;
 
             gpd->WriteSettingEntry(settingAchievements);
             gpd->WriteSettingEntry(settingGamerscore);
@@ -745,18 +744,20 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, State current, State to
             if (current == StateUnlockedOnline)
                 entry->achievementsUnlockedOnline--;
 
-            entry->gamerscoreUnlocked -= gamerscore;
-            dashGPD->gamerscoreUnlocked.int32 -= gamerscore;
+            entry->gamerscoreUnlocked -= chiev->gamerscore;
+            dashGPD->gamerscoreUnlocked.int32 -= chiev->gamerscore;
             dashGPD->achievementsUnlocked.int32--;
 
             settingAchievements.int32--;
-            settingGamerscore.int32 -= gamerscore;
+            settingGamerscore.int32 -= chiev->gamerscore;
 
             gpd->WriteSettingEntry(settingAchievements);
             gpd->WriteSettingEntry(settingGamerscore);
         }
 
         entry->flags |= (SyncAchievement | DownloadAchievementImage);
+
+        gpd->WriteAchievementEntry(chiev);
     }
     catch (string error)
     {
