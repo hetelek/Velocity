@@ -160,13 +160,13 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
             this->close();
             return;
         }
-        GameEntry g = { gpd, &dashGPD->gamesPlayed.at(i) };
+        GameEntry g = { gpd, &dashGPD->gamesPlayed.at(i), false, tempPath };
         games.push_back(g);
 
         // if there are avatar awards then add it to the vector
         if (dashGPD->gamesPlayed.at(i).avatarAwardCount != 0)
         {
-            AvatarAwardGameEntry a = { gpd, &dashGPD->gamesPlayed.at(i), NULL };
+            AvatarAwardGameEntry a = { gpd, &dashGPD->gamesPlayed.at(i), NULL, false, string("") };
             aaGames.push_back(a);
         }
 
@@ -253,6 +253,7 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
             return;
         }
         aaGames.at(i).gpd = gpd;
+        aaGames.at(i).tempFileName = tempGPDName;
     }
 }
 
@@ -452,12 +453,12 @@ void ProfileEditor::on_avatarAwardsList_itemSelectionChanged()
     }
     else if (award->flags & Unlocked)
     {
-        ui->cmbxAwState->setCurrentIndex(0);
+        ui->cmbxAwState->setCurrentIndex(1);
         ui->dteAwTimestamp->setEnabled(false);
     }
     else
     {
-        ui->cmbxAwState->setCurrentIndex(1);
+        ui->cmbxAwState->setCurrentIndex(0);
         ui->dteAwTimestamp->setEnabled(false);
     }
 
@@ -477,4 +478,28 @@ void ProfileEditor::replyFinishedAwImg(QNetworkReply *aReply)
         ui->imgAw->setPixmap(QPixmap::fromImage(QImage::fromData(img)));
     else
         ui->imgAw->setText("<i>Unable to download image.</i>");
+}
+
+void ProfileEditor::on_btnUnlockAllAchvs_clicked()
+{
+    int index = ui->gamesList->currentIndex().row();
+    if (index < 0)
+        return;
+
+    QMessageBox::StandardButton btn = QMessageBox::question(this, "Are you sure?", "Are you sure that you want to unlock all of the achievements for " +
+                          QString::fromStdWString(games.at(index).titleEntry->gameName) + " offline?", QMessageBox::Yes, QMessageBox::No);
+
+    if (btn != QMessageBox::Yes)
+        return;
+
+    games.at(index).gpd->UnlockAllAchievementsOffline();
+    games.at(index).updated = true;
+
+    // update the ui
+    for (DWORD i = 0; i < ui->achievementsList->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem *item = ui->achievementsList->topLevelItem(i);
+        if (item->text(2) != "Unlocked Online")
+            item->setText(2, "Unlocked Offline");
+    }
 }

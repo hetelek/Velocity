@@ -41,7 +41,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabGeneralSettings">
       <attribute name="title">
@@ -1060,29 +1060,67 @@
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::Box</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="text">
                   <string/>
                  </property>
                 </widget>
                </item>
-               <item row="0" column="2" rowspan="2">
-                <widget class="QPushButton" name="btnUnlockAllAchvs">
-                 <property name="text">
-                  <string>Unlock All Achievements</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="Resources.qrc">
-                   <normaloff>:/Images/unlock.png</normaloff>:/Images/unlock.png</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>20</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </widget>
+               <item row="0" column="2" rowspan="5">
+                <layout class="QVBoxLayout" name="verticalLayout_14">
+                 <item>
+                  <widget class="QPushButton" name="btnUnlockAllAchvs">
+                   <property name="text">
+                    <string>Unlock All Achievements</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="Resources.qrc">
+                     <normaloff>:/Images/unlock.png</normaloff>:/Images/unlock.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>20</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="btnCreateAch">
+                   <property name="text">
+                    <string>Create Achievement</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="Resources.qrc">
+                     <normaloff>:/Images/add.png</normaloff>:/Images/add.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>20</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="btnExtractGPD">
+                   <property name="text">
+                    <string>Extract GPD</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="Resources.qrc">
+                     <normaloff>:/Images/extract.png</normaloff>:/Images/extract.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>20</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
                <item row="1" column="0">
                 <widget class="QLabel" name="lblGameTitleID">
@@ -1098,44 +1136,10 @@
                  </property>
                 </widget>
                </item>
-               <item row="2" column="2">
-                <widget class="QPushButton" name="btnCreateAch">
-                 <property name="text">
-                  <string>Create Achievement</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="Resources.qrc">
-                   <normaloff>:/Images/add.png</normaloff>:/Images/add.png</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>20</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
                <item row="3" column="0">
                 <widget class="QLabel" name="lblGameAchvs">
                  <property name="text">
                   <string>Achievements:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="2" rowspan="2">
-                <widget class="QPushButton" name="btnExtractGPD">
-                 <property name="text">
-                  <string>Extract GPD</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="Resources.qrc">
-                   <normaloff>:/Images/extract.png</normaloff>:/Images/extract.png</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>20</width>
-                   <height>20</height>
-                  </size>
                  </property>
                 </widget>
                </item>
@@ -1308,7 +1312,7 @@ p, li { white-space: pre-wrap; }
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::Box</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="text">
                   <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1367,6 +1371,9 @@ p, li { white-space: pre-wrap; }
                <width>621</width>
                <height>191</height>
               </size>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
              </property>
              <property name="iconSize">
               <size>
@@ -1434,7 +1441,7 @@ p, li { white-space: pre-wrap; }
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::Box</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="text">
                   <string/>
@@ -1639,7 +1646,7 @@ p, li { white-space: pre-wrap; }
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::Box</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="text">
                   <string/>
@@ -1655,11 +1662,6 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
       </layout>
-     </widget>
-     <widget class="QWidget" name="tab_4">
-      <attribute name="title">
-       <string>Games Played</string>
-      </attribute>
      </widget>
     </widget>
    </item>

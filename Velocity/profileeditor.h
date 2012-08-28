@@ -150,6 +150,8 @@ struct GameEntry
 {
     GameGPD *gpd;
     TitleEntry *titleEntry;
+    bool updated;
+    string tempFileName;
 };
 
 struct AvatarAwardGameEntry
@@ -157,6 +159,8 @@ struct AvatarAwardGameEntry
     GameGPD *gameGPD;
     TitleEntry *titleEntry;
     AvatarAwardGPD *gpd;
+    bool updated;
+    string tempFileName;
 };
 
 class ProfileEditor : public QDialog
@@ -181,6 +185,8 @@ private slots:
     void on_aaGamelist_itemSelectionChanged();
 
     void on_avatarAwardsList_itemSelectionChanged();
+
+    void on_btnUnlockAllAchvs_clicked();
 
 private:
     Ui::ProfileEditor *ui;
