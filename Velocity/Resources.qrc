@@ -1,0 +1,38 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Images/CreateFile35.png</file>
+        <file>Images/Eye16.png</file>
+        <file>Images/Fix24.png</file>
+        <file>Images/free60.png</file>
+        <file>Images/Github16.png</file>
+        <file>Images/Leaner.png</file>
+        <file>Images/Leaner24.png</file>
+        <file>Images/OpenIcon35.png</file>
+        <file>Images/ProfileEditorIcon35.png</file>
+        <file>Images/ThemeCreator35.png</file>
+        <file>Images/AccountFileIcon.png</file>
+        <file>Images/FolderFileIcon.png</file>
+        <file>Images/GpdFileIcon.png</file>
+        <file>Images/ImageFileIcon.png</file>
+        <file>Images/PecFileIcon.png</file>
+        <file>Images/DefaultFileIcon.png</file>
+        <file>Images/cancel.png</file>
+        <file>Images/extract.png</file>
+        <file>Images/new file.png</file>
+        <file>Images/new folder.png</file>
+        <file>Images/rename.png</file>
+        <file>Images/save.png</file>
+        <file>Images/certificate.png</file>
+        <file>Images/descriptor.png</file>
+        <file>Images/license.png</file>
+        <file>Images/flag.png</file>
+        <file>Images/add.png</file>
+        <file>Images/delete.png</file>
+        <file>Images/package.png</file>
+        <file>Images/gpd.png</file>
+        <file>Images/asset.png</file>
+        <file>Images/avatar-body.png</file>
+        <file>Images/HiddenAchievement.png</file>
+        <file>Images/unlock.png</file>
+    </qresource>
+</RCC>

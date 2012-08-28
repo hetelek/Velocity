@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1013</width>
+    <height>623</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Velocity - Xbox 360 File Manager</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="Resources.qrc">
+    <normaloff>:/Images/Leaner24.png</normaloff>:/Images/Leaner24.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <property name="margin">
+     <number>0</number>
+    </property>
+    <item row="0" column="0">
+     <widget class="QMdiArea" name="mdiArea">
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAsNeeded</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAsNeeded</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1013</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuOpen">
+     <property name="title">
+      <string>Open</string>
+     </property>
+     <property name="icon">
+      <iconset resource="Resources.qrc">
+       <normaloff>:/Images/OpenIcon35.png</normaloff>:/Images/OpenIcon35.png</iconset>
+     </property>
+     <addaction name="actionPackage"/>
+     <addaction name="actionXDBF_File"/>
+     <addaction name="actionSTRB_File"/>
+    </widget>
+    <addaction name="menuOpen"/>
+    <addaction name="actionCreate_Package"/>
+   </widget>
+   <widget class="QMenu" name="menuProfile">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionProfile_Manager"/>
+    <addaction name="actionTheme_Creator"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuProfile"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="statusTip">
+    <string/>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </widget>
+  <action name="actionCreate_Package">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/CreateFile35.png</normaloff>:/Images/CreateFile35.png</iconset>
+   </property>
+   <property name="text">
+    <string>Create Package</string>
+   </property>
+  </action>
+  <action name="actionProfile_Manager">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/ProfileEditorIcon35.png</normaloff>:/Images/ProfileEditorIcon35.png</iconset>
+   </property>
+   <property name="text">
+    <string>Profile Editor</string>
+   </property>
+  </action>
+  <action name="actionTheme_Creator">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/ThemeCreator35.png</normaloff>:/Images/ThemeCreator35.png</iconset>
+   </property>
+   <property name="text">
+    <string>Theme Creator</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionPackage">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/package.png</normaloff>:/Images/package.png</iconset>
+   </property>
+   <property name="text">
+    <string>Package</string>
+   </property>
+  </action>
+  <action name="actionXDBF_File">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/gpd.png</normaloff>:/Images/gpd.png</iconset>
+   </property>
+   <property name="text">
+    <string>GPD</string>
+   </property>
+  </action>
+  <action name="actionSTRB_File">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/asset.png</normaloff>:/Images/asset.png</iconset>
+   </property>
+   <property name="text">
+    <string>Avatar Asset</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="Resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>
