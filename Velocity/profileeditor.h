@@ -17,6 +17,7 @@
 #include "GPD/DashboardGPD.h"
 #include "GPD/GameGPD.h"
 #include "GPD/AvatarAwardGPD.h"
+#include "AvatarAsset/AvatarAssetDefinintions.h"
 
 // other
 #include <iostream>
@@ -165,6 +166,13 @@ struct AvatarAwardGameEntry
     string tempFileName;
 };
 
+enum State
+{
+    StateLocked,
+    StateUnlockedOffline,
+    StateUnlockedOnline
+};
+
 class ProfileEditor : public QDialog
 {
     Q_OBJECT
@@ -192,6 +200,14 @@ private slots:
 
     void on_btnExtractGPD_clicked();
 
+    void on_cmbxAchState_currentIndexChanged(const QString &arg1);
+
+    void on_btnExtractGPD_2_clicked();
+
+    void on_btnUnlockAllAwards_clicked();
+
+    void on_cmbxAwState_currentIndexChanged(const QString &arg1);
+
 private:
     Ui::ProfileEditor *ui;
     StfsPackage *profile;
@@ -204,6 +220,10 @@ private:
     bool dispose;
 
     void addToQueue(SettingEntryType type, UINT64 id);
+
+    void updateAvatarAward(TitleEntry *entry, State current, State toSet, AssetGender g);
+
+    State getStateFromFlags(DWORD flags);
 };
 
 #endif // PROFILEEDITOR_H
