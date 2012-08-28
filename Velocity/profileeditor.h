@@ -9,6 +9,8 @@
 #include <QtNetwork/QNetworkReply>
 #include <QDir>
 #include <QUuid>
+#include <QFileDialog>
+#include "qthelpers.h"
 
 // xbox360
 #include "Stfs/StfsLib.h"
@@ -187,6 +189,8 @@ private slots:
     void on_avatarAwardsList_itemSelectionChanged();
 
     void on_btnUnlockAllAchvs_clicked();
+
+    void on_btnExtractGPD_clicked();
 
 private:
     Ui::ProfileEditor *ui;

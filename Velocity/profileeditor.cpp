@@ -503,3 +503,26 @@ void ProfileEditor::on_btnUnlockAllAchvs_clicked()
             item->setText(2, "Unlocked Offline");
     }
 }
+
+void ProfileEditor::on_btnExtractGPD_clicked()
+{
+    DWORD index = ui->gamesList->currentIndex().row();
+    if (index < 0)
+        return;
+
+    QString gpdName = QString::number(games.at(index).titleEntry->titleID, 16).toUpper() + ".gpd";
+    QString filePath = QFileDialog::getSaveFileName(this, "Choose a place to save the GPD", QtHelpers::DesktopLocation() + "/" + gpdName, "GPD File (*.gpd *.fit);;All Files (*.*)");
+
+    if (filePath == "")
+        return;
+
+    try
+    {
+        profile->ExtractFile(gpdName.toStdString(), filePath.toStdString());
+        QMessageBox::information(this, "Success", "Successfully extracted " + gpdName + " from your profile.\n");
+    }
+    catch (string error)
+    {
+        QMessageBox::critical(this, "Error", "Failed to extract " + gpdName + ".\n\n" + QString::fromStdString(error));
+    }
+}
