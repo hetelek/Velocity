@@ -17,7 +17,7 @@
 
 // other
 #include "ui_mainwindow.h"
-#include "Stfs/StfsLib.h"
+#include "Stfs/StfsPackage.h"
 #include "GPD/GPDBase.h"
 #include <iostream>
 #include <vector>

@@ -14,7 +14,7 @@
 #include "qthelpers.h"
 
 // xbox360
-#include "Stfs/StfsLib.h"
+#include "Stfs/StfsPackage.h"
 
 namespace Ui {
 class Metadata;

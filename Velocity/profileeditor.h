@@ -13,7 +13,7 @@
 #include "qthelpers.h"
 
 // xbox360
-#include "Stfs/StfsLib.h"
+#include "Stfs/StfsPackage.h"
 #include "GPD/DashboardGPD.h"
 #include "GPD/GameGPD.h"
 #include "GPD/AvatarAwardGPD.h"

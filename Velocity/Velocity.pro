@@ -17,7 +17,6 @@ SOURCES += main.cpp \
     profileeditor.cpp \
     about.cpp \
     Stfs/StfsMetaData.cpp \
-    Stfs/StfsLib.cpp \
     Stfs/SHA1.cpp \
     #Stfs/botan.cpp
     FileIO.cpp \
@@ -40,14 +39,14 @@ SOURCES += main.cpp \
     Account/AccountHelpers.cpp \
     Account/Account.cpp \
     GPD/XDBFHelpers.cpp \
-    GPD/DashboardGPD.cpp
+    GPD/DashboardGPD.cpp \
+    Stfs/StfsPackage.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
     profileeditor.h \
     about.h \
     Stfs/StfsMetaData.h \
-    Stfs/StfsLib.h \
     Stfs/StfsConstants.h \
     Stfs/SHA1.h \
     Stfs/FileIO.h \
@@ -76,7 +75,8 @@ HEADERS  += mainwindow.h \
     Account/AccountDefinitions.h \
     Account/Account.h \
     GPD/XDBFHelpers.h \
-    GPD/DashboardGPD.h
+    GPD/DashboardGPD.h \
+    Stfs/StfsPackage.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \

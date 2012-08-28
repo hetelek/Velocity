@@ -82,7 +82,7 @@ void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *pare
         item->setText(3, "N/A");
     }
 
-    for (int i = 0; i < entry->fileEntries.size(); i++)
+    for (DWORD i = 0; i < entry->fileEntries.size(); i++)
     {
         QTreeWidgetItem *fileEntry;
         if (!isRootEntry)
@@ -90,7 +90,7 @@ void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *pare
         else
             fileEntry = new QTreeWidgetItem(ui->treeWidget);
 
-        int index = entry->fileEntries.at(i).name.rfind(".");
+        DWORD index = entry->fileEntries.at(i).name.rfind(".");
         string extension = "";
         if (index != string::npos)
             extension = entry->fileEntries.at(i).name.substr(index);
@@ -113,7 +113,6 @@ void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *pare
         fileEntry->setText(1, "0x" + QString::number(entry->fileEntries.at(i).fileSize));
         fileEntry->setText(2, "0x" + QString::number(package->BlockToAddress(entry->fileEntries.at(i).startingBlockNum), 16).toUpper());
         fileEntry->setText(3, "0x" + QString::number(entry->fileEntries.at(i).startingBlockNum, 16).toUpper());
-        fileEntry->setData(0, Qt::UserRole, QVariant(i));
     }
 
     for (int i = 0; i < entry->folderEntries.size(); i++)

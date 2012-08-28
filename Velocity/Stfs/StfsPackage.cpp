@@ -1,4 +1,4 @@
-#include "StfsLib.h"
+#include "StfsPackage.h"
 #include "StfsMetaData.h"
 
 #ifdef STFS_DEBUG

@@ -18,7 +18,7 @@
 #include <QUuid>
 
 // xbox libs
-#include "Stfs/StfsLib.h"
+#include "Stfs/StfsPackage.h"
 #include "GPD/GPDBase.h"
 #include "AvatarAsset/AvatarAsset.h"
 
