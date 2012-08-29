@@ -702,7 +702,11 @@
                  </widget>
                 </item>
                 <item row="0" column="1" colspan="3">
-                 <widget class="QLineEdit" name="txtName"/>
+                 <widget class="QLineEdit" name="txtName">
+                  <property name="maxLength">
+                   <number>129</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="1" column="0">
                  <widget class="QLabel" name="label_13">
@@ -712,7 +716,11 @@
                  </widget>
                 </item>
                 <item row="1" column="1" colspan="3">
-                 <widget class="QLineEdit" name="txtMotto"/>
+                 <widget class="QLineEdit" name="txtMotto">
+                  <property name="maxLength">
+                   <number>21</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="2" column="0">
                  <widget class="QLabel" name="label_14">
@@ -722,7 +730,11 @@
                  </widget>
                 </item>
                 <item row="2" column="1" colspan="3">
-                 <widget class="QLineEdit" name="txtLocation"/>
+                 <widget class="QLineEdit" name="txtLocation">
+                  <property name="maxLength">
+                   <number>40</number>
+                  </property>
+                 </widget>
                 </item>
                 <item row="3" column="0" colspan="2">
                  <widget class="QLabel" name="label_15">

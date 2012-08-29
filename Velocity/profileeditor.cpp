@@ -41,12 +41,12 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
         ui->cmbxRegion->addItem(regions[i].name);
 
     // extract the dashboard gpd
-    string tempFile = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
-    tempFiles.push_back(tempFile);
-    profile->ExtractFile("FFFE07D1.gpd", tempFile);
+    dashGPDTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+    tempFiles.push_back(dashGPDTempPath);
+    profile->ExtractFile("FFFE07D1.gpd", dashGPDTempPath);
 
     // parse the dashboard gpd
-    dashGPD = new DashboardGPD(tempFile);
+    dashGPD = new DashboardGPD(dashGPDTempPath);
 
     // load all the goodies
     if (dashGPD->gamerName.entry.type == 0)
@@ -166,7 +166,7 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
         // if there are avatar awards then add it to the vector
         if (dashGPD->gamesPlayed.at(i).avatarAwardCount != 0)
         {
-            AvatarAwardGameEntry a = { gpd, &dashGPD->gamesPlayed.at(i), NULL, false, string("") };
+            AvatarAwardGameEntry a = { gpd, &dashGPD->gamesPlayed.at(i), NULL, false, string(""), string("") };
             aaGames.push_back(a);
         }
 
@@ -206,7 +206,7 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
     }
 
     // extract the PEC file
-    string pecTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+    pecTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
     profile->ExtractFile("PEC", pecTempPath);
     tempFiles.push_back(pecTempPath);
 
@@ -255,6 +255,7 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
         }
         aaGames.at(i).gpd = gpd;
         aaGames.at(i).tempFileName = tempGPDName;
+        aaGames.at(i).gpdName = gpdName.toStdString();
     }
 }
 
@@ -268,8 +269,6 @@ void ProfileEditor::addToQueue(SettingEntryType type, UINT64 id)
 
 ProfileEditor::~ProfileEditor()
 {
-    delete dashGPD;
-
     // free all the game gpd memory
     for (DWORD i = 0; i < games.size(); i++)
         delete games.at(i).gpd;
@@ -278,8 +277,10 @@ ProfileEditor::~ProfileEditor()
     for (DWORD i = 0; i < aaGames.size(); i++)
         delete aaGames.at(i).gpd;
 
-    if (PEC != NULL)
-        delete PEC;
+    // TODO: put a save button somewhere
+    saveAll();
+
+    delete dashGPD;
 
     if (dispose)
         delete profile;
@@ -701,6 +702,9 @@ void ProfileEditor::updateAvatarAward(TitleEntry *entry, AvatarAwardGPD *gpd, st
     // write the entry back to the gpd
     gpd->WriteAvatarAward(award);
 
+    // update the dash gpd
+    dashGPD->WriteTitleEntry(entry);
+
     entry->flags |= (DownloadAvatarAward | SyncAvatarAward);
 }
 
@@ -779,6 +783,8 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
         entry->flags |= (SyncAchievement | DownloadAchievementImage);
 
         gpd->WriteAchievementEntry(chiev);
+
+        dashGPD->WriteTitleEntry(entry);
     }
     catch (string error)
     {
@@ -788,7 +794,46 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
 
 void ProfileEditor::saveAll()
 {
+    // create all the entries that need to be created
+    for (DWORD i = 0; i < entriesToAdd.size(); i++)
+        dashGPD->CreateSettingEntry(&entriesToAdd.at(i), entriesToAdd.at(i).entry.id);
 
+    // get the avatar colors from the ui
+    if (dashGPD->avatarInformation.entry.type != 0)
+    {
+        BYTE *colors = &dashGPD->avatarInformation.binaryData.data[0xFC];
+        QPushButton *buttons[9] = { ui->clrSkin, ui->clrHair, ui->clrLips, ui->clrEyes, ui->clrEyebrows, ui->clrEyeShadow, ui->clrFacialHair, ui->clrFacePaint, ui->clrfacePaint2 };
+
+        for (DWORD i = 0; i < 9; i++)
+        {
+            colors[(i * 4) + 1] = buttons[i]->palette().background().color().red();
+            colors[(i * 4) + 2] = buttons[i]->palette().background().color().green();
+            colors[(i * 4) + 3] = buttons[i]->palette().background().color().blue();
+        }
+
+        dashGPD->WriteSettingEntry(dashGPD->avatarInformation);
+    }
+
+    // save the avatar awards
+    if (PEC != NULL)
+    {
+        // put all the avatar award gpds back in the PEC
+        for (DWORD i = 0; i < aaGames.size(); i++)
+            if (aaGames.at(i).updated)
+                PEC->ReplaceFile(aaGames.at(i).tempFileName, aaGames.at(i).gpdName);
+
+        delete PEC;
+
+        profile->ReplaceFile(pecTempPath, "PEC");
+    }
+
+
+    // put the dash gpd back in the profile
+    profile->ReplaceFile(dashGPDTempPath, "FFFE07D1.gpd");
+
+    // fix the package
+    profile->Rehash();
+    // TODO: resign yo
 }
 
 State ProfileEditor::getStateFromFlags(DWORD flags)

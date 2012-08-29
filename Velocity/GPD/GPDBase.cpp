@@ -234,7 +234,7 @@ void GPDBase::WriteSettingEntry(SettingEntry setting)
             break;
         }
         case Binary:
-            DWORD calculatedLength = 0x18 + setting.binaryData.length + 1;
+            DWORD calculatedLength = 0x18 + setting.binaryData.length;
             if (setting.entry.length != calculatedLength)
             {
                 // adjust the memory if the length changed

@@ -165,6 +165,7 @@ struct AvatarAwardGameEntry
     AvatarAwardGPD *gpd;
     bool updated;
     string tempFileName;
+    string gpdName;
 };
 
 enum State
@@ -236,6 +237,8 @@ private:
     vector<GameEntry> games;
     vector<AvatarAwardGameEntry> aaGames;
     StfsPackage *PEC;
+    string pecTempPath;
+    string dashGPDTempPath;
     bool dispose;
 
     void addToQueue(SettingEntryType type, UINT64 id);
