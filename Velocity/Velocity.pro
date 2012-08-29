@@ -41,7 +41,8 @@ SOURCES += main.cpp \
     GPD/XDBFHelpers.cpp \
     GPD/DashboardGPD.cpp \
     Stfs/StfsPackage.cpp \
-    renamedialog.cpp
+    renamedialog.cpp \
+    creationwizard.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -78,7 +79,8 @@ HEADERS  += mainwindow.h \
     GPD/XDBFHelpers.h \
     GPD/DashboardGPD.h \
     Stfs/StfsPackage.h \
-    renamedialog.h
+    renamedialog.h \
+    creationwizard.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -92,7 +94,8 @@ FORMS    += mainwindow.ui \
     xdbfdialog.ui \
     strbdialog.ui \
     imagedialog.ui \
-    renamedialog.ui
+    renamedialog.ui \
+    creationwizard.ui
 
 RESOURCES += \
     Resources.qrc

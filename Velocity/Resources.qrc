@@ -35,5 +35,6 @@
         <file>Images/HiddenAchievement.png</file>
         <file>Images/unlock.png</file>
         <file>Images/replace.png</file>
+        <file>Images/package512.png</file>
     </qresource>
 </RCC>
