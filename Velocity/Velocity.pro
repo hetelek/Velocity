@@ -40,7 +40,8 @@ SOURCES += main.cpp \
     Account/Account.cpp \
     GPD/XDBFHelpers.cpp \
     GPD/DashboardGPD.cpp \
-    Stfs/StfsPackage.cpp
+    Stfs/StfsPackage.cpp \
+    renamedialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -76,7 +77,8 @@ HEADERS  += mainwindow.h \
     Account/Account.h \
     GPD/XDBFHelpers.h \
     GPD/DashboardGPD.h \
-    Stfs/StfsPackage.h
+    Stfs/StfsPackage.h \
+    renamedialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -89,7 +91,8 @@ FORMS    += mainwindow.ui \
     transferflagsdialog.ui \
     xdbfdialog.ui \
     strbdialog.ui \
-    imagedialog.ui
+    imagedialog.ui \
+    renamedialog.ui
 
 RESOURCES += \
     Resources.qrc
