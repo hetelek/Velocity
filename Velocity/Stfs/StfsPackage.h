@@ -98,8 +98,14 @@ public:
     // Description: replace an existing file into the package
     void ReplaceFile(string path, string pathInPackage);
 
+    // Description: rename an existing file in the package
+    void RenameFile(string newName, string pathInPackage);
+
     // Description: convert a block into an address in the file
     DWORD BlockToAddress(DWORD blockNum);
+
+    // Description: returns whether the 'isPEC' parameter is set
+    bool IsPEC();
 
     // Description: close the io and all other resources used
     void Close();
@@ -121,6 +127,8 @@ private:
     HashTable topTable;
     HashTable cached;
     DWORD tablesPerLevel[3];
+
+    bool isPEC;
 
     // Description: read the file listing from the file
     void ReadFileListing();

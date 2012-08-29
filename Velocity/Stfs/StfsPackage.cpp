@@ -6,7 +6,7 @@
 #include <QDebug>
 #endif
 
-StfsPackage::StfsPackage(string packagePath, bool isPEC)
+StfsPackage::StfsPackage(string packagePath, bool isPEC) : isPEC(isPEC)
 {
     io = new FileIO(packagePath);
     metaData = new StfsMetaData(io, isPEC);
@@ -101,9 +101,13 @@ DWORD StfsPackage::BlockToAddress(DWORD blockNum)
     return (ComputeBackingDataBlockNumber(blockNum) << 0x0C) + firstHashTableAddress;
 }
 
+bool StfsPackage::IsPEC()
+{
+    return isPEC;
+}
+
 DWORD StfsPackage::ComputeLevelNBackingHashBlockNumber(DWORD blockNum, Level level)
 {
-
     switch (level)
     {
         case Zero:
@@ -963,6 +967,12 @@ void StfsPackage::WriteFileListing()
         WriteFileEntry(&outFiles.at(i - outFileSize));
     }
 
+    // write remaining null bytes
+    int remainer = 0x1000 - ((outFoldersAndFilesSize % 0x40) * 0x40);
+    BYTE *nullBytes = new BYTE[remainer];
+    memset(nullBytes, 0, remainer);
+    io->write(nullBytes, remainer);
+
     // update the file table block count and write it to file
     metaData->volumeDescriptor.fileTableBlockCount = ((outFiles.size() + outFileSize) * 0x40 / 0x1000) + 1;
     metaData->WriteVolumeDescriptor();
@@ -982,6 +992,9 @@ void StfsPackage::WriteFileEntry(FileEntry *entry)
 {
     // update the name length so it matches the string
     entry->nameLen = entry->name.length();
+
+    if (entry->nameLen > 0x28)
+        throw string("STFS: File entry name length cannot be greater than 40(0x28) characters.\n");
 
     // put the flags and name length into one byte
     BYTE nameLengthAndFlags = entry->nameLen | (entry->flags << 6);
@@ -1302,6 +1315,15 @@ void StfsPackage::ReplaceFile(string path, string pathInPackage)
     io->setPosition(entry.fileEntryAddress + 0x34);
     io->write(entry.fileSize);
     UpdateEntry(pathInPackage, entry);
+}
+
+void StfsPackage::RenameFile(string newName, string pathInPackage)
+{
+    FileEntry entry = GetFileEntry(pathInPackage);
+    entry.name = newName;
+
+    io->setPosition(entry.fileEntryAddress);
+    WriteFileEntry(&entry);
 }
 
 void StfsPackage::Close()
