@@ -509,6 +509,8 @@ void ProfileEditor::on_btnUnlockAllAchvs_clicked()
     games.at(index).titleEntry->gamerscoreUnlocked = games.at(index).titleEntry->totalGamerscore;
     games.at(index).titleEntry->flags |= (SyncAchievement | DownloadAchievementImage);
 
+    dashGPD->WriteTitleEntry(games.at(index).titleEntry);
+
     ui->lblGameAchvs->setText("Achievements: " + QString::number(games.at(index).titleEntry->achievementsUnlocked) + " out of " + QString::number(games.at(index).titleEntry->achievementCount) + " unlocked");
     ui->lblGameGamerscore->setText("Gamerscore: " + QString::number(games.at(index).titleEntry->gamerscoreUnlocked) + " out of " + QString::number(games.at(index).titleEntry->totalGamerscore) + " unlocked");
 }
@@ -624,6 +626,8 @@ void ProfileEditor::on_btnUnlockAllAwards_clicked()
     aaGames.at(index).titleEntry->maleAvatarAwardsEarned = aaGames.at(index).titleEntry->maleAvatarAwardCount;
     aaGames.at(index).titleEntry->femaleAvatarAwardsEarned = aaGames.at(index).titleEntry->femaleAvatarAwardCount;
     aaGames.at(index).titleEntry->flags |= (DownloadAvatarAward | SyncAvatarAward);
+
+    dashGPD->WriteTitleEntry(aaGames.at(index).titleEntry);
 
     ui->lblAwGameAwards->setText("Awards: " + QString::number(aaGames.at(index).titleEntry->avatarAwardsEarned) + " out of " + QString::number(aaGames.at(index).titleEntry->avatarAwardCount) + " unlocked");
 }
