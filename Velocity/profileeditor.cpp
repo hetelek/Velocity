@@ -795,7 +795,7 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
 void ProfileEditor::saveAll()
 {
     // create all the entries that need to be created
-    for (DWORD i = 0; i < entriesToAdd.size(); i++)
+   /* for (DWORD i = 0; i < entriesToAdd.size(); i++)
         dashGPD->CreateSettingEntry(&entriesToAdd.at(i), entriesToAdd.at(i).entry.id);
 
     // get the avatar colors from the ui
@@ -812,7 +812,7 @@ void ProfileEditor::saveAll()
         }
 
         dashGPD->WriteSettingEntry(dashGPD->avatarInformation);
-    }
+    } */
 
     // save the avatar awards
     if (PEC != NULL)
@@ -821,6 +821,8 @@ void ProfileEditor::saveAll()
         for (DWORD i = 0; i < aaGames.size(); i++)
             if (aaGames.at(i).updated)
                 PEC->ReplaceFile(aaGames.at(i).tempFileName, aaGames.at(i).gpdName);
+
+        PEC->Rehash();
 
         delete PEC;
 
