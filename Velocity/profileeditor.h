@@ -10,6 +10,7 @@
 #include <QDir>
 #include <QUuid>
 #include <QFileDialog>
+#include <QColorDialog>
 #include "qthelpers.h"
 
 // xbox360
@@ -208,6 +209,24 @@ private slots:
 
     void on_cmbxAwState_currentIndexChanged(const QString &arg1);
 
+    void on_clrEyeShadow_clicked();
+
+    void on_clrSkin_clicked();
+
+    void on_clrHair_clicked();
+
+    void on_clrLips_clicked();
+
+    void on_clrEyes_clicked();
+
+    void on_clrEyebrows_clicked();
+
+    void on_clrFacialHair_clicked();
+
+    void on_clrFacePaint_clicked();
+
+    void on_clrfacePaint2_clicked();
+
 private:
     Ui::ProfileEditor *ui;
     StfsPackage *profile;
@@ -226,6 +245,10 @@ private:
     void updateAchievement(TitleEntry *entry, AchievementEntry *chiev, State toSet, GameGPD *gpd);
 
     State getStateFromFlags(DWORD flags);
+
+    void getAvatarColor(QPushButton *sender);
+
+    void saveAll();
 };
 
 #endif // PROFILEEDITOR_H

@@ -786,6 +786,11 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
     }
 }
 
+void ProfileEditor::saveAll()
+{
+
+}
+
 State ProfileEditor::getStateFromFlags(DWORD flags)
 {
     if (flags & UnlockedOnline)
@@ -794,4 +799,55 @@ State ProfileEditor::getStateFromFlags(DWORD flags)
         return StateUnlockedOffline;
     else
         return StateLocked;
+}
+
+void ProfileEditor::getAvatarColor(QPushButton *sender)
+{
+    QColor color = QColorDialog::getColor(sender->palette().background().color(), this);
+    sender->setStyleSheet("* { background-color: rgb(" + QString::number(color.red()) + "," + QString::number(color.green()) + "," + QString::number(color.blue()) + ") }");
+}
+
+void ProfileEditor::on_clrEyeShadow_clicked()
+{
+    getAvatarColor(ui->clrEyeShadow);
+}
+
+void ProfileEditor::on_clrSkin_clicked()
+{
+    getAvatarColor(ui->clrSkin);
+}
+
+void ProfileEditor::on_clrHair_clicked()
+{
+    getAvatarColor(ui->clrHair);
+}
+
+void ProfileEditor::on_clrLips_clicked()
+{
+    getAvatarColor(ui->clrLips);
+}
+
+void ProfileEditor::on_clrEyes_clicked()
+{
+    getAvatarColor(ui->clrEyes);
+}
+
+void ProfileEditor::on_clrEyebrows_clicked()
+{
+    getAvatarColor(ui->clrEyebrows);
+}
+
+void ProfileEditor::on_clrFacialHair_clicked()
+{
+    getAvatarColor(ui->clrFacialHair);
+}
+
+void ProfileEditor::on_clrFacePaint_clicked()
+{
+    getAvatarColor(ui->clrFacePaint);
+}
+
+void ProfileEditor::on_clrfacePaint2_clicked()
+{
+    getAvatarColor(ui->clrfacePaint2);
 }
