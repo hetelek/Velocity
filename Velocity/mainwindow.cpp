@@ -101,3 +101,9 @@ void MainWindow::on_actionSTRB_File_triggered()
         QMessageBox::critical(this, "Error", "An error occured while openeing the STRB package.\n\n" + QString::fromStdString(error));
     }
 }
+
+void MainWindow::on_actionCreate_Package_triggered()
+{
+    CreationWizard wizard(this);
+    wizard.exec();
+}

@@ -14,6 +14,7 @@
 #include "xdbfdialog.h"
 #include "strbdialog.h"
 #include "profileeditor.h"
+#include "creationwizard.h"
 
 // other
 #include "ui_mainwindow.h"
@@ -46,6 +47,8 @@ private slots:
     void on_actionXDBF_File_triggered();
 
     void on_actionSTRB_File_triggered();
+
+    void on_actionCreate_Package_triggered();
 
 private:
     Ui::MainWindow *ui;
