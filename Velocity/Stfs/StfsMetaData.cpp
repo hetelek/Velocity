@@ -132,7 +132,7 @@ void StfsMetaData::WriteCertificate()
     if (magic != CON)
         throw string("STFS: Error writing certificate. Package is strong signed and therefore doesn't have a certificate.\n");
 
-    WriteCertificateEx(&certificate, io, 4);
+    WriteCertificateEx(&certificate, io, (isPEC) ? 0 : 4);
 }
 
 void StfsMetaData::WriteMetaData()
@@ -240,7 +240,7 @@ void StfsMetaData::WriteMetaData()
 
 void StfsMetaData::WriteVolumeDescriptor()
 {
-    WriteVolumeDescriptorEx(&volumeDescriptor, io, 0x379);
+    WriteVolumeDescriptorEx(&volumeDescriptor, io, (isPEC) ? 0x244 : 0x379);
 }
 
 StfsMetaData::~StfsMetaData()

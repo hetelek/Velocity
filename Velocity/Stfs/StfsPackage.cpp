@@ -539,6 +539,7 @@ void StfsPackage::Rehash()
                 // hash the block
                 HashBlock(blockBuffer, topTable.entries[i].blockHash);
             }
+
             break;
 
         case One:
@@ -571,6 +572,8 @@ void StfsPackage::Rehash()
                 // hash the table
                 HashBlock(blockBuffer, topTable.entries[i].blockHash);
             }
+
+
 
             break;
 
@@ -636,7 +639,7 @@ void StfsPackage::Rehash()
     // build table so we can write it to the file and hash it
     BuildTableInMemory(&topTable, blockBuffer);
 
-    // write the allocatedBlockCount at the bottom of the hash table, MS why?
+    // write the number of blocks the table hashes at the bottom of the hash table, MS why?
     if (topTable.level >= One)
     {
         DWORD allocatedBlockCountSwapped = metaData->volumeDescriptor.allocatedBlockCount;
@@ -653,6 +656,23 @@ void StfsPackage::Rehash()
 
     // write new volume descriptor to the file
     metaData->WriteVolumeDescriptor();
+
+    // hash the header
+    if (isPEC)
+    {
+        BYTE *buffer = new BYTE[0xDC4];
+        io->setPosition(0x23C);
+        io->readBytes(buffer, 0xDC4);
+
+        sha1.Update(buffer, 0xDC4);
+        sha1.Final();
+        sha1.GetHash(metaData->headerHash);
+        sha1.Reset();
+
+        delete[] buffer;
+
+        metaData->WriteMetaData();
+    }
 }
 
 void StfsPackage::SwapTable(DWORD index, Level lvl)
