@@ -7,6 +7,7 @@ PackageViewer::PackageViewer(StfsPackage *package, QWidget *parent) :
     package(package),
     parent (parent)
 {
+    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
     disposePackage = true;
@@ -15,35 +16,49 @@ PackageViewer::PackageViewer(StfsPackage *package, QWidget *parent) :
     ui->treeWidget->header()->resizeSection(2, 100);
 
     // load all of the data
-    ui->lblMagic->setText(QString::fromStdString("Magic: " + MagicToString(package->metaData->magic)));
-    ui->lblDisplayName->setText("Display Name: " + QString::fromStdWString(package->metaData->displayName));
-    ui->lblType->setText(QString::fromStdString("Package Type: " + ContentTypeToString(package->metaData->contentType)));
-    ui->lblTitleName->setText("Title ID: " + QString::number(package->metaData->titleID, 16).toUpper());
-
-    QString builder = "";
-    for (int i = 0; i < 8; i++)
-        builder += QString("%1").arg((BYTE)package->metaData->profileID[i], 2, 16, QChar('0')).toUpper();
-
-    ui->txtProfileID->setText(builder.toUpper());
-
-    builder = "";
-    for (int i = 0; i < 20; i++)
-        builder += QString("%1").arg((BYTE)package->metaData->deviceID[i], 2, 16, QChar('0')).toUpper();
-
-    ui->txtDeviceID->setText(builder.toUpper());
-
-    // set the thumbnail
-    QByteArray imageBuff((char*)package->metaData->thumbnailImage, (size_t)package->metaData->thumbnailImageSize);
-    ui->imgTile->setPixmap(QPixmap::fromImage(QImage::fromData(imageBuff)));
-
-    if (package->metaData->magic != CON)
+    if (package->IsPEC())
     {
-        ui->txtProfileID->setEnabled(false);
-        ui->txtDeviceID->setEnabled(false);
-    }
+        ui->lblMagic->setText("Magic: <i>N/A</i>");
+        ui->lblDisplayName->setText("Display Name: <i>N/A</i>");
+        ui->lblTitleName->setText("Title ID: <i>N/A</i>");
+        ui->lblType->setText("Type: PEC");
 
-    if (package->metaData->contentType == Profile)
-        ui->btnProfileEditor->setEnabled(true);
+        ui->txtDeviceID->setEnabled(false);
+        ui->txtProfileID->setEnabled(false);
+    }
+    else
+    {
+        ui->lblMagic->setText(QString::fromStdString("Magic: " + MagicToString(package->metaData->magic)));
+        ui->lblDisplayName->setText("Display Name: " + QString::fromStdWString(package->metaData->displayName));
+
+        ui->lblType->setText(QString::fromStdString("Package Type: " + ContentTypeToString(package->metaData->contentType)));
+        ui->lblTitleName->setText("Title ID: " + QString::number(package->metaData->titleID, 16).toUpper());
+
+        QString builder = "";
+        for (int i = 0; i < 8; i++)
+            builder += QString("%1").arg((BYTE)package->metaData->profileID[i], 2, 16, QChar('0')).toUpper();
+
+        ui->txtProfileID->setText(builder.toUpper());
+
+        builder = "";
+        for (int i = 0; i < 20; i++)
+            builder += QString("%1").arg((BYTE)package->metaData->deviceID[i], 2, 16, QChar('0')).toUpper();
+
+        ui->txtDeviceID->setText(builder.toUpper());
+
+        // set the thumbnail
+        QByteArray imageBuff((char*)package->metaData->thumbnailImage, (size_t)package->metaData->thumbnailImageSize);
+        ui->imgTile->setPixmap(QPixmap::fromImage(QImage::fromData(imageBuff)));
+
+        if (package->metaData->magic != CON)
+        {
+            ui->txtProfileID->setEnabled(false);
+            ui->txtDeviceID->setEnabled(false);
+        }
+
+        if (package->metaData->contentType == Profile)
+            ui->btnProfileEditor->setEnabled(true);
+    }
 
     listing = package->GetFileListing();
     PopulateTreeWidget(&listing);
@@ -161,8 +176,8 @@ void PackageViewer::on_btnFix_clicked()
 
 void PackageViewer::on_btnViewAll_clicked()
 {
-    Metadata *meta = new Metadata(package);
-    meta->exec();
+    Metadata meta(package);
+    meta.exec();
 }
 
 void PackageViewer::showRemoveContextMenu(QPoint point)
@@ -173,12 +188,10 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
     QPoint globalPos = ui->treeWidget->mapToGlobal(point);
 
     QMenu contextMenu;
-    QIcon icon, icon2;
-    icon.addPixmap(QPixmap::fromImage(QImage(":/Images/extract.png")));
-    contextMenu.addAction(icon, "Extract Selected");
-
-    icon2.addPixmap(QPixmap::fromImage(QImage(":/Images/delete.png")));
-    contextMenu.addAction(icon2, "Remove Selected");
+    contextMenu.addAction(QPixmap(":/Images/extract.png"), "Extract Selected");
+    contextMenu.addAction(QPixmap(":/Images/delete.png"), "Remove Selected");
+    contextMenu.addAction(QPixmap(":/Images/rename.png"), "Rename Selected");
+    contextMenu.addAction(QPixmap(":/Images/replace.png"), "Replace Selected");
 
     QAction *selectedItem = contextMenu.exec(globalPos);
     if(selectedItem == NULL)
@@ -251,6 +264,48 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         else
             QMessageBox::warning(this, "Warning", "Some files could not be deleted.\n\nSuccessful Deletions: " + QString::number(successCount) + " / " + QString::number(totalCount));
     }
+    else if (selectedItem->text() == "Rename Selected")
+    {
+        QString packagePath;
+        GetPackagePath(items.at(0), &packagePath);
+        try
+        {
+            string newName = items.at(0)->text(0).toStdString();
+
+            RenameDialog dialog(this, &newName);
+            dialog.exec();
+
+            if (newName == items.at(0)->text(0).toStdString())
+                return;
+
+            package->RenameFile(newName, packagePath.toStdString());
+            items.at(0)->setText(0, QString::fromStdString(newName));
+            QMessageBox::information(this, "Success", "The file has been renamed.");
+        }
+        catch (string error)
+        {
+            QMessageBox::critical(this, "Error", "Failed to rename file.\n\n" + QString::fromStdString(error));
+        }
+    }
+    else if (selectedItem->text() == "Replace Selected")
+    {
+        QString packagePath;
+        GetPackagePath(items.at(0), &packagePath);
+
+        QString path = QFileDialog::getOpenFileName(this, "New File", QtHelpers::DesktopLocation() + "/" + ui->treeWidget->selectedItems()[0]->text(0));
+        if (path.isEmpty())
+            return;
+
+        try
+        {
+            package->ReplaceFile(path.toStdString(), packagePath.toStdString());
+            QMessageBox::information(this, "Success", "The file has been replace.");
+        }
+        catch(string error)
+        {
+            QMessageBox::critical(this, "Error", "Failed to replace file.\n\n" + QString::fromStdString(error));
+        }
+    }
 }
 
 void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
@@ -263,29 +318,36 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
 
     if (extension == ".gpd" || extension == ".fit")
     {
-        // get a temporary file name
-        QString tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", ""));
-        string tempNameStd = tempName.toStdString();
+        try
+        {
+            // get a temporary file name
+            QString tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", ""));
+            string tempNameStd = tempName.toStdString();
 
-        // extract the file to a temporary location
-        QString packagePath;
-        GetPackagePath(item, &packagePath);
+            // extract the file to a temporary location
+            QString packagePath;
+            GetPackagePath(item, &packagePath);
 
-        package->ExtractFile(packagePath.toStdString(), tempNameStd);
+            package->ExtractFile(packagePath.toStdString(), tempNameStd);
 
-        // parse the gpd
-        GPDBase *gpd = new GPDBase(tempNameStd);
-        bool changed;
-        XdbfDialog dialog(gpd, &changed, this);
-        dialog.exec();
+            // parse the gpd
+            GPDBase *gpd = new GPDBase(tempNameStd);
+            bool changed;
+            XdbfDialog dialog(gpd, &changed, this);
+            dialog.exec();
 
-        if(changed)
-            package->ReplaceFile(tempNameStd, packagePath.toStdString());
+            if(changed)
+                package->ReplaceFile(tempNameStd, packagePath.toStdString());
 
-        delete gpd;
+            delete gpd;
 
-        // delete the temp file
-        QFile::remove(tempName);
+            // delete the temp file
+            QFile::remove(tempName);
+        }
+        catch(string error)
+        {
+            QMessageBox::critical(this, "Error", "Failed to open the GPD.\n\n" + QString::fromStdString(error));
+        }
     }
     else if (extension == ".bin")
     {
@@ -314,6 +376,31 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
         }
         else
             io.close();
+    }
+    else if (item->text(0) == "PEC")
+    {
+        try
+        {
+            // get a temporary file name
+            string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+
+            // extract the file to a temporary location
+            QString packagePath;
+            GetPackagePath(item, &packagePath);
+
+            package->ExtractFile(packagePath.toStdString(), string(tempName));
+
+            StfsPackage *package = new StfsPackage(tempName, true);
+            PackageViewer dialog(package, this);
+            dialog.exec();
+
+            // delete the temp file
+            remove(tempName.c_str());
+        }
+        catch(string error)
+        {
+            QMessageBox::critical(this, "Error", "Failed to open PEC file.\n\n" + QString::fromStdString(error));
+        }
     }
 }
 

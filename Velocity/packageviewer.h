@@ -7,6 +7,8 @@
 #include "xdbfdialog.h"
 #include "strbdialog.h"
 #include "profileeditor.h"
+#include "renamedialog.h"
+#include "certificatedialog.h"
 
 // qt
 #include <QDialog>
