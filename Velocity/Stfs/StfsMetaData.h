@@ -76,5 +76,6 @@ public:
 
 private:
 	FileIO *io;
+    bool isPEC;
 };
 

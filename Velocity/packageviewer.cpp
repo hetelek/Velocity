@@ -358,7 +358,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
         QString packagePath;
         GetPackagePath(item, &packagePath);
 
-        package->ExtractFile(packagePath.toStdString(), string(tempName));
+        package->ExtractFile(packagePath.toStdString(), tempName);
 
         // verify that it's an STFB file
         FileIO io(tempName, false);
@@ -388,11 +388,14 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
             QString packagePath;
             GetPackagePath(item, &packagePath);
 
-            package->ExtractFile(packagePath.toStdString(), string(tempName));
+            package->ExtractFile(packagePath.toStdString(), tempName);
 
-            StfsPackage *package = new StfsPackage(tempName, true);
-            PackageViewer dialog(package, this);
+            StfsPackage *pec = new StfsPackage(tempName, true);
+            PackageViewer dialog(pec, this);
             dialog.exec();
+
+            // replace the PEC with the modified one
+            package->ReplaceFile(tempName, packagePath.toStdString());
 
             // delete the temp file
             remove(tempName.c_str());

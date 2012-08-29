@@ -4,7 +4,7 @@
 
 using namespace std;
 
-StfsMetaData::StfsMetaData(FileIO *io, bool isPEC)
+StfsMetaData::StfsMetaData(FileIO *io, bool isPEC) : isPEC(isPEC)
 {
 	// set the io
 	this->io = io;
@@ -140,82 +140,102 @@ void StfsMetaData::WriteMetaData()
     // seek to the begining of the file
     io->setPosition(0);
 
-    io->write(magic);
+    if (!isPEC)
+    {
 
-    if (magic == CON)
-        WriteCertificate();
-    else if (magic == PIRS || magic == LIVE)
-        io->write(packageSignature, 0x100);
+        io->write(magic);
+
+        if (magic == CON)
+            WriteCertificate();
+        else if (magic == PIRS || magic == LIVE)
+            io->write(packageSignature, 0x100);
+        else
+        {
+            stringstream except;
+            except << "STFS: Content signature type 0x" << hex << (DWORD)magic << " is invalid.\n";
+            throw except.str();
+        }
+
+        // write the licensing data
+        io->setPosition(0x22C);
+        for (DWORD i = 0; i < 0x10; i++)
+        {
+            io->write(licenseData[i].licenseID);
+            io->write(licenseData[i].bits);
+            io->write(licenseData[i].flags);
+        }
+
+        io->write(headerHash, 0x14);
+        io->write(headerSize);
+        io->write((DWORD)contentType);
+        io->write((DWORD)metaDataVersion);
+        io->write((UINT64)contentSize);
+        io->write(mediaID);
+        io->write(version);
+        io->write(baseVersion);
+        io->write(titleID);
+        io->write((BYTE)platform);
+        io->write((BYTE)executableType);
+        io->write((BYTE)discNumber);
+        io->write((BYTE)discInSet);
+        io->write((DWORD)savegameID);
+        io->write(consoleID, 5);
+        io->write(profileID, 8);
+
+        WriteVolumeDescriptor();
+
+        io->write(dataFileCount);
+        io->write(dataFileCombinedSize);
+
+        // skip padding
+        io->setPosition(0x3B1);
+
+        io->write(seriesID, 0x10);
+        io->write(seasonID, 0x10);
+        io->write(seasonNumber);
+        io->write(episodeNumber);
+
+        // skip padding
+        io->setPosition(0x3FD);
+
+        io->write(deviceID, 0x14);
+        io->write(displayName);
+
+        io->setPosition(0xD11);
+        io->write(displayDescription);
+
+        io->setPosition(0x1611);
+        io->write(publisherName);
+
+        io->setPosition(0x1691);
+        io->write(titleName);
+
+        io->setPosition(0x1711);
+        io->write((BYTE)transferFlags);
+
+        io->write(thumbnailImageSize);
+        io->write(titleThumbnailImageSize);
+
+        io->write(thumbnailImage, thumbnailImageSize);
+        io->setPosition(0x571A);
+        io->write(titleThumbnailImage, titleThumbnailImageSize);
+    }
+
     else
     {
-        stringstream except;
-        except << "STFS: Content signature type 0x" << hex << (DWORD)magic << " is invalid.\n";
-        throw except.str();
+        WriteCertificateEx(&certificate, io, 0);
+        io->write(headerHash, 0x14);
+
+        WriteVolumeDescriptorEx(&volumeDescriptor, io, 0x244);
+
+        // *skip missing int*
+        io->setPosition(0x26C);
+        io->write(profileID, 8);
+
+        // *skip missing byte*
+        io->setPosition(0x275);
+        io->write(consoleID, 5);
     }
-
-    // write the licensing data
-    io->setPosition(0x22C);
-    for (DWORD i = 0; i < 0x10; i++)
-    {
-        io->write(licenseData[i].licenseID);
-        io->write(licenseData[i].bits);
-        io->write(licenseData[i].flags);
-    }
-
-    io->write(headerHash, 0x14);
-    io->write(headerSize);
-    io->write((DWORD)contentType);
-    io->write((DWORD)metaDataVersion);
-    io->write((UINT64)contentSize);
-    io->write(mediaID);
-    io->write(version);
-    io->write(baseVersion);
-    io->write(titleID);
-    io->write((BYTE)platform);
-    io->write((BYTE)executableType);
-    io->write((BYTE)discNumber);
-    io->write((BYTE)discInSet);
-    io->write((DWORD)savegameID);
-    io->write(consoleID, 5);
-    io->write(profileID, 8);
-
-    WriteVolumeDescriptor();
-
-    io->write(dataFileCount);
-    io->write(dataFileCombinedSize);
-
-    // skip padding
-    io->setPosition(0x3B1);
-
-    io->write(seriesID, 0x10);
-    io->write(seasonID, 0x10);
-    io->write(seasonNumber);
-    io->write(episodeNumber);
-
-    // skip padding
-    io->setPosition(0x3FD);
-
-    io->write(deviceID, 0x14);
-    io->write(displayName);
-
-    io->setPosition(0xD11);
-    io->write(displayDescription);
-
-    io->setPosition(0x1611);
-    io->write(publisherName);
-
-    io->setPosition(0x1691);
-    io->write(titleName);
-
-    io->setPosition(0x1711);
-    io->write((BYTE)transferFlags);
-
-    io->write(thumbnailImageSize);
-    io->write(titleThumbnailImageSize);
-
-    io->write(thumbnailImage, thumbnailImageSize);
-    io->setPosition(0x571A);
-    io->write(titleThumbnailImage, titleThumbnailImageSize);
 }
 
 void StfsMetaData::WriteVolumeDescriptor()
@@ -225,6 +245,9 @@ void StfsMetaData::WriteVolumeDescriptor()
 
 StfsMetaData::~StfsMetaData()
 {
-	delete[] thumbnailImage;
-	delete[] titleThumbnailImage;
+    if (!isPEC)
+    {
+        delete[] thumbnailImage;
+        delete[] titleThumbnailImage;
+    }
 }
