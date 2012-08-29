@@ -82,7 +82,10 @@ SettingEntry GPDBase::readSettingEntry(XDBFEntry entry)
     // read the setting entry type
     toReturn.type = (SettingEntryType)io->readByte();
     if (toReturn.type <= 0 || toReturn.type > 7)
+    {
+        printf("%llX\n", entry.id);
         throw string("XDBF: Error reading setting entry. Invalid setting entry type.\n");
+    }
 
     // skip past the nonsense
     io->setPosition(entryAddr + 0x10);
@@ -190,6 +193,7 @@ void GPDBase::WriteSettingEntry(SettingEntry setting)
     // write the setting entry header
     io->setPosition(entryAddr);
     io->write((UINT64)setting.entry.id);
+    io->setPosition(entryAddr + 8);
     io->write((BYTE)setting.type);
 
     io->setPosition(entryAddr + 0x10);
@@ -221,12 +225,13 @@ void GPDBase::WriteSettingEntry(SettingEntry setting)
                 // adjust the memory if the length changed
                 xdbf->DeallocateMemory(xdbf->GetRealAddress(setting.entry.addressSpecifier), setting.entry.length);
                 setting.entry.length = calculatedLength;
-                setting.entry.addressSpecifier = xdbf->GetSpecifier(xdbf->AllocateMemory(setting.entry.length));
+                entryAddr = xdbf->AllocateMemory(setting.entry.length);
+                setting.entry.addressSpecifier = xdbf->GetSpecifier(entryAddr);
 
-                io->setPosition(xdbf->GetRealAddress(setting.entry.addressSpecifier));
+                io->setPosition(entryAddr);
                 io->write((UINT64)setting.entry.id);
                 io->write((BYTE)setting.type);
-                io->setPosition(xdbf->GetRealAddress(setting.entry.addressSpecifier) + 0x10);
+                io->setPosition(entryAddr + 0x10);
             }
             io->write((DWORD)((setting.str->size() + 1) * 2));
             io->setPosition(entryAddr + 0x18);
@@ -234,18 +239,19 @@ void GPDBase::WriteSettingEntry(SettingEntry setting)
             break;
         }
         case Binary:
-            DWORD calculatedLength = 0x18 + setting.binaryData.length;
+            DWORD calculatedLength = 0x18 + setting.binaryData.length + 1;
             if (setting.entry.length != calculatedLength)
             {
                 // adjust the memory if the length changed
                 xdbf->DeallocateMemory(xdbf->GetRealAddress(setting.entry.addressSpecifier), setting.entry.length);
                 setting.entry.length = calculatedLength;
-                setting.entry.addressSpecifier = xdbf->GetSpecifier(xdbf->AllocateMemory(setting.entry.length));
+                entryAddr = xdbf->AllocateMemory(setting.entry.length);
+                setting.entry.addressSpecifier = xdbf->GetSpecifier(entryAddr);
 
-                io->setPosition(xdbf->GetRealAddress(setting.entry.addressSpecifier));
+                io->setPosition(entryAddr);
                 io->write((UINT64)setting.entry.id);
                 io->write((BYTE)setting.type);
-                io->setPosition(xdbf->GetRealAddress(setting.entry.addressSpecifier) + 0x10);
+                io->setPosition(entryAddr + 0x10);
             }
             io->write(setting.binaryData.length);
             io->setPosition(entryAddr + 0x18);

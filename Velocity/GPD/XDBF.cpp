@@ -430,7 +430,7 @@ DWORD XDBF::AllocateMemory(DWORD size)
     {
         // get the position in the file of the memory allocated
         io->setPosition(0, ios_base::end);
-        toReturn = (DWORD)io->getPosition();
+        toReturn = GetSpecifier((DWORD)io->getPosition());
 
         io->flush();
         io->setPosition(size - 1, ios_base::end);
@@ -439,7 +439,7 @@ DWORD XDBF::AllocateMemory(DWORD size)
     }
     else
     {
-        // calculate the real address of the free memory in the file
+        // get the the real address of the free memory in the file
         toReturn = GetRealAddress(freeMemory.at(index).addressSpecifier);
 
         // erase the entry used from the vector
@@ -652,8 +652,17 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
             throw string("XDBF: Error updating entry. Invalid entry type.\n");
     }
 
+    // find the entry in the table and update it
+    for (DWORD i = 0; i < group->entries.size(); i++)
+        if (group->entries.at(i).id == entry->id)
+        {
+            group->entries.at(i).addressSpecifier = entry->addressSpecifier;
+            group->entries.at(i).length = entry->length;
+        }
+
     // find the sync
     for (DWORD i = 0; i < group->syncs.synced.size(); i++)
+    {
         if (group->syncs.synced.at(i).entryID == entry->id)
         {
             SyncEntry sync = group->syncs.synced.at(i);
@@ -671,8 +680,11 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
             // re-write the updated sync data
             writeSyncData(&group->syncData);
         }
+    }
 
-    // if it didn't find then sync, then we'll assume it's already in the queue
+    // if it didn't find the sync, then we'll assume it's already in the queue
+
+    writeEntryListing();
 }
 
 void XDBF::DeleteEntry(XDBFEntry entry)
