@@ -572,9 +572,6 @@ void StfsPackage::Rehash()
                 // hash the table
                 HashBlock(blockBuffer, topTable.entries[i].blockHash);
             }
-
-
-
             break;
 
         case Two:
@@ -657,22 +654,32 @@ void StfsPackage::Rehash()
     // write new volume descriptor to the file
     metaData->WriteVolumeDescriptor();
 
-    // hash the header
+    DWORD headerStart;
+
+    // set the headerStart
     if (isPEC)
-    {
-        BYTE *buffer = new BYTE[0xDC4];
-        io->setPosition(0x23C);
-        io->readBytes(buffer, 0xDC4);
+        headerStart = 0x23C;
+    else
+        headerStart = 0x344;
 
-        sha1.Update(buffer, 0xDC4);
-        sha1.Final();
-        sha1.GetHash(metaData->headerHash);
-        sha1.Reset();
+    // calculate header size / first hash table address
+    DWORD calculated = ((metaData->headerSize + 0xFFF) & 0xF000);
+    DWORD headerSize = calculated - headerStart;
 
-        delete[] buffer;
+    // read the data to hash
+    BYTE *buffer = new BYTE[headerSize];
+    io->setPosition(headerStart);
+    io->readBytes(buffer, headerSize);
 
-        metaData->WriteMetaData();
-    }
+    // hash the header
+    sha1.Update(buffer, headerSize);
+    sha1.Final();
+    sha1.GetHash(metaData->headerHash);
+    sha1.Reset();
+
+    delete[] buffer;
+
+    metaData->WriteMetaData();
 }
 
 void StfsPackage::SwapTable(DWORD index, Level lvl)

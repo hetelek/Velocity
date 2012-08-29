@@ -796,23 +796,7 @@ void ProfileEditor::saveAll()
 {
     // create all the entries that need to be created
    /* for (DWORD i = 0; i < entriesToAdd.size(); i++)
-        dashGPD->CreateSettingEntry(&entriesToAdd.at(i), entriesToAdd.at(i).entry.id);
-
-    // get the avatar colors from the ui
-    if (dashGPD->avatarInformation.entry.type != 0)
-    {
-        BYTE *colors = &dashGPD->avatarInformation.binaryData.data[0xFC];
-        QPushButton *buttons[9] = { ui->clrSkin, ui->clrHair, ui->clrLips, ui->clrEyes, ui->clrEyebrows, ui->clrEyeShadow, ui->clrFacialHair, ui->clrFacePaint, ui->clrfacePaint2 };
-
-        for (DWORD i = 0; i < 9; i++)
-        {
-            colors[(i * 4) + 1] = buttons[i]->palette().background().color().red();
-            colors[(i * 4) + 2] = buttons[i]->palette().background().color().green();
-            colors[(i * 4) + 3] = buttons[i]->palette().background().color().blue();
-        }
-
-        dashGPD->WriteSettingEntry(dashGPD->avatarInformation);
-    } */
+        dashGPD->CreateSettingEntry(&entriesToAdd.at(i), entriesToAdd.at(i).entry.id); */
 
     // save the avatar awards
     if (PEC != NULL)
