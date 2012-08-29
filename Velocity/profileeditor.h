@@ -156,6 +156,7 @@ struct GameEntry
     TitleEntry *titleEntry;
     bool updated;
     string tempFileName;
+    string gpdName;
 };
 
 struct AvatarAwardGameEntry

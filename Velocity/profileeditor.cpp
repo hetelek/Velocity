@@ -160,7 +160,7 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
             this->close();
             return;
         }
-        GameEntry g = { gpd, &dashGPD->gamesPlayed.at(i), false, tempPath };
+        GameEntry g = { gpd, &dashGPD->gamesPlayed.at(i), false, tempPath, gpdName.toStdString() };
         games.push_back(g);
 
         // if there are avatar awards then add it to the vector
@@ -769,18 +769,18 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
             gpd->WriteSettingEntry(settingAchievements);
             gpd->WriteSettingEntry(settingGamerscore);
 
-            entry->flags &= 0xFFFCFFFF;
+            chiev->flags &= 0xFFFCFFFF;
         }
 
         if (toSet == StateUnlockedOffline)
         {
-            entry->flags &= 0xFFFCFFFF;
-            entry->flags |= Unlocked;
+            chiev->flags &= 0xFFFCFFFF;
+            chiev->flags |= Unlocked;
         }
         else if (toSet == StateUnlockedOnline)
-            entry->flags |= (Unlocked | UnlockedOnline);
+            chiev->flags |= (Unlocked | UnlockedOnline);
 
-        entry->flags |= (SyncAchievement | DownloadAchievementImage);
+        chiev->flags |= (SyncAchievement | DownloadAchievementImage);
 
         gpd->WriteAchievementEntry(chiev);
 
@@ -826,6 +826,11 @@ void ProfileEditor::saveAll()
 
         profile->ReplaceFile(pecTempPath, "PEC");
     }
+
+    // save the achievements
+    for (DWORD i = 0; i < games.size(); i++)
+        if (games.at(i).updated)
+            profile->ReplaceFile(games.at(i).tempFileName, games.at(i).gpdName);
 
 
     // put the dash gpd back in the profile
