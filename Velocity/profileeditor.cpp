@@ -195,6 +195,7 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
     if (!pecExists && aaGames.size() != 0)
     {
         QMessageBox::critical(this, "File Not Found", "Games have been found with avatar awards, but no PEC file exists.\n");
+        ui->tabAvatarAwards->setEnabled(false);
         this->close();
         return;
     }
