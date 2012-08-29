@@ -34,5 +34,6 @@
         <file>Images/avatar-body.png</file>
         <file>Images/HiddenAchievement.png</file>
         <file>Images/unlock.png</file>
+        <file>Images/replace.png</file>
     </qresource>
 </RCC>
