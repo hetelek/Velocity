@@ -64,7 +64,7 @@ void DashboardGPD::init()
 			case GamercardCred:
 				gamerscoreUnlocked = settings.at(i);
 				break;
-			case GamercardTitleAchievementsEarned:
+            case GamercardAchievementsEarned:
 				achievementsUnlocked = settings.at(i);
 				break;
 			case GamercardRep:
