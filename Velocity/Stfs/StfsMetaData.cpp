@@ -86,7 +86,7 @@ StfsMetaData::StfsMetaData(FileIO *io, bool isPEC) : isPEC(isPEC)
         io->setPosition(0x1691);
         titleName = io->readWString(0x80);
         io->setPosition(0x1711);
-        transferFlags = (TransferFlags)io->readByte();
+        transferFlags = io->readByte();
 
         // read image sizes
         thumbnailImageSize = io->readDword();

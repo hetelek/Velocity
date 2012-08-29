@@ -67,15 +67,6 @@ enum ContentType
 	XNA = 0xE0000
 };
 
-enum TransferFlags
-{
-	DeviceAndProfileIDTransfer = 0,
-	MoveOnlyTransfer = 0x20,
-	DeviceIDTransfer = 0x40,
-	ProfileIDTransfer = 0x80,
-	None = 0xC0
-};
-
 enum BlockStatusLevelZero
 {
 	Unallocated = 0,
