@@ -40,6 +40,10 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
     for (DWORD i = 0; i < 109; i++)
         ui->cmbxRegion->addItem(regions[i].name);
 
+    // load the gamerpicture
+    QByteArray imageBuff((char*)profile->metaData->thumbnailImage, (size_t)profile->metaData->thumbnailImageSize);
+    ui->imgGamerpicture->setPixmap(QPixmap::fromImage(QImage::fromData(imageBuff)));
+
     // extract the dashboard gpd
     dashGPDTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
     tempFiles.push_back(dashGPDTempPath);
@@ -50,27 +54,38 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
 
     // load all the goodies
     if (dashGPD->gamerName.entry.type == 0)
-        addToQueue(UnicodeString, GamercardUserName);
+        addToDashGPD(&dashGPD->gamerName, UnicodeString, GamercardUserName);
     else
         ui->txtName->setText(QString::fromStdWString(*dashGPD->gamerName.str));
 
+    if (dashGPD->gamerscoreUnlocked.entry.type == 0)
+    {
+        addToDashGPD(&dashGPD->gamerscoreUnlocked, Int32, GamercardCred);
+        ui->lblGamerscore->setText("0G");
+    }
+    else
+        ui->lblGamerscore->setText(QString::number(dashGPD->gamerscoreUnlocked.int32) + "G");
+
+    if (dashGPD->achievementsUnlocked.entry.type == 0)
+        addToDashGPD(&dashGPD->achievementsUnlocked, Int32, GamercardAchievementsEarned);
+
     if (dashGPD->motto.entry.type == 0)
-        addToQueue(UnicodeString, GamercardMotto);
+        addToDashGPD(&dashGPD->motto, UnicodeString, GamercardMotto);
     else
         ui->txtMotto->setText(QString::fromStdWString(*dashGPD->motto.str));
 
     if (dashGPD->gamerLocation.entry.type == 0)
-        addToQueue(UnicodeString, GamercardUserLocation);
+        addToDashGPD(&dashGPD->gamerLocation, UnicodeString, GamercardUserLocation);
     else
         ui->txtLocation->setText(QString::fromStdWString(*dashGPD->gamerLocation.str));
 
     if (dashGPD->gamerzone.entry.type == 0)
-        addToQueue(Int32, GamercardZone);
+        addToDashGPD(&dashGPD->gamerzone, Int32, GamercardZone);
     else
         ui->cmbxGamerzone->setCurrentIndex(dashGPD->gamerzone.int32);
 
     if (dashGPD->gamercardRegion.entry.type == 0)
-        addToQueue(Int32, GamercardRegion);
+        addToDashGPD(&dashGPD->gamercardRegion, Int32, GamercardRegion);
     else
     {
         // find the index of the gamer's region
@@ -80,20 +95,19 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
     }
 
     if (dashGPD->yearsOnLive.entry.type == 0)
-        addToQueue(Int32, YearsOnLive);
+        addToDashGPD(&dashGPD->yearsOnLive, Int32, YearsOnLive);
     else
         ui->cmbxTenure->setCurrentIndex(dashGPD->yearsOnLive.int32);
 
     if (dashGPD->reputation.entry.type == 0)
-        addToQueue(Float, GamercardRep);
+        addToDashGPD(&dashGPD->reputation, Float, GamercardRep);
     else
         ui->spnRep->setValue(dashGPD->reputation.floatData);
 
     if (dashGPD->gamerBio.entry.type == 0)
-        addToQueue(UnicodeString, GamercardUserBio);
+        addToDashGPD(&dashGPD->gamerBio, UnicodeString, GamercardUserBio);
     else
         ui->txtBio->setPlainText(QString::fromStdWString(*dashGPD->gamerBio.str));
-
 
     // load the avatar image
     if (dashGPD->avatarImage.entry.type != 0)
@@ -104,25 +118,6 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
     else
         ui->imgAvatar->setPixmap(QPixmap::fromImage(QImage(":/Images/avatar-body.png")));
 
-    // load the avatar colors
-    if (dashGPD->avatarInformation.entry.type == 0)
-    {
-        ui->gbAvatarColors->setTitle("Avatar Colors - Not Found");
-        ui->gbAvatarColors->setEnabled(false);
-    }
-    else
-    {
-        BYTE *colors = &dashGPD->avatarInformation.binaryData.data[0xFC];
-        ui->clrSkin->setStyleSheet("* { background-color: rgb(" + QString::number(colors[1]) + "," + QString::number(colors[2]) + "," + QString::number(colors[3]) + ") }");
-        ui->clrHair->setStyleSheet("* { background-color: rgb(" + QString::number(colors[5]) + "," + QString::number(colors[6]) + "," + QString::number(colors[7]) + ") }");
-        ui->clrLips->setStyleSheet("* { background-color: rgb(" + QString::number(colors[9]) + "," + QString::number(colors[10]) + "," + QString::number(colors[11]) + ") }");
-        ui->clrEyes->setStyleSheet("* { background-color: rgb(" + QString::number(colors[13]) + "," + QString::number(colors[14]) + "," + QString::number(colors[15]) + ") }");
-        ui->clrEyebrows->setStyleSheet("* { background-color: rgb(" + QString::number(colors[17]) + "," + QString::number(colors[18]) + "," + QString::number(colors[19]) + ") }");
-        ui->clrEyeShadow->setStyleSheet("* { background-color: rgb(" + QString::number(colors[21]) + "," + QString::number(colors[22]) + "," + QString::number(colors[23]) + ") }");
-        ui->clrFacialHair->setStyleSheet("* { background-color: rgb(" + QString::number(colors[25]) + "," + QString::number(colors[24]) + "," + QString::number(colors[27]) + ") }");
-        ui->clrFacePaint->setStyleSheet("* { background-color: rgb(" + QString::number(colors[29]) + "," + QString::number(colors[28]) + "," + QString::number(colors[31]) + ") }");
-        ui->clrfacePaint2->setStyleSheet("* { background-color: rgb(" + QString::number(colors[33]) + "," + QString::number(colors[30]) + "," + QString::number(colors[35]) + ") }");;
-    }
 
     ////////////////////////////
     // LOAD ACHIEVEMENTS
@@ -259,12 +254,30 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
     }
 }
 
-void ProfileEditor::addToQueue(SettingEntryType type, UINT64 id)
+void ProfileEditor::addToDashGPD(SettingEntry *entry, SettingEntryType type, UINT64 id)
 {
-    SettingEntry setting;
-    setting.type = type;
-    setting.entry.id = id;
-    entriesToAdd.push_back(setting);
+    entry->type = type;
+
+    switch (type)
+    {
+        case Int32:
+        case Int64:
+        case Float:
+        case Double:
+        case TimeStamp:
+            entry->int32 = 0;
+            break;
+        case Binary:
+            entry->binaryData.length = 0;
+            entry->binaryData.data = NULL;
+            break;
+        case UnicodeString:
+            wstring *s = new wstring(L"");
+            entry->str = s;
+            break;
+    }
+
+    dashGPD->CreateSettingEntry(entry, id);
 }
 
 ProfileEditor::~ProfileEditor()
@@ -845,49 +858,4 @@ void ProfileEditor::getAvatarColor(QPushButton *sender)
 {
     QColor color = QColorDialog::getColor(sender->palette().background().color(), this);
     sender->setStyleSheet("* { background-color: rgb(" + QString::number(color.red()) + "," + QString::number(color.green()) + "," + QString::number(color.blue()) + ") }");
-}
-
-void ProfileEditor::on_clrEyeShadow_clicked()
-{
-    getAvatarColor(ui->clrEyeShadow);
-}
-
-void ProfileEditor::on_clrSkin_clicked()
-{
-    getAvatarColor(ui->clrSkin);
-}
-
-void ProfileEditor::on_clrHair_clicked()
-{
-    getAvatarColor(ui->clrHair);
-}
-
-void ProfileEditor::on_clrLips_clicked()
-{
-    getAvatarColor(ui->clrLips);
-}
-
-void ProfileEditor::on_clrEyes_clicked()
-{
-    getAvatarColor(ui->clrEyes);
-}
-
-void ProfileEditor::on_clrEyebrows_clicked()
-{
-    getAvatarColor(ui->clrEyebrows);
-}
-
-void ProfileEditor::on_clrFacialHair_clicked()
-{
-    getAvatarColor(ui->clrFacialHair);
-}
-
-void ProfileEditor::on_clrFacePaint_clicked()
-{
-    getAvatarColor(ui->clrFacePaint);
-}
-
-void ProfileEditor::on_clrfacePaint2_clicked()
-{
-    getAvatarColor(ui->clrfacePaint2);
 }

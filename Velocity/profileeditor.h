@@ -211,30 +211,11 @@ private slots:
 
     void on_cmbxAwState_currentIndexChanged(const QString &arg1);
 
-    void on_clrEyeShadow_clicked();
-
-    void on_clrSkin_clicked();
-
-    void on_clrHair_clicked();
-
-    void on_clrLips_clicked();
-
-    void on_clrEyes_clicked();
-
-    void on_clrEyebrows_clicked();
-
-    void on_clrFacialHair_clicked();
-
-    void on_clrFacePaint_clicked();
-
-    void on_clrfacePaint2_clicked();
-
 private:
     Ui::ProfileEditor *ui;
     StfsPackage *profile;
     DashboardGPD *dashGPD;
     vector<string> tempFiles;
-    vector<SettingEntry> entriesToAdd;
     vector<GameEntry> games;
     vector<AvatarAwardGameEntry> aaGames;
     StfsPackage *PEC;
@@ -242,7 +223,7 @@ private:
     string dashGPDTempPath;
     bool dispose;
 
-    void addToQueue(SettingEntryType type, UINT64 id);
+    void addToDashGPD(SettingEntry *entry, SettingEntryType type, UINT64 id);
 
     void updateAvatarAward(TitleEntry *entry, AvatarAwardGPD *gpd, struct AvatarAward *award, State toSet);
 
