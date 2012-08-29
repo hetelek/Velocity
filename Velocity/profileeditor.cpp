@@ -811,9 +811,12 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
 
 void ProfileEditor::saveAll()
 {
-    // create all the entries that need to be created
-   /* for (DWORD i = 0; i < entriesToAdd.size(); i++)
-        dashGPD->CreateSettingEntry(&entriesToAdd.at(i), entriesToAdd.at(i).entry.id); */
+    // validate the bio length
+    if (ui->txtBio->toPlainText().length() > 499)
+    {
+        QMessageBox::warning(this, "Invalid Length", "The length of a gamer's bio must be less than or equal to 499 characters.\n");
+        return;
+    }
 
     // save the avatar awards
     if (PEC != NULL)
@@ -835,6 +838,44 @@ void ProfileEditor::saveAll()
         if (games.at(i).updated)
             profile->ReplaceFile(games.at(i).tempFileName, games.at(i).gpdName);
 
+
+    // save all of the stuff on the front page
+
+    // gamer name
+    wstring temp = ui->txtName->text().toStdWString();
+    dashGPD->gamerName.str = &temp;
+    dashGPD->WriteSettingEntry(dashGPD->gamerName);
+
+    // motto
+    temp = ui->txtMotto->text().toStdWString();
+    dashGPD->motto.str = &temp;
+    dashGPD->WriteSettingEntry(dashGPD->motto);
+
+    // location
+    temp = ui->txtLocation->text().toStdWString();
+    dashGPD->gamerLocation.str = &temp;
+    dashGPD->WriteSettingEntry(dashGPD->gamerLocation);
+
+    // gamerzone
+    dashGPD->gamerzone.int32 = ui->cmbxGamerzone->currentIndex();
+    dashGPD->WriteSettingEntry(dashGPD->gamerzone);
+
+    // region
+    dashGPD->gamercardRegion.int32 = regions[ui->cmbxRegion->currentIndex()].value;
+    dashGPD->WriteSettingEntry(dashGPD->gamercardRegion);
+
+    // years on LIVE
+    dashGPD->yearsOnLive.int32 = ui->cmbxTenure->currentIndex();
+    dashGPD->WriteSettingEntry(dashGPD->yearsOnLive);
+
+    // reputation
+    dashGPD->reputation.floatData = (float)ui->spnRep->value();
+    dashGPD->WriteSettingEntry(dashGPD->reputation);
+
+    // bio
+    temp = ui->txtBio->toPlainText().toStdWString();
+    dashGPD->gamerBio.str = &temp;
+    dashGPD->WriteSettingEntry(dashGPD->gamerBio);
 
     // put the dash gpd back in the profile
     profile->ReplaceFile(dashGPDTempPath, "FFFE07D1.gpd");
