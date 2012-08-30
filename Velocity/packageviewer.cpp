@@ -182,7 +182,8 @@ void PackageViewer::on_btnViewAll_clicked()
 
 void PackageViewer::showRemoveContextMenu(QPoint point)
 {
-    if (ui->treeWidget->selectedItems().length() < 1)
+    int amount = ui->treeWidget->selectedItems().length();
+    if (amount < 1)
             return;
 
     QPoint globalPos = ui->treeWidget->mapToGlobal(point);
@@ -190,8 +191,19 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
     QMenu contextMenu;
     contextMenu.addAction(QPixmap(":/Images/extract.png"), "Extract Selected");
     contextMenu.addAction(QPixmap(":/Images/delete.png"), "Remove Selected");
-    contextMenu.addAction(QPixmap(":/Images/rename.png"), "Rename Selected");
-    contextMenu.addAction(QPixmap(":/Images/replace.png"), "Replace Selected");
+
+    bool isFolder = ui->treeWidget->selectedItems()[0]->text(3) == "N/A";
+    if (amount == 1)
+    {
+        contextMenu.addSeparator();
+        contextMenu.addAction(QPixmap(":/Images/rename.png"), "Rename Selected");
+
+        if (!isFolder)
+            contextMenu.addAction(QPixmap(":/Images/replace.png"), "Replace Selected");
+    }
+
+    contextMenu.addSeparator();
+    contextMenu.addAction(QPixmap(":/Images/add.png"), "Inject Here");
 
     QAction *selectedItem = contextMenu.exec(globalPos);
     if(selectedItem == NULL)
