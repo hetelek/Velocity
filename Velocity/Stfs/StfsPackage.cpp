@@ -231,11 +231,6 @@ void StfsPackage::ReadFileListing()
             // read the name length
             fe.nameLen = io->readByte();
 
-#ifdef STFS_DEBUG
-            if ((fe.nameLen & 0x40))
-                printf("Bit 6 set, %s\n", fe.name.c_str());
-#endif
-
             // check for a mismatch in the total allocated blocks for the file
             fe.blocksForFile = io->readInt24(LittleEndian);
             io->setPosition(3, ios_base::cur);
@@ -286,6 +281,7 @@ void StfsPackage::ExtractFile(FileEntry *entry, string outPath)
 {
     if (entry->nameLen == 0)
     {
+        except.str(std::string());
         except << "STFS: File '" << entry->name << "' doesn't exist in the package.\n";
         throw except.str();
     }
@@ -333,6 +329,7 @@ FileEntry StfsPackage::GetFileEntry(string pathInPackage)
 
     if (entry.nameLen == 0)
     {
+        except.str(std::string());
         except << "STFS: File entry '" << pathInPackage << "' cannot be found in the package.\n";
         throw except.str();
     }
@@ -879,7 +876,7 @@ void StfsPackage::RemoveFile(FileEntry entry)
 
     // make sure the file was found in the package
     if (!found)
-        throw string("STFS: file could not be deleted because it doesn't exist in the package.\n");
+        throw string("STFS: File could not be deleted because it doesn't exist in the package.\n");
 
     // set the status of every allocated block to unallocated
     DWORD blockToDeallocate = entry.startingBlockNum;
@@ -1008,7 +1005,7 @@ void StfsPackage::SetNextBlock(DWORD blockNum, INT24 nextBlockNum)
 
     DWORD hashLoc = GetHashAddressOfBlock(blockNum) + 0x15;
     io->setPosition(hashLoc);
-    io->write(nextBlockNum);
+    io->write((INT24)nextBlockNum);
 }
 
 void StfsPackage::WriteFileEntry(FileEntry *entry)
@@ -1172,6 +1169,7 @@ void StfsPackage::InjectFile(string path, string pathInPackage)
     entry.flags = 0;
     entry.pathIndicator = folder->folder.entryIndex;
     entry.startingBlockNum = -1;
+    entry.blocksForFile = ((fileSize + 0xFFF) & 0xFFFFFFF000) >> 0xC;
 
     INT24 block, prevBlock = -1;
     while(fileSize >= 0x1000)
@@ -1218,7 +1216,6 @@ void StfsPackage::InjectFile(string path, string pathInPackage)
 
     folder->fileEntries.push_back(entry);
     WriteFileListing();
-    Rehash();
 }
 
 void StfsPackage::ReplaceFile(string path, string pathInPackage)
