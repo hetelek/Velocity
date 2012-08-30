@@ -719,10 +719,10 @@ void ProfileEditor::updateAvatarAward(TitleEntry *entry, AvatarAwardGPD *gpd, st
     // write the entry back to the gpd
     gpd->WriteAvatarAward(award);
 
+    entry->flags |= (DownloadAvatarAward | SyncAvatarAward);
+
     // update the dash gpd
     dashGPD->WriteTitleEntry(entry);
-
-    entry->flags |= (DownloadAvatarAward | SyncAvatarAward);
 }
 
 void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev, State toSet, GameGPD *gpd)
@@ -761,8 +761,12 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
                 entry->achievementsUnlockedOnline++;
 
             entry->gamerscoreUnlocked += chiev->gamerscore;
-            dashGPD->gamerscoreUnlocked.int32 += chiev->gamerscore;
+
             dashGPD->achievementsUnlocked.int32++;
+            dashGPD->gamerscoreUnlocked.int32 += chiev->gamerscore;
+
+            dashGPD->WriteSettingEntry(dashGPD->achievementsUnlocked);
+            dashGPD->WriteSettingEntry(dashGPD->gamerscoreUnlocked);
 
             settingAchievements.int32++;
             settingGamerscore.int32 += chiev->gamerscore;
@@ -777,8 +781,12 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
                 entry->achievementsUnlockedOnline--;
 
             entry->gamerscoreUnlocked -= chiev->gamerscore;
-            dashGPD->gamerscoreUnlocked.int32 -= chiev->gamerscore;
-            dashGPD->achievementsUnlocked.int32--;
+
+            dashGPD->achievementsUnlocked.int32++;
+            dashGPD->gamerscoreUnlocked.int32 += chiev->gamerscore;
+
+            dashGPD->WriteSettingEntry(dashGPD->achievementsUnlocked);
+            dashGPD->WriteSettingEntry(dashGPD->gamerscoreUnlocked);
 
             settingAchievements.int32--;
             settingGamerscore.int32 -= chiev->gamerscore;
