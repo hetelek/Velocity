@@ -196,6 +196,8 @@ void DashboardGPD::WriteTitleEntry(TitleEntry *entry)
 
 	io->write(entry->gameName);
 
+    xdbf->UpdateEntry(&entry->entry);
+
 	io->flush();
 }
 
