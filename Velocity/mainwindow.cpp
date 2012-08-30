@@ -14,7 +14,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionProfile_Manager_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*.*)");
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
 
     if (fileName.isEmpty())
         return;
@@ -40,7 +40,7 @@ void MainWindow::on_actionAbout_triggered()
 }
 void MainWindow::on_actionPackage_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*.*)");
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
 
     if (fileName.isEmpty())
         return;
@@ -63,7 +63,7 @@ void MainWindow::on_actionPackage_triggered()
 
 void MainWindow::on_actionXDBF_File_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open XDBF File"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "GPD File (*.gpd *.fit);;All Files (*.*)");
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open XDBF File"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "GPD File (*.gpd *.fit);;All Files (*)");
 
     if (fileName.isEmpty())
         return;
@@ -86,7 +86,7 @@ void MainWindow::on_actionSTRB_File_triggered()
 {
     try
     {
-        QString fileName = QFileDialog::getOpenFileName(this, tr("Open an Avatar Asset"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "BIN File (*.bin);;All Files (*.*)");
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Open an Avatar Asset"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "BIN File (*.bin);;All Files (*)");
         if (fileName.isEmpty())
             return;
 
