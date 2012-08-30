@@ -128,7 +128,12 @@ DWORD FileIO::readDword()
 {
 	DWORD returnVal;
 	readBytesWithChecks(&returnVal, 4);
-	return returnVal;
+
+    #ifdef __APPLE__ | __unix
+        return returnVal & 0x00000000FFFFFFFF;
+    #else
+        return returnVal;
+    #endif
 }
 
 INT32 FileIO::readInt32()
