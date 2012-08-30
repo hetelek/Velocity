@@ -155,8 +155,13 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
             this->close();
             return;
         }
-        GameEntry g = { gpd, &dashGPD->gamesPlayed.at(i), false, tempPath, gpdName.toStdString() };
-        games.push_back(g);
+
+        // if there aren't any achievements for it, then don't add it to the game list
+        if (dashGPD->gamesPlayed.at(i).achievementCount != 0)
+        {
+            GameEntry g = { gpd, &dashGPD->gamesPlayed.at(i), false, tempPath, gpdName.toStdString() };
+            games.push_back(g);
+        }
 
         // if there are avatar awards then add it to the vector
         if (dashGPD->gamesPlayed.at(i).avatarAwardCount != 0)
