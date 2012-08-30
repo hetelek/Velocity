@@ -56,7 +56,7 @@ private slots:
 private:
     Ui::PackageViewer *ui;
     void PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *parent = NULL);
-    void GetPackagePath(QTreeWidgetItem *item, QString *out);
+    void GetPackagePath(QTreeWidgetItem *item, QString *out, bool folderOnly = false);
     StfsPackage *package;
     bool disposePackage;
     FileListing listing;

@@ -134,9 +134,13 @@ void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *pare
         PopulateTreeWidget(&entry->folderEntries.at(i), item);
 }
 
-void PackageViewer::GetPackagePath(QTreeWidgetItem *item, QString *out)
+void PackageViewer::GetPackagePath(QTreeWidgetItem *item, QString *out, bool folderOnly)
 {
     bool hasParent = item->parent() != NULL;
+
+    if (!hasParent && folderOnly)
+        return;
+
     QString slash = "";
     if (hasParent)
         slash = "\\";
@@ -186,13 +190,17 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
     if (amount < 1)
             return;
 
+    bool isFolder = ui->treeWidget->selectedItems()[0]->text(3) == "N/A";
     QPoint globalPos = ui->treeWidget->mapToGlobal(point);
 
     QMenu contextMenu;
-    contextMenu.addAction(QPixmap(":/Images/extract.png"), "Extract Selected");
-    contextMenu.addAction(QPixmap(":/Images/delete.png"), "Remove Selected");
 
-    bool isFolder = ui->treeWidget->selectedItems()[0]->text(3) == "N/A";
+    if (!isFolder)
+    {
+        contextMenu.addAction(QPixmap(":/Images/extract.png"), "Extract Selected");
+        contextMenu.addAction(QPixmap(":/Images/delete.png"), "Remove Selected");
+    }
+
     if (amount == 1)
     {
         contextMenu.addSeparator();
@@ -312,6 +320,32 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         {
             package->ReplaceFile(path.toStdString(), packagePath.toStdString());
             QMessageBox::information(this, "Success", "The file has been replace.");
+        }
+        catch(string error)
+        {
+            QMessageBox::critical(this, "Error", "Failed to replace file.\n\n" + QString::fromStdString(error));
+        }
+    }
+    else if (selectedItem->text() == "Inject Here")
+    {
+        QString packagePath;
+        GetPackagePath(items.at(0), &packagePath, true);
+
+        QString path = QFileDialog::getOpenFileName(this, "New File", QtHelpers::DesktopLocation());
+        if (path.isEmpty())
+            return;
+
+        QFileInfo pathInfo(path);
+
+        if (isFolder)
+            packagePath.append(items.at(0)->text(0) + "\\");
+
+        packagePath.append(pathInfo.fileName());
+
+        try
+        {
+            package->InjectFile(path.toStdString(), packagePath.toStdString());
+            QMessageBox::information(this, "Success", "The file has been injected.");
         }
         catch(string error)
         {
