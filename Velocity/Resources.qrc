@@ -36,5 +36,6 @@
         <file>Images/unlock.png</file>
         <file>Images/replace.png</file>
         <file>Images/package512.png</file>
+        <file>Images/trophy.png</file>
     </qresource>
 </RCC>
