@@ -15,11 +15,11 @@ class CreationWizard;
 class CreationWizard : public QWizard
 {
     Q_OBJECT
-    
+
 public:
     explicit CreationWizard(QWidget *parent = 0);
     ~CreationWizard();
-    
+
 private slots:
     void on_cbMagic_currentIndexChanged(int index);
 

@@ -24,6 +24,7 @@
 #include <iostream>
 #include <vector>
 #include <stdio.h>
+#include "achievementcreationwizard.h"
 
 using namespace std;
 
@@ -210,6 +211,8 @@ private slots:
     void on_btnUnlockAllAwards_clicked();
 
     void on_cmbxAwState_currentIndexChanged(const QString &arg1);
+
+    void on_btnCreateAch_clicked();
 
 private:
     Ui::ProfileEditor *ui;

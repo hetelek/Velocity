@@ -42,7 +42,8 @@ SOURCES += main.cpp \
     GPD/DashboardGPD.cpp \
     Stfs/StfsPackage.cpp \
     renamedialog.cpp \
-    creationwizard.cpp
+    creationwizard.cpp \
+    achievementcreationwizard.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -80,6 +81,7 @@ HEADERS  += mainwindow.h \
     GPD/DashboardGPD.h \
     Stfs/StfsPackage.h \
     renamedialog.h \
+    achievementcreationwizard.h \
     creationwizard.h
 
 FORMS    += mainwindow.ui \
@@ -95,7 +97,8 @@ FORMS    += mainwindow.ui \
     strbdialog.ui \
     imagedialog.ui \
     renamedialog.ui \
-    creationwizard.ui
+    creationwizard.ui \
+    achievementcreationwizard.ui
 
 RESOURCES += \
     Resources.qrc

@@ -900,3 +900,13 @@ void ProfileEditor::getAvatarColor(QPushButton *sender)
     QColor color = QColorDialog::getColor(sender->palette().background().color(), this);
     sender->setStyleSheet("* { background-color: rgb(" + QString::number(color.red()) + "," + QString::number(color.green()) + "," + QString::number(color.blue()) + ") }");
 }
+
+void ProfileEditor::on_btnCreateAch_clicked()
+{
+    if (ui->gamesList->currentIndex().row() < 0)
+        return;
+
+    AchievementEntry entry;
+    AchievementCreationWizard wiz(games.at(ui->gamesList->currentIndex().row()).gpd->gameName.ws, &entry, this);
+    wiz.exec();
+}
