@@ -198,6 +198,9 @@ void StfsPackage::ExtractBlock(DWORD blockNum, BYTE *data, DWORD length)
 
 void StfsPackage::ReadFileListing()
 {
+    fileListing.fileEntries.clear();
+    fileListing.folderEntries.clear();
+
     // setup the entry for the block chain
     FileEntry entry;
     entry.startingBlockNum = metaData->volumeDescriptor.fileTableBlockNum;
@@ -392,10 +395,10 @@ vector<string> StfsPackage::SplitString(string str, string delimeter)
     vector<string> splits;
     string temp;
 
-    // find the next '/' in the string
+    // find the next '\' in the string
     while (str.find(delimeter, 0) != string::npos)
     {
-        // get the substring from the begginging of the string, to the next '/'
+        // get the substring from the begginging of the string, to the next '\'
         size_t pos = str.find(delimeter, 0);
         temp = str.substr(0, pos);
         str.erase(0, pos + delimeter.size());
@@ -865,11 +868,14 @@ void StfsPackage::RemoveFile(FileEntry entry)
 {
     bool found = false;
 
+    vector<FileEntry> files, folders;
+    GenerateRawFileListing(&fileListing, &files, &folders);
+
     // remove the file from the listing
-    for (DWORD i = 0; i < fileListing.fileEntries.size(); i++)
-        if (fileListing.fileEntries.at(i).name == entry.name && fileListing.fileEntries.at(i).pathIndicator == entry.pathIndicator)
+    for (DWORD i = 0; i < files.size(); i++)
+        if (files.at(i).name == entry.name && files.at(i).pathIndicator == entry.pathIndicator)
         {
-            fileListing.fileEntries.erase(fileListing.fileEntries.begin() + i);
+            files.erase(files.begin() + i);
             found = true;
             break;
         }
@@ -887,14 +893,21 @@ void StfsPackage::RemoveFile(FileEntry entry)
     }
 
     // update the file listing
-    WriteFileListing();
+    WriteFileListing(true, &files, &folders);
 }
 
-void StfsPackage::WriteFileListing()
+void StfsPackage::WriteFileListing(bool usePassed, vector<FileEntry> *outFis, vector<FileEntry> *outFos)
 {
     // get the raw file listing
     vector<FileEntry> outFiles, outFolders;
-    GenerateRawFileListing(&fileListing, &outFiles, &outFolders);
+
+    if (!usePassed)
+        GenerateRawFileListing(&fileListing, &outFiles, &outFolders);
+    else
+    {
+        outFiles = *outFis;
+        outFolders = *outFos;
+    }
 
     // take out the 'Root' directory
     outFolders.erase(outFolders.begin());
@@ -996,6 +1009,8 @@ void StfsPackage::WriteFileListing()
     // update the file table block count and write it to file
     metaData->volumeDescriptor.fileTableBlockCount = ((outFiles.size() + outFileSize) * 0x40 / 0x1000) + 1;
     metaData->WriteVolumeDescriptor();
+
+    ReadFileListing();
 }
 
 void StfsPackage::SetNextBlock(DWORD blockNum, INT24 nextBlockNum)

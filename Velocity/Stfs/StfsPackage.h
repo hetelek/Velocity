@@ -200,7 +200,7 @@ private:
     void SetNextBlock(DWORD blockNum, INT24 nextBlockNum);
 
     // Description: discard the current file listing and rewrite it
-    void WriteFileListing();
+    void WriteFileListing(bool usePassed = false, vector<FileEntry> *outFis = NULL, vector<FileEntry> *outFos = NULL);
 
     // Description: write a file entry at the io's current position
     void WriteFileEntry(FileEntry *entry);
