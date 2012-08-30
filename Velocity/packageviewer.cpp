@@ -345,6 +345,9 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         try
         {
             package->InjectFile(path.toStdString(), packagePath.toStdString());
+            ui->treeWidget->clear();
+            listing = package->GetFileListing();
+            PopulateTreeWidget(&listing);
             QMessageBox::information(this, "Success", "The file has been injected.");
         }
         catch(string error)
