@@ -74,7 +74,7 @@ public:
     void ExtractFile(FileEntry *entry, string outPath);
 
     // Description: get the file entry of a file's path, sets nameLen to '0' if not found
-    FileEntry GetFileEntry(string pathInPackage);
+    FileEntry GetFileEntry(string pathInPackage, bool checkFolders = false, FileEntry *newEntry = NULL);
 
     // Description: check if the file exists
     bool FileExists(string pathInPackage);
@@ -182,7 +182,7 @@ private:
     void AddToListing(FileListing *fullListing, FileListing *out);
 
     // Description: get the file entry from a file's path
-    void GetFileEntry(vector<string> locationOfFile, FileListing *start, FileEntry *out, FileEntry *newEntry = NULL, bool updateEntry = false);
+    void GetFileEntry(vector<string> locationOfFile, FileListing *start, FileEntry *out, FileEntry *newEntry = NULL, bool updateEntry = false, bool checkFolders = false);
 
     // Description: get the raw file listing
     void GenerateRawFileListing(FileListing *in, vector<FileEntry> *outFiles, vector<FileEntry> *outFolders);

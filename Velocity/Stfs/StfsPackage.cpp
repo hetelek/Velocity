@@ -325,10 +325,10 @@ void StfsPackage::ExtractFile(FileEntry *entry, string outPath)
     outFile.close();
 }
 
-FileEntry StfsPackage::GetFileEntry(string pathInPackage)
+FileEntry StfsPackage::GetFileEntry(string pathInPackage, bool checkFolders, FileEntry *newEntry)
 {
     FileEntry entry;
-    GetFileEntry(SplitString(pathInPackage, "\\"), &fileListing, &entry);
+    GetFileEntry(SplitString(pathInPackage, "\\"), &fileListing, &entry, newEntry, (newEntry != NULL), checkFolders);
 
     if (entry.nameLen == 0)
     {
@@ -347,7 +347,7 @@ bool StfsPackage::FileExists(string pathInPackage)
     return (entry.nameLen != 0);
 }
 
-void StfsPackage::GetFileEntry(vector<string> locationOfFile, FileListing *start, FileEntry *out, FileEntry *newEntry, bool updateEntry)
+void StfsPackage::GetFileEntry(vector<string> locationOfFile, FileListing *start, FileEntry *out, FileEntry *newEntry, bool updateEntry, bool checkFolders)
 {
     bool found = false;
 
@@ -365,9 +365,28 @@ void StfsPackage::GetFileEntry(vector<string> locationOfFile, FileListing *start
                 // set the out value, and break
                 if (out != NULL)
                     *out = start->fileEntries.at(i);
+
                 found = true;
                 break;
             }
+
+        if (!found && checkFolders)
+        {
+            // find the file
+            for (DWORD i = 0; i < start->folderEntries.size(); i++)
+                if (start->folderEntries.at(i).folder.name == locationOfFile.at(0))
+                {
+                    // update the entry
+                    if (updateEntry)
+                        start->folderEntries.at(i).folder = *newEntry;
+
+                    // set the out value, and break
+                    if (out != NULL)
+                        *out = start->folderEntries.at(i).folder;
+                    found = true;
+                    break;
+                }
+        }
     }
     else
     {
@@ -1381,8 +1400,11 @@ void StfsPackage::ReplaceFile(string path, string pathInPackage)
 
 void StfsPackage::RenameFile(string newName, string pathInPackage)
 {
-    FileEntry entry = GetFileEntry(pathInPackage);
+    FileEntry entry = GetFileEntry(pathInPackage, true);
     entry.name = newName;
+
+    // update the entry in memory
+    GetFileEntry(pathInPackage, true, &entry);
 
     io->setPosition(entry.fileEntryAddress);
     WriteFileEntry(&entry);
