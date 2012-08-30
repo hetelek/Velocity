@@ -238,11 +238,7 @@ void StfsPackage::ReadFileListing()
 
             // check for a mismatch in the total allocated blocks for the file
             fe.blocksForFile = io->readInt24(LittleEndian);
-            if (io->readInt24(LittleEndian) != fe.blocksForFile)
-            {
-                except << "STFS: Size mismatch for file entry number 0x" << hex << i << " in block number 0x" << hex << block << ".\n";
-                throw string(except.str());
-            }
+            io->setPosition(3, ios_base::cur);
 
             // read more information
             fe.startingBlockNum = io->readInt24(LittleEndian);
