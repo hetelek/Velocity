@@ -146,6 +146,8 @@ void AvatarAwardGPD::WriteAvatarAward(struct AvatarAward *award)
     io->write(award->unlockedDescription);
     io->write(award->lockedDescription);
 
+    xdbf->UpdateEntry(&award->entry);
+
     io->flush();
 }
 
