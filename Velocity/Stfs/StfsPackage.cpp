@@ -1248,7 +1248,7 @@ void StfsPackage::ReplaceFile(string path, string pathInPackage)
 
     // set up the entry
     entry.fileSize = fileSize;
-    entry.blocksForFile = (fileSize + 0xFFF) & 0xFFFFF000;
+    entry.blocksForFile = ((fileSize + 0xFFF) & 0xFFFFFFF000) >> 0xC;
 
     DWORD block = entry.startingBlockNum;
     io->setPosition(BlockToAddress(block));
