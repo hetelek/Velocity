@@ -266,7 +266,7 @@ void XDBF::writeSyncList(SyncList *syncs)
         syncs->entry.length = (syncs->synced.size() + syncs->toSync.size()) * 0x10;
 
         // allocate new memory
-        syncs->entry.addressSpecifier = GetSpecifier(AllocateMemory(syncs->entry.length));
+        syncs->entry.addressSpecifier = AllocateMemory(syncs->entry.length);
     }
 
     // seek to the sync list position
