@@ -266,7 +266,7 @@ void XDBF::writeSyncList(SyncList *syncs)
         syncs->entry.length = (syncs->synced.size() + syncs->toSync.size()) * 0x10;
 
         // allocate new memory
-        syncs->entry.addressSpecifier = AllocateMemory(syncs->entry.length);
+        syncs->entry.addressSpecifier = GetSpecifier(AllocateMemory(syncs->entry.length));
     }
 
     // seek to the sync list position
@@ -318,6 +318,19 @@ DWORD XDBF::GetSpecifier(DWORD address)
 XDBFEntry XDBF::CreateEntry(EntryType type, UINT64 id, DWORD size)
 {
     XDBFEntry entry = { type, id, 0, size };
+
+    header.entryCount++;
+
+    if (id == ((type == AvatarAward) ? 1 : 0x100000000) || id == ((type == AvatarAward) ? 2 : 0x200000000))
+    {
+        // allocate memory for the entry
+        entry.addressSpecifier = GetSpecifier(AllocateMemory(size));
+        writeEntryListing();
+
+        writeHeader();
+
+        return entry;
+    }
 
     // make sure the entry doesn't already exist
     vector<XDBFEntry> *entries;
@@ -413,11 +426,16 @@ XDBFEntry XDBF::CreateEntry(EntryType type, UINT64 id, DWORD size)
 
     writeEntryListing();
 
+    writeHeader();
+
     return entry;
 }
 
 DWORD XDBF::AllocateMemory(DWORD size)
 {
+    if (size == 0)
+        return GetRealAddress(0);
+
     DWORD toReturn;
 
     // first checek and see if we can allocate some of the memory in the free memory table
@@ -491,6 +509,9 @@ void XDBF::DeallocateMemory(DWORD addr, DWORD size)
 void XDBF::readEntryGroup(XDBFEntryGroup *group, EntryType type)
 {
     XDBFEntry entry = { (EntryType)io->readInt16(), io->readUInt64(), io->readDword(), io->readDword() };
+    group->syncData.entry.type = (EntryType)0;
+    group->syncs.entry.type = (EntryType)0;
+
     while (entry.type == type)
     {
         if (entry.id == ((type == AvatarAward) ? 1 : 0x100000000))
@@ -546,23 +567,23 @@ void XDBF::writeEntryListing()
     writeEntryGroup(&achievements);
     io->flush();
 
-    // write achievement entries
+    // write image entries
     writeEntryGroup(&images);
     io->flush();
 
-    // write achievement entries
+    // write setting entries
     writeEntryGroup(&settings);
     io->flush();
 
-    // write achievement entries
+    // write title entries
     writeEntryGroup(&titlesPlayed);
     io->flush();
 
-    // write achievement entries
+    // write string entries
     writeEntryGroup(&strings);
     io->flush();
 
-    // write achievement entries
+    // write avatar award entries
     writeEntryGroup(&avatarAwards);
     io->flush();
 
@@ -654,11 +675,29 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
 
     // find the entry in the table and update it
     for (DWORD i = 0; i < group->entries.size(); i++)
+    {
         if (group->entries.at(i).id == entry->id)
         {
             group->entries.at(i).addressSpecifier = entry->addressSpecifier;
             group->entries.at(i).length = entry->length;
         }
+    }
+
+    // if the sync data doesn't exist, then create it
+    if (group->syncData.entry.type == 0)
+    {
+        group->syncData.entry = CreateEntry(entry->type, (entry->type == AvatarAward) ? 2 : 0x200000000, 0x18);
+        group->syncData.lastSyncedTime = 0;
+        group->syncData.lastSyncID = 0;
+        group->syncData.nextSyncID = 1;
+    }
+
+    // if the sync list doesn't exist, then create it
+    if (group->syncs.entry.type == 0)
+    {
+        group->syncs.entry = CreateEntry(entry->type, (entry->type == AvatarAward) ? 1 : 0x100000000, 0);
+        group->syncs.lengthChanged = true;
+    }
 
     // find the sync
     for (DWORD i = 0; i < group->syncs.synced.size(); i++)
@@ -673,16 +712,14 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
             // add the sync to the queue
             sync.syncValue = group->syncData.nextSyncID++;
             group->syncs.toSync.push_back(sync);
-
-            // re-write the new sync list
-            writeSyncList(&group->syncs);
-
-            // re-write the updated sync data
-            writeSyncData(&group->syncData);
         }
     }
 
-    // if it didn't find the sync, then we'll assume it's already in the queue
+    // re-write the new sync list
+    writeSyncList(&group->syncs);
+
+    // re-write the updated sync data
+    writeSyncData(&group->syncData);
 
     writeEntryListing();
 }
