@@ -53,7 +53,7 @@ StfsPackage::StfsPackage(string packagePath, bool isPEC) : isPEC(isPEC)
         topTable.entryCount++;
     topTable.entries = new HashEntry[topTable.entryCount];
 
-    for  (DWORD i = 0; i < topTable.entryCount; i++)
+    for (DWORD i = 0; i < topTable.entryCount; i++)
     {
         io->readBytes(topTable.entries[i].blockHash, 0x14);
         topTable.entries[i].status = io->readByte();
@@ -1021,6 +1021,8 @@ void StfsPackage::SetNextBlock(DWORD blockNum, INT24 nextBlockNum)
     DWORD hashLoc = GetHashAddressOfBlock(blockNum) + 0x15;
     io->setPosition(hashLoc);
     io->write((INT24)nextBlockNum);
+
+    io->flush();
 }
 
 void StfsPackage::WriteFileEntry(FileEntry *entry)
@@ -1231,6 +1233,19 @@ void StfsPackage::InjectFile(string path, string pathInPackage)
 
     folder->fileEntries.push_back(entry);
     WriteFileListing();
+
+
+    if (topLevel == Zero)
+    {
+        io->setPosition(topTable.addressInFile);
+
+        for (DWORD i = 0; i < topTable.entryCount; i++)
+        {
+            io->readBytes(topTable.entries[i].blockHash, 0x14);
+            topTable.entries[i].status = io->readByte();
+            topTable.entries[i].nextBlock = io->readInt24();
+        }
+    }
 }
 
 void StfsPackage::ReplaceFile(string path, string pathInPackage)
@@ -1350,6 +1365,18 @@ void StfsPackage::ReplaceFile(string path, string pathInPackage)
     io->setPosition(entry.fileEntryAddress + 0x34);
     io->write(entry.fileSize);
     UpdateEntry(pathInPackage, entry);
+
+    if (topLevel == Zero)
+    {
+        io->setPosition(topTable.addressInFile);
+
+        for (DWORD i = 0; i < topTable.entryCount; i++)
+        {
+            io->readBytes(topTable.entries[i].blockHash, 0x14);
+            topTable.entries[i].status = io->readByte();
+            topTable.entries[i].nextBlock = io->readInt24();
+        }
+    }
 }
 
 void StfsPackage::RenameFile(string newName, string pathInPackage)
