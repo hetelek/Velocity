@@ -204,15 +204,15 @@ private slots:
 
     void on_btnExtractGPD_clicked();
 
-    void on_cmbxAchState_currentIndexChanged(const QString &arg1);
-
     void on_btnExtractGPD_2_clicked();
 
     void on_btnUnlockAllAwards_clicked();
 
-    void on_cmbxAwState_currentIndexChanged(const QString &arg1);
-
     void on_btnCreateAch_clicked();
+
+    void on_cmbxAchState_currentIndexChanged(int index);
+
+    void on_cmbxAwState_currentIndexChanged(int index);
 
 private:
     Ui::ProfileEditor *ui;
