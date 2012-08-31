@@ -203,13 +203,14 @@ void AvatarAsset::readAnimationInfo(DWORD pos)
 	io->setEndian(LittleEndian);
 
 	// read the frame count
-	DWORD temp = io->readDword();
-	animation.frameCount = *(float*)&temp;
+    animation.frameCount = io->readDword();
 
 	// read the fps
-	io->setPosition(pos + 8);
-	temp = io->readDword();
+    DWORD temp = io->readDword();
 	animation.framesPerSecond = *(float*)&temp;
+
+    // round dat, yo
+    animation.framesPerSecond = (float)(((int)((animation.framesPerSecond + .05f) * 100)) / 100);
 
 	// calculate the duration of the animation
 	animation.duration = (float)animation.frameCount / animation.framesPerSecond;
