@@ -448,7 +448,7 @@ DWORD XDBF::AllocateMemory(DWORD size)
     {
         // get the position in the file of the memory allocated
         io->setPosition(0, ios_base::end);
-        toReturn = GetSpecifier((DWORD)io->getPosition());
+        toReturn = (DWORD)io->getPosition();
 
         io->flush();
         io->setPosition(size - 1, ios_base::end);
@@ -622,6 +622,8 @@ void XDBF::writeHeader()
 
 void XDBF::writeEntryGroup(XDBFEntryGroup *group)
 {
+    std::sort(group->entries.begin(), group->entries.end(), compareEntries);
+
     // write all the entries
     for (DWORD i = 0; i < group->entries.size(); i++)
         writeEntry(&group->entries.at(i));
@@ -635,6 +637,8 @@ void XDBF::writeEntryGroup(XDBFEntryGroup *group)
 
 void XDBF::writeEntryGroup(vector<XDBFEntry> *group)
 {
+    std::sort(group->begin(), group->end(), compareEntries);
+
     // write all the entries
     for (DWORD i = 0; i < group->size(); i++)
         writeEntry(&group->at(i));
@@ -797,4 +801,12 @@ void XDBF::DeleteEntry(XDBFEntry entry)
 
     // re-write the entry table
     writeEntryListing();
+}
+
+bool compareEntries(XDBFEntry a, XDBFEntry b)
+{
+    if (a.type < b.type)
+        return true;
+    else
+        return a.id < b.id;
 }
