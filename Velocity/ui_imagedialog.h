@@ -1,8 +1,8 @@
 /********************************************************************************
 ** Form generated from reading UI file 'imagedialog.ui'
 **
-** Created: Thu Aug 30 18:18:50 2012
-**      by: Qt User Interface Compiler version 4.8.0
+** Created: Fri Aug 31 19:22:11 2012
+**      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -38,6 +38,9 @@ public:
         if (ImageDialog->objectName().isEmpty())
             ImageDialog->setObjectName(QString::fromUtf8("ImageDialog"));
         ImageDialog->resize(400, 300);
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/Images/Leaner24.png"), QSize(), QIcon::Normal, QIcon::Off);
+        ImageDialog->setWindowIcon(icon);
         verticalLayout = new QVBoxLayout(ImageDialog);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         label = new QLabel(ImageDialog);
@@ -61,6 +64,7 @@ public:
 
         verticalLayout->addLayout(horizontalLayout);
 
+        verticalLayout->setStretch(0, 9);
 
         retranslateUi(ImageDialog);
 
@@ -69,7 +73,7 @@ public:
 
     void retranslateUi(QDialog *ImageDialog)
     {
-        ImageDialog->setWindowTitle(QApplication::translate("ImageDialog", "Dialog", 0, QApplication::UnicodeUTF8));
+        ImageDialog->setWindowTitle(QApplication::translate("ImageDialog", "Image", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("ImageDialog", "[Image Here]", 0, QApplication::UnicodeUTF8));
         pushButton->setText(QApplication::translate("ImageDialog", "Close", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
