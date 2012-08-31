@@ -416,7 +416,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
 
         package->ExtractFile(packagePath.toStdString(), tempName);
 
-        // verify that it's an STFB file
+        // verify that it's an STRB file
         FileIO io(tempName, false);
         if (io.readDword() == 0x53545242)
         {
@@ -432,6 +432,24 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
         }
         else
             io.close();
+    }
+    else if (extension == ".png" || extension == ".jpg" || extension == ".jpeg")
+    {
+        // get a temporary file name
+        string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+
+        // extract the file to a temporary location
+        QString imagePath;
+        GetPackagePath(item, &imagePath);
+
+        package->ExtractFile(imagePath.toStdString(), tempName);
+
+        // display the image
+        ImageDialog dialog(QImage(QString::fromStdString(tempName)), this);
+        dialog.exec();
+
+        // delete the temp file
+        QFile::remove(QString::fromStdString(tempName));
     }
     else if (item->text(0) == "PEC")
     {

@@ -9,6 +9,7 @@
 #include "profileeditor.h"
 #include "renamedialog.h"
 #include "certificatedialog.h"
+#include "imagedialog.h"
 
 // qt
 #include <QDialog>
