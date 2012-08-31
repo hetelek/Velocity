@@ -31,7 +31,14 @@ PackageViewer::PackageViewer(StfsPackage *package, QWidget *parent) :
         ui->lblMagic->setText(QString::fromStdString("Magic: " + MagicToString(package->metaData->magic)));
         ui->lblDisplayName->setText("Display Name: " + QString::fromStdWString(package->metaData->displayName));
 
-        ui->lblType->setText(QString::fromStdString("Package Type: " + ContentTypeToString(package->metaData->contentType)));
+        try
+        {
+            ui->lblType->setText(QString::fromStdString("Package Type: " + ContentTypeToString(package->metaData->contentType)));
+        }
+        catch (...)
+        {
+            ui->lblType->setText("Package Type: <i>Unknown</i>");
+        }
         ui->lblTitleName->setText("Title ID: " + QString::number(package->metaData->titleID, 16).toUpper());
 
         QString builder = "";
