@@ -32,9 +32,8 @@ bool XDBFHelpers::CompareEntries(XDBFEntry a, XDBFEntry b)
 
 struct tm* XDBFHelpers::FILETIMEtoTM(FILETIME time)
 {
-    INT64 ll = (((INT64)(time.dwHighDateTime)) << 32) + time.dwLowDateTime;
-	time_t t = (time_t)((ll - 116444736000000000) / 10000000);
-    return localtime(&t);
+    INT64 i64 = (((INT64)(time.dwHighDateTime)) << 32) + time.dwLowDateTime;
+    return (time_t)((i64 - 116444736000000000) / 10000000);
 }
 
 FILETIME XDBFHelpers::TMtoFILETIME(struct tm* time)
