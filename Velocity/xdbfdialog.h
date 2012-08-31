@@ -3,6 +3,9 @@
 
 // qt
 #include <QDialog>
+#include <QModelIndex>
+#include <QMessageBox>
+#include <QDateTime>
 
 // xbox360
 #include "GPD/XDBF.h"
@@ -14,6 +17,12 @@ namespace Ui {
 class XdbfDialog;
 }
 
+struct Entry
+{
+    EntryType type;
+    int index;
+};
+
 class XdbfDialog : public QDialog
 {
     Q_OBJECT
@@ -22,12 +31,19 @@ public:
     explicit XdbfDialog(GPDBase *gpd, bool *modified = NULL, QWidget *parent = 0);
     ~XdbfDialog();
     
+private slots:
+
+
+    void on_treeWidget_doubleClicked(const QModelIndex &index);
+
 private:
     Ui::XdbfDialog *ui;
     GPDBase *gpd;
     bool *modified;
 
     void addEntriesToTable(vector<XDBFEntry> entries, QString type);
+
+    Entry indexToEntry(int index);
 };
 
 #endif // XDBFDIALOG_H

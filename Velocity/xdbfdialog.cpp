@@ -45,3 +45,78 @@ XdbfDialog::~XdbfDialog()
 {
     delete ui;
 }
+
+Entry XdbfDialog::indexToEntry(int index)
+{
+    Entry toReturn;
+
+    DWORD count = 0;
+    if (index < (count += gpd->xdbf->achievements.entries.size()))
+    {
+        toReturn.index = index;
+        toReturn.type = Achievement;
+    }
+    else if (index < (count += gpd->xdbf->images.size()))
+    {
+        toReturn.index = index - gpd->xdbf->achievements.entries.size();
+        toReturn.type = Image;
+    }
+    else if (index < (count += gpd->xdbf->settings.entries.size()))
+    {
+        toReturn.index = index - (count - gpd->xdbf->settings.entries.size());
+        toReturn.type = Setting;
+    }
+    else if (index < (count += gpd->xdbf->titlesPlayed.entries.size()))
+    {
+        toReturn.index = index - (count - gpd->xdbf->titlesPlayed.entries.size());
+        toReturn.type = Title;
+    }
+    else if (index < (count += gpd->xdbf->strings.size()))
+    {
+        toReturn.index = index - (count - gpd->xdbf->strings.size());
+        toReturn.type = String;
+    }
+    else if (index < (count += gpd->xdbf->avatarAwards.entries.size()))
+    {
+        toReturn.index = index - (count - gpd->xdbf->avatarAwards.entries.size());
+        toReturn.type = AvatarAward;
+    }
+
+    return toReturn;
+}
+
+void XdbfDialog::on_treeWidget_doubleClicked(const QModelIndex &index)
+{
+    Entry e = indexToEntry(index.row());
+    switch (e.type)
+    {
+        case String:
+            QMessageBox::about(this, "Setting", "<html><center><h3>Unicode String</h3><br />" + QString::fromStdWString(gpd->strings.at(e.index).ws) + "</center></html>");
+            break;
+        case Setting:
+            SettingEntry setting = gpd->settings.at(e.index);
+
+            switch (setting.type)
+            {
+                case Int32:
+                    QMessageBox::about(this, "Setting", "<html><center><h3>Int32 Setting</h3><br />" + QString::number(setting.int32) + "</center></html>");
+                    break;
+                case Int64:
+                    QMessageBox::about(this, "Setting", "<html><center><h3>Int64 Setting</h3><br />" + QString::number(setting.int64) + "</center></html>");
+                    break;
+                case Float:
+                    QMessageBox::about(this, "Setting", "<html><center><h3>Float Setting</h3><br />" + QString::number(setting.floatData) + "</center></html>");
+                    break;
+                case Double:
+                    QMessageBox::about(this, "Setting", "<html><center><h3>Double Setting</h3><br />" + QString::number(setting.doubleData) + "</center></html>");
+                    break;
+                case UnicodeString:
+                    QMessageBox::about(this, "Setting", "<html><center><h3>String Setting</h3><br />" + QString::fromStdWString(*setting.str) + "</center></html>");
+                    break;
+                case TimeStamp:
+                    QMessageBox::about(this, "Setting", "<html><center><h3>Timestamp Setting</h3><br />" + QDateTime::fromTime_t(setting.timeStamp).toString() + "</center></html>");
+                    break;
+            }
+            break;
+    }
+}
