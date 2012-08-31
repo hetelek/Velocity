@@ -37,6 +37,7 @@ enum ContentType
 {
 	App = 0x7000,
 	ArcadeGame = 0xD0000,
+    AvatarAssetPack = 0x8000,
 	AvatarItem = 0x9000,
 	CacheFile = 0x40000,
 	CommunityGame = 0x2000000,

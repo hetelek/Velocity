@@ -116,61 +116,63 @@ string ContentTypeToString(ContentType type)
         case App:
             return string("App");
         case ArcadeGame:
-            return string("ArcadeGame");
+            return string("Arcade Game");
+        case AvatarAssetPack:
+        return string("Avatar Asset Pack");
         case AvatarItem:
             return string("AvatarItem");
         case CacheFile:
-            return string("CacheFile");
+            return string("Cache File");
         case CommunityGame:
-            return string("CommunityGame");
+            return string("Community Game");
         case GameDemo:
-            return string("GameDemo");
+            return string("Game Demo");
         case GamerPicture:
-            return string("GamerPicture");
+            return string("Gamer Picture");
         case GamerTitle:
-            return string("GamerTitle");
+            return string("Gamer Title");
         case GameTrailer:
-            return string("GameTrailer");
+            return string("Game Trailer");
         case GameVideo:
-            return string("GameVideo");
+            return string("Game Video");
         case InstalledGame:
-            return string("InstalledGame");
+            return string("Installed Game");
         case Installer:
             return string("Installer");
         case IPTVPauseBuffer:
-            return string("IPTVPauseBuffer");
+            return string("IPTV Pause Buffer");
         case LicenseStore:
-            return string("LicenseStore");
+            return string("License Store");
         case MarketPlaceContent:
-            return string("MarketPlaceContent");
+            return string("Market Place Content");
         case Movie:
             return string("Movie");
         case MusicVideo:
-            return string("MusicVideo");
+            return string("Music Video");
         case PodcastVideo:
-            return string("PodcastVideo");
+            return string("Podcast Video");
         case Profile:
             return string("Profile");
         case Publisher:
             return string("Publisher");
         case SavedGame:
-            return string("SavedGame");
+            return string("Saved Game");
         case StorageDownload:
-            return string("StorageDownload");
+            return string("Storage Download");
         case Theme:
             return string("Theme");
         case Video:
             return string("Video");
         case ViralVideo:
-            return string("ViralVideo");
+            return string("Viral Video");
         case XboxDownload:
-            return string("XboxDownload");
+            return string("Xbox Download");
         case XboxOriginalGame:
-            return string("XboxOriginalGame");
+            return string("Xbox Original Game");
         case XboxSavedGame:
-            return string("XboxSavedGame");
+            return string("Xbox Saved Game");
         case Xbox360Title:
-            return string("Xbox360Title");
+            return string("Xbox360 Title");
         case XNA:
             return string("XNA");
         default:
