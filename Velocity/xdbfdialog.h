@@ -13,6 +13,9 @@
 #include "GPD/XDBFHelpers.h"
 #include "GPD/GPDBase.h"
 
+// forms
+#include "imagedialog.h"
+
 namespace Ui {
 class XdbfDialog;
 }

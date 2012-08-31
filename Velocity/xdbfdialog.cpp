@@ -94,6 +94,7 @@ void XdbfDialog::on_treeWidget_doubleClicked(const QModelIndex &index)
             QMessageBox::about(this, "Setting", "<html><center><h3>Unicode String</h3><br />" + QString::fromStdWString(gpd->strings.at(e.index).ws) + "</center></html>");
             break;
         case Setting:
+        {
             SettingEntry setting = gpd->settings.at(e.index);
 
             switch (setting.type)
@@ -118,5 +119,14 @@ void XdbfDialog::on_treeWidget_doubleClicked(const QModelIndex &index)
                     break;
             }
             break;
+        }
+        case Image:
+        {
+            QByteArray imageBuff((char*)gpd->images.at(e.index).image, (size_t)gpd->images.at(e.index).length);
+
+            ImageDialog dialog(QImage::fromData(imageBuff), this);
+            dialog.exec();
+            break;
+        }
     }
 }
