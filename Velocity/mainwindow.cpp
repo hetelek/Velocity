@@ -29,7 +29,7 @@ void MainWindow::dropEvent(QDropEvent *event)
     // iterate through all of the files dropped
     for (DWORD i = 0; i < filePaths.size(); i++)
     {
-        std::string fileName = QString(filePaths.at(i).encodedPath()).mid(1).toStdString();
+        std::string fileName = QString(filePaths.at(i).encodedPath()).mid(1).replace("%20", " ").toStdString();
 
         // make sure the file exists
         if (!QFile::exists(QString::fromStdString(fileName)))
@@ -54,7 +54,7 @@ void MainWindow::dropEvent(QDropEvent *event)
                     ui->mdiArea->addSubWindow(viewer);
                     viewer->show();
 
-                    ui->statusBar->showMessage("Stfs package loaded successfully.", 3000);
+                    ui->statusBar->showMessage("STFS package loaded successfully.", 3000);
                 }
                 catch (string error)
                 {
@@ -94,7 +94,7 @@ void MainWindow::dropEvent(QDropEvent *event)
                 }
                 catch (string error)
                 {
-                    QMessageBox::critical(this, "Error", "An error occured while opening the STRB package.\n\n" + QString::fromStdString(error));
+                    QMessageBox::critical(this, "STRB Error", "An error occured while opening the STRB package.\n\n" + QString::fromStdString(error));
                 }
                 break;
             }
