@@ -167,8 +167,11 @@ pip-log.txt
 *.pro.user
 moc_*.h
 ui_*.h
+*.autosave
+Makefile
 VelocityDebug/
 VelocityRelease/
+Velocity.app/
 
 # Compiled Object files
 *.slo
