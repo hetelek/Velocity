@@ -199,7 +199,7 @@ SyncData XDBF::readSyncData(XDBFEntry entry)
     data.lastSyncID = io->readUInt64();
 
     FILETIME time = { io->readDword(), io->readDword() };
-    data.lastSyncedTime = XDBFHelpers::FILETIMEtoTM(time);
+    data.lastSyncedTime = XDBFHelpers::FILETIMEtoTimeT(time);
 
     io->setPosition(pos);
 
@@ -215,7 +215,7 @@ void XDBF::writeSyncData(SyncData *data)
     io->write(data->lastSyncID);
 
     // write the last time synced
-    FILETIME lastSynced = XDBFHelpers::TMtoFILETIME(data->lastSyncedTime);
+    FILETIME lastSynced = XDBFHelpers::TimeTtoFILETIME(data->lastSyncedTime);
     io->write(lastSynced.dwHighDateTime);
     io->write(lastSynced.dwLowDateTime);
 }
@@ -691,7 +691,7 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
     if (group->syncData.entry.type == 0)
     {
         group->syncData.entry = CreateEntry(entry->type, (entry->type == AvatarAward) ? 2 : 0x200000000, 0x18);
-        group->syncData.lastSyncedTime = 0;
+        group->syncData.lastSyncedTime = NULL;
         group->syncData.lastSyncID = 0;
         group->syncData.nextSyncID = 1;
     }

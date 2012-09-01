@@ -61,7 +61,7 @@ struct SyncList
 struct SyncData
 {
 	UINT64 nextSyncID, lastSyncID;
-	struct tm* lastSyncedTime;
+    struct tm *lastSyncedTime;
 
 	XDBFEntry entry;
 };
@@ -100,7 +100,7 @@ struct SettingEntry
 			BYTE *data;
 			DWORD length;
 		} binaryData;
-		struct tm* timeStamp;
+        time_t timeStamp;
 	};
 };
 
@@ -145,7 +145,7 @@ struct AchievementEntry
 	DWORD imageID;
 	DWORD gamerscore;
 	DWORD flags;
-	struct tm* unlockTime;
+    time_t unlockTime;
 	wstring name;
 	wstring lockedDescription;
 	wstring unlockedDescription;
@@ -177,7 +177,7 @@ struct TitleEntry
 	BYTE femaleAvatarAwardsEarned;
 	BYTE femaleAvatarAwardCount;
 	DWORD flags;
-	struct tm* lastPlayed;
+    time_t lastPlayed;
 	wstring gameName;
 };
 
@@ -410,7 +410,7 @@ struct AvatarAward
 	DWORD titleID;
 	DWORD imageID;
 	DWORD flags;
-	struct tm *unlockTime;
+    time_t unlockTime;
 	AssetSubcategory subcategory;
 	DWORD unknown;
 	wstring name;

@@ -126,7 +126,7 @@ SettingEntry GPDBase::readSettingEntry(XDBFEntry entry)
         case TimeStamp:
         {
             FILETIME time = { io->readDword(), io->readDword() };
-            toReturn.timeStamp = XDBFHelpers::FILETIMEtoTM(time);
+            toReturn.timeStamp = XDBFHelpers::FILETIMEtoTimeT(time);
             break;
         }
     }
@@ -212,7 +212,7 @@ void GPDBase::WriteSettingEntry(SettingEntry setting)
             break;
         case TimeStamp:
         {
-            FILETIME time = XDBFHelpers::TMtoFILETIME(setting.timeStamp);
+            FILETIME time = XDBFHelpers::TimeTtoFILETIME(setting.timeStamp);
             io->write(time.dwHighDateTime);
             io->write(time.dwLowDateTime);
             break;

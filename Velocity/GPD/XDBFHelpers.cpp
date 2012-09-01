@@ -30,23 +30,19 @@ bool XDBFHelpers::CompareEntries(XDBFEntry a, XDBFEntry b)
 		return a.id < b.type;
 }
 
-struct tm* XDBFHelpers::FILETIMEtoTM(FILETIME time)
+time_t XDBFHelpers::FILETIMEtoTimeT(FILETIME time)
 {
     INT64 i64 = (((INT64)(time.dwHighDateTime)) << 32) + time.dwLowDateTime;
     return (time_t)((i64 - 116444736000000000) / 10000000);
 }
 
-FILETIME XDBFHelpers::TMtoFILETIME(struct tm* time)
+FILETIME XDBFHelpers::TimeTtoFILETIME(time_t time)
 {
 	FILETIME toReturn = { 0, 0 };
 
-	if (time == NULL)
-		return toReturn;
-
-	time_t unixTime = mktime(time);
-	UINT64 ll = (unixTime * 10000000L) + 116444736000000000L;
-    toReturn.dwLowDateTime = (DWORD)ll;
-    toReturn.dwHighDateTime = (UINT64)(ll >> 32);
+    INT64 ll = (time * 10000000L) + 116444736000000000L;
+    toReturn.dwLowDateTime = (unsigned long)ll;
+    toReturn.dwHighDateTime = (unsigned long)(ll >> 32);
 
 	return toReturn;
 }
