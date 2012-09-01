@@ -6,6 +6,9 @@
 #include <QFileDialog>
 #include <QDebug>
 #include <QMessageBox>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QFile>
 
 // forms
 #include "profileeditor.h"
@@ -22,6 +25,7 @@
 #include "GPD/GPDBase.h"
 #include <iostream>
 #include <vector>
+#include "FileIO.h"
 
 using namespace std;
 
@@ -36,6 +40,10 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+protected:
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
 
 private slots:
     void on_actionProfile_Manager_triggered();
