@@ -165,7 +165,7 @@ pip-log.txt
 # Qt Files #
 ############
 *.pro.user
-*.moc
+moc_*.h
 ui_*.h
 VelocityDebug/
 VelocityRelease/
