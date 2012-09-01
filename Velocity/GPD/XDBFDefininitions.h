@@ -130,7 +130,7 @@ enum AchievementFlags
     Tournament = 5,             //The player has received an award in a tournament-level event.
     Checkpoint = 6,             //The player has reached a certain point or completed a specific portion of the game.
     Other = 7,                  //Other achievement type.
-    Secret,                     //Achievment details not shown before unlocked.
+    Secret = 8,                 //Achievment details not shown before unlocked.
     UnlockedOnline = 0x10000,   //Indicates the achievement was achieved online.
     Unlocked = 0x20000          //Indicates the achievement was achieved.
 };
