@@ -6,7 +6,12 @@
 #include <math.h>
 #include <map>
 #include <stdlib.h>
-//#include "botan.h"
+
+#ifdef QT_NO_DEBUG
+    #include "botan.h"
+    #include <QMessageBox>
+#endif
+
 #include "../FileIO.h"
 #include "StfsMetaData.h"
 #include "SHA1.h"
@@ -84,7 +89,7 @@ public:
 
     // Description: resign the file
     // TODO
-    void Resign();
+    void Resign(string kvPath);
 
     // Description: remove a file entry from the file listing
     void RemoveFile(FileEntry entry);

@@ -18,7 +18,6 @@ SOURCES += main.cpp \
     about.cpp \
     Stfs/StfsMetaData.cpp \
     Stfs/SHA1.cpp \
-    #Stfs/botan.h \
     FileIO.cpp \
     GPD/XDBF.cpp \
     GPD/GPDBase.cpp \
@@ -53,7 +52,6 @@ HEADERS  += mainwindow.h \
     Stfs/StfsConstants.h \
     Stfs/SHA1.h \
     Stfs/FileIO.h \
-    #Stfs/botan.h \
     FileIO.h \
     GPD/XDBFDefininitions.h \
     GPD/XDBF.h \
@@ -103,3 +101,7 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     Resources.qrc
 
+CONFIG(release, debug|release){
+    HEADERS  += Stfs/botan.h
+    SOURCES  += Stfs/botan.cpp
+}

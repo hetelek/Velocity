@@ -102,7 +102,7 @@ StfsMetaData::StfsMetaData(FileIO *io, bool isPEC) : isPEC(isPEC)
         io->readBytes(titleThumbnailImage, titleThumbnailImageSize);
         io->setPosition(0x971A);
 
-    #ifdef STFS_DEBUG
+    #ifdef DEBUG
         if(metaDataVersion != 2)
             throw string("STFS: Metadata version is not 2.\n");
     #endif

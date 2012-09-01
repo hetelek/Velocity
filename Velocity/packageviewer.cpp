@@ -173,7 +173,11 @@ void PackageViewer::on_btnFix_clicked()
 
     try
     {
-        package->Resign();
+        QString path = QFileDialog::getOpenFileName(this, "KV Location", QtHelpers::DesktopLocation() + "/KV.bin");
+        if (path.isEmpty())
+            return;
+
+        package->Resign(path.toStdString());
     }
     catch (string error)
     {
