@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'imagedialog.ui'
 **
-** Created: Fri Aug 31 19:22:11 2012
+** Created: Fri Aug 31 21:39:15 2012
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -32,6 +32,7 @@ public:
     QHBoxLayout *horizontalLayout;
     QSpacerItem *horizontalSpacer;
     QPushButton *pushButton;
+    QSpacerItem *horizontalSpacer_2;
 
     void setupUi(QDialog *ImageDialog)
     {
@@ -60,6 +61,10 @@ public:
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
 
         horizontalLayout->addWidget(pushButton);
+
+        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout->addItem(horizontalSpacer_2);
 
 
         verticalLayout->addLayout(horizontalLayout);
