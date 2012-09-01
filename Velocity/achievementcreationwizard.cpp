@@ -1,6 +1,8 @@
 #include "achievementcreationwizard.h"
 #include "ui_achievementcreationwizard.h"
 
+#include <QMessageBox>
+
 AchievementCreationWizard::AchievementCreationWizard(wstring gameName, AchievementEntry *entry, QWidget *parent) :QWizard(parent), ui(new Ui::AchievementCreationWizard), achievement(entry)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -8,6 +10,7 @@ AchievementCreationWizard::AchievementCreationWizard(wstring gameName, Achieveme
 
     ui->label_3->setFont(QFont("Arial", 10));
     ui->lblAchievementType->setFont(QFont("Arial", 10));
+
 
     ui->label_3->setText("Welcome to the achievement creation wizard! This wizard will allow you to create an achievement for the game " + QString::fromStdWString(gameName) + ". The achievement you create will only be obtainable through modding, and since it isn't an official achievement, your friends on XboxLIVE will not be able to see it.\r\n\r\nClick next to begin.");
 }
@@ -19,6 +22,7 @@ AchievementCreationWizard::~AchievementCreationWizard()
 
 void AchievementCreationWizard::on_comboBox_currentIndexChanged(int index)
 {
+
     switch (index)
     {
         case 0:
