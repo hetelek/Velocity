@@ -852,8 +852,45 @@ void ProfileEditor::on_btnCreateAch_clicked()
         return;
 
     AchievementEntry entry;
-    AchievementCreationWizard wiz(games.at(ui->gamesList->currentIndex().row()).gpd->gameName.ws, &entry, this);
+    QImage thumbnail;
+    AchievementCreationWizard wiz(games.at(ui->gamesList->currentIndex().row()).gpd->gameName.ws, &thumbnail, &entry, this);
     wiz.exec();
+
+    // make sure the user didn't exit out of the wizard early
+    if (entry.structSize == 0x1C)
+    {
+        GameGPD *game = games.at(ui->gamesList->currentIndex().row()).gpd;
+        games.at(ui->gamesList->currentIndex().row()).updated = true;
+
+        // convert the image data to PNG and get a pointer to the data
+        QByteArray ba;
+        QBuffer buffer(&ba);
+        buffer.open(QIODevice::WriteOnly);
+        QPixmap::fromImage(thumbnail).save(&buffer, "PNG");
+
+        // get the next available image id
+        DWORD last = 0;
+        for (DWORD i = 0; i < game->achievements.size(); i++)
+            last = game->achievements.at(i).imageID;
+        entry.imageID = last + 1;
+
+        // add the achievement to the game
+        game->CreateAchievement(&entry, ba.data(), ba.length());
+
+        // add the achievement to the UI
+        QTreeWidgetItem *item = new QTreeWidgetItem;
+        item->setText(0, QString::fromStdWString(entry.name));
+        item->setText(1, QString::fromStdWString(entry.lockedDescription));
+        item->setText(2, "Locked");
+        item->setText(3, QString::number(entry.gamerscore));
+        ui->achievementsList->insertTopLevelItem(ui->achievementsList->topLevelItemCount(), item);
+
+        // update the title entry
+        TitleEntry *title = games.at(ui->gamesList->currentIndex().row()).titleEntry;
+        title->achievementCount++;
+        title->totalGamerscore += entry.gamerscore;
+        dashGPD->WriteTitleEntry(title);
+    }
 }
 
 void ProfileEditor::on_cmbxAchState_currentIndexChanged(int index)

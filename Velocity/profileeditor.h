@@ -11,6 +11,7 @@
 #include <QUuid>
 #include <QFileDialog>
 #include <QColorDialog>
+#include <QBuffer>
 #include "qthelpers.h"
 
 // xbox360

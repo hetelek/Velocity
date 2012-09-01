@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>920</width>
-    <height>408</height>
+    <height>424</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -29,7 +29,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabGeneralSettings">
       <attribute name="title">
@@ -429,7 +429,7 @@
             <enum>QTabWidget::South</enum>
            </property>
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="tab_5">
             <attribute name="title">
