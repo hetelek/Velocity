@@ -118,6 +118,17 @@ void GameGPD::CreateAchievement(AchievementEntry *entry, BYTE *thumbnail, DWORD 
 	// write the image to the file
 	io->setPosition(xdbf->GetRealAddress(imageEntry.addressSpecifier));
 	io->write(thumbnail, thumbnailLen);
+
+    // make a copy of the image
+    BYTE *imageCopy = new BYTE[thumbnailLen];
+    memcpy(imageCopy, thumbnail, thumbnailLen);
+
+    // add the image to the vector
+    ImageEntry image = { imageCopy, thumbnailLen, imageEntry, thumbnailLen };
+    images.push_back(image);
+
+    xdbf->UpdateEntry(&entry->entry);
+    xdbf->UpdateEntry(&imageEntry);
 }
 
 string GameGPD::GetAchievementType(AchievementEntry *entry)
