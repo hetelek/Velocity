@@ -99,7 +99,7 @@ void Account::SetLiveEnabled(bool b)
 	else
 	{
 		account.reservedFlags &= (~LiveEnabled);
-		account.serviceProvider = LiveDisasbled;
+        account.serviceProvider |= LiveDisasbled;
 	}
 }
 
