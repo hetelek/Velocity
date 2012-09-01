@@ -165,5 +165,21 @@ pip-log.txt
 # Qt Files #
 ############
 *.pro.user
+*.moc
+ui_*.h
 VelocityDebug/
 VelocityRelease/
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
