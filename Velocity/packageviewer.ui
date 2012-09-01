@@ -217,12 +217,6 @@
     </widget>
    </item>
   </layout>
-  <zorder>label_5</zorder>
-  <zorder>label_6</zorder>
-  <zorder>txtProfileID</zorder>
-  <zorder>txtDeviceID</zorder>
-  <zorder>lblMagic</zorder>
-  <zorder></zorder>
  </widget>
  <resources>
   <include location="Resources.qrc"/>
