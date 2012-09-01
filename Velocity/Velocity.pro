@@ -11,6 +11,8 @@ TEMPLATE = app
 
 include(Stfs/Botan.pri)
 
+UI_DIR = ..\Velocity
+
 SOURCES += main.cpp \
     mainwindow.cpp \
     packageviewer.cpp \
