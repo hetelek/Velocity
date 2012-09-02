@@ -47,7 +47,8 @@ SOURCES += main.cpp \
     renamedialog.cpp \
     creationwizard.cpp \
     achievementcreationwizard.cpp \
-    propertiesdialog.cpp
+    propertiesdialog.cpp \
+    addressconverterdialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -86,7 +87,8 @@ HEADERS  += mainwindow.h \
     renamedialog.h \
     achievementcreationwizard.h \
     creationwizard.h \
-    propertiesdialog.h
+    propertiesdialog.h \
+    addressconverterdialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -103,7 +105,8 @@ FORMS    += mainwindow.ui \
     renamedialog.ui \
     creationwizard.ui \
     achievementcreationwizard.ui \
-    propertiesdialog.ui
+    propertiesdialog.ui \
+    addressconverterdialog.ui
 
 RESOURCES += \
     Resources.qrc
