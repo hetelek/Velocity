@@ -5,6 +5,7 @@
 #include "StfsConstants.h"
 #include "FileIO.h"
 #include <iostream>
+#include <sstream>
 
 using std::string;
 
@@ -40,6 +41,17 @@ struct Certificate
     BYTE signature[0x80];
 };
 
+struct MSTime
+{
+    WORD year;
+    BYTE month;
+    BYTE monthDay;
+
+    BYTE hours;
+    BYTE minutes;
+    BYTE seconds;
+};
+
 void ReadVolumeDescriptorEx(VolumeDescriptor *descriptor, FileIO *io, DWORD address);
 
 void WriteVolumeDescriptorEx(VolumeDescriptor *descriptor, FileIO *io, DWORD address);
@@ -53,5 +65,11 @@ string MagicToString(Magic magic);
 string ContentTypeToString(ContentType type);
 
 string ConsoleTypeToString(ConsoleType type);
+
+string ByteSizeToString(int bytes);
+
+MSTime DWORDToMSTime(DWORD winTime);
+
+DWORD MSTimeToDWORD(MSTime time);
 
 #endif // STFSDEFINITIONS_H
