@@ -38,5 +38,7 @@
         <file>Images/package512.png</file>
         <file>Images/trophy.png</file>
         <file>Images/properties.png</file>
+        <file>Images/clean.png</file>
+        <file>Images/convert.png</file>
     </qresource>
 </RCC>
