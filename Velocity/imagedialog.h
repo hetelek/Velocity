@@ -15,9 +15,6 @@ class ImageDialog : public QDialog
 public:
     explicit ImageDialog(QImage image, QWidget *parent = 0);
     ~ImageDialog();
-    
-private slots:
-    void on_pushButton_clicked();
 
 private:
     Ui::ImageDialog *ui;

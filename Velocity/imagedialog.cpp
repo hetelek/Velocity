@@ -14,8 +14,3 @@ ImageDialog::~ImageDialog()
 {
     delete ui;
 }
-
-void ImageDialog::on_pushButton_clicked()
-{
-    this->close();
-}
