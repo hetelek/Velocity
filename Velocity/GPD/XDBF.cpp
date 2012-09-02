@@ -803,6 +803,15 @@ void XDBF::DeleteEntry(XDBFEntry entry)
     writeEntryListing();
 }
 
+void XDBF::ExtractEntry(XDBFEntry entry, BYTE *outBuffer)
+{
+    // seek to the begining of the entry
+    io->setPosition(GetRealAddress(entry.addressSpecifier));
+
+    // read the bytes of the entry
+    io->readBytes(outBuffer, entry.length);
+}
+
 bool compareEntries(XDBFEntry a, XDBFEntry b)
 {
     if (a.type < b.type)
