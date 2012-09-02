@@ -23,6 +23,54 @@ void ReadVolumeDescriptorEx(VolumeDescriptor *descriptor, FileIO *io, DWORD addr
     descriptor->unallocatedBlockCount = io->readDword();
 }
 
+string ByteSizeToString(int bytes)
+{
+    int B = 1; //byte
+    int KB = 1024 * B; //kilobyte
+    int MB = 1024 * KB; //megabyte
+    int GB = 1024 * MB; //gigabyte
+
+    // divide stuff
+    std::stringstream result;
+    if (bytes > GB)
+        result << (bytes / GB) << " GB";
+    else if (bytes > MB)
+        result << (bytes / MB) << " MB";
+    else if (bytes > KB)
+        result << ((int)(((bytes / (float)KB) + 0.05f) * 100) / 100.0f) << " KB";
+    else
+        result << bytes << " bytes";
+
+    return result.str();
+}
+
+DWORD MSTimeToDWORD(MSTime time)
+{
+    DWORD toReturn = 0;
+    toReturn |= ((time.year - 1980) & 0xEF) << 25;
+    toReturn |= (time.month & 0xF) << 21;
+    toReturn |= (time.monthDay & 0x1F) << 16;
+    toReturn |= (time.hours & 0x1F) << 11;
+    toReturn |= (time.minutes & 0x3F) << 5;
+    toReturn |= time.seconds & 0x1F;
+
+    return toReturn;
+}
+
+MSTime DWORDToMSTime(DWORD winTime)
+{
+    MSTime time;
+
+    time.year = ((winTime & 0xFE000000) >> 25) + 1980;
+    time.month = (winTime & 0x1E00000) >> 21;
+    time.monthDay = (winTime & 0x1F0000) >> 16;
+    time.hours = (winTime & 0xF800) >> 11;
+    time.minutes = (winTime & 0x7E0) >> 5;
+    time.seconds = winTime & 0x1F;
+
+    return time;
+}
+
 void WriteVolumeDescriptorEx(VolumeDescriptor *descriptor, FileIO *io, DWORD address)
 {
     // volume descriptor position
