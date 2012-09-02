@@ -20,6 +20,7 @@
 
 // forms
 #include "imagedialog.h"
+#include "addressconverterdialog.h"
 
 namespace Ui {
 class XdbfDialog;

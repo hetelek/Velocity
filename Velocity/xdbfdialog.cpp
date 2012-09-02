@@ -53,6 +53,9 @@ void XdbfDialog::showContextMenu(QPoint p)
     QMenu contextMenu;
 
     contextMenu.addAction(QPixmap(":/Images/extract.png"), "Extract Entry");
+    contextMenu.addAction(QPixmap(":/Images/replace.png"), "Replace Entry");
+    contextMenu.addSeparator();
+    contextMenu.addAction(QPixmap(":/Images/convert.png"), "Address Converter");
 
     QAction *selectedItem = contextMenu.exec(globalPos);
 
@@ -97,7 +100,58 @@ void XdbfDialog::showContextMenu(QPoint p)
         io.close();
 
         // free the temporary memory
-        delete entryBuff;
+        delete[] entryBuff;
+    }
+    else if (selectedItem->text() == "Replace Entry")
+    {
+        QString entryPath = QFileDialog::getOpenFileName(this, "Open the entry to replace the current with", QtHelpers::DesktopLocation() + "\\" + ui->treeWidget->currentItem()->text(0));
+
+        if (entryPath == "")
+            return;
+
+        Entry e = indexToEntry(ui->treeWidget->currentIndex().row());
+        XDBFEntry xentry;
+
+        // get the xdbf entry
+        if (e.type == Achievement)
+            xentry = gpd->xdbf->achievements.entries.at(e.index);
+        else if (e.type == Image)
+            xentry = gpd->xdbf->images.at(e.index);
+        else if (e.type == Setting)
+            xentry = gpd->xdbf->settings.entries.at(e.index);
+        else if (e.type == Title)
+            xentry = gpd->xdbf->titlesPlayed.entries.at(e.index);
+        else if (e.type == String)
+            xentry = gpd->xdbf->strings.at(e.index);
+        else if (e.type == AvatarAward)
+            xentry = gpd->xdbf->avatarAwards.entries.at(e.index);
+
+        // open the file and get the length
+        FileIO io(entryPath.toStdString());
+        io.setPosition(0, ios_base::end);
+        DWORD fileLen = io.getPosition();
+
+        // allocate enough memory for the buffer
+        BYTE *entryBuff = new BYTE[fileLen];
+
+        // read in the file
+        io.setPosition(0);
+        io.readBytes(entryBuff, fileLen);
+
+        gpd->xdbf->RewriteEntry(xentry, entryBuff);
+
+        // cleanup
+        delete[] entryBuff;
+        io.close();
+        if (modified != NULL)
+            *modified = true;
+
+        QMessageBox::information(this, "Success", "Successfully replaced the entry.");
+    }
+    else if (selectedItem->text() == "Address Converter")
+    {
+        AddressConverterDialog dialog(gpd->xdbf, this);
+        dialog.exec();
     }
 }
 
