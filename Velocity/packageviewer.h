@@ -10,6 +10,7 @@
 #include "renamedialog.h"
 #include "certificatedialog.h"
 #include "imagedialog.h"
+#include "propertiesdialog.h"
 
 // qt
 #include <QDialog>
@@ -58,6 +59,7 @@ private:
     Ui::PackageViewer *ui;
     void PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *parent = NULL);
     void GetPackagePath(QTreeWidgetItem *item, QString *out, bool folderOnly = false);
+    void SetIcon(string name, QTreeWidgetItem *item);
     StfsPackage *package;
     bool disposePackage;
     FileListing listing;

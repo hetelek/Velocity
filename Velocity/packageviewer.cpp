@@ -91,14 +91,13 @@ void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *pare
 
     if (!isRootEntry)
     {
-        QIcon icon(":/Images/FolderFileIcon.png");
         if (!isRoot)
             item = new QTreeWidgetItem(parent);
         else
             item = new QTreeWidgetItem(ui->treeWidget);
 
         item->setText(0, QString::fromStdString(entry->folder.name));
-        item->setIcon(0, icon);
+        item->setIcon(0, QIcon(":/Images/FolderFileIcon.png"));
         item->setText(1, "0");
         item->setText(2, "N/A");
         item->setText(3, "N/A");
@@ -112,27 +111,10 @@ void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *pare
         else
             fileEntry = new QTreeWidgetItem(ui->treeWidget);
 
-        DWORD index = entry->fileEntries.at(i).name.rfind(".");
-        string extension = "";
-        if (index != string::npos)
-            extension = entry->fileEntries.at(i).name.substr(index);
-
-        if (extension == ".gpd" || extension == ".fit")
-            fileEntry->setIcon(0, QIcon(":/Images/GpdFileIcon.png"));
-        else if (entry->fileEntries.at(i).name == "Account")
-            fileEntry->setIcon(0, QIcon(":/Images/AccountFileIcon.png"));
-        else if (entry->fileEntries.at(i).name == "PEC")
-            fileEntry->setIcon(0, QIcon(":/Images/PecFileIcon.png"));
-        else if (entry->fileEntries.at(i).name == "Account")
-            fileEntry->setIcon(0, QIcon(":/Images/AccountFileIcon.png"));
-        else if (extension == ".png" || extension == ".jpg" || extension == ".jpeg")
-            fileEntry->setIcon(0, QIcon(":/Images/ImageFileIcon.png"));
-        else
-            fileEntry->setIcon(0, QIcon(":/Images/DefaultFileIcon.png"));
-
+        SetIcon(entry->fileEntries.at(i).name, fileEntry);
 
         fileEntry->setText(0, QString::fromStdString(entry->fileEntries.at(i).name));
-        fileEntry->setText(1, "0x" + QString::number(entry->fileEntries.at(i).fileSize));
+        fileEntry->setText(1, "0x" + QString::number(entry->fileEntries.at(i).fileSize, 16).toUpper());
         fileEntry->setText(2, "0x" + QString::number(package->BlockToAddress(entry->fileEntries.at(i).startingBlockNum), 16).toUpper());
         fileEntry->setText(3, "0x" + QString::number(entry->fileEntries.at(i).startingBlockNum, 16).toUpper());
     }
@@ -156,6 +138,27 @@ void PackageViewer::GetPackagePath(QTreeWidgetItem *item, QString *out, bool fol
 
     if (hasParent)
         GetPackagePath(item->parent(), out);
+}
+
+void PackageViewer::SetIcon(string name, QTreeWidgetItem *item)
+{
+    DWORD index = name.rfind(".");
+    string extension = "";
+    if (index != string::npos)
+        extension = name.substr(index);
+
+    if (extension == ".gpd" || extension == ".fit")
+        item->setIcon(0, QIcon(":/Images/GpdFileIcon.png"));
+    else if (name == "Account")
+        item->setIcon(0, QIcon(":/Images/AccountFileIcon.png"));
+    else if (name == "PEC")
+        item->setIcon(0, QIcon(":/Images/PecFileIcon.png"));
+    else if (name == "Account")
+        item->setIcon(0, QIcon(":/Images/AccountFileIcon.png"));
+    else if (extension == ".png" || extension == ".jpg" || extension == ".jpeg")
+        item->setIcon(0, QIcon(":/Images/ImageFileIcon.png"));
+    else
+        item->setIcon(0, QIcon(":/Images/DefaultFileIcon.png"));
 }
 
 void PackageViewer::on_btnFix_clicked()
@@ -223,6 +226,8 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
     contextMenu.addSeparator();
     contextMenu.addAction(QPixmap(":/Images/add.png"), "Inject Here");
+    contextMenu.addSeparator();
+    contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
 
     QAction *selectedItem = contextMenu.exec(globalPos);
     if(selectedItem == NULL)
@@ -348,22 +353,79 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
         QFileInfo pathInfo(path);
 
-        if (isFolder)
+        if (isFolder && items.at(0)->parent() == NULL)
             packagePath.append(items.at(0)->text(0) + "\\");
+        else
+            packagePath.append("\\");
 
         packagePath.append(pathInfo.fileName());
 
         try
         {
-            package->InjectFile(path.toStdString(), packagePath.toStdString());
-            ui->treeWidget->clear();
+            FileEntry injectedEntry = package->InjectFile(path.toStdString(), packagePath.toStdString());
             listing = package->GetFileListing();
-            PopulateTreeWidget(&listing);
+
+            QTreeWidgetItem *fileEntry = new QTreeWidgetItem(items.at(0));
+
+            SetIcon(injectedEntry.name, fileEntry);
+
+            fileEntry->setText(0, QString::fromStdString(injectedEntry.name));
+            fileEntry->setText(1, "0x" + QString::number(injectedEntry.fileSize, 16).toUpper());
+            fileEntry->setText(2, "0x" + QString::number(package->BlockToAddress(injectedEntry.startingBlockNum), 16).toUpper());
+            fileEntry->setText(3, "0x" + QString::number(injectedEntry.startingBlockNum, 16).toUpper());
+
             QMessageBox::information(this, "Success", "The file has been injected.");
         }
         catch(string error)
         {
             QMessageBox::critical(this, "Error", "Failed to replace file.\n\n" + QString::fromStdString(error));
+        }
+    }
+    else if (selectedItem->text() == "View Properties")
+    {
+        try
+        {
+            QString packagePath;
+            GetPackagePath(items.at(0), &packagePath);
+
+            FileEntry entry = package->GetFileEntry(packagePath.toStdString(), true);
+            bool folder = entry.flags & 2;
+
+            bool changed = false;
+            PropertiesDialog dialog(&entry, packagePath, &changed, items.at(0)->icon(0), items.at(0)->childCount() != 0, this);
+            dialog.exec();
+
+            if (changed)
+            {
+                package->GetFileEntry(packagePath.toStdString(), true, &entry);
+                listing = package->GetFileListing();
+
+                items.at(0)->setText(0, QString::fromStdString(entry.name));
+
+                bool newStatus = (entry.flags & 2);
+                if (folder != newStatus)
+                {
+                    if (newStatus)
+                    {
+                        items.at(0)->setIcon(0, QIcon(":/Images/FolderFileIcon.png"));
+                        items.at(0)->setText(1, "0");
+                        items.at(0)->setText(2, "N/A");
+                        items.at(0)->setText(3, "N/A");
+                    }
+                    else
+                    {
+                        SetIcon(entry.name, items.at(0));
+                        items.at(0)->setText(0, QString::fromStdString(entry.name));
+                        items.at(0)->setText(1, "0x" + QString::number(entry.fileSize, 16).toUpper());
+                        items.at(0)->setText(2, "0x" + QString::number(package->BlockToAddress(entry.startingBlockNum), 16).toUpper());
+                        items.at(0)->setText(3, "0x" + QString::number(entry.startingBlockNum, 16).toUpper());
+                    }
+                }
+            }
+        }
+        catch(string error)
+        {
+            QMessageBox::critical(this, "Error", "Failed to open file.\n\n" + QString::fromStdString(error));
         }
     }
 }
