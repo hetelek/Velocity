@@ -6,15 +6,14 @@
 #include <math.h>
 #include <map>
 #include <stdlib.h>
-
-#ifdef QT_NO_DEBUG
-    #include "botan.h"
-    #include <QMessageBox>
-#endif
-
 #include "../FileIO.h"
 #include "StfsMetaData.h"
 #include "SHA1.h"
+
+#include <botan/botan.h>
+#include <botan/pubkey.h>
+#include <botan/rsa.h>
+#include <botan/emsa.h>
 
 using std::string;
 using std::stringstream;
@@ -31,7 +30,7 @@ struct FileEntry
     INT24 startingBlockNum;
     WORD pathIndicator;
     DWORD fileSize;
-    DWORD updateTimeStamp;
+    DWORD createdTimeStamp;
     DWORD accessTimeStamp;
     DWORD fileEntryAddress;
 };
@@ -98,7 +97,7 @@ public:
     void RemoveFile(string pathInPackage);
 
     // Description: inject a file into the package
-    void InjectFile(string path, string pathInPackage);
+    FileEntry InjectFile(string path, string pathInPackage);
 
     // Description: replace an existing file into the package
     void ReplaceFile(string path, string pathInPackage);

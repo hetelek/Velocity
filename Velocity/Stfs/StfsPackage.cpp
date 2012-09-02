@@ -242,7 +242,7 @@ void StfsPackage::ReadFileListing()
             fe.startingBlockNum = io->readInt24(LittleEndian);
             fe.pathIndicator = io->readWord();
             fe.fileSize = io->readDword();
-            fe.updateTimeStamp = io->readDword();
+            fe.createdTimeStamp = io->readDword();
             fe.accessTimeStamp = io->readDword();
 
             // get the flags
@@ -360,7 +360,11 @@ void StfsPackage::GetFileEntry(vector<string> locationOfFile, FileListing *start
             {
                 // update the entry
                 if (updateEntry)
+                {
                     start->fileEntries.at(i) = *newEntry;
+                    io->setPosition(start->fileEntries.at(i).fileEntryAddress);
+                    WriteFileEntry(&start->fileEntries.at(i));
+                }
 
                 // set the out value, and break
                 if (out != NULL)
@@ -378,7 +382,11 @@ void StfsPackage::GetFileEntry(vector<string> locationOfFile, FileListing *start
                 {
                     // update the entry
                     if (updateEntry)
+                    {
                         start->folderEntries.at(i).folder = *newEntry;
+                        io->setPosition(start->folderEntries.at(i).folder.fileEntryAddress);
+                        WriteFileEntry(&start->folderEntries.at(i).folder);
+                    }
 
                     // set the out value, and break
                     if (out != NULL)
@@ -398,7 +406,7 @@ void StfsPackage::GetFileEntry(vector<string> locationOfFile, FileListing *start
                 locationOfFile.erase(locationOfFile.begin());
 
                 // recursively call GetFileEntry again with the updated vector, and break
-                GetFileEntry(locationOfFile, &start->folderEntries.at(i), out);
+                GetFileEntry(locationOfFile, &start->folderEntries.at(i), out, newEntry, updateEntry, checkFolders);
                 found = true;
                 break;
             }
@@ -801,7 +809,6 @@ DWORD StfsPackage::GetTableHashAddress(DWORD index, Level lvl)
 
 void StfsPackage::Resign(string kvPath)
 {
-#ifdef QT_NO_DEBUG
     FileIO kvIo(kvPath);
     kvIo.setPosition(0, ios_base::end);
 
@@ -890,19 +897,15 @@ void StfsPackage::Resign(string kvPath)
     Botan::BigInt q = Botan::BigInt::decode((unsigned char*)qData, 0x40);
 
     Botan::AutoSeeded_RNG rng;
-        QMessageBox::information(0, "", QString::number(adder, 16));
     Botan::RSA_PrivateKey pkey(rng, p, q, 0x10001, 0, n);
 
-    Botan::PK_Signer signer(pkey, "EMSA3(SHA-1)");
-    Botan::SecureVector<Botan::byte> signature = signer.sign_message(dataToHash, size, rng);
+    /*Botan::PK_Signer signer(pkey, "EMSA3(SHA-1)");
+    Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToHash, 0x118, rng);
 
     XeCryptBnQw_SwapDwQwLeBe((BYTE*)&signature[0], 0x80);
-    memcpy(metaData->certificate.signature, (BYTE*)&signature[0], 0x80);
+    memcpy(metaData->certificate.signature, (BYTE*)&signature[0], 0x80);*/
 
     metaData->WriteCertificate();
-#else
-    throw string("Not yet implemented.\n");
-#endif
 }
 
 
@@ -1137,7 +1140,7 @@ void StfsPackage::WriteFileEntry(FileEntry *entry)
     io->write(entry->startingBlockNum, LittleEndian);
     io->write(entry->pathIndicator);
     io->write(entry->fileSize);
-    io->write(entry->updateTimeStamp);
+    io->write(entry->createdTimeStamp);
     io->write(entry->accessTimeStamp);
 }
 
@@ -1238,7 +1241,7 @@ void StfsPackage::UpdateEntry(string pathInPackage, FileEntry entry)
     GetFileEntry(SplitString(pathInPackage, "\\"), &fileListing, NULL, &entry, true);
 }
 
-void StfsPackage::InjectFile(string path, string pathInPackage)
+FileEntry StfsPackage::InjectFile(string path, string pathInPackage)
 {
     if(FileExists(pathInPackage))
         throw string("STFS: File already exists in the package.\n");
@@ -1327,7 +1330,6 @@ void StfsPackage::InjectFile(string path, string pathInPackage)
     folder->fileEntries.push_back(entry);
     WriteFileListing();
 
-
     if (topLevel == Zero)
     {
         io->setPosition(topTable.addressInFile);
@@ -1339,6 +1341,8 @@ void StfsPackage::InjectFile(string path, string pathInPackage)
             topTable.entries[i].nextBlock = io->readInt24();
         }
     }
+
+    return entry;
 }
 
 void StfsPackage::ReplaceFile(string path, string pathInPackage)
