@@ -10,10 +10,19 @@ PropertiesDialog::PropertiesDialog(FileEntry *entry, QString location, bool *cha
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
     setWindowTitle(QString::fromStdString(entry->name) + " Properties");
+
+    bool folder = (entry->flags & 2);
+    location = location.insert(0, '\\');
+    if (folder)
+        location = location.mid(0, location.lastIndexOf('\\'));
+
+    if (location.isEmpty())
+        location = "\\";
+
     ui->lblIcon->setPixmap(icon.pixmap(24, 24));
 
     // if it's a file, remove the filename
-    if (!(entry->flags & 2))
+    if (!folder)
     {
         int index = location.lastIndexOf('\\');
         if (index != -1)
@@ -21,20 +30,22 @@ PropertiesDialog::PropertiesDialog(FileEntry *entry, QString location, bool *cha
         else
             location = "";
     }
-    location.insert(0, '\\');
+
     ui->leName->setText(QString::fromStdString(entry->name));
 
     // get the extension
     size_t index = entry->name.rfind('.');
     QString exten;
-    if (index != string::npos)
+    if (entry->flags & 2)
+        exten = "File folder";
+    else if (index != string::npos)
         exten = QString::fromStdString(entry->name.substr(index)).toLower();
     else
         exten = "File";
 
     // get the friendly name of the extension (if any)
     QString final;
-    if (exten != "File")
+    if (exten != "File" && exten != "File folder")
     {
         QString friendlyName;
         if (exten == ".gpd")
@@ -88,10 +99,12 @@ PropertiesDialog::PropertiesDialog(FileEntry *entry, QString location, bool *cha
     ui->lblAccessed->setText(dateStr);
 
     ui->cbConsecutive->setCheckState((entry->flags & 1) << 1);
-    ui->cbFolder->setCheckState((entry->flags & 2) << 1);
+    ui->cbFolder->setCheckState(folder << 1);
 
     if (hasChildren)
         ui->cbFolder->setEnabled(false);
+
+    *changed = false;
 }
 
 PropertiesDialog::~PropertiesDialog()
@@ -101,23 +114,25 @@ PropertiesDialog::~PropertiesDialog()
 
 void PropertiesDialog::on_btnCancel_clicked()
 {
-    *changed = false;
     close();
 }
 
 void PropertiesDialog::on_leName_textChanged(const QString &arg1)
 {
-    ui->btnApply->setEnabled(true);
+    if (arg1.toStdString() != entry->name && !ui->btnApply->isEnabled())
+        ui->btnApply->setEnabled(true);
 }
 
 void PropertiesDialog::on_cbConsecutive_toggled(bool checked)
 {
-    ui->btnApply->setEnabled(true);
+    if (checked != (entry->flags & 1) && !ui->btnApply->isEnabled())
+        ui->btnApply->setEnabled(true);
 }
 
 void PropertiesDialog::on_cbFolder_toggled(bool checked)
 {
-    ui->btnApply->setEnabled(true);
+    if (checked != (entry->flags & 2) >> 1 && !ui->btnApply->isEnabled())
+        ui->btnApply->setEnabled(true);
 }
 
 void PropertiesDialog::updateEntry()
@@ -141,4 +156,5 @@ void PropertiesDialog::on_btnOK_clicked()
 void PropertiesDialog::on_btnApply_clicked()
 {
     updateEntry();
+    ui->btnApply->setEnabled(false);
 }
