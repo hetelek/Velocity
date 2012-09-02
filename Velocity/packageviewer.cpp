@@ -70,7 +70,7 @@ PackageViewer::PackageViewer(StfsPackage *package, QWidget *parent) :
     listing = package->GetFileListing();
     PopulateTreeWidget(&listing);
 
-    // setup the context
+    // setup the context menu
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showRemoveContextMenu(QPoint)));
 }
