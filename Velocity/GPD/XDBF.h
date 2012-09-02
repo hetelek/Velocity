@@ -50,6 +50,9 @@ public:
     // Description: remove all the unused memory in the file
     void Clean();
 
+    // Description: re-write an entry
+    void RewriteEntry(XDBFEntry entry, BYTE *entryBuffer);
+
 private:
     FileIO *io;
     bool ioPassedIn;

@@ -728,6 +728,57 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
     writeEntryListing();
 }
 
+void XDBF::RewriteEntry(XDBFEntry entry, BYTE *entryBuffer)
+{
+    // get the entry list
+    vector<XDBFEntry> *entryList;
+    switch (entry.type)
+    {
+        case Achievement:
+            entryList = &achievements.entries;
+            break;
+        case Image:
+            entryList = &images;
+            break;
+        case Setting:
+            entryList = &settings.entries;
+            break;
+        case Title:
+            entryList = &titlesPlayed.entries;
+            break;
+        case String:
+            entryList = &strings;
+            break;
+        case AvatarAward:
+            entryList = &avatarAwards.entries;
+            break;
+    }
+
+    // make sure the entry already exists
+    DWORD i;
+    for (i = 0; i < entryList->size(); i++)
+        if (entryList->at(i).id == entry.id)
+            break;
+    if (i == entryList->size())
+        throw string("XDBF: Error rewriting entry, entry not found.\n");
+
+    // if the size has changed, then we need to reallocate memory
+    if (entry.length != entryList->at(i).length)
+    {
+        DeallocateMemory(entryList->at(i).addressSpecifier, entryList->at(i).length);
+        entryList->at(i).addressSpecifier = entry.length = GetSpecifier(AllocateMemory(entry.length));
+        entryList->at(i).length = entry.length;
+    }
+
+    // write the entry
+    io->setPosition(GetRealAddress(entry.addressSpecifier));
+    io->write(entryBuffer, entry.length);
+
+    // update the file
+    UpdateEntry(&entryList->at(i));
+    writeEntryListing();
+}
+
 void XDBF::DeleteEntry(XDBFEntry entry)
 {
     // make sure that the entry exists
