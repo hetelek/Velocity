@@ -10,6 +10,8 @@ TARGET = Velocity
 TEMPLATE = app
 
 include(Stfs/Botan.pri)
+INCLUDEPATH += "C:/botan/include"
+LIBS += "C:/botan/libBotan.a"
 
 UI_DIR = ..\Velocity
 
@@ -44,7 +46,8 @@ SOURCES += main.cpp \
     Stfs/StfsPackage.cpp \
     renamedialog.cpp \
     creationwizard.cpp \
-    achievementcreationwizard.cpp
+    achievementcreationwizard.cpp \
+    propertiesdialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -82,7 +85,8 @@ HEADERS  += mainwindow.h \
     Stfs/StfsPackage.h \
     renamedialog.h \
     achievementcreationwizard.h \
-    creationwizard.h
+    creationwizard.h \
+    propertiesdialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -98,12 +102,8 @@ FORMS    += mainwindow.ui \
     imagedialog.ui \
     renamedialog.ui \
     creationwizard.ui \
-    achievementcreationwizard.ui
+    achievementcreationwizard.ui \
+    propertiesdialog.ui
 
 RESOURCES += \
     Resources.qrc
-
-CONFIG(release, debug|release){
-    HEADERS  += Stfs/botan.h
-    SOURCES  += Stfs/botan.cpp
-}
