@@ -6,12 +6,17 @@
 #include <QModelIndex>
 #include <QMessageBox>
 #include <QDateTime>
+#include <QMenu>
+#include <QFile>
+#include <QFileDialog>
+#include "qthelpers.h"
 
 // xbox360
 #include "GPD/XDBF.h"
 #include "GPD/XDBFDefininitions.h"
 #include "GPD/XDBFHelpers.h"
 #include "GPD/GPDBase.h"
+#include "FileIO.h"
 
 // forms
 #include "imagedialog.h"
@@ -35,9 +40,9 @@ public:
     ~XdbfDialog();
     
 private slots:
-
-
     void on_treeWidget_doubleClicked(const QModelIndex &index);
+
+    void showContextMenu(QPoint p);
 
 private:
     Ui::XdbfDialog *ui;

@@ -23,6 +23,9 @@ XdbfDialog::XdbfDialog(GPDBase *gpd, bool *modified, QWidget *parent) : QDialog(
                 setWindowTitle("XDBF Viewer - " + QString::fromStdWString(gpd->strings.at(i).ws));
             break;
         }
+
+    ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
 }
 
 void XdbfDialog::addEntriesToTable(vector<XDBFEntry> entries, QString type)
@@ -38,6 +41,63 @@ void XdbfDialog::addEntriesToTable(vector<XDBFEntry> entries, QString type)
 
         // add it to the table
         ui->treeWidget->insertTopLevelItem(ui->treeWidget->topLevelItemCount(), item);
+    }
+}
+
+void XdbfDialog::showContextMenu(QPoint p)
+{
+    if (ui->treeWidget->selectedItems().count() < 1)
+        return;
+
+    QPoint globalPos = ui->treeWidget->mapToGlobal(p);
+    QMenu contextMenu;
+
+    contextMenu.addAction(QPixmap(":/Images/extract.png"), "Extract Entry");
+
+    QAction *selectedItem = contextMenu.exec(globalPos);
+
+    if (selectedItem == NULL)
+        return;
+    else if (selectedItem->text() == "Extract Entry")
+    {
+        Entry e = indexToEntry(ui->treeWidget->currentIndex().row());
+        XDBFEntry xentry;
+
+        // get the xdbf entry
+        if (e.type == Achievement)
+            xentry = gpd->xdbf->achievements.entries.at(e.index);
+        else if (e.type == Image)
+            xentry = gpd->xdbf->images.at(e.index);
+        else if (e.type == Setting)
+            xentry = gpd->xdbf->settings.entries.at(e.index);
+        else if (e.type == Title)
+            xentry = gpd->xdbf->titlesPlayed.entries.at(e.index);
+        else if (e.type == String)
+            xentry = gpd->xdbf->strings.at(e.index);
+        else if (e.type == AvatarAward)
+            xentry = gpd->xdbf->avatarAwards.entries.at(e.index);
+
+        // extract the entry into memory
+        BYTE *entryBuff = new BYTE[xentry.length];
+        gpd->xdbf->ExtractEntry(xentry, entryBuff);
+
+        // get the out path
+        QString outPath = QFileDialog::getSaveFileName(this, "Choose a place to extract the entry", QtHelpers::DesktopLocation() + "\\" + ui->treeWidget->currentItem()->text(0));
+
+        if (outPath == "")
+            return;
+
+        // delete the file if it exists
+        if (QFile::exists(outPath))
+            QFile::remove(outPath);
+
+        // write the data to a file
+        FileIO io(outPath.toStdString(), true);
+        io.write(entryBuff, xentry.length);
+        io.close();
+
+        // free the temporary memory
+        delete entryBuff;
     }
 }
 
