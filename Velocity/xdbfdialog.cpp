@@ -7,13 +7,7 @@ XdbfDialog::XdbfDialog(GPDBase *gpd, bool *modified, QWidget *parent) : QDialog(
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->treeWidget->header()->resizeSection(0, 260);
 
-    // dispay all the entries
-    addEntriesToTable(gpd->xdbf->achievements.entries, "Achievement");
-    addEntriesToTable(gpd->xdbf->images, "Image");
-    addEntriesToTable(gpd->xdbf->settings.entries, "Setting");
-    addEntriesToTable(gpd->xdbf->titlesPlayed.entries, "Title");
-    addEntriesToTable(gpd->xdbf->strings, "String");
-    addEntriesToTable(gpd->xdbf->avatarAwards.entries, "Avatar Award");
+    loadEntries();
 
     // display the gpd name
     for (DWORD i = 0; i < gpd->strings.size(); i++)
@@ -44,6 +38,17 @@ void XdbfDialog::addEntriesToTable(vector<XDBFEntry> entries, QString type)
     }
 }
 
+void XdbfDialog::loadEntries()
+{
+    // dispay all the entries
+    addEntriesToTable(gpd->xdbf->achievements.entries, "Achievement");
+    addEntriesToTable(gpd->xdbf->images, "Image");
+    addEntriesToTable(gpd->xdbf->settings.entries, "Setting");
+    addEntriesToTable(gpd->xdbf->titlesPlayed.entries, "Title");
+    addEntriesToTable(gpd->xdbf->strings, "String");
+    addEntriesToTable(gpd->xdbf->avatarAwards.entries, "Avatar Award");
+}
+
 void XdbfDialog::showContextMenu(QPoint p)
 {
     if (ui->treeWidget->selectedItems().count() < 1)
@@ -56,6 +61,8 @@ void XdbfDialog::showContextMenu(QPoint p)
     contextMenu.addAction(QPixmap(":/Images/replace.png"), "Replace Entry");
     contextMenu.addSeparator();
     contextMenu.addAction(QPixmap(":/Images/convert.png"), "Address Converter");
+    contextMenu.addSeparator();
+    contextMenu.addAction(QPixmap(":/Images/clean.png"), "Clean");
 
     QAction *selectedItem = contextMenu.exec(globalPos);
 
@@ -152,6 +159,33 @@ void XdbfDialog::showContextMenu(QPoint p)
     {
         AddressConverterDialog dialog(gpd->xdbf, this);
         dialog.exec();
+    }
+    else if (selectedItem->text() == "Clean")
+    {
+        QMessageBox::StandardButton btn = QMessageBox::question(this, "Continue?", "Cleaning the GPD will remove all of the unused memory that is in the file. This could potentially reduce the size of the GPD.\n\nDo you want to continue?", QMessageBox::Yes, QMessageBox::No);
+
+        if (btn != QMessageBox::Yes)
+            return;
+
+        // clean the GPD
+        try
+        {
+            gpd->xdbf->Clean();
+        }
+        catch (std::string error)
+        {
+            QMessageBox::critical(this, "Clean Error", "An error occured while cleaning the GPD.\n\n" + QString::fromStdString(error));
+            return;
+        }
+
+        // reload the listing
+        ui->treeWidget->clear();
+        loadEntries();
+
+        if (modified != NULL)
+            *modified = true;
+
+        QMessageBox::information(this, "Success", "Successfully cleaned the GPD.");
     }
 }
 

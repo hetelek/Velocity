@@ -53,6 +53,8 @@ private:
     void addEntriesToTable(vector<XDBFEntry> entries, QString type);
 
     Entry indexToEntry(int index);
+
+    void loadEntries();
 };
 
 #endif // XDBFDIALOG_H
