@@ -58,6 +58,38 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
     ui->chxLIVE->setCheckState(account->IsLiveEnabled() << 1);
     ui->chxRecovering->setCheckState(account->IsRecovering() << 1);
     ui->chxPasscode->setCheckState(account->IsPasscodeEnabled() << 1);
+    ui->cmbxConsoleType->setCurrentIndex((profile->metaData->certificate.ownerConsoleType == DevKit) ? 0 : 1);
+
+    // load passcode
+    BYTE passCode[4];
+    account->GetPasscode(passCode);
+    ui->cmbxPass1->setCurrentIndex(passCode[0]);
+    ui->cmbxPass2->setCurrentIndex(passCode[1]);
+    ui->cmbxPass3->setCurrentIndex(passCode[2]);
+    ui->cmbxPass4->setCurrentIndex(passCode[3]);
+
+    switch (account->GetServiceProvider())
+    {
+        case ProductionNet:
+            ui->cmbxNetwork->setCurrentIndex(0);
+            break;
+        case PartnerNet:
+            ui->cmbxNetwork->setCurrentIndex(1);
+            break;
+        case LiveDisabled:
+            ui->cmbxNetwork->setEnabled(false);
+            break;
+        default:
+            ui->cmbxNetwork->addItem(QString::fromStdString(AccountHelpers::XboxLiveServiceProviderToString(account->GetServiceProvider())));
+            break;
+    }
+
+    // disable the controls that won't be used
+    ui->cmbxPass1->setEnabled(account->IsPasscodeEnabled());
+    ui->cmbxPass2->setEnabled(account->IsPasscodeEnabled());
+    ui->cmbxPass3->setEnabled(account->IsPasscodeEnabled());
+    ui->cmbxPass4->setEnabled(account->IsPasscodeEnabled());
+    ui->cmbxNetwork->setEnabled(account->IsLiveEnabled());
 
     // populate the years on live combo box
     for (DWORD i = 0; i <= 20; i++)
@@ -339,12 +371,11 @@ ProfileEditor::~ProfileEditor()
     for (DWORD i = 0; i < aaGames.size(); i++)
         delete aaGames.at(i).gpd;
 
-    // TODO: put a save button somewhere
     saveAll();
 
     delete dashGPD;
 
-    delete account;
+    //delete account;
 
     if (dispose)
         delete profile;
@@ -1158,4 +1189,12 @@ void ProfileEditor::showAllAwardGames()
 void ProfileEditor::on_btnAwardShowAll_clicked()
 {
     showAllAwardGames();
+}
+
+void ProfileEditor::on_chxPasscode_stateChanged(int arg1)
+{
+    ui->cmbxPass1->setEnabled(arg1 >> 1);
+    ui->cmbxPass2->setEnabled(arg1 >> 1);
+    ui->cmbxPass3->setEnabled(arg1 >> 1);
+    ui->cmbxPass4->setEnabled(arg1 >> 1);
 }
