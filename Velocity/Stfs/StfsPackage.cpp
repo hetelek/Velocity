@@ -8,6 +8,9 @@
 
 StfsPackage::StfsPackage(string packagePath, bool isPEC) : isPEC(isPEC)
 {
+    Botan::LibraryInitializer init;
+    sha1 = new Botan::SHA_160;
+
     io = new FileIO(packagePath);
     metaData = new StfsMetaData(io, isPEC);
 
@@ -694,9 +697,9 @@ void StfsPackage::Rehash()
     io->readBytes(buffer, headerSize);
 
     // hash the header
-    sha1.clear();
-    sha1.update(buffer, headerSize);
-    sha1.final(metaData->headerHash);
+    sha1->clear();
+    sha1->update(buffer, headerSize);
+    sha1->final(metaData->headerHash);
 
     delete[] buffer;
 
@@ -839,9 +842,9 @@ void StfsPackage::Resign(string kvPath)
     io->readBytes(buffer, headerSize);
 
     // hash the header
-    sha1.clear();
-    sha1.update(buffer, headerSize);
-    sha1.final(metaData->headerHash);
+    sha1->clear();
+    sha1->update(buffer, headerSize);
+    sha1->final(metaData->headerHash);
 
     delete[] buffer;
 
@@ -921,9 +924,9 @@ void StfsPackage::SetBlockStatus(DWORD blockNum, BlockStatusLevelZero status)
 void StfsPackage::HashBlock(BYTE *block, BYTE *outBuffer)
 {
     // hash the block
-    sha1.clear();
-    sha1.update(block, 0x1000);
-    sha1.final(outBuffer);
+    sha1->clear();
+    sha1->update(block, 0x1000);
+    sha1->final(outBuffer);
 }
 
 void StfsPackage::BuildTableInMemory(HashTable *table, BYTE *outBuffer)

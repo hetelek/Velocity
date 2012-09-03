@@ -124,7 +124,7 @@ private:
 
     FileIO *io;
     stringstream except;
-    Botan::SHA_160 sha1;
+    Botan::SHA_160 *sha1;
 
     Sex packageSex;
     DWORD blockStep[2];
