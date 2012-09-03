@@ -227,6 +227,8 @@ private slots:
 
     void on_chxPasscode_stateChanged(int arg1);
 
+    void on_chxLIVE_stateChanged(int arg1);
+
 private:
     Ui::ProfileEditor *ui;
     StfsPackage *profile;

@@ -928,6 +928,9 @@ void ProfileEditor::saveAll()
 
     // save all of the stuff on the front page
 
+    account->Save(profile->metaData->certificate.ownerConsoleType);
+    profile->ReplaceFile(accountTempPath, "Account");
+
     // gamer name
     wstring temp = ui->txtName->text().toStdWString();
     dashGPD->gamerName.str = &temp;
@@ -1140,6 +1143,7 @@ void ProfileEditor::on_pushButton_clicked()
         showAllGames();
         QMessageBox::warning(this, "Nothing Found", "No games match your search criteria.\n");
         ui->txtGameSearch->setText("");
+        return;
     }
 
     // add all the matched ones to the list
@@ -1172,6 +1176,7 @@ void ProfileEditor::on_btnAwardGo_clicked()
         showAllAwardGames();
         QMessageBox::warning(this, "Nothing Found", "No games match your search criteria.\n");
         ui->txtAwardGameSearch->setText("");
+        return;
     }
 
     // add all the matched ones to the list
@@ -1197,4 +1202,9 @@ void ProfileEditor::on_chxPasscode_stateChanged(int arg1)
     ui->cmbxPass2->setEnabled(arg1 >> 1);
     ui->cmbxPass3->setEnabled(arg1 >> 1);
     ui->cmbxPass4->setEnabled(arg1 >> 1);
+}
+
+void ProfileEditor::on_chxLIVE_stateChanged(int arg1)
+{
+    ui->cmbxNetwork->setEnabled(arg1 >> 1);
 }
