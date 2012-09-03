@@ -546,7 +546,6 @@ DWORD StfsPackage::GetHashTableEntryCount(DWORD index, Level lvl)
 
 void StfsPackage::Rehash()
 {
-    CSHA1 sha1;
     BYTE blockBuffer[0x1000];
     switch (topLevel)
     {
@@ -695,10 +694,9 @@ void StfsPackage::Rehash()
     io->readBytes(buffer, headerSize);
 
     // hash the header
-    sha1.Update(buffer, headerSize);
-    sha1.Final();
-    sha1.GetHash(metaData->headerHash);
-    sha1.Reset();
+    sha1.clear();
+    sha1.update(buffer, headerSize);
+    sha1.final(metaData->headerHash);
 
     delete[] buffer;
 
@@ -841,10 +839,9 @@ void StfsPackage::Resign(string kvPath)
     io->readBytes(buffer, headerSize);
 
     // hash the header
-    sha1.Update(buffer, headerSize);
-    sha1.Final();
-    sha1.GetHash(metaData->headerHash);
-    sha1.Reset();
+    sha1.clear();
+    sha1.update(buffer, headerSize);
+    sha1.final(metaData->headerHash);
 
     delete[] buffer;
 
@@ -903,8 +900,13 @@ void StfsPackage::Resign(string kvPath)
     Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToHash, 0x118, rng);
 
     XeCryptBnQw_SwapDwQwLeBe((BYTE*)&signature[0], 0x80);
-    memcpy(metaData->certificate.signature, (BYTE*)&signature[0], 0x80);*/
+    memcpy(metaData->certificate.signature, (BYTE*)&signature[0], 0x80);
+    Botan::HMAC hm();
+    hm.set_key();
 
+    Botan::ARC4 rc4;
+    rc4.set_key();
+    rc4.decrypt();*/
     metaData->WriteCertificate();
 }
 
@@ -919,10 +921,9 @@ void StfsPackage::SetBlockStatus(DWORD blockNum, BlockStatusLevelZero status)
 void StfsPackage::HashBlock(BYTE *block, BYTE *outBuffer)
 {
     // hash the block
-    sha1.Update(block, 0x1000);
-    sha1.Final();
-    sha1.GetHash(outBuffer);
-    sha1.Reset();
+    sha1.clear();
+    sha1.update(block, 0x1000);
+    sha1.final(outBuffer);
 }
 
 void StfsPackage::BuildTableInMemory(HashTable *table, BYTE *outBuffer)
