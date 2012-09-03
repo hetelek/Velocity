@@ -239,7 +239,7 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
         hmacSha1.set_key(DEVKIT_KEY, 0x10);
 
     // hash the confounder and decrypted data
-    BYTE hmacHash[0x10];
+    BYTE hmacHash[0x14];
     hmacSha1.update(decryptedData, 0x184);
     hmacSha1.final(hmacHash);
 
@@ -249,11 +249,11 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
     FileIO encrypted(*outPath, true);
     encrypted.write(hmacHash, 0x10);
 
+    Botan::HMAC hmacSha1_2(sha1);
     // generate the rc4 key
-    BYTE rc4Key[0x10];
-    hmacSha1.clear();
-    hmacSha1.update(hmacHash, 0x10);
-    hmacSha1.final(rc4Key);
+    BYTE rc4Key[0x14];
+    hmacSha1_2.update(hmacHash, 0x10);
+    hmacSha1_2.final(rc4Key);
 
     // encrypt the data
     Botan::ARC4 rc4;
