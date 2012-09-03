@@ -58,6 +58,10 @@ private slots:
 
     void on_btnStfsTools_clicked();
 
+    void on_btnSearch_clicked();
+
+    void on_btnShowAll_clicked();
+
 private:
     Ui::PackageViewer *ui;
     void PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *parent = NULL);
@@ -67,6 +71,10 @@ private:
     bool disposePackage;
     FileListing listing;
     QWidget *parent;
+
+    void showAllItems();
+
+    void collapseAllChildren(QTreeWidgetItem *item);
 };
 
 #endif // PACKAGEVIEWER_H
