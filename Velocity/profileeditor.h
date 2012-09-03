@@ -235,6 +235,10 @@ private slots:
 
     void onSaveAvatarAwardThumbnail(QPoint p);
 
+    void on_dteAchTimestamp_dateTimeChanged(const QDateTime &date);
+
+    void on_dteAwTimestamp_dateTimeChanged(const QDateTime &date);
+
 private:
     Ui::ProfileEditor *ui;
     StfsPackage *profile;

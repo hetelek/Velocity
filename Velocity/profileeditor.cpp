@@ -238,8 +238,13 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
         item->setText(0, QString::fromStdWString(gpd->gameName.ws));
 
         // set the thumbnail
-        QByteArray imageBuff((char*)gpd->thumbnail.image, (size_t)gpd->thumbnail.length);
-        item->setIcon(0, QIcon(QPixmap::fromImage(QImage::fromData(imageBuff))));
+        if (gpd->thumbnail.image != NULL)
+        {
+            QByteArray imageBuff((char*)gpd->thumbnail.image, (size_t)gpd->thumbnail.length);
+            item->setIcon(0, QIcon(QPixmap::fromImage(QImage::fromData(imageBuff))));
+        }
+        else
+            item->setIcon(0, QIcon(QPixmap(":\Images\HiddenAcheivement.png")));
 
         // add the item to the list
         if (dashGPD->gamesPlayed.at(i).achievementCount != 0)
@@ -452,7 +457,7 @@ void ProfileEditor::saveImage(QPoint p, QLabel *imgLabel)
     contextMenu.addAction(QPixmap(":/Images/save.png"), "Save Image");
     QAction *selectedItem = contextMenu.exec(globalPos);
 
-    if (selectedItem->text() == NULL)
+    if (selectedItem == NULL)
         return;
     else if (selectedItem->text() == "Save Image")
     {
@@ -1120,6 +1125,7 @@ void ProfileEditor::on_cmbxAchState_currentIndexChanged(int index)
         updateAchievement(games.at(ui->gamesList->currentIndex().row()).titleEntry, &gpd->achievements.at(ui->achievementsList->currentIndex().row()), StateUnlockedOnline, gpd);
 
         ui->dteAchTimestamp->setEnabled(true);
+        ui->dteAchTimestamp->setDateTime(QDateTime::currentDateTime());
     }
 
     games.at(ui->gamesList->currentIndex().row()).updated = true;
@@ -1130,7 +1136,6 @@ void ProfileEditor::on_cmbxAwState_currentIndexChanged(int index)
     // make sure the indices are valid
     if (ui->aaGamelist->currentIndex().row() < 0 || ui->avatarAwardsList->currentIndex().row() < 0)
         return;
-
 
     AvatarAwardGPD *gpd = aaGames.at(ui->aaGamelist->currentIndex().row()).gpd;
 
@@ -1164,7 +1169,9 @@ void ProfileEditor::on_cmbxAwState_currentIndexChanged(int index)
 
         // update the title entry
         updateAvatarAward(aaGames.at(ui->aaGamelist->currentIndex().row()).titleEntry, gpd, &gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row()), StateUnlockedOnline);
-        ui->dteAchTimestamp->setEnabled(true);
+
+        ui->dteAwTimestamp->setEnabled(true);
+        ui->dteAwTimestamp->setDateTime(QDateTime::currentDateTime());
     }
 
     aaGames.at(ui->aaGamelist->currentIndex().row()).updated = true;
@@ -1247,4 +1254,37 @@ void ProfileEditor::on_chxPasscode_stateChanged(int arg1)
 void ProfileEditor::on_chxLIVE_stateChanged(int arg1)
 {
     ui->cmbxNetwork->setEnabled(arg1 >> 1);
+}
+
+void ProfileEditor::on_dteAchTimestamp_dateTimeChanged(const QDateTime &date)
+{
+    if (ui->gamesList->currentIndex().row() < 0 || ui->achievementsList->currentIndex().row() < 0)
+        return;
+
+    AchievementEntry *entry = &games.at(ui->gamesList->currentIndex().row()).gpd->achievements.at(ui->achievementsList->currentIndex().row());
+
+    // make sure the user changed the time
+    if (date.toTime_t() == entry->unlockTime)
+        return;
+
+    entry->unlockTime = date.toTime_t();
+    ui->dteAchTimestamp->setDateTime(QDateTime::fromTime_t(entry->unlockTime));
+    games.at(ui->gamesList->currentIndex().row()).gpd->WriteAchievementEntry(entry);
+    games.at(ui->gamesList->currentIndex().row()).updated = true;
+}
+
+void ProfileEditor::on_dteAwTimestamp_dateTimeChanged(const QDateTime &date)
+{
+    if (ui->aaGamelist->currentIndex().row() < 0 || ui->avatarAwardsList->currentIndex().row() < 0)
+        return;
+
+    struct AvatarAward *entry = &aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row());
+
+    // make sure the user changed the time
+    if (date.toTime_t() == entry->unlockTime)
+        return;
+
+    entry->unlockTime = date.toTime_t();
+    aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->WriteAvatarAward(entry);
+    aaGames.at(ui->aaGamelist->currentIndex().row()).updated = true;
 }
