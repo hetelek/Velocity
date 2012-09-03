@@ -13,6 +13,7 @@
 #include <botan/pubkey.h>
 #include <botan/rsa.h>
 #include <botan/emsa.h>
+#include <botan/sha160.h>
 
 using std::string;
 using std::stringstream;
