@@ -329,6 +329,7 @@ ProfileEditor::~ProfileEditor()
 void ProfileEditor::on_gamesList_itemSelectionChanged()
 {
     loadGameInfo(ui->gamesList->currentIndex().row());
+    loadAchievementInfo(ui->gamesList->currentIndex().row(), 0);
 }
 
 void ProfileEditor::loadGameInfo(int index)
@@ -424,6 +425,7 @@ void ProfileEditor::loadAchievementInfo(int gameIndex, int chievIndex)
 void ProfileEditor::on_aaGamelist_itemSelectionChanged()
 {
     loadAwardGameInfo(ui->aaGamelist->currentIndex().row());
+    loadAvatarAwardInfo(ui->aaGamelist->currentIndex().row(), 0);
 }
 
 void ProfileEditor::loadAwardGameInfo(int index)
@@ -637,7 +639,6 @@ void ProfileEditor::on_btnExtractGPD_clicked()
         QMessageBox::critical(this, "Error", "Failed to extract " + gpdName + ".\n\n" + QString::fromStdString(error));
     }
 }
-
 
 void ProfileEditor::on_btnExtractGPD_2_clicked()
 {
@@ -1064,4 +1065,68 @@ void ProfileEditor::on_cmbxAwState_currentIndexChanged(int index)
     }
 
     aaGames.at(ui->aaGamelist->currentIndex().row()).updated = true;
+}
+
+void ProfileEditor::on_pushButton_clicked()
+{
+    QList<QTreeWidgetItem*> itemsMatched = ui->gamesList->findItems(ui->txtGameSearch->text(), Qt::MatchContains);
+
+    // hide all the items
+    for (DWORD i = 0; i < ui->gamesList->topLevelItemCount(); i++)
+        ui->gamesList->setItemHidden(ui->gamesList->topLevelItem(i), true);
+
+    if (itemsMatched.count() == 0)
+    {
+        showAllGames();
+        QMessageBox::warning(this, "Nothing Found", "No games match your search criteria.\n");
+        ui->txtGameSearch->setText("");
+    }
+
+    // add all the matched ones to the list
+    for (DWORD i = 0; i < itemsMatched.count(); i++)
+        ui->gamesList->setItemHidden(itemsMatched.at(i), false);
+}
+
+void ProfileEditor::on_btnShowAll_clicked()
+{
+    showAllGames();
+}
+
+void ProfileEditor::showAllGames()
+{
+    // show all the items
+    for (DWORD i = 0; i < ui->gamesList->topLevelItemCount(); i++)
+        ui->gamesList->setItemHidden(ui->gamesList->topLevelItem(i), false);
+}
+
+void ProfileEditor::on_btnAwardGo_clicked()
+{
+    QList<QTreeWidgetItem*> itemsMatched = ui->aaGamelist->findItems(ui->txtAwardGameSearch->text(), Qt::MatchContains);
+
+    // hide all the items
+    for (DWORD i = 0; i < ui->aaGamelist->topLevelItemCount(); i++)
+        ui->aaGamelist->setItemHidden(ui->aaGamelist->topLevelItem(i), true);
+
+    if (itemsMatched.count() == 0)
+    {
+        showAllAwardGames();
+        QMessageBox::warning(this, "Nothing Found", "No games match your search criteria.\n");
+        ui->txtAwardGameSearch->setText("");
+    }
+
+    // add all the matched ones to the list
+    for (DWORD i = 0; i < itemsMatched.count(); i++)
+        ui->aaGamelist->setItemHidden(itemsMatched.at(i), false);
+}
+
+void ProfileEditor::showAllAwardGames()
+{
+    // show all the items
+    for (DWORD i = 0; i < ui->aaGamelist->topLevelItemCount(); i++)
+        ui->aaGamelist->setItemHidden(ui->aaGamelist->topLevelItem(i), false);
+}
+
+void ProfileEditor::on_btnAwardShowAll_clicked()
+{
+    showAllAwardGames();
 }

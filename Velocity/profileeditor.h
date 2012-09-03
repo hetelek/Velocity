@@ -215,6 +215,14 @@ private slots:
 
     void on_cmbxAwState_currentIndexChanged(int index);
 
+    void on_pushButton_clicked();
+
+    void on_btnShowAll_clicked();
+
+    void on_btnAwardGo_clicked();
+
+    void on_btnAwardShowAll_clicked();
+
 private:
     Ui::ProfileEditor *ui;
     StfsPackage *profile;
@@ -246,6 +254,10 @@ private:
     void loadAwardGameInfo(int index);
 
     void loadAvatarAwardInfo(int gameIndex, int awardIndex);
+
+    void showAllGames();
+
+    void showAllAwardGames();
 };
 
 #endif // PROFILEEDITOR_H
