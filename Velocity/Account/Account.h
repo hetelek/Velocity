@@ -118,6 +118,6 @@ private:
 
 	void writeFile();
 
-    FileIO* decryptAccount(std::string *outPath, ConsoleType type);
+    void decryptAccount(std::string encryptedPath, std::string *outPath, ConsoleType type);
 };
 

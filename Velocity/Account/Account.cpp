@@ -1,14 +1,17 @@
 #include "Account.h"
 
-Account::Account(string path, bool decrypt, ConsoleType type) : ioPassedIn(false), type(type)
+Account::Account(std::string path, bool decrypt, ConsoleType type) : ioPassedIn(false), type(type)
 {
     Botan::LibraryInitializer init;
-	io = new FileIO(path);
 
     if (decrypt)
     {
-        io->close();
-        io = decryptAccount(&outPath, type);
+        decryptAccount(path, &outPath, type);
+        io = new FileIO(outPath);
+    }
+    else
+    {
+        io = new FileIO(path);
     }
 
 	parseFile();
@@ -83,7 +86,12 @@ bool Account::IsValidXUID()
 
 bool Account::IsTeamXUID()
 {
-	return (account.cachedUserFlags & 0xFF00000000000140) == 0xFE00000000000100;
+    return (account.xuid & 0xFF00000000000140) == 0xFE00000000000100;
+}
+
+UINT64 Account::GetXUID()
+{
+    return account.xuid;
 }
 
 void Account::SetPasscodeEnabled(bool b)
@@ -152,22 +160,26 @@ void Account::SetGamertag(wstring gamertag)
     account.gamertag = gamertag;
 }
 
-FileIO* Account::decryptAccount(std::string *outPath, ConsoleType type)
+void Account::decryptAccount(std::string encryptedPath, std::string *outPath, ConsoleType type)
 {
-    Botan::byte hmacHash[0x10];
-    Botan::byte rc4Key[0x10];
+    // open the encrypted file
+    FileIO encIo(encryptedPath);
+    BYTE hmacHash[0x10];
+    BYTE rc4Key[0x10];
 
-    io->setPosition(0);
-    io->readBytes(hmacHash, 0x10);
+    // read the hash
+    encIo.readBytes(hmacHash, 0x10);
 
-    Botan::SHA_160 sha1;
-    Botan::HMAC hmacSha1(&sha1);
+    Botan::SHA_160 *sha1 = new Botan::SHA_160;
+    Botan::HMAC hmacSha1(sha1);
 
+    // set the hmac-sha1 key
     if (type == Retail)
         hmacSha1.set_key(RETAIL_KEY, 0x10);
     else
         hmacSha1.set_key(DEVKIT_KEY, 0x10);
 
+    // calculate the hmac
     hmacSha1.update(hmacHash, 0x10);
     hmacSha1.final(rc4Key);
 
@@ -175,19 +187,27 @@ FileIO* Account::decryptAccount(std::string *outPath, ConsoleType type)
     BYTE confounder[8];
     BYTE payload[0x17C];
 
-    io->readBytes(restOfFile, 0x184);
+    // read the rest of the file
+    encIo.readBytes(restOfFile, 0x184);
 
+    // decrypt using rc4
     Botan::ARC4 rc4;
     rc4.set_key(rc4Key, 0x10);
     rc4.decrypt(restOfFile, 0x184);
 
+    // copy the parts
     memcpy(confounder, restOfFile, 8);
     memcpy(payload, &restOfFile[8], 0x17C);
 
+    // write the payload
     *outPath = std::string(tmpnam(NULL));
-    FileIO *decrypted = new FileIO(*outPath, true);
-    decrypted->write(payload, 0x17C);
-    return decrypted;
+    FileIO decrypted(*outPath, true);
+    decrypted.write(payload, 0x17C);
+    decrypted.flush();
+
+    // cleanup
+    decrypted.close();
+    encIo.close();
 }
 
 void Account::writeFile()
