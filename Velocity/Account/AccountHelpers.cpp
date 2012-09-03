@@ -26,7 +26,7 @@ string AccountHelpers::XboxLiveServiceProviderToString(XboxLiveServiceProvider p
 {
 	switch (provider)
 	{
-		case LiveDisasbled:
+        case LiveDisabled:
 			return string("Live Disabled");
 		case ProductionNet:
 			return string("ProductionNet");

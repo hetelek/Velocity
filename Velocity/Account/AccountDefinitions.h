@@ -54,7 +54,7 @@ enum ConsoleLanguage
 
 enum XboxLiveServiceProvider
 {
-	LiveDisasbled = 0,
+    LiveDisabled = 0,
 	ProductionNet = 0x50524F44,	// PROD
 	PartnerNet = 0x50415254		// PART
 };
