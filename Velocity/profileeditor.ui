@@ -168,12 +168,12 @@
              <widget class="QComboBox" name="cmbxConsoleType">
               <item>
                <property name="text">
-                <string>Retail</string>
+                <string>Developer</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>Developer</string>
+                <string>Retail</string>
                </property>
               </item>
              </widget>
@@ -436,7 +436,7 @@
            </widget>
           </item>
           <item row="8" column="3">
-           <widget class="QLabel" name="label">
+           <widget class="QLabel" name="lblXUID">
             <property name="text">
              <string>-</string>
             </property>
@@ -466,7 +466,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="chxRecovering_2">
+             <widget class="QCheckBox" name="chxPasscode">
               <property name="text">
                <string>Passcode</string>
               </property>
@@ -654,7 +654,7 @@
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <widget class="QWidget" name="">
+         <widget class="QWidget" name="layoutWidget">
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
             <widget class="QTreeWidget" name="gamesList">
@@ -1061,7 +1061,7 @@ p, li { white-space: pre-wrap; }
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <widget class="QWidget" name="">
+         <widget class="QWidget" name="layoutWidget">
           <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
             <widget class="QTreeWidget" name="aaGamelist">

@@ -20,6 +20,8 @@
 #include "GPD/GameGPD.h"
 #include "GPD/AvatarAwardGPD.h"
 #include "AvatarAsset/AvatarAssetDefinintions.h"
+#include "Account/Account.h"
+#include "Account/AccountHelpers.h"
 
 // other
 #include <iostream>
@@ -227,12 +229,14 @@ private:
     Ui::ProfileEditor *ui;
     StfsPackage *profile;
     DashboardGPD *dashGPD;
+    Account *account;
     vector<string> tempFiles;
     vector<GameEntry> games;
     vector<AvatarAwardGameEntry> aaGames;
     StfsPackage *PEC;
     string pecTempPath;
     string dashGPDTempPath;
+    string accountTempPath;
     bool dispose;
 
     void addToDashGPD(SettingEntry *entry, SettingEntryType type, UINT64 id);

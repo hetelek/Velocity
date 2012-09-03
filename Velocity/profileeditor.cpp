@@ -28,9 +28,36 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
         return;
     }
 
+    // make sure the account file exists
+    if (!profile->FileExists("Account"))
+    {
+        QMessageBox::critical(this, "File Not Found", "The Account file wasn't found.\n");
+        this->close();
+        return;
+    }
+
     ///////////////////////////////////
     // LOAD FRONT PAGE
     ///////////////////////////////////
+
+    // extract the account file
+    accountTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+    profile->ExtractFile("Account", accountTempPath);
+    tempFiles.push_back(accountTempPath);
+
+    // parse the account file
+    account = new Account(accountTempPath, true, profile->metaData->certificate.ownerConsoleType);
+
+    // load all of the account information
+    ui->txtGamertag->setText(QString::fromStdWString(account->GetGamertag()));
+    ui->lblLanguage->setText(QString::fromStdString(AccountHelpers::ConsoleLanguageToString(account->GetLanguage())));
+    ui->lblSubscriptionTeir->setText(QString::fromStdString(AccountHelpers::SubscriptionTeirToString(account->GetSubscriptionTeir())));
+    ui->lblParentalControlled->setText(((account->IsParentalControlled()) ? "Yes" : "No"));
+    ui->lblCreditCard->setText(((account->IsPaymentInstrumentCreditCard()) ? "Yes" : "No"));
+    ui->lblXUID->setText(QString::number(account->GetXUID(), 16).toUpper());\
+    ui->chxLIVE->setCheckState(account->IsLiveEnabled() << 1);
+    ui->chxRecovering->setCheckState(account->IsRecovering() << 1);
+    ui->chxPasscode->setCheckState(account->IsPasscodeEnabled() << 1);
 
     // populate the years on live combo box
     for (DWORD i = 0; i <= 20; i++)
@@ -316,6 +343,8 @@ ProfileEditor::~ProfileEditor()
     saveAll();
 
     delete dashGPD;
+
+    delete account;
 
     if (dispose)
         delete profile;
