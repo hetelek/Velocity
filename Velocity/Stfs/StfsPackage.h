@@ -108,6 +108,9 @@ public:
     // Description: convert a block into an address in the file
     DWORD BlockToAddress(DWORD blockNum);
 
+    // Description: get the address of a hash for a data block
+    DWORD GetHashAddressOfBlock(DWORD blockNum);
+
     // Description: returns whether the 'isPEC' parameter is set
     bool IsPEC();
 
@@ -163,9 +166,6 @@ private:
 
     // Description: get the true block number for the hash table that hashes the block at level 2
     DWORD ComputeLevel2BackingHashBlockNumber(DWORD blockNum);
-
-    // Description: get the address of a hash for a data block
-    DWORD GetHashAddressOfBlock(DWORD blockNum);
 
     // Descrption: get the address of a hash table in the package
     DWORD GetHashTableAddress(DWORD index, Level lvl);
