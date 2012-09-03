@@ -238,6 +238,14 @@ private:
     void getAvatarColor(QPushButton *sender);
 
     void saveAll();
+
+    void loadGameInfo(int index);
+
+    void loadAchievementInfo(int gameIndex, int chievIndex);
+
+    void loadAwardGameInfo(int index);
+
+    void loadAvatarAwardInfo(int gameIndex, int awardIndex);
 };
 
 #endif // PROFILEEDITOR_H
