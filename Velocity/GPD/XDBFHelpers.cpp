@@ -38,12 +38,11 @@ time_t XDBFHelpers::FILETIMEtoTimeT(FILETIME time)
 
 FILETIME XDBFHelpers::TimeTtoFILETIME(time_t time)
 {
-	FILETIME toReturn = { 0, 0 };
+    FILETIME toReturn;
 
-    INT64 ll = (time * 10000000L) + 116444736000000000L;
-    toReturn.dwLowDateTime = (unsigned long)ll;
-    toReturn.dwHighDateTime = (unsigned long)(ll >> 32);
-
+    UINT64 ll = ((UINT64)(time * (UINT64)10000000)) + 116444736000000000;
+    toReturn.dwLowDateTime = (DWORD)ll;
+    toReturn.dwHighDateTime = ll >> 32;
 	return toReturn;
 }
 
