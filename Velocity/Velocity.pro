@@ -21,7 +21,6 @@ SOURCES += main.cpp \
     profileeditor.cpp \
     about.cpp \
     Stfs/StfsMetaData.cpp \
-    Stfs/SHA1.cpp \
     FileIO.cpp \
     GPD/XDBF.cpp \
     GPD/GPDBase.cpp \
@@ -57,7 +56,6 @@ HEADERS  += mainwindow.h \
     about.h \
     Stfs/StfsMetaData.h \
     Stfs/StfsConstants.h \
-    Stfs/SHA1.h \
     Stfs/FileIO.h \
     FileIO.h \
     GPD/XDBFDefininitions.h \
