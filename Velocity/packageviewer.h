@@ -11,6 +11,7 @@
 #include "certificatedialog.h"
 #include "imagedialog.h"
 #include "propertiesdialog.h"
+#include "stfstoolsdialog.h"
 
 // qt
 #include <QDialog>
@@ -54,6 +55,8 @@ private slots:
     void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
 
     void on_btnProfileEditor_clicked();
+
+    void on_btnStfsTools_clicked();
 
 private:
     Ui::PackageViewer *ui;

@@ -129,7 +129,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,1,2,2">
      <item>
       <widget class="QPushButton" name="btnProfileEditor">
        <property name="enabled">
@@ -145,9 +145,13 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="btnStfsTools">
        <property name="text">
         <string>STFS Tools</string>
+       </property>
+       <property name="icon">
+        <iconset resource="Resources.qrc">
+         <normaloff>:/Images/gear.png</normaloff>:/Images/gear.png</iconset>
        </property>
       </widget>
      </item>

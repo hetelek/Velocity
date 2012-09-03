@@ -554,3 +554,9 @@ void PackageViewer::on_btnProfileEditor_clicked()
     ProfileEditor *editor = new ProfileEditor(package, true, this->parentWidget());
     editor->show();
 }
+
+void PackageViewer::on_btnStfsTools_clicked()
+{
+    StfsToolsDialog dialog(package, this);
+    dialog.exec();
+}
