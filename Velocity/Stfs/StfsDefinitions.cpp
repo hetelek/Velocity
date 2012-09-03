@@ -37,7 +37,7 @@ string ByteSizeToString(int bytes)
     else if (bytes > MB)
         result << (bytes / MB) << " MB";
     else if (bytes > KB)
-        result << ((int)(((bytes / (float)KB) + 0.05f) * 100) / 100.0f) << " KB";
+        result << ((int)(((bytes / (float)KB) + 0.005f) * 100) / 100.0f) << " KB";
     else
         result << bytes << " bytes";
 
