@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include "../FileIO.h"
 #include "StfsMetaData.h"
-#include "SHA1.h"
 
 #include <botan/botan.h>
 #include <botan/pubkey.h>
@@ -124,7 +123,7 @@ private:
 
     FileIO *io;
     stringstream except;
-    CSHA1 sha1;
+    Botan::SHA_160 sha1;
 
     Sex packageSex;
     DWORD blockStep[2];
