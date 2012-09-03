@@ -70,9 +70,12 @@ PackageViewer::PackageViewer(StfsPackage *package, QWidget *parent) :
     listing = package->GetFileListing();
     PopulateTreeWidget(&listing);
 
-    // setup the context menu
+    // setup the context menus
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showRemoveContextMenu(QPoint)));
+
+    ui->imgTile->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->imgTile, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showSaveImageContextMenu(QPoint)));
 }
 
 PackageViewer::~PackageViewer()
@@ -196,6 +199,28 @@ void PackageViewer::on_btnViewAll_clicked()
 {
     Metadata meta(package);
     meta.exec();
+}
+
+void PackageViewer::showSaveImageContextMenu(QPoint point)
+{
+    QPoint globalPos = ui->imgTile->mapToGlobal(point);
+    QMenu contextMenu;
+
+    contextMenu.addAction(QPixmap(":/Images/save.png"), "Save Image");
+    QAction *selectedItem = contextMenu.exec(globalPos);
+
+    if (selectedItem == NULL)
+        return;
+    else if (selectedItem->text() == "Save Image")
+    {
+        QString imageSavePath = QFileDialog::getSaveFileName(this, "Choose a location to save the thumbnail", QtHelpers::DesktopLocation() + "\\thumbnail.png", "*.png");
+        if (imageSavePath == "")
+            return;
+
+        ui->imgTile->pixmap()->save(imageSavePath, "PNG");
+
+        QMessageBox::information(this, "Success", "Successfully saved the thumbnail image.");
+    }
 }
 
 void PackageViewer::showRemoveContextMenu(QPoint point)

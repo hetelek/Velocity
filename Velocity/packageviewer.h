@@ -62,6 +62,8 @@ private slots:
 
     void on_btnShowAll_clicked();
 
+    void showSaveImageContextMenu(QPoint point);
+
 private:
     Ui::PackageViewer *ui;
     void PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *parent = NULL);
