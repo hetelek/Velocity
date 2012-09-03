@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Address Converter</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3" stretch="90,0">
+  <layout class="QVBoxLayout" name="verticalLayout_3" stretch="9,0">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
