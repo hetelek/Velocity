@@ -68,7 +68,7 @@ void XDBF::Clean()
     io->close();
 
     // delete the original file
-    remove(io->getFilePath().c_str());
+    int i = remove(io->getFilePath().c_str());
 
     // move the temp file to the old file's location
     rename(tempFileName, io->getFilePath().c_str());
@@ -77,6 +77,17 @@ void XDBF::Clean()
 
     // write the updated entry table
     writeEntryListing();
+
+    // clear all of the existing entries
+    achievements.entries.clear();
+    images.clear();
+    settings.entries.clear();
+    titlesPlayed.entries.clear();
+    strings.clear();
+    avatarAwards.entries.clear();
+
+    // reload the file listing
+    readEntryTable();
 }
 
 void XDBF::writeNewEntryGroup(XDBFEntryGroup *group, FileIO *newIO)
