@@ -1,6 +1,6 @@
 #include "Account.h"
 
-Account::Account(std::string path, bool decrypt, ConsoleType type) : ioPassedIn(false), type(type)
+Account::Account(std::string path, bool decrypt, ConsoleType type) : ioPassedIn(false), type(type), decrypt(decrypt), path(path)
 {
     Botan::LibraryInitializer init;
 
@@ -160,6 +160,13 @@ void Account::SetGamertag(wstring gamertag)
     account.gamertag = gamertag;
 }
 
+void Account::Save(ConsoleType type)
+{
+    writeFile();
+    if (decrypt)
+        encryptAccount(outPath, type, &path);
+}
+
 void Account::decryptAccount(std::string encryptedPath, std::string *outPath, ConsoleType type)
 {
     // open the encrypted file
@@ -208,6 +215,58 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
     // cleanup
     decrypted.close();
     encIo.close();
+}
+
+void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::string *outPath)
+{
+    FileIO decIo(decryptedPath);
+    BYTE decryptedData[0x184];
+
+    // copy in the the confounder
+    memcpy(decryptedData, CONFOUNDER, 8);
+
+    // read the decrypted data
+    decIo.readBytes(&decryptedData[8], 0x17C);
+
+    // initialization
+    Botan::SHA_160 *sha1 = new Botan::SHA_160;
+    Botan::HMAC hmacSha1(sha1);
+
+    // set the hmac-sha1 key
+    if (type == Retail)
+        hmacSha1.set_key(RETAIL_KEY, 0x10);
+    else
+        hmacSha1.set_key(DEVKIT_KEY, 0x10);
+
+    // hash the confounder and decrypted data
+    BYTE hmacHash[0x10];
+    hmacSha1.update(decryptedData, 0x184);
+    hmacSha1.final(hmacHash);
+
+    // begin writing the payload
+    if (outPath == NULL)
+        *outPath = std::string(tmpnam(NULL));
+    FileIO encrypted(*outPath, true);
+    encrypted.write(hmacHash, 0x10);
+
+    // generate the rc4 key
+    BYTE rc4Key[0x10];
+    hmacSha1.clear();
+    hmacSha1.update(hmacHash, 0x10);
+    hmacSha1.final(rc4Key);
+
+    // encrypt the data
+    Botan::ARC4 rc4;
+    rc4.set_key(rc4Key, 0x10);
+    rc4.encrypt(&decryptedData[8], 0x17C);
+
+    // write the confounder and encrypted data
+    encrypted.write(decryptedData, 0x184);
+    encrypted.flush();
+
+    // clean up
+    encrypted.close();
+    decIo.close();
 }
 
 void Account::writeFile()

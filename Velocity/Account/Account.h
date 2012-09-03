@@ -20,7 +20,7 @@ using std::wstring;
 class Account
 {
 public:
-    Account(string path, bool decrypt = true, ConsoleType type = Retail);
+    Account(std::string path, bool decrypt = true, ConsoleType type = Retail);
 	~Account(void);
 
 	// Description: returns true if the player has a passcode, false otherwise
@@ -105,13 +105,16 @@ public:
 	void SetLanguage(ConsoleLanguage language);
 
 	// Description: set the gamertag for the player
-	void SetGamertag(wstring gamertag);
+    void SetGamertag(std::wstring gamertag);
+
+    // Description: saves all set data and overwrites the current file
+    void Save(ConsoleType type = Retail);
 
 private:
 	FileIO *io;
-	bool ioPassedIn;
+    bool ioPassedIn, decrypt;
 	AccountInfo account;
-    std::string outPath;
+    std::string outPath, path;
     ConsoleType type;
 
 	void parseFile();
@@ -119,5 +122,6 @@ private:
 	void writeFile();
 
     void decryptAccount(std::string encryptedPath, std::string *outPath, ConsoleType type);
+    void encryptAccount(std::string decryptedPath, ConsoleType type, std::string *outPath = NULL);
 };
 
