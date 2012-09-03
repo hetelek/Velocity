@@ -40,5 +40,6 @@
         <file>Images/properties.png</file>
         <file>Images/clean.png</file>
         <file>Images/convert.png</file>
+        <file>Images/gear.png</file>
     </qresource>
 </RCC>

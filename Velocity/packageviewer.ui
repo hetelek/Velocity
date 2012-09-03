@@ -145,6 +145,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="text">
+        <string>STFS Tools</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="btnViewAll">
        <property name="text">
         <string>View All Metadata</string>
