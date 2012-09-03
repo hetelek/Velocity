@@ -355,8 +355,6 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
         if (isFolder && items.at(0)->parent() == NULL)
             packagePath.append(items.at(0)->text(0) + "\\");
-        else
-            packagePath.append("\\");
 
         packagePath.append(pathInfo.fileName());
 
@@ -365,7 +363,11 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             FileEntry injectedEntry = package->InjectFile(path.toStdString(), packagePath.toStdString());
             listing = package->GetFileListing();
 
-            QTreeWidgetItem *fileEntry = new QTreeWidgetItem(items.at(0));
+            QTreeWidgetItem *fileEntry;
+            if (injectedEntry.pathIndicator != 0xFFFF)
+                fileEntry = new QTreeWidgetItem(items.at(0));
+            else
+                fileEntry = new QTreeWidgetItem(ui->treeWidget);
 
             SetIcon(injectedEntry.name, fileEntry);
 
