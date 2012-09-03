@@ -1,9 +1,18 @@
 #pragma once
 
+// other
 #include <iostream>
+#include <stdio.h>
 #include "FileIO.h"
 #include "Account/AccountDefinitions.h"
 #include "GPD/XDBFDefininitions.h"
+#include "Stfs/StfsConstants.h"
+
+// botan
+#include <botan/botan.h>
+#include <botan/sha160.h>
+#include <botan/hmac.h>
+#include <botan/arc4.h>
 
 using std::string;
 using std::wstring;
@@ -11,8 +20,7 @@ using std::wstring;
 class Account
 {
 public:
-	Account(FileIO *io);
-	Account(string path);
+    Account(string path, bool decrypt = true, ConsoleType type = Retail);
 	~Account(void);
 
 	// Description: returns true if the player has a passcode, false otherwise
@@ -103,9 +111,13 @@ private:
 	FileIO *io;
 	bool ioPassedIn;
 	AccountInfo account;
+    std::string outPath;
+    ConsoleType type;
 
 	void parseFile();
 
 	void writeFile();
+
+    FileIO* decryptAccount(std::string *outPath, ConsoleType type);
 };
 

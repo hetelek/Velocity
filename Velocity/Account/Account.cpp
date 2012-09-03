@@ -1,14 +1,16 @@
 #include "Account.h"
 
-
-Account::Account(FileIO *io) : io(io), ioPassedIn(true)
+Account::Account(string path, bool decrypt, ConsoleType type) : ioPassedIn(false), type(type)
 {
-	parseFile();
-}
-
-Account::Account(string path) : ioPassedIn(false)
-{
+    Botan::LibraryInitializer init;
 	io = new FileIO(path);
+
+    if (decrypt)
+    {
+        io->close();
+        io = decryptAccount(&outPath, type);
+    }
+
 	parseFile();
 }
 
@@ -147,7 +149,45 @@ void Account::SetLanguage(ConsoleLanguage language)
 
 void Account::SetGamertag(wstring gamertag)
 {
-	account.gamertag = gamertag;
+    account.gamertag = gamertag;
+}
+
+FileIO* Account::decryptAccount(std::string *outPath, ConsoleType type)
+{
+    Botan::byte hmacHash[0x10];
+    Botan::byte rc4Key[0x10];
+
+    io->setPosition(0);
+    io->readBytes(hmacHash, 0x10);
+
+    Botan::SHA_160 sha1;
+    Botan::HMAC hmacSha1(&sha1);
+
+    if (type == Retail)
+        hmacSha1.set_key(RETAIL_KEY, 0x10);
+    else
+        hmacSha1.set_key(DEVKIT_KEY, 0x10);
+
+    hmacSha1.update(hmacHash, 0x10);
+    hmacSha1.final(rc4Key);
+
+    BYTE restOfFile[0x184];
+    BYTE confounder[8];
+    BYTE payload[0x17C];
+
+    io->readBytes(restOfFile, 0x184);
+
+    Botan::ARC4 rc4;
+    rc4.set_key(rc4Key, 0x10);
+    rc4.decrypt(restOfFile, 0x184);
+
+    memcpy(confounder, restOfFile, 8);
+    memcpy(payload, &restOfFile[8], 0x17C);
+
+    *outPath = std::string(tmpnam(NULL));
+    FileIO *decrypted = new FileIO(*outPath, true);
+    decrypted->write(payload, 0x17C);
+    return decrypted;
 }
 
 void Account::writeFile()
@@ -228,5 +268,6 @@ wstring Account::GetGamertag()
 
 Account::~Account(void)
 {
-
+    delete io;
+    remove(outPath.c_str());
 }
