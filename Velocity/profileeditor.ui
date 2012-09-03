@@ -1031,6 +1031,9 @@ p, li { white-space: pre-wrap; }
                  <height>64</height>
                 </size>
                </property>
+               <property name="contextMenuPolicy">
+                <enum>Qt::CustomContextMenu</enum>
+               </property>
                <property name="frameShape">
                 <enum>QFrame::NoFrame</enum>
                </property>
@@ -1396,6 +1399,9 @@ p, li { white-space: pre-wrap; }
                  <width>128</width>
                  <height>128</height>
                 </size>
+               </property>
+               <property name="contextMenuPolicy">
+                <enum>Qt::CustomContextMenu</enum>
                </property>
                <property name="frameShape">
                 <enum>QFrame::NoFrame</enum>

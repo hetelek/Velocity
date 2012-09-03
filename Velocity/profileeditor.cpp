@@ -36,6 +36,10 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
         return;
     }
 
+    // setup the ui context menu stuff
+    connect(ui->imgAch, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onSaveAchievementThumbnail(QPoint)));
+    connect(ui->imgAw, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onSaveAvatarAwardThumbnail(QPoint)));
+
     ///////////////////////////////////
     // LOAD FRONT PAGE
     ///////////////////////////////////
@@ -333,6 +337,7 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
     }
     else
         ui->tabAvatarAwards->setEnabled(false);
+
 }
 
 void ProfileEditor::addToDashGPD(SettingEntry *entry, SettingEntryType type, UINT64 id)
@@ -375,7 +380,7 @@ ProfileEditor::~ProfileEditor()
 
     delete dashGPD;
 
-    //delete account;
+    delete account;
 
     if (dispose)
         delete profile;
@@ -384,6 +389,16 @@ ProfileEditor::~ProfileEditor()
     for (DWORD i = 0; i < tempFiles.size(); i++)
         QFile::remove(QString::fromStdString(tempFiles.at(i)));
     delete ui;
+}
+
+void ProfileEditor::onSaveAchievementThumbnail(QPoint p)
+{
+    saveImage(p, ui->imgAch);
+}
+
+void ProfileEditor::onSaveAvatarAwardThumbnail(QPoint p)
+{
+    saveImage(p, ui->imgAw);
 }
 
 void ProfileEditor::on_gamesList_itemSelectionChanged()
@@ -424,6 +439,31 @@ void ProfileEditor::loadGameInfo(int index)
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinishedBoxArt(QNetworkReply*)));
     string tmp = DashboardGPD::GetSmallBoxArtURL(title);
     manager->get(QNetworkRequest(QUrl(QString::fromStdString(tmp))));
+}
+
+void ProfileEditor::saveImage(QPoint p, QLabel *imgLabel)
+{
+    if (imgLabel->pixmap()->isNull())
+        return;
+
+    QPoint globalPos = imgLabel->mapToGlobal(p);
+    QMenu contextMenu;
+
+    contextMenu.addAction(QPixmap(":/Images/save.png"), "Save Image");
+    QAction *selectedItem = contextMenu.exec(globalPos);
+
+    if (selectedItem->text() == NULL)
+        return;
+    else if (selectedItem->text() == "Save Image")
+    {
+        QString saveFileName = QFileDialog::getSaveFileName(this, "Choose a place to save the thumbnail", QtHelpers::DesktopLocation() + "\\thumbnail.png", "*.png");
+
+        if (saveFileName == "")
+            return;
+
+        imgLabel->pixmap()->save(saveFileName, "PNG");
+        QMessageBox::information(this, "Success", "Successfully saved thumbnail image");
+    }
 }
 
 void ProfileEditor::replyFinishedBoxArt(QNetworkReply *aReply)
@@ -928,8 +968,8 @@ void ProfileEditor::saveAll()
 
     // save all of the stuff on the front page
 
-    account->Save(profile->metaData->certificate.ownerConsoleType);
-    profile->ReplaceFile(accountTempPath, "Account");
+    //account->Save(profile->metaData->certificate.ownerConsoleType);
+    //profile->ReplaceFile(accountTempPath, "Account");
 
     // gamer name
     wstring temp = ui->txtName->text().toStdWString();

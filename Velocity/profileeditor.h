@@ -12,6 +12,8 @@
 #include <QFileDialog>
 #include <QColorDialog>
 #include <QBuffer>
+#include <QLabel>
+#include <QMenu>
 #include "qthelpers.h"
 
 // xbox360
@@ -229,6 +231,10 @@ private slots:
 
     void on_chxLIVE_stateChanged(int arg1);
 
+    void onSaveAchievementThumbnail(QPoint p);
+
+    void onSaveAvatarAwardThumbnail(QPoint p);
+
 private:
     Ui::ProfileEditor *ui;
     StfsPackage *profile;
@@ -266,6 +272,8 @@ private:
     void showAllGames();
 
     void showAllAwardGames();
+
+    void saveImage(QPoint p, QLabel *imgLabel);
 };
 
 #endif // PROFILEEDITOR_H
