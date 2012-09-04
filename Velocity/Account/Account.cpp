@@ -172,7 +172,7 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
     // open the encrypted file
     FileIO encIo(encryptedPath);
     BYTE hmacHash[0x10];
-    BYTE rc4Key[0x10];
+    BYTE rc4Key[0x14];
 
     // read the hash
     encIo.readBytes(hmacHash, 0x10);
@@ -257,7 +257,7 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
     // encrypt the data
     Botan::ARC4 rc4;
     rc4.set_key(rc4Key, 0x10);
-    rc4.encrypt(&decryptedData[8], 0x17C);
+    rc4.encrypt(decryptedData, 0x184);
 
     // write the confounder and encrypted data
     encrypted.write(decryptedData, 0x184);
