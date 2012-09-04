@@ -973,8 +973,8 @@ void ProfileEditor::saveAll()
 
     // save all of the stuff on the front page
 
-    //account->Save(profile->metaData->certificate.ownerConsoleType);
-    //profile->ReplaceFile(accountTempPath, "Account");
+    account->Save(profile->metaData->certificate.ownerConsoleType);
+    profile->ReplaceFile(accountTempPath, "Account");
 
     // gamer name
     wstring temp = ui->txtName->text().toStdWString();
