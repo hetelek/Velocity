@@ -973,6 +973,27 @@ void ProfileEditor::saveAll()
 
     // save all of the stuff on the front page
 
+    // gamertag
+    account->SetGamertag(ui->txtGamertag->text().toStdWString());
+    account->SetPasscodeEnabled(ui->chxLIVE->checkState() >> 1);
+    account->SetLiveEnabled(ui->chxLIVE->checkState() >> 1);
+    account->SetRecovering(ui->chxRecovering->checkState() >> 1);
+
+    BYTE passcode[4] = { (BYTE)ui->cmbxPass1->currentIndex(), (BYTE)ui->cmbxPass2->currentIndex(), (BYTE)ui->cmbxPass3->currentIndex(), (BYTE)ui->cmbxPass4->currentIndex() };
+    account->SetPasscode(passcode);
+
+    switch (ui->cmbxNetwork->currentIndex())
+    {
+        case 0:
+            account->SetOnlineServiceProvider(ProductionNet);
+            break;
+        case 1:
+            account->SetOnlineServiceProvider(PartnerNet);
+            break;
+    }
+
+    profile->metaData->certificate.ownerConsoleType = ui->cmbxConsoleType->currentIndex() + 1;
+
     account->Save(profile->metaData->certificate.ownerConsoleType);
     profile->ReplaceFile(accountTempPath, "Account");
 
