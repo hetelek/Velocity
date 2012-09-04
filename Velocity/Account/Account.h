@@ -107,6 +107,12 @@ public:
 	// Description: set the gamertag for the player
     void SetGamertag(std::wstring gamertag);
 
+    // Description: set the passcode for the player
+    void SetPasscode(BYTE *passcode);
+
+    // Description: set the service provider for the player
+    void SetOnlineServiceProvider(XboxLiveServiceProvider provider);
+
     // Description: saves all set data and overwrites the current file
     void Save(ConsoleType type = Retail);
 

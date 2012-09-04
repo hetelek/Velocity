@@ -97,9 +97,9 @@ UINT64 Account::GetXUID()
 void Account::SetPasscodeEnabled(bool b)
 {
 	if (b)
-		account.cachedUserFlags |= PasswordProtected;
+        account.reservedFlags |= PasswordProtected;
 	else
-		account.cachedUserFlags &= (~PasswordProtected);
+        account.reservedFlags &= (~PasswordProtected);
 }
 
 void Account::SetLiveEnabled(bool b)
@@ -109,24 +109,24 @@ void Account::SetLiveEnabled(bool b)
 	else
 	{
 		account.reservedFlags &= (~LiveEnabled);
-        account.serviceProvider |= LiveDisabled;
+        account.serviceProvider = LiveDisabled;
 	}
 }
 
 void Account::SetRecovering(bool b)
 {
 	if (b)
-		account.cachedUserFlags |= Recovering;
+        account.reservedFlags |= Recovering;
 	else
-		account.cachedUserFlags &= (~Recovering);
+        account.reservedFlags &= (~Recovering);
 }
 
 void Account::SetParentalControlled(bool b)
 {
 	if (b)
-		account.cachedUserFlags |= 0x1000000;
+        account.cachedUserFlags |= 0x1000000;
 	else
-		account.cachedUserFlags &= (~0x1000000);
+        account.cachedUserFlags &= (~0x1000000);
 }
 
 void Account::SetPaymentInstrumentCreditCard(bool b)
@@ -158,6 +158,16 @@ void Account::SetLanguage(ConsoleLanguage language)
 void Account::SetGamertag(wstring gamertag)
 {
     account.gamertag = gamertag;
+}
+
+void Account::SetPasscode(BYTE *passcode)
+{
+    memcpy(account.passcode, passcode, 4);
+}
+
+void Account::SetOnlineServiceProvider(XboxLiveServiceProvider provider)
+{
+    account.serviceProvider = provider;
 }
 
 void Account::Save(ConsoleType type)
