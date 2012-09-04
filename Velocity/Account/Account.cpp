@@ -206,6 +206,16 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
     memcpy(confounder, restOfFile, 8);
     memcpy(payload, &restOfFile[8], 0x17C);
 
+    hmacSha1.update(confounder, 8);
+    hmacSha1.update(payload, 0x17C);
+
+    BYTE confoundPayloadHash[0x14];
+    hmacSha1.final(confoundPayloadHash);
+
+    if (memcmp(confoundPayloadHash, hmacHash, 0x10) != 0)
+        throw string("Account: Account decryption failed.\n");
+
+
     // write the payload
     *outPath = std::string(tmpnam(NULL));
     FileIO decrypted(*outPath, true);
