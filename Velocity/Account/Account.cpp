@@ -249,11 +249,10 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
     FileIO encrypted(*outPath, true);
     encrypted.write(hmacHash, 0x10);
 
-    Botan::HMAC hmacSha1_2(sha1);
     // generate the rc4 key
     BYTE rc4Key[0x14];
-    hmacSha1_2.update(hmacHash, 0x10);
-    hmacSha1_2.final(rc4Key);
+    hmacSha1.update(hmacHash, 0x10);
+    hmacSha1.final(rc4Key);
 
     // encrypt the data
     Botan::ARC4 rc4;
@@ -347,6 +346,7 @@ wstring Account::GetGamertag()
 
 Account::~Account(void)
 {
+    io->close();
     delete io;
     remove(outPath.c_str());
 }
