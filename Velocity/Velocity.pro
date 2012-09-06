@@ -48,7 +48,9 @@ SOURCES += main.cpp \
     achievementcreationwizard.cpp \
     propertiesdialog.cpp \
     addressconverterdialog.cpp \
-    stfstoolsdialog.cpp
+    stfstoolsdialog.cpp \
+    progressdialog.cpp \
+    stfsworkerthread.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -88,7 +90,9 @@ HEADERS  += mainwindow.h \
     creationwizard.h \
     propertiesdialog.h \
     addressconverterdialog.h \
-    stfstoolsdialog.h
+    stfstoolsdialog.h \
+    progressdialog.h \
+    stfsworkerthread.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -107,7 +111,8 @@ FORMS    += mainwindow.ui \
     achievementcreationwizard.ui \
     propertiesdialog.ui \
     addressconverterdialog.ui \
-    stfstoolsdialog.ui
+    stfstoolsdialog.ui \
+    progressdialog.ui
 
 RESOURCES += \
     Resources.qrc
