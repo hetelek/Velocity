@@ -50,7 +50,8 @@ SOURCES += main.cpp \
     addressconverterdialog.cpp \
     stfstoolsdialog.cpp \
     progressdialog.cpp \
-    stfsworkerthread.cpp
+    stfsworkerthread.cpp \
+    singleprogressdialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -92,7 +93,8 @@ HEADERS  += mainwindow.h \
     addressconverterdialog.h \
     stfstoolsdialog.h \
     progressdialog.h \
-    stfsworkerthread.h
+    stfsworkerthread.h \
+    singleprogressdialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -112,7 +114,8 @@ FORMS    += mainwindow.ui \
     propertiesdialog.ui \
     addressconverterdialog.ui \
     stfstoolsdialog.ui \
-    progressdialog.ui
+    progressdialog.ui \
+    singleprogressdialog.ui
 
 RESOURCES += \
     Resources.qrc
