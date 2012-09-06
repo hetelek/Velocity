@@ -246,7 +246,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         contextMenu.addAction(QPixmap(":/Images/rename.png"), "Rename Selected");
 
         if (!isFolder)
-            contextMenu.addAction(QPixmap(":/Images/replace.png"), "Replace Selected");
+            contextMenu.addAction(QPixmap(":/Images/replace.png"), "Replace File");
     }
 
     contextMenu.addSeparator();
@@ -356,7 +356,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             QMessageBox::critical(this, "Error", "Failed to rename file.\n\n" + QString::fromStdString(error));
         }
     }
-    else if (selectedItem->text() == "Replace Selected")
+    else if (selectedItem->text() == "Replace File")
     {
         QString packagePath;
         GetPackagePath(items.at(0), &packagePath);
@@ -367,13 +367,18 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
         try
         {
-            package->ReplaceFile(path.toStdString(), packagePath.toStdString());
-            QMessageBox::information(this, "Success", "The file has been replace.");
+            SingleProgressDialog *dialog = new SingleProgressDialog(package, path, packagePath, this);
+            dialog->setModal(true);
+            dialog->show();
+            dialog->startReplace();
+
         }
         catch(string error)
         {
             QMessageBox::critical(this, "Error", "Failed to replace file.\n\n" + QString::fromStdString(error));
         }
+
+        QMessageBox::information(this, "Success", "Successfully replaced file.");
     }
     else if (selectedItem->text() == "Inject Here")
     {
