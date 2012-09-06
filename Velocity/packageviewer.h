@@ -12,6 +12,7 @@
 #include "imagedialog.h"
 #include "propertiesdialog.h"
 #include "stfstoolsdialog.h"
+#include "progressdialog.h"
 
 // qt
 #include <QDialog>

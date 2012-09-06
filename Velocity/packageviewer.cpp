@@ -277,30 +277,38 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         if (path.isEmpty())
             return;
 
+
+        QList<QString> packagePaths;
+        QList<QString> outPaths;
         for (int i = 0; i < totalCount; i++)
         {
             QString packagePath;
             GetPackagePath(items.at(i), &packagePath);
+            packagePaths.append(packagePath);
 
             QString final = path;
             if (multiple)
                 final += "\\" + items.at(i)->text(0);
-
-            try
-            {
-                package->ExtractFile(packagePath.toStdString(), final.toStdString());
-                successCount++;
-            }
-            catch (string error)
-            {
-                QMessageBox::critical(this, "Error", "Failed to extract file.\n\n" + QString::fromStdString(error));
-            }
+            outPaths.append(final);
         }
 
-        if (successCount == totalCount)
-            QMessageBox::information(this, "Success", "All selected files have been extracted.");
-        else
-            QMessageBox::warning(this, "Warning", "Some files could not be extracted.\n\nSuccessful Extractions: " + QString::number(successCount) + " / " + QString::number(totalCount));
+        try
+        {
+            ProgressDialog *dialog = new ProgressDialog(package, packagePaths, outPaths, this);
+            dialog->setModal(true);
+            dialog->show();
+            dialog->startExtracting();
+
+            successCount++;
+        }
+        catch (string error)
+        {
+            QMessageBox::critical(this, "Error", "Failed to extract file.\n\n" + QString::fromStdString(error));
+            return;
+        }
+
+        QMessageBox::information(this, "Success", "All selected files have been extracted.");
+
     }
     else if (selectedItem->text() == "Remove Selected")
     {
