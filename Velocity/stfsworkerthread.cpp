@@ -1,8 +1,8 @@
 #include "stfsworkerthread.h"
 #include "Stfs/StfsPackage.h"
 
-StfsWorkerThread::StfsWorkerThread(StfsPackage *package, StfsJob job, FileEntry *packageFile, QString externalPath, QObject *parent) :
-    QThread(parent), package(package), job(job), packageFile(packageFile), externalPath(externalPath)
+StfsWorkerThread::StfsWorkerThread(StfsPackage *package, StfsJob job, FileEntry *packageFile, QString externalPath, QObject *parent, QString packageFilePath) :
+    QThread(parent), package(package), job(job), packageFile(packageFile), externalPath(externalPath), packageFilePath(packageFilePath)
 {
 
 }
@@ -13,6 +13,9 @@ void StfsWorkerThread::run()
     {
         case Extract:
             package->ExtractFile(packageFile, externalPath.toStdString(), progessUpdatedExternal, this);
+            break;
+        case Replace:
+            package->ReplaceFile(externalPath.toStdString(), packageFilePath.toStdString(), progessUpdatedExternal, this);
             break;
     }
 }
