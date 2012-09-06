@@ -35,7 +35,7 @@ void ProgressDialog::startExtracting()
 void ProgressDialog::extractNextFile()
 {
     // create a new thread
-    StfsWorkerThread thread(package, Extract, &fileEntries.at(filesExtracted), outPaths.at(filesExtracted), this);
+    StfsWorkerThread thread(package, Extract, &fileEntries.at(filesExtracted), outPaths.at(filesExtracted), this, "");
     ui->groupBox->setTitle(filesToExtract.at(filesExtracted));
     ui->groupBox_2->setTitle("Overall Progress, File " + QString::number(filesExtracted + 1) + " of " + QString::number(filesToExtract.size()));
 
