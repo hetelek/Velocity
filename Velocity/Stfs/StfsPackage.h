@@ -100,7 +100,10 @@ public:
     FileEntry InjectFile(string path, string pathInPackage);
 
     // Description: replace an existing file into the package
-    void ReplaceFile(string path, string pathInPackage);
+    void ReplaceFile(string path, string pathInPackage, void(*replaceProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+
+    // Description: replace an existing file into the package
+    void ReplaceFile(string path, FileEntry *entry, string pathInPackage, void(*replaceProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
     // Description: rename an existing file in the package
     void RenameFile(string newName, string pathInPackage);

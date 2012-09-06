@@ -1357,11 +1357,9 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage)
     return entry;
 }
 
-void StfsPackage::ReplaceFile(string path, string pathInPackage)
+void StfsPackage::ReplaceFile(string path, FileEntry *entry, string pathInPackage, void (*replaceProgress)(void *, DWORD, DWORD), void *arg)
 {
-    FileEntry entry = GetFileEntry(pathInPackage);
-
-    if (entry.nameLen == 0)
+    if (entry->nameLen == 0)
         throw string("STFS: File doesn't exists in the package.\n");
 
     FileIO fileIn(path);
@@ -1371,10 +1369,10 @@ void StfsPackage::ReplaceFile(string path, string pathInPackage)
     fileIn.setPosition(0);
 
     // set up the entry
-    entry.fileSize = fileSize;
-    entry.blocksForFile = ((fileSize + 0xFFF) & 0xFFFFFFF000) >> 0xC;
+    entry->fileSize = fileSize;
+    entry->blocksForFile = ((fileSize + 0xFFF) & 0xFFFFFFF000) >> 0xC;
 
-    DWORD block = entry.startingBlockNum;
+    DWORD block = entry->startingBlockNum;
     io->setPosition(BlockToAddress(block));
 
     DWORD fullReads = fileSize / 0x1000;
@@ -1421,6 +1419,10 @@ void StfsPackage::ReplaceFile(string path, string pathInPackage)
 
         // write the data
         io->write(toWrite, 0x1000);
+
+        // update the progress if needed
+        if (replaceProgress != NULL)
+            replaceProgress(arg, i, entry->blocksForFile);
     }
 
     DWORD remainder = fileSize % 0x1000;
@@ -1462,18 +1464,22 @@ void StfsPackage::ReplaceFile(string path, string pathInPackage)
         io->write(toWrite, remainder);
     }
 
+    // update the progress if needed
+    if (replaceProgress != NULL)
+        replaceProgress(arg, entry->blocksForFile, entry->blocksForFile);
+
     SetNextBlock(block, INT24_MAX);
 
-    entry.flags &= 0x2;
+    entry->flags &= 0x2;
 
-    io->setPosition(entry.fileEntryAddress + 0x28);
-    io->write((BYTE)(entry.nameLen | (entry.flags << 6)));
-    io->write(entry.blocksForFile, LittleEndian);
-    io->write(entry.blocksForFile, LittleEndian);
+    io->setPosition(entry->fileEntryAddress + 0x28);
+    io->write((BYTE)(entry->nameLen | (entry->flags << 6)));
+    io->write(entry->blocksForFile, LittleEndian);
+    io->write(entry->blocksForFile, LittleEndian);
 
-    io->setPosition(entry.fileEntryAddress + 0x34);
-    io->write(entry.fileSize);
-    UpdateEntry(pathInPackage, entry);
+    io->setPosition(entry->fileEntryAddress + 0x34);
+    io->write(entry->fileSize);
+    UpdateEntry(pathInPackage, *entry);
 
     if (topLevel == Zero)
     {
@@ -1486,6 +1492,12 @@ void StfsPackage::ReplaceFile(string path, string pathInPackage)
             topTable.entries[i].nextBlock = io->readInt24();
         }
     }
+}
+
+void StfsPackage::ReplaceFile(string path, string pathInPackage, void (*replaceProgress)(void *, DWORD, DWORD), void *arg)
+{
+    FileEntry entry = GetFileEntry(pathInPackage);
+    ReplaceFile(path, &entry, pathInPackage, replaceProgress, arg);
 }
 
 void StfsPackage::RenameFile(string newName, string pathInPackage)
