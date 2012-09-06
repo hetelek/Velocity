@@ -274,16 +274,16 @@ FileListing StfsPackage::GetFileListing(bool forceUpdate)
     return fileListing;
 }
 
-void StfsPackage::ExtractFile(string pathInPackage, string outPath)
+void StfsPackage::ExtractFile(string pathInPackage, string outPath, void (*extractProgress)(void*, DWORD, DWORD), void *arg)
 {
     // get the given path's file entry
     FileEntry entry = GetFileEntry(pathInPackage);
 
     // extract the file
-    ExtractFile(&entry, outPath);
+    ExtractFile(&entry, outPath, extractProgress, arg);
 }
 
-void StfsPackage::ExtractFile(FileEntry *entry, string outPath)
+void StfsPackage::ExtractFile(FileEntry *entry, string outPath, void (*extractProgress)(void*, DWORD, DWORD), void *arg)
 {
     if (entry->nameLen == 0)
     {
@@ -315,6 +315,10 @@ void StfsPackage::ExtractFile(FileEntry *entry, string outPath)
         outFile.write(data, 0x1000);
 
         block = GetBlockHashEntry(block).nextBlock;
+
+        // call the extract progress function if needed
+        if (extractProgress != NULL)
+            extractProgress(arg, i + 1, entry->blocksForFile);
     }
 
     // read the remaining data
@@ -322,6 +326,10 @@ void StfsPackage::ExtractFile(FileEntry *entry, string outPath)
     {
         ExtractBlock(block, data, fileSize);
         outFile.write(data, fileSize);
+
+        // call the extract progress function if needed
+        if (extractProgress != NULL)
+            extractProgress(arg, entry->blocksForFile, entry->blocksForFile);
     }
 
     // cleanup

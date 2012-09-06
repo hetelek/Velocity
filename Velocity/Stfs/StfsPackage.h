@@ -72,10 +72,10 @@ public:
     FileListing GetFileListing(bool forceUpdate = false);
 
     // Description: extract a file to designated file path
-    void ExtractFile(string pathInPackage, string outPath);
+    void ExtractFile(string pathInPackage, string outPath, void(*extractProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
     // Description: extract a file (by FileEntry) to a designated file path
-    void ExtractFile(FileEntry *entry, string outPath);
+    void ExtractFile(FileEntry *entry, string outPath, void(*extractProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
     // Description: get the file entry of a file's path, sets nameLen to '0' if not found
     FileEntry GetFileEntry(string pathInPackage, bool checkFolders = false, FileEntry *newEntry = NULL);
