@@ -907,8 +907,9 @@ void StfsPackage::Resign(string kvPath)
     Botan::AutoSeeded_RNG rng;
     Botan::RSA_PrivateKey pkey(rng, p, q, 0x10001, 0, n);
 
-    /*Botan::PK_Signer signer(pkey, "EMSA3(SHA-1)");
-    Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToHash, 0x118, rng);
+    Botan::EMSA3 emsa(Botan::SHA_160);
+    //Botan::PK_Signer signer(pkey, &emsa);
+    /*Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToHash, 0x118, rng);
 
     XeCryptBnQw_SwapDwQwLeBe((BYTE*)&signature[0], 0x80);
     memcpy(metaData->certificate.signature, (BYTE*)&signature[0], 0x80);
@@ -1024,7 +1025,7 @@ void StfsPackage::WriteFileListing(bool usePassed, vector<FileEntry> *outFis, ve
     std::map<INT24, int> folders;
     folders[0xFFFF] = 0xFFFF;
 
-    bool alwaysAllocate = false;
+    bool alwaysAllocate = false, firstCheck = true;
 
     // go to the block where the file listing begins (for overwriting)
     DWORD block = metaData->volumeDescriptor.fileTableBlockNum;
@@ -1040,7 +1041,9 @@ void StfsPackage::WriteFileListing(bool usePassed, vector<FileEntry> *outFis, ve
     for (int i = 0; i < outFolders.size(); i++)
     {
         // check to see if we need to go to the next block
-        if ((i + 1) % 0x40 == 0)
+        if (firstCheck)
+            firstCheck = false;
+        else if ((i + 1) % 0x40 == 0)
         {
             // check if we need to allocate a new block
             INT24 nextBlock;
@@ -1081,7 +1084,9 @@ void StfsPackage::WriteFileListing(bool usePassed, vector<FileEntry> *outFis, ve
     int outFoldersAndFilesSize = outFileSize + outFiles.size();
     for(int i = outFileSize; i < outFoldersAndFilesSize; i++)
     {
-        if (i % 0x40 == 0)
+        if (firstCheck)
+            firstCheck = false;
+        else if (i % 0x40 == 0)
         {
             INT24 nextBlock;
             if (alwaysAllocate)
