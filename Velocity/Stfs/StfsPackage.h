@@ -15,6 +15,7 @@
 #include <botan/emsa.h>
 #include <botan/sha160.h>
 #include <botan/emsa3.h>
+#include <botan/look_pk.h>
 
 using std::string;
 using std::stringstream;
@@ -98,7 +99,7 @@ public:
     void RemoveFile(string pathInPackage);
 
     // Description: inject a file into the package
-    FileEntry InjectFile(string path, string pathInPackage);
+    FileEntry InjectFile(string path, string pathInPackage, void(*injectProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
     // Description: replace an existing file into the package
     void ReplaceFile(string path, string pathInPackage, void(*replaceProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
@@ -227,4 +228,7 @@ private:
 
     // Description: swap bytes by chunks of 8
     void XeCryptBnQw_SwapDwQwLeBe(BYTE *data, DWORD length);
+
+    // Description: get the number of bytes to skip over the hash table
+    DWORD GetHashTableSkipSize(DWORD tableAddress);
 };

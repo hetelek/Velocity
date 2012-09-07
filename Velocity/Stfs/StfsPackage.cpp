@@ -298,42 +298,145 @@ void StfsPackage::ExtractFile(FileEntry *entry, string outPath, void (*extractPr
     // get the file size that we are extracting
     DWORD fileSize = entry->fileSize;
 
-    // generate the block chain which we have to extract
-    DWORD fullReadCounts = fileSize / 0x1000;
-
-    fileSize -= (fullReadCounts * 0x1000);
-
-    DWORD block = entry->startingBlockNum;
-
-    // allocate data for the blocks
-    BYTE data[0x1000];
-
-    // read all the full blocks the file allocates
-    for(DWORD i = 0; i < fullReadCounts; i++)
+    // check if all the blocks are consecutive
+    if (entry->flags & 1)
     {
-        ExtractBlock(block, data);
-        outFile.write(data, 0x1000);
+        // allocate 0xAA blocks of memory, for maximum efficiency, yo
+        BYTE buffer[0xAA000];
 
-        block = GetBlockHashEntry(block).nextBlock;
+        // seek to the begining of the file
+        DWORD startAddress = BlockToAddress(entry->startingBlockNum);
+        io->setPosition(startAddress);
 
-        // call the extract progress function if needed
-        if (extractProgress != NULL)
-            extractProgress(arg, i + 1, entry->blocksForFile);
+        // calculate the number of blocks to read before we hit a table
+        DWORD blockCount = (ComputeLevel0BackingHashBlockNumber(entry->startingBlockNum) + blockStep[0]) - ((startAddress - firstHashTableAddress) >> 0xC);
+
+        // pick up the change at the begining, until we hit a hash table
+        if (entry->blocksForFile <= blockCount)
+        {
+            io->readBytes(buffer, entry->fileSize);
+            outFile.write(buffer, entry->fileSize);
+
+            // update progress if needed
+            if (extractProgress != NULL)
+                extractProgress(arg, entry->blocksForFile, entry->blocksForFile);
+
+            outFile.close();
+            return;
+        }
+        else
+        {
+            io->readBytes(buffer, blockCount << 0xC);
+            outFile.write(buffer, blockCount << 0xC);
+
+            // update progress if needed
+            if (extractProgress != NULL)
+                extractProgress(arg, blockCount, entry->blocksForFile);
+        }
+
+        // extract the blocks inbetween the tables
+        DWORD tempSize = (entry->fileSize - (blockCount << 0xC));
+        while (tempSize >= 0xAA000)
+        {
+            // skip past the hash table(s)
+            DWORD currentPos = io->getPosition();
+            io->setPosition(currentPos + GetHashTableSkipSize(currentPos));
+
+            // read in the 0xAA blocks between the tables
+            io->readBytes(buffer, 0xAA000);
+
+            // write the bytes to the out file
+            outFile.write(buffer, 0xAA000);
+
+            tempSize -= 0xAA000;
+            blockCount += 0xAA;
+
+            // update progress if needed
+            if (extractProgress != NULL)
+                extractProgress(arg, blockCount, entry->blocksForFile);
+        }
+
+        // pick up the change at the end
+        if (tempSize != 0)
+        {
+            // skip past the hash table(s)
+            DWORD currentPos = io->getPosition();
+            io->setPosition(currentPos + GetHashTableSkipSize(currentPos));
+
+            // read in the extra crap
+            io->readBytes(buffer, tempSize);
+
+            // write it to the out file
+            outFile.write(buffer, tempSize);
+
+            // update progress if needed
+            if (extractProgress != NULL)
+                extractProgress(arg, entry->blocksForFile, entry->blocksForFile);
+        }
+
     }
-
-    // read the remaining data
-    if (fileSize != 0)
+    else
     {
-        ExtractBlock(block, data, fileSize);
-        outFile.write(data, fileSize);
+        // generate the block chain which we have to extract
+        DWORD fullReadCounts = fileSize / 0x1000;
 
-        // call the extract progress function if needed
-        if (extractProgress != NULL)
-            extractProgress(arg, entry->blocksForFile, entry->blocksForFile);
+        fileSize -= (fullReadCounts * 0x1000);
+
+        DWORD block = entry->startingBlockNum;
+
+        // allocate data for the blocks
+        BYTE data[0x1000];
+
+        // read all the full blocks the file allocates
+        for(DWORD i = 0; i < fullReadCounts; i++)
+        {
+            ExtractBlock(block, data);
+            outFile.write(data, 0x1000);
+
+            block = GetBlockHashEntry(block).nextBlock;
+
+            // call the extract progress function if needed
+            if (extractProgress != NULL)
+                extractProgress(arg, i + 1, entry->blocksForFile);
+        }
+
+        // read the remaining data
+        if (fileSize != 0)
+        {
+            ExtractBlock(block, data, fileSize);
+            outFile.write(data, fileSize);
+
+            // call the extract progress function if needed
+            if (extractProgress != NULL)
+                extractProgress(arg, entry->blocksForFile, entry->blocksForFile);
+        }
     }
 
     // cleanup
     outFile.close();
+}
+
+DWORD StfsPackage::GetHashTableSkipSize(DWORD tableAddress)
+{
+    // convert the address to a true block number
+    DWORD trueBlockNumber = (tableAddress - firstHashTableAddress) >> 0xC;
+
+    // check if it's the first hash table
+    if (trueBlockNumber == 0)
+        return (0x1000 << packageSex);
+
+    // check if it's the level 2 table, or above
+    if (trueBlockNumber == blockStep[1])
+        return (0x3000 << packageSex);
+    else if (trueBlockNumber > blockStep[1])
+        trueBlockNumber -= (blockStep[1] + (1 << packageSex));
+
+    // check if it's at a level 1 table
+    if (trueBlockNumber == blockStep[0] || trueBlockNumber % blockStep[1] == 0)
+        return (0x2000 << packageSex);
+
+    // otherwise, assume it's at a level 0 table
+    return (0x1000 << packageSex);
 }
 
 FileEntry StfsPackage::GetFileEntry(string pathInPackage, bool checkFolders, FileEntry *newEntry)
@@ -911,14 +1014,12 @@ void StfsPackage::Resign(string kvPath)
     //Botan::PK_Signer signer(pkey, &emsa);
     /*Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToHash, 0x118, rng);
 
-    XeCryptBnQw_SwapDwQwLeBe((BYTE*)&signature[0], 0x80);
-    memcpy(metaData->certificate.signature, (BYTE*)&signature[0], 0x80);
-    Botan::HMAC hm();
-    hm.set_key();
+    Botan::PK_Signer signer(pkey, Botan::get_emsa("EMSA3(SHA-1)"));
+    Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToHash, 0x118, rng);
 
-    Botan::ARC4 rc4;
-    rc4.set_key();
-    rc4.decrypt();*/
+    XeCryptBnQw_SwapDwQwLeBe((BYTE*)&signature[0], 0x80);
+    memcpy(metaData->certificate.signature, (BYTE*)&signature[0], 0x80);*/
+
     metaData->WriteCertificate();
 }
 
@@ -1258,7 +1359,7 @@ void StfsPackage::UpdateEntry(string pathInPackage, FileEntry entry)
     GetFileEntry(SplitString(pathInPackage, "\\"), &fileListing, NULL, &entry, true);
 }
 
-FileEntry StfsPackage::InjectFile(string path, string pathInPackage)
+FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injectProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL)
 {
     if(FileExists(pathInPackage))
         throw string("STFS: File already exists in the package.\n");
@@ -1302,6 +1403,7 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage)
     entry.blocksForFile = ((fileSize + 0xFFF) & 0xFFFFFFF000) >> 0xC;
 
     INT24 block, prevBlock = -1;
+    DWORD counter = 0;
     while(fileSize >= 0x1000)
     {
         block = AllocateBlock();
@@ -1322,6 +1424,10 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage)
         io->write(data, 0x1000);
 
         fileSize -= 0x1000;
+
+        // update the progress if needed
+        if (injectProgress != NULL)
+            injectProgress(arg, ++counter, entry.blocksForFile);
     }
 
     if(fileSize != 0)
@@ -1340,6 +1446,10 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage)
         io->write(data, fileSize);
 
         fileSize = 0;
+
+        // update the progress if needed
+        if (injectProgress != NULL)
+            injectProgress(arg, entry.blocksForFile, entry.blocksForFile);
     }
 
     SetNextBlock(block, INT24_MAX);
@@ -1362,10 +1472,11 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage)
     return entry;
 }
 
+
 void StfsPackage::ReplaceFile(string path, FileEntry *entry, string pathInPackage, void (*replaceProgress)(void *, DWORD, DWORD), void *arg)
 {
     if (entry->nameLen == 0)
-        throw string("STFS: File doesn't exists in the package.\n");
+       throw string("STFS: File doesn't exists in the package.\n");
 
     FileIO fileIn(path);
 
