@@ -128,8 +128,8 @@ void MainWindow::on_actionProfile_Manager_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    About *about = new About(this);
-    about->show();
+    About about(this);
+    about.exec();
 }
 void MainWindow::on_actionPackage_triggered()
 {
