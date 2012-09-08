@@ -988,9 +988,9 @@ void StfsPackage::Resign(string kvPath)
     kvIo.readBytes(metaData->certificate.certificateSignature, 0x100);
 
     // read the keys for signing
-    BYTE *nData = new BYTE[0x80];
-    BYTE *pData = new BYTE[0x40];
-    BYTE *qData = new BYTE[0x40];
+    BYTE nData[0x80];
+    BYTE pData[0x40];
+    BYTE qData[0x40];
 
     kvIo.setPosition(0x298 + adder);
     kvIo.readBytes(nData, 0x80);
@@ -1003,22 +1003,26 @@ void StfsPackage::Resign(string kvPath)
     XeCryptBnQw_SwapDwQwLeBe(qData, 0x40);
 
     // get the keys ready for signing
-    Botan::BigInt n = Botan::BigInt::decode((unsigned char*)nData, 0x80);
-    Botan::BigInt p = Botan::BigInt::decode((unsigned char*)pData, 0x40);
-    Botan::BigInt q = Botan::BigInt::decode((unsigned char*)qData, 0x40);
+    Botan::BigInt n = Botan::BigInt::decode(nData, 0x80);
+    Botan::BigInt p = Botan::BigInt::decode(pData, 0x40);
+    Botan::BigInt q = Botan::BigInt::decode(qData, 0x40);
 
     Botan::AutoSeeded_RNG rng;
     Botan::RSA_PrivateKey pkey(rng, p, q, 0x10001, 0, n);
 
-    Botan::EMSA3 emsa(Botan::SHA_160);
-    //Botan::PK_Signer signer(pkey, &emsa);
-    /*Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToHash, 0x118, rng);
-
-    Botan::PK_Signer signer(pkey, Botan::get_emsa("EMSA3(SHA-1)"));
+    Botan::PK_Signer signer(pkey, Botan::get_emsa("EMSA3(SHA-160)"));
     Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToHash, 0x118, rng);
 
-    XeCryptBnQw_SwapDwQwLeBe((BYTE*)&signature[0], 0x80);
-    memcpy(metaData->certificate.signature, (BYTE*)&signature[0], 0x80);*/
+    // 8 byte swap the new signature
+    XeCryptBnQw_SwapDwQwLeBe(signature, 0x80);
+
+    // reverse the new signature every 8 bytes
+    for (int i = 0; i < 0x10; i++)
+    {
+        FileIO::swapEndian(&signature[i * 8], 1, 8);
+    }
+
+    memcpy(metaData->certificate.signature, signature, 0x80);
 
     metaData->WriteCertificate();
 }
@@ -1059,18 +1063,17 @@ void StfsPackage::XeCryptBnQw_SwapDwQwLeBe(BYTE *data, DWORD length)
 {
     if (length % 8 != 0)
         throw string("STFS: length is not divisible by 8.\n");
-    length /= 8;
 
-    for (int i = 0; i < length; i++)
+    for (int i = 0; i < length / 2; i += 8)
     {
-        for (int x = 0; x < 4; x++)
-        {
-            int loc = (i * 8) + x;
-            int distFromCent = abs(x - 3);
-            BYTE temp = data[loc];
-            data[loc] = data[i * 8 + 4 + distFromCent];
-            data[i * 8 + 4 + distFromCent] = temp;
-        }
+        BYTE temp[8];
+        memcpy(temp, &data[i], 8);
+
+        BYTE temp2[8];
+        memcpy(temp2, &data[length - i - 8], 8);
+
+        memcpy(&data[i], temp2, 8);
+        memcpy(&data[length - i - 8], temp, 8);
     }
 }
 
