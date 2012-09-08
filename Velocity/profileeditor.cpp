@@ -488,9 +488,9 @@ void ProfileEditor::on_achievementsList_itemSelectionChanged()
 void ProfileEditor::loadAchievementInfo(int gameIndex, int chievIndex)
 {
     if (gameIndex < 0)
-        gameIndex = 0;
+        return;
     if (chievIndex < 0)
-        chievIndex = 0;
+        return;
 
     if (chievIndex >= games.at(gameIndex).gpd->achievements.size())
         return;
@@ -593,9 +593,9 @@ void ProfileEditor::on_avatarAwardsList_itemSelectionChanged()
 void ProfileEditor::loadAvatarAwardInfo(int gameIndex, int awardIndex)
 {
     if (gameIndex < 0)
-        gameIndex == 0;
+        return;
     if (awardIndex < 0)
-        awardIndex = 0;
+        return;
 
     if (awardIndex >= aaGames.at(gameIndex).gpd->avatarAwards.size())
         return;
@@ -1081,9 +1081,9 @@ void ProfileEditor::on_cmbxAchState_currentIndexChanged(int index)
     int chievIndex = ui->achievementsList->currentIndex().row();
 
     if (gameIndex < 0)
-        gameIndex = 0;
-    if (chievIndex = 0)
-        chievIndex = 0;
+        return;
+    if (chievIndex < 0)
+        return;
 
     GameGPD *gpd = games.at(gameIndex).gpd;
 
@@ -1133,9 +1133,9 @@ void ProfileEditor::on_cmbxAwState_currentIndexChanged(int index)
     int awardIndex = ui->avatarAwardsList->currentIndex().row();
 
     if (gameIndex < 0)
-        gameIndex = 0;
+        return;
     if (awardIndex < 0)
-        awardIndex = 0;
+        return;
 
     AvatarAwardGPD *gpd = aaGames.at(gameIndex).gpd;
 
