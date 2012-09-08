@@ -33,7 +33,9 @@ StfsMetaData::StfsMetaData(FileIO *io, bool isPEC) : isPEC(isPEC)
         // read licensing data
         for(int i = 0; i < 0x10; i++)
         {
-            licenseData[i].licenseID = io->readUInt64();
+            UINT64 tempYo = io->readUInt64();
+            licenseData[i].type = (LicenseType)(tempYo >> 48);
+            licenseData[i].licenseID = (tempYo & 0xFFFFFFFFFFFF);
             licenseData[i].bits = io->readDword();
             licenseData[i].flags = io->readDword();
         }
@@ -160,7 +162,7 @@ void StfsMetaData::WriteMetaData()
         io->setPosition(0x22C);
         for (DWORD i = 0; i < 0x10; i++)
         {
-            io->write(licenseData[i].licenseID);
+            io->write((UINT64)((licenseData[i].type << 48) | licenseData[i].licenseID));
             io->write(licenseData[i].bits);
             io->write(licenseData[i].flags);
         }
