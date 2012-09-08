@@ -18,6 +18,8 @@ CertificateDialog::CertificateDialog(Certificate *cert, QWidget *parent) : QDial
     cmbxConsoleType = new QComboBox;
     cmbxConsoleType->addItem("Devkit");
     cmbxConsoleType->addItem("Retail");
+    cmbxConsoleType->addItem("TestKit");
+    cmbxConsoleType->addItem("DevKit Recovery Generated");
     ui->tableWidget->setCellWidget(3, 0, cmbxConsoleType);
     cmbxConsoleType->setCurrentIndex(cert->ownerConsoleType - 1);
 

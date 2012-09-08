@@ -102,11 +102,11 @@ void ReadCertificateEx(Certificate *cert, FileIO *io, DWORD address)
 
     char tempPartNum[0x15];
     tempPartNum[0x14] = 0;
-    io->readBytes((BYTE*)tempPartNum, 0x14);
+    io->readBytes((BYTE*)tempPartNum, 0x11);
     cert->ownerConsolePartNumber = string(tempPartNum);
 
-    cert->ownerConsoleType = (ConsoleType)io->readByte();
-    if (cert->ownerConsoleType != DevKit && cert->ownerConsoleType != Retail)
+    cert->ownerConsoleType = (ConsoleType)io->readDword();
+    if (cert->ownerConsoleType != DevKit && cert->ownerConsoleType != Retail && cert->ownerConsoleType != TestKit && cert->ownerConsoleType != DevKit2)
         throw string("STFS: Invalid console type.\n");
 
     char tempGenDate[9] = {0};
@@ -127,8 +127,8 @@ void WriteCertificateEx(Certificate *cert, FileIO *io, DWORD address)
     // write the certificate
     io->write(cert->publicKeyCertificateSize);
     io->write(cert->ownerConsoleID, 5);
-    io->write(cert->ownerConsolePartNumber.c_str(), 0x14);
-    io->write((BYTE)cert->ownerConsoleType);
+    io->write(cert->ownerConsolePartNumber.c_str(), 0x11);
+    io->write((DWORD)cert->ownerConsoleType);
     io->write(cert->dateGeneration.c_str(), 8);
     io->write(cert->publicExponent);
     io->write(cert->publicModulus, 0x80);
@@ -153,8 +153,19 @@ string MagicToString(Magic magic)
 
 string ConsoleTypeToString(ConsoleType type)
 {
-    const string names[2] = { "DevKit", "Retail" };
-    return names[type - 1];
+    switch (type)
+    {
+        case DevKit:
+            return string("DevKit");
+        case Retail:
+            return string("Retail");
+        case TestKit:
+            return string("TestKit");
+        case DevKit2:
+            return string("DevKit2");
+        default:
+            throw string("STFS: Invalid console type.\n");
+    }
 }
 
 string ContentTypeToString(ContentType type)
