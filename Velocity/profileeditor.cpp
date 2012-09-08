@@ -1249,6 +1249,14 @@ void ProfileEditor::on_chxPasscode_stateChanged(int arg1)
     ui->cmbxPass2->setEnabled(arg1 >> 1);
     ui->cmbxPass3->setEnabled(arg1 >> 1);
     ui->cmbxPass4->setEnabled(arg1 >> 1);
+
+    if (arg1 == 0)
+    {
+        ui->cmbxPass1->setCurrentIndex(0);
+        ui->cmbxPass2->setCurrentIndex(0);
+        ui->cmbxPass3->setCurrentIndex(0);
+        ui->cmbxPass4->setCurrentIndex(0);
+    }
 }
 
 void ProfileEditor::on_chxLIVE_stateChanged(int arg1)

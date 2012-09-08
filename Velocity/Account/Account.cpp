@@ -32,6 +32,7 @@ void Account::parseFile()
 	account.cachedUserFlags = io->readDword();
 	account.serviceProvider = (XboxLiveServiceProvider)io->readDword();
 
+    io->setPosition(0x38);
 	account.passcode[0] = io->readByte();
 	account.passcode[1] = io->readByte();
 	account.passcode[2] = io->readByte();
@@ -313,6 +314,8 @@ void Account::writeFile()
 	io->write(account.cachedUserFlags);
 	io->write(account.serviceProvider);
 
+    io->setPosition(0x38);
+
 	io->write(account.passcode[0]);
 	io->write(account.passcode[1]);
 	io->write(account.passcode[2]);
@@ -350,8 +353,11 @@ XboxLiveServiceProvider Account::GetServiceProvider()
 void Account::GetPasscode(BYTE *passcode)
 {
 	if (!IsPasscodeEnabled())
-		return;
-	memcpy(passcode, account.passcode, 4);
+    {
+        memset(passcode, 0, 4);
+        return;
+    }
+    memcpy(passcode, account.passcode, 4);
 }
 
 string Account::GetOnlineDomain()

@@ -228,6 +228,11 @@
              <widget class="QComboBox" name="cmbxPass1">
               <item>
                <property name="text">
+                <string>Null</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
                 <string>Up</string>
                </property>
               </item>
@@ -280,6 +285,11 @@
             </item>
             <item>
              <widget class="QComboBox" name="cmbxPass2">
+              <item>
+               <property name="text">
+                <string>Null</string>
+               </property>
+              </item>
               <item>
                <property name="text">
                 <string>Up</string>
@@ -336,6 +346,11 @@
              <widget class="QComboBox" name="cmbxPass3">
               <item>
                <property name="text">
+                <string>Null</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
                 <string>Up</string>
                </property>
               </item>
@@ -388,6 +403,11 @@
             </item>
             <item>
              <widget class="QComboBox" name="cmbxPass4">
+              <item>
+               <property name="text">
+                <string>Null</string>
+               </property>
+              </item>
               <item>
                <property name="text">
                 <string>Up</string>
