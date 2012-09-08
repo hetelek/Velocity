@@ -137,6 +137,16 @@ void Account::SetPaymentInstrumentCreditCard(bool b)
 		account.cachedUserFlags &= 0xFFFFFFFE;
 }
 
+void Account::SetXUIDOnline()
+{
+    account.xuid = (account.xuid & 0xFFFFFFFFFFFF) | 0x9000000000000;
+}
+
+void Account::SetXUIDOffline()
+{
+    account.xuid = ((account.xuid & 0xFFFFFFFFFFFF) | 0xE000000000000000);
+}
+
 void Account::SetSubscriptionTeir(SubscriptionTeir teir)
 {
 	account.cachedUserFlags &= (~0xF00000);

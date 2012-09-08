@@ -110,6 +110,12 @@ public:
     // Description: set the passcode for the player
     void SetPasscode(BYTE *passcode);
 
+    // Description: set the gamer's XUID to offline
+    void SetXUIDOffline();
+
+    // Description: set the gamer's XUID to offline
+    void SetXUIDOnline();
+
     // Description: set the service provider for the player
     void SetOnlineServiceProvider(XboxLiveServiceProvider provider);
 

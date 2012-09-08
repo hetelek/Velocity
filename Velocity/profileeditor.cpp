@@ -58,7 +58,7 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
     ui->lblSubscriptionTeir->setText(QString::fromStdString(AccountHelpers::SubscriptionTeirToString(account->GetSubscriptionTeir())));
     ui->lblParentalControlled->setText(((account->IsParentalControlled()) ? "Yes" : "No"));
     ui->lblCreditCard->setText(((account->IsPaymentInstrumentCreditCard()) ? "Yes" : "No"));
-    ui->lblXUID->setText(QString::number(account->GetXUID(), 16).toUpper());\
+    ui->lblXUID->setText(QString::number(account->GetXUID(), 16).toUpper());
     ui->chxLIVE->setCheckState(account->IsLiveEnabled() << 1);
     ui->chxRecovering->setCheckState(account->IsRecovering() << 1);
     ui->chxPasscode->setCheckState(account->IsPasscodeEnabled() << 1);
@@ -1254,6 +1254,12 @@ void ProfileEditor::on_chxPasscode_stateChanged(int arg1)
 void ProfileEditor::on_chxLIVE_stateChanged(int arg1)
 {
     ui->cmbxNetwork->setEnabled(arg1 >> 1);
+
+    if (arg1 == 0)
+        account->SetXUIDOffline();
+    else
+        account->SetXUIDOnline();
+    ui->lblXUID->setText(QString::number(account->GetXUID(), 16).toUpper());
 }
 
 void ProfileEditor::on_dteAchTimestamp_dateTimeChanged(const QDateTime &date)
