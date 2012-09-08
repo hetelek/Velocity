@@ -797,10 +797,10 @@ void ProfileEditor::updateAvatarAward(TitleEntry *entry, AvatarAwardGPD *gpd, st
     if (toSet == StateUnlockedOffline)
     {
         award->flags &= 0xFFFCFFFF;
-        award->flags |= Unlocked;
+        award->flags |= (Unlocked | 0x100000);
     }
     else if (toSet == StateUnlockedOnline)
-        award->flags |= (Unlocked | UnlockedOnline);
+        award->flags |= (Unlocked | UnlockedOnline | 0x100000);
 
     // write the entry back to the gpd
     gpd->WriteAvatarAward(award);
@@ -892,9 +892,9 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
             chiev->flags |= Unlocked;
         }
         else if (toSet == StateUnlockedOnline)
-            chiev->flags |= (Unlocked | UnlockedOnline);
+            chiev->flags |= (Unlocked | UnlockedOnline | 0x100000);
 
-        chiev->flags |= (SyncAchievement | DownloadAchievementImage);
+        chiev->flags |= (SyncAchievement | DownloadAchievementImage | 0x100000);
 
         gpd->WriteAchievementEntry(chiev);
 
@@ -915,6 +915,7 @@ void ProfileEditor::saveAll()
         return;
     }
 
+    QString path = QFileDialog::getOpenFileName(this, "KV Location", QtHelpers::DesktopLocation() + "/KV.bin");
     // save the avatar awards
     if (PEC != NULL)
     {
@@ -924,6 +925,11 @@ void ProfileEditor::saveAll()
                 PEC->ReplaceFile(aaGames.at(i).tempFileName, aaGames.at(i).gpdName);
 
         PEC->Rehash();
+
+        if (path.isEmpty())
+            return;
+
+        PEC->Resign(path.toStdString());
 
         delete PEC;
 
@@ -940,7 +946,7 @@ void ProfileEditor::saveAll()
 
     // gamertag
     account->SetGamertag(ui->txtGamertag->text().toStdWString());
-    account->SetPasscodeEnabled(ui->chxLIVE->checkState() >> 1);
+    account->SetPasscodeEnabled(ui->chxPasscode->checkState() >> 1);
     account->SetLiveEnabled(ui->chxLIVE->checkState() >> 1);
     account->SetRecovering(ui->chxRecovering->checkState() >> 1);
 
@@ -1003,7 +1009,7 @@ void ProfileEditor::saveAll()
 
     // fix the package
     profile->Rehash();
-    // TODO: resign yo
+    profile->Resign(path.toStdString());
 }
 
 State ProfileEditor::getStateFromFlags(DWORD flags)
