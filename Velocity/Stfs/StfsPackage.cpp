@@ -969,7 +969,7 @@ void StfsPackage::Resign(string kvPath)
 
     // read the certificate
     kvIo.setPosition(0x9B8 + adder);
-    metaData->certificate.publicKeyCertificateSize = kvIo.readWord();
+     metaData->certificate.publicKeyCertificateSize = kvIo.readWord();
     kvIo.readBytes(metaData->certificate.ownerConsoleID, 5);
 
     char tempPartNum[0x15];
@@ -1011,7 +1011,7 @@ void StfsPackage::Resign(string kvPath)
     Botan::RSA_PrivateKey pkey(rng, p, q, 0x10001, 0, n);
 
     Botan::PK_Signer signer(pkey, Botan::get_emsa("EMSA3(SHA-160)"));
-    Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToHash, 0x118, rng);
+    Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToHash, size, rng);
 
     // 8 byte swap the new signature
     XeCryptBnQw_SwapDwQwLeBe(signature, 0x80);
