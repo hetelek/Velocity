@@ -129,7 +129,7 @@ StfsMetaData::StfsMetaData(FileIO *io, bool isPEC) : isPEC(isPEC)
 
 void StfsMetaData::WriteCertificate()
 {
-    if (magic != CON)
+    if (magic != CON && !isPEC)
         throw string("STFS: Error writing certificate. Package is strong signed and therefore doesn't have a certificate.\n");
 
     WriteCertificateEx(&certificate, io, (isPEC) ? 0 : 4);
