@@ -140,7 +140,8 @@ void Metadata::btnTransFlagsClicked()
 
 void Metadata::btnLicenseClicked()
 {
-    LicensingDataDialog dialog(package->metaData->licenseData, this);
+    bool unlockable = (package->metaData->contentType == AvatarItem || package->metaData->contentType == ArcadeGame || package->metaData->contentType == MarketPlaceContent);
+    LicensingDataDialog dialog(package->metaData->licenseData, unlockable, this);
     dialog.exec();
 }
 
