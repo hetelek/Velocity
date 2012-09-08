@@ -9,23 +9,8 @@
 
 using std::string;
 
-enum LicenseType
-{
-    Unused = 0x0000,
-    Unrestricted = 0xFFFF,
-    ConsoleProfileLicense = 0x0009,
-    WindowsProfileLicense = 0x0003,
-    ConsoleLicense = 0xF000,
-    //These unknowns seem to be media related.
-    Unknown1 = 0xE000,
-    Unknown2 = 0xD000,
-    Unknown3 = 0xC000,
-    Unknown4 = 0xB000
-};
-
 struct LicenseEntry
 {
-    LicenseType type;
     UINT64 licenseID;
     DWORD bits;
     DWORD flags;
@@ -80,8 +65,6 @@ string MagicToString(Magic magic);
 string ContentTypeToString(ContentType type);
 
 string ConsoleTypeToString(ConsoleType type);
-
-string LicenseTypeToString(LicenseType type);
 
 string ByteSizeToString(int bytes);
 

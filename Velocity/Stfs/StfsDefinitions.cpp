@@ -71,33 +71,6 @@ MSTime DWORDToMSTime(DWORD winTime)
     return time;
 }
 
-string LicenseTypeToString(LicenseType type)
-{
-    switch (type)
-    {
-        case Unused:
-            return string("Unused");
-        case Unrestricted:
-            return string("Unrestricted");
-        case ConsoleProfileLicense:
-            return string("ConsoleProfileLicense");
-        case WindowsProfileLicense:
-            return string("WindowsProfileLicense");
-        case ConsoleLicense:
-            return string("ConsoleLicense");
-        case Unknown1:
-            return string("Unknown1");
-        case Unknown2:
-            return string("Unknown2");
-        case Unknown3:
-            return string("Unknown3");
-        case Unknown4:
-            return string("Unknown4");
-        default:
-            throw string("STFS: Invalid 'License Type' value.\n");
-    }
-}
-
 void WriteVolumeDescriptorEx(VolumeDescriptor *descriptor, FileIO *io, DWORD address)
 {
     // volume descriptor position
