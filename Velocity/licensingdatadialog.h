@@ -4,6 +4,7 @@
 // qt
 #include <QDialog>
 #include <QMessageBox>
+#include <QTableWidgetItem>
 #include "qthelpers.h"
 
 // xbox360
@@ -18,13 +19,15 @@ class LicensingDataDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit LicensingDataDialog(LicenseEntry *entryTable, QWidget *parent = 0);
+    explicit LicensingDataDialog(LicenseEntry *entryTable, bool unlockable, QWidget *parent = 0);
     ~LicensingDataDialog();
     
 private slots:
     void on_pushButton_clicked();
 
     void on_pushButton_2_clicked();
+
+    void on_btnUnlock_clicked();
 
 private:
     Ui::LicensingDataDialog *ui;

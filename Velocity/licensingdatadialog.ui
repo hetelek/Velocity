@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>392</width>
-    <height>258</height>
+    <width>524</width>
+    <height>306</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,6 +23,11 @@
      <attribute name="horizontalHeaderDefaultSectionSize">
       <number>100</number>
      </attribute>
+     <column>
+      <property name="text">
+       <string>Type</string>
+      </property>
+     </column>
      <column>
       <property name="text">
        <string>License ID</string>
@@ -54,6 +59,17 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnUnlock">
+       <property name="text">
+        <string>Unlock</string>
+       </property>
+       <property name="icon">
+        <iconset resource="Resources.qrc">
+         <normaloff>:/Images/unlock.png</normaloff>:/Images/unlock.png</iconset>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton">
