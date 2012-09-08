@@ -2,7 +2,7 @@
 #include "ui_progressdialog.h"
 
 ProgressDialog::ProgressDialog(StfsPackage *package, QList<QString> filesToExtract, QList<QString> outPaths, QWidget *parent) :
-    QDialog(parent),  ui(new Ui::ProgressDialog), package(package), filesToExtract(filesToExtract), outPaths(outPaths), overallProgress(0), totalBlocksToExtract(0), filesExtracted(0)
+    QDialog(parent),  ui(new Ui::ProgressDialog), package(package), filesToExtract(filesToExtract), outPaths(outPaths), overallProgress(0), totalBlocksToExtract(0), filesExtracted(0), prevPrgress(0)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -38,6 +38,7 @@ void ProgressDialog::extractNextFile()
     StfsWorkerThread thread(package, Extract, &fileEntries.at(filesExtracted), outPaths.at(filesExtracted), this, "");
     ui->groupBox->setTitle(filesToExtract.at(filesExtracted));
     ui->groupBox_2->setTitle("Overall Progress, File " + QString::number(filesExtracted + 1) + " of " + QString::number(filesToExtract.size()));
+    prevPrgress = 0;
 
     connect(&thread, SIGNAL(progressUpdated(DWORD, DWORD)), this, SLOT(updateProgress(DWORD,DWORD)));
 
@@ -50,8 +51,12 @@ void ProgressDialog::updateProgress(DWORD blocksExtracted, DWORD totalBlockCount
     ui->progressBar->setMaximum(totalBlockCount);
     ui->progressBar->setValue(blocksExtracted);
 
+    overallProgress += (blocksExtracted - prevPrgress);
+
     // update overall progress bar
-    ui->progressBar_2->setValue(overallProgress++);
+    ui->progressBar_2->setValue(overallProgress);
+
+    prevPrgress = blocksExtracted;
 
     if (overallProgress == totalBlocksToExtract)
         close();

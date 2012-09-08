@@ -37,6 +37,7 @@ private:
     DWORD overallProgress;
     DWORD totalBlocksToExtract;
     DWORD filesExtracted;
+    DWORD prevPrgress;
 
     void extractNextFile();
 };
