@@ -89,7 +89,6 @@ public:
     void Rehash();
 
     // Description: resign the file
-    // TODO
     void Resign(string kvPath);
 
     // Description: remove a file entry from the file listing

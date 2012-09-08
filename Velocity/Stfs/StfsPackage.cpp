@@ -928,19 +928,21 @@ void StfsPackage::Resign(string kvPath)
     if (kvIo.getPosition() == 0x4000)
         adder = 0x10;
 
-    DWORD headerStart, size, hashLoc;
+    DWORD headerStart, size, hashLoc, toSignLoc;
     // set the headerStart
     if (isPEC)
     {
         headerStart = 0x23C;
         hashLoc = 0x228;
-        size = 0x14;
+        size = 0x230;
+        toSignLoc = 0x23C;
     }
     else
     {
         headerStart = 0x344;
         hashLoc = 0x32C;
         size = 0x118;
+        toSignLoc = 0x22C;
     }
 
     // calculate header size / first hash table address
@@ -962,10 +964,10 @@ void StfsPackage::Resign(string kvPath)
     io->setPosition(hashLoc);
     io->write(metaData->headerHash, 0x14);
 
-    io->setPosition(headerStart - size);
+    io->setPosition(toSignLoc);
 
-    BYTE *dataToHash = new BYTE[size];
-    io->readBytes(dataToHash, size);
+    BYTE *dataToSign = new BYTE[size];
+    io->readBytes(dataToSign, size);
 
     // read the certificate
     kvIo.setPosition(0x9B8 + adder);
@@ -1011,16 +1013,14 @@ void StfsPackage::Resign(string kvPath)
     Botan::RSA_PrivateKey pkey(rng, p, q, 0x10001, 0, n);
 
     Botan::PK_Signer signer(pkey, Botan::get_emsa("EMSA3(SHA-160)"));
-    Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToHash, size, rng);
+    Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToSign, size, rng);
 
     // 8 byte swap the new signature
     XeCryptBnQw_SwapDwQwLeBe(signature, 0x80);
 
     // reverse the new signature every 8 bytes
     for (int i = 0; i < 0x10; i++)
-    {
         FileIO::swapEndian(&signature[i * 8], 1, 8);
-    }
 
     memcpy(metaData->certificate.signature, signature, 0x80);
 
