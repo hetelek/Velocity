@@ -15,7 +15,7 @@ LicensingDataDialog::LicensingDataDialog(LicenseEntry *entryTable, bool unlockab
     {
         ui->tableWidget->insertRow(i);
         ui->tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(LicenseTypeToString(entryTable[i].type))));
-        ui->tableWidget->setItem(i, 1, new QTableWidgetItem("0x" + QString::number(entryTable[i].licenseID, 16).toUpper()));
+        ui->tableWidget->setItem(i, 1, new QTableWidgetItem("0x" + QString::number(entryTable[i].data, 16).toUpper()));
         ui->tableWidget->setItem(i, 2, new QTableWidgetItem("0x" + QString::number(entryTable[i].bits, 16).toUpper()));
         ui->tableWidget->setItem(i, 3, new QTableWidgetItem("0x" + QString::number(entryTable[i].flags, 16).toUpper()));
     }
@@ -51,7 +51,7 @@ void LicensingDataDialog::on_pushButton_clicked()
     // update all the license entries
     for (DWORD i = 0; i < 0x10; i++)
     {
-        entryTable[i].licenseID = ui->tableWidget->item(i, 1)->text().replace("0x", "").toULongLong(0, 16);
+        entryTable[i].data = ui->tableWidget->item(i, 1)->text().replace("0x", "").toULongLong(0, 16);
         entryTable[i].bits = QtHelpers::ParseHexString(ui->tableWidget->item(i, 2)->text());
         entryTable[i].flags = QtHelpers::ParseHexString(ui->tableWidget->item(i, 3)->text());
     }
@@ -73,7 +73,7 @@ void LicensingDataDialog::on_btnUnlock_clicked()
         return;
 
     entryTable[0].type = Unrestricted;
-    entryTable[0].licenseID = 0xFFFFFFFFFFFF;
+    entryTable[0].data = 0xFFFFFFFFFFFF;
     entryTable[0].bits = 1;
 
     ui->tableWidget->item(0, 0)->setText("Unrestricted");
