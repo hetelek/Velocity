@@ -487,7 +487,12 @@ void ProfileEditor::on_achievementsList_itemSelectionChanged()
 
 void ProfileEditor::loadAchievementInfo(int gameIndex, int chievIndex)
 {
-    if (chievIndex < 0 || gameIndex < 0 || chievIndex >= games.at(gameIndex).gpd->achievements.size())
+    if (gameIndex < 0)
+        gameIndex = 0;
+    if (chievIndex < 0)
+        chievIndex = 0;
+
+    if (chievIndex >= games.at(gameIndex).gpd->achievements.size())
         return;
 
     AchievementEntry entry = games.at(gameIndex).gpd->achievements.at(chievIndex);
@@ -582,57 +587,17 @@ void ProfileEditor::replyFinishedAwBoxArt(QNetworkReply *aReply)
 
 void ProfileEditor::on_avatarAwardsList_itemSelectionChanged()
 {
-    if (ui->aaGamelist->currentIndex().row() < 0 || ui->avatarAwardsList->currentIndex().row() < 0 || ui->avatarAwardsList->currentIndex().row() >= aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.size())
-        return;
-
-    // get the current award
-    struct AvatarAward *award = &aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row());
-
-    // update the ui
-    ui->lblAwName->setText("Name: " + QString::fromStdWString(award->name));
-    ui->lblAwLockDesc->setText("Locked Description: " + QString::fromStdWString(award->lockedDescription));
-    ui->lblAwUnlDesc->setText("Unlocked Description: " + QString::fromStdWString(award->unlockedDescription));
-
-    try
-    {
-         ui->lblAwType->setText("Type: " + QString::fromStdString(XDBFHelpers::AssetSubcategoryToString(award->subcategory)));
-    }
-    catch (...)
-    {
-        ui->lblAwType->setText("Type: <i>Unknown</i>");
-    }
-
-    ui->lblAwGender->setText("Gender: " + QString::fromStdString(XDBFHelpers::AssetGenderToString(aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->GetAssetGender(award))));
-    ui->lblAwSecret->setText(QString("Secret: ") + ((award->flags & 0xFFFF) ? "No" : "Yes"));
-
-    if (award->flags & UnlockedOnline)
-    {
-        ui->cmbxAwState->setCurrentIndex(2);
-        ui->dteAwTimestamp->setEnabled(true);
-    }
-    else if (award->flags & Unlocked)
-    {
-        ui->cmbxAwState->setCurrentIndex(1);
-        ui->dteAwTimestamp->setEnabled(false);
-    }
-    else
-    {
-        ui->cmbxAwState->setCurrentIndex(0);
-        ui->dteAwTimestamp->setEnabled(false);
-    }
-
-    ui->dteAwTimestamp->setDateTime(QDateTime::fromTime_t(award->unlockTime));
-
-    // download the thumbnail
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinishedAwImg(QNetworkReply*)));
-    string tmp = AvatarAwardGPD::GetLargeAwardImageURL(award);
-    manager->get(QNetworkRequest(QUrl(QString::fromStdString(tmp))));
+    loadAvatarAwardInfo(ui->aaGamelist->currentIndex().row(), ui->avatarAwardsList->currentIndex().row());
 }
 
 void ProfileEditor::loadAvatarAwardInfo(int gameIndex, int awardIndex)
 {
-    if (gameIndex < 0 || awardIndex < 0 || awardIndex >= aaGames.at(gameIndex).gpd->avatarAwards.size())
+    if (gameIndex < 0)
+        gameIndex == 0;
+    if (awardIndex < 0)
+        awardIndex = 0;
+
+    if (awardIndex >= aaGames.at(gameIndex).gpd->avatarAwards.size())
         return;
 
     // get the current award
@@ -1106,96 +1071,104 @@ void ProfileEditor::on_btnCreateAch_clicked()
 
 void ProfileEditor::on_cmbxAchState_currentIndexChanged(int index)
 {
-    // make sure the indices are valid
-    if (ui->gamesList->currentIndex().row() < 0 || ui->achievementsList->currentIndex().row() < 0)
-        return;
+    int gameIndex = ui->gamesList->currentIndex().row();
+    int chievIndex = ui->achievementsList->currentIndex().row();
 
-    GameGPD *gpd = games.at(ui->gamesList->currentIndex().row()).gpd;
+    if (gameIndex < 0)
+        gameIndex = 0;
+    if (chievIndex = 0)
+        chievIndex = 0;
+
+    GameGPD *gpd = games.at(gameIndex).gpd;
 
     // make sure that the user changed the value, and they didn't just select another achievement
-    if (index == getStateFromFlags(gpd->achievements.at(ui->achievementsList->currentIndex().row()).flags))
+    if (index == getStateFromFlags(gpd->achievements.at(chievIndex).flags))
         return;
 
     // update the achievement entry
     if (index == 0)
     {
         // update the list text
-        ui->achievementsList->topLevelItem(ui->achievementsList->currentIndex().row())->setText(2, "Locked");
+        ui->achievementsList->topLevelItem(chievIndex)->setText(2, "Locked");
 
         // update the title entry
-        updateAchievement(games.at(ui->gamesList->currentIndex().row()).titleEntry, &gpd->achievements.at(ui->achievementsList->currentIndex().row()), StateLocked, gpd);
+        updateAchievement(games.at(gameIndex).titleEntry, &gpd->achievements.at(chievIndex), StateLocked, gpd);
 
         ui->dteAchTimestamp->setEnabled(false);
     }
     else if (index == 1)
     {
         // update the list text
-        ui->achievementsList->topLevelItem(ui->achievementsList->currentIndex().row())->setText(2, "Unlocked Offline");
+        ui->achievementsList->topLevelItem(chievIndex)->setText(2, "Unlocked Offline");
 
         // update the title entry
-        updateAchievement(games.at(ui->gamesList->currentIndex().row()).titleEntry, &gpd->achievements.at(ui->achievementsList->currentIndex().row()), StateUnlockedOffline, gpd);
+        updateAchievement(games.at(gameIndex).titleEntry, &gpd->achievements.at(chievIndex), StateUnlockedOffline, gpd);
 
         ui->dteAchTimestamp->setEnabled(false);
     }
     else
     {
         // update the list text
-        ui->achievementsList->topLevelItem(ui->achievementsList->currentIndex().row())->setText(2, "Unlocked Online");
+        ui->achievementsList->topLevelItem(chievIndex)->setText(2, "Unlocked Online");
 
         // update the title entry
-        updateAchievement(games.at(ui->gamesList->currentIndex().row()).titleEntry, &gpd->achievements.at(ui->achievementsList->currentIndex().row()), StateUnlockedOnline, gpd);
+        updateAchievement(games.at(gameIndex).titleEntry, &gpd->achievements.at(chievIndex), StateUnlockedOnline, gpd);
 
         ui->dteAchTimestamp->setEnabled(true);
         ui->dteAchTimestamp->setDateTime(QDateTime::currentDateTime());
     }
 
-    games.at(ui->gamesList->currentIndex().row()).updated = true;
+    games.at(gameIndex).updated = true;
 }
 
 void ProfileEditor::on_cmbxAwState_currentIndexChanged(int index)
 {
-    // make sure the indices are valid
-    if (ui->aaGamelist->currentIndex().row() < 0 || ui->avatarAwardsList->currentIndex().row() < 0)
-        return;
+    int gameIndex = ui->aaGamelist->currentIndex().row();
+    int awardIndex = ui->avatarAwardsList->currentIndex().row();
 
-    AvatarAwardGPD *gpd = aaGames.at(ui->aaGamelist->currentIndex().row()).gpd;
+    if (gameIndex < 0)
+        gameIndex = 0;
+    if (awardIndex < 0)
+        awardIndex = 0;
+
+    AvatarAwardGPD *gpd = aaGames.at(gameIndex).gpd;
 
     // make sure that the user changed the value, and they didn't just select another achievement
-    if (index == getStateFromFlags(gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row()).flags))
+    if (index == getStateFromFlags(gpd->avatarAwards.at(awardIndex).flags))
         return;
 
     // update the award entry
     if (index == 0)
     {
         // update the list text
-        ui->avatarAwardsList->topLevelItem(ui->avatarAwardsList->currentIndex().row())->setText(3, "Locked");
+        ui->avatarAwardsList->topLevelItem(awardIndex)->setText(3, "Locked");
 
         // update the title entry
-        updateAvatarAward(aaGames.at(ui->aaGamelist->currentIndex().row()).titleEntry, gpd, &gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row()), StateLocked);
+        updateAvatarAward(aaGames.at(gameIndex).titleEntry, gpd, &gpd->avatarAwards.at(awardIndex), StateLocked);
         ui->dteAchTimestamp->setEnabled(false);
     }
     else if (index == 1)
     {
         // update the list text
-        ui->avatarAwardsList->topLevelItem(ui->avatarAwardsList->currentIndex().row())->setText(3, "Unlocked Offline");
+        ui->avatarAwardsList->topLevelItem(awardIndex)->setText(3, "Unlocked Offline");
 
         // update the title entry
-        updateAvatarAward(aaGames.at(ui->aaGamelist->currentIndex().row()).titleEntry, gpd, &gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row()), StateUnlockedOffline);
+        updateAvatarAward(aaGames.at(gameIndex).titleEntry, gpd, &gpd->avatarAwards.at(awardIndex), StateUnlockedOffline);
         ui->dteAchTimestamp->setEnabled(false);
     }
     else
     {
         // update the list text
-        ui->avatarAwardsList->topLevelItem(ui->avatarAwardsList->currentIndex().row())->setText(3, "Unlocked Online");
+        ui->avatarAwardsList->topLevelItem(awardIndex)->setText(3, "Unlocked Online");
 
         // update the title entry
-        updateAvatarAward(aaGames.at(ui->aaGamelist->currentIndex().row()).titleEntry, gpd, &gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row()), StateUnlockedOnline);
+        updateAvatarAward(aaGames.at(gameIndex).titleEntry, gpd, &gpd->avatarAwards.at(awardIndex), StateUnlockedOnline);
 
         ui->dteAwTimestamp->setEnabled(true);
         ui->dteAwTimestamp->setDateTime(QDateTime::currentDateTime());
     }
 
-    aaGames.at(ui->aaGamelist->currentIndex().row()).updated = true;
+    aaGames.at(gameIndex).updated = true;
 }
 
 void ProfileEditor::on_pushButton_clicked()
