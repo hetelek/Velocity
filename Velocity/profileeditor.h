@@ -219,11 +219,7 @@ private slots:
 
     void on_cmbxAwState_currentIndexChanged(int index);
 
-    void on_pushButton_clicked();
-
     void on_btnShowAll_clicked();
-
-    void on_btnAwardGo_clicked();
 
     void on_btnAwardShowAll_clicked();
 
@@ -238,6 +234,10 @@ private slots:
     void on_dteAchTimestamp_dateTimeChanged(const QDateTime &date);
 
     void on_dteAwTimestamp_dateTimeChanged(const QDateTime &date);
+
+    void on_txtGameSearch_textChanged(const QString &arg1);
+
+    void on_txtAwardGameSearch_textChanged(const QString &arg1);
 
 private:
     Ui::ProfileEditor *ui;

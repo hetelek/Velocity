@@ -29,7 +29,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabGeneralSettings">
       <attribute name="title">
@@ -692,20 +692,9 @@
             </widget>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout" stretch="90,0,0">
+            <layout class="QHBoxLayout" name="horizontalLayout" stretch="90,0">
              <item>
               <widget class="QLineEdit" name="txtGameSearch"/>
-             </item>
-             <item>
-              <widget class="QPushButton" name="pushButton">
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="Resources.qrc">
-                 <normaloff>:/Images/go.png</normaloff>:/Images/go.png</iconset>
-               </property>
-              </widget>
              </item>
              <item>
               <widget class="QPushButton" name="btnShowAll">
@@ -1111,17 +1100,6 @@ p, li { white-space: pre-wrap; }
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
               <widget class="QLineEdit" name="txtAwardGameSearch"/>
-             </item>
-             <item>
-              <widget class="QPushButton" name="btnAwardGo">
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="Resources.qrc">
-                 <normaloff>:/Images/go.png</normaloff>:/Images/go.png</iconset>
-               </property>
-              </widget>
              </item>
              <item>
               <widget class="QPushButton" name="btnAwardShowAll">

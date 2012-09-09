@@ -228,6 +228,39 @@ void PackageViewer::showSaveImageContextMenu(QPoint point)
     }
 }
 
+void PackageViewer::on_txtSearch_textChanged(const QString &arg1)
+{
+    QList<QTreeWidgetItem*> itemsMatched = ui->treeWidget->findItems(ui->txtSearch->text(), Qt::MatchContains | Qt::MatchRecursive);
+
+    // hide all the items
+    for (DWORD i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
+        ui->treeWidget->setItemHidden(ui->treeWidget->topLevelItem(i), true);
+
+    if (itemsMatched.count() == 0)
+    {
+        ui->txtSearch->setStyleSheet("color: rgb(255, 1, 1);");
+        showAllItems();
+        return;
+    }
+
+    ui->txtSearch->setStyleSheet("");
+    // add all the matched ones to the list
+    for (DWORD i = 0; i < itemsMatched.count(); i++)
+    {
+        // show all the item's parents
+        QTreeWidgetItem *parent = itemsMatched.at(i)->parent();
+        while (parent != NULL)
+        {
+            ui->treeWidget->setItemHidden(parent, false);
+            parent->setExpanded(true);
+            parent = parent->parent();
+        }
+
+        // show the item itself
+        ui->treeWidget->setItemHidden(itemsMatched.at(i), false);
+    }
+}
+
 void PackageViewer::showRemoveContextMenu(QPoint point)
 {
     int amount = ui->treeWidget->selectedItems().length();
@@ -594,47 +627,16 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
 
 void PackageViewer::on_btnProfileEditor_clicked()
 {
-    ProfileEditor *editor = new ProfileEditor(package, true, this->parentWidget());
+    ProfileEditor *editor = new ProfileEditor(package, true);
     editor->show();
+    disposePackage = false;
+    delete ui;
 }
 
 void PackageViewer::on_btnStfsTools_clicked()
 {
     StfsToolsDialog dialog(package, this);
     dialog.exec();
-}
-
-void PackageViewer::on_btnSearch_clicked()
-{
-    QList<QTreeWidgetItem*> itemsMatched = ui->treeWidget->findItems(ui->txtSearch->text(), Qt::MatchContains | Qt::MatchRecursive);
-
-    // hide all the items
-    for (DWORD i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
-        ui->treeWidget->setItemHidden(ui->treeWidget->topLevelItem(i), true);
-
-    if (itemsMatched.count() == 0)
-    {
-        showAllItems();
-        QMessageBox::warning(this, "Nothing Found", "No files/folders match your search criteria.\n");
-        ui->txtSearch->setText("");
-        return;
-    }
-
-    // add all the matched ones to the list
-    for (DWORD i = 0; i < itemsMatched.count(); i++)
-    {
-        // show all the item's parents
-        QTreeWidgetItem *parent = itemsMatched.at(i)->parent();
-        while (parent != NULL)
-        {
-            ui->treeWidget->setItemHidden(parent, false);
-            parent->setExpanded(true);
-            parent = parent->parent();
-        }
-
-        // show the item itself
-        ui->treeWidget->setItemHidden(itemsMatched.at(i), false);
-    }
 }
 
 void PackageViewer::on_btnShowAll_clicked()

@@ -60,11 +60,11 @@ private slots:
 
     void on_btnStfsTools_clicked();
 
-    void on_btnSearch_clicked();
-
     void on_btnShowAll_clicked();
 
     void showSaveImageContextMenu(QPoint point);
+
+    void on_txtSearch_textChanged(const QString &arg1);
 
 private:
     Ui::PackageViewer *ui;

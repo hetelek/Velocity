@@ -237,16 +237,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="txtSearch"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnSearch">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="Resources.qrc">
-         <normaloff>:/Images/go.png</normaloff>:/Images/go.png</iconset>
+      <widget class="QLineEdit" name="txtSearch">
+       <property name="styleSheet">
+        <string notr="true"/>
        </property>
       </widget>
      </item>

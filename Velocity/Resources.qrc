@@ -43,7 +43,6 @@
         <file>Images/gear.png</file>
         <file>Images/information.png</file>
         <file>Images/undo.png</file>
-        <file>Images/go.png</file>
         <file>Images/lock.png</file>
     </qresource>
 </RCC>

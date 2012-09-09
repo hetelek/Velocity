@@ -1176,29 +1176,9 @@ void ProfileEditor::on_cmbxAwState_currentIndexChanged(int index)
     aaGames.at(gameIndex).updated = true;
 }
 
-void ProfileEditor::on_pushButton_clicked()
-{
-    QList<QTreeWidgetItem*> itemsMatched = ui->gamesList->findItems(ui->txtGameSearch->text(), Qt::MatchContains);
-
-    // hide all the items
-    for (DWORD i = 0; i < ui->gamesList->topLevelItemCount(); i++)
-        ui->gamesList->setItemHidden(ui->gamesList->topLevelItem(i), true);
-
-    if (itemsMatched.count() == 0)
-    {
-        showAllGames();
-        QMessageBox::warning(this, "Nothing Found", "No games match your search criteria.\n");
-        ui->txtGameSearch->setText("");
-        return;
-    }
-
-    // add all the matched ones to the list
-    for (DWORD i = 0; i < itemsMatched.count(); i++)
-        ui->gamesList->setItemHidden(itemsMatched.at(i), false);
-}
-
 void ProfileEditor::on_btnShowAll_clicked()
 {
+    ui->txtGameSearch->setText("");
     showAllGames();
 }
 
@@ -1207,27 +1187,6 @@ void ProfileEditor::showAllGames()
     // show all the items
     for (DWORD i = 0; i < ui->gamesList->topLevelItemCount(); i++)
         ui->gamesList->setItemHidden(ui->gamesList->topLevelItem(i), false);
-}
-
-void ProfileEditor::on_btnAwardGo_clicked()
-{
-    QList<QTreeWidgetItem*> itemsMatched = ui->aaGamelist->findItems(ui->txtAwardGameSearch->text(), Qt::MatchContains);
-
-    // hide all the items
-    for (DWORD i = 0; i < ui->aaGamelist->topLevelItemCount(); i++)
-        ui->aaGamelist->setItemHidden(ui->aaGamelist->topLevelItem(i), true);
-
-    if (itemsMatched.count() == 0)
-    {
-        showAllAwardGames();
-        QMessageBox::warning(this, "Nothing Found", "No games match your search criteria.\n");
-        ui->txtAwardGameSearch->setText("");
-        return;
-    }
-
-    // add all the matched ones to the list
-    for (DWORD i = 0; i < itemsMatched.count(); i++)
-        ui->aaGamelist->setItemHidden(itemsMatched.at(i), false);
 }
 
 void ProfileEditor::showAllAwardGames()
@@ -1239,6 +1198,7 @@ void ProfileEditor::showAllAwardGames()
 
 void ProfileEditor::on_btnAwardShowAll_clicked()
 {
+    ui->txtAwardGameSearch->setText("");
     showAllAwardGames();
 }
 
@@ -1300,4 +1260,44 @@ void ProfileEditor::on_dteAwTimestamp_dateTimeChanged(const QDateTime &date)
     entry->unlockTime = date.toTime_t();
     aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->WriteAvatarAward(entry);
     aaGames.at(ui->aaGamelist->currentIndex().row()).updated = true;
+}
+
+void ProfileEditor::on_txtGameSearch_textChanged(const QString &arg1)
+{
+    QList<QTreeWidgetItem*> itemsMatched = ui->gamesList->findItems(ui->txtGameSearch->text(), Qt::MatchContains);
+
+    // hide all the items
+    for (DWORD i = 0; i < ui->gamesList->topLevelItemCount(); i++)
+        ui->gamesList->setItemHidden(ui->gamesList->topLevelItem(i), true);
+
+    if (itemsMatched.count() == 0)
+    {
+        ui->txtGameSearch->setStyleSheet("color: rgb(255, 1, 1);");
+        return;
+    }
+
+    ui->txtGameSearch->setStyleSheet("");
+    // add all the matched ones to the list
+    for (DWORD i = 0; i < itemsMatched.count(); i++)
+        ui->gamesList->setItemHidden(itemsMatched.at(i), false);
+}
+
+void ProfileEditor::on_txtAwardGameSearch_textChanged(const QString &arg1)
+{
+    QList<QTreeWidgetItem*> itemsMatched = ui->aaGamelist->findItems(ui->txtAwardGameSearch->text(), Qt::MatchContains);
+
+    // hide all the items
+    for (DWORD i = 0; i < ui->aaGamelist->topLevelItemCount(); i++)
+        ui->aaGamelist->setItemHidden(ui->aaGamelist->topLevelItem(i), true);
+
+    if (itemsMatched.count() == 0)
+    {
+        ui->txtAwardGameSearch->setStyleSheet("color: rgb(255, 1, 1);");
+        return;
+    }
+
+    ui->txtAwardGameSearch->setStyleSheet("");
+    // add all the matched ones to the list
+    for (DWORD i = 0; i < itemsMatched.count(); i++)
+        ui->aaGamelist->setItemHidden(itemsMatched.at(i), false);
 }
