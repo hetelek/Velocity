@@ -1,0 +1,122 @@
+Add 0x4CB0 to Virtual Address to view in VS
+
+someStruct
+{
+	0x18 = fileHandle
+	0x1C = Volume Descriptor
+	0x40 = blockCache
+};
+
+struct XCONTENT_MOUNTED_PACKAGE
+{
+	0x14 = 		fileHandle
+	
+	0x38 = 		fileHeader
+	0x378 = 	headerSize 	// headerSize >= 0x971A && headerSize <= 0x10000000 
+	0x37C = 	packageType // so profile, savegame, 
+};
+
+struct BLOCKINFO
+{
+	DWORD trueBlockNum;
+	BYTE idk1, indexInCache, idk3, blockFlags;
+	// we need to find out idk1
+};
+
+struct _XCONTENT_HEADER; // the actual header, not sure how long but probably "HeaderSize" long
+
+DWORD StfsDataBlocksPerHashTreeLevel[4] = { 0xAA, 0x70E4, 0x4AF768, 0xFFFFFFFF };
+
+#define TreeLevelFromBlockFlags(flags) (flags & 3)
+
+enum BlockFlags // bottom 2 bits are tree level
+{
+	0x10,
+	0x20,
+	0x40, 	// block is allocated
+	0x80
+};
+
+struct r29Struct
+{
+	(r29Struct*) 	0x00 = addressOfThisStruct
+	(r29Struct*) 	0x04 = addressOfThisStruct
+	(DWORD)			0x08 = 0
+	
+	(DWORD)			0x10 = 1
+	(DWORD) 		0x14 = fileTableBlockCount << 0x0C
+	
+	(WORD)			0x1A = 0xFFFE
+	(DWORD)			0x1C = fileTableBlockCount  << 0x0C
+	(DWORD)			0x20 = firstFileTableBlockNum
+	(DWORD)			0x24 = 0
+	(DWORD) 		0x28 = 0
+	
+	(WORD)			0x36 = 0xFFFF
+};
+
+struct r31Struct
+{
+	(DWORD) 		0x20 = topHashTableAddressInFile
+	(HANDLE)		0x28 = fileHANDLE
+	(HANDLE)		0x2C = eventHANDLE // raised when op done
+	(BLOCKINFO*)	0x30 = blockInfoArray // parallel to blockArray
+	(char*) 		0x34 = blockArray (cache thing)	
+	
+	(byte)			0x8C = (blockSeperation & 8) >> 3
+	(byte)			0x8D = Block Step (blockSeperation == 0 = 0xAC), else = 0xAB
+	(WORD)			0x8E = Block Step (blockSeperation == 0 = 0x723A), else = 0x718F blockSeperation == 0 = {0xAC, 0x723A} ), else = {0xAB, 0x718F}
+	
+	(DWORD)			0x94 = Allocated Block Count
+	(DWORD)			0x98 = Unallocated Block Count
+	
+	(byte)			0xA0 = fileTableBlockCount
+	(byte)			0xA3 = (~blockSeperation) & 1
+	(char[14]) 		0xA4 = topHashTableHash
+	(BLOCK_STATUS)	0xB8 = '2' bit of blockSeperation
+	(byte)			0xBC = blockInfoLength // number of elements in blockInfo array
+	(byte)			0xBD = indexOfLastBlockPutInCache?
+	(byte)			0xBE = Tree levels? (totalAllocatedBlocks <= 0xAA = 0), (totalAllocatedBlocks <= 0x0x70E4 = 1), 2
+	
+	// need 0x80, 0xB8, and 0xB9
+};
+
+struct XCONTENT_MOUNTED_PACKAGE
+{
+	(r31Struct*) 		0x000 
+	(BYTE*)				0x004 = blockCacheArray/
+	
+	(HANDLE)			0x014 = fileHandle
+	
+	(XCONTENT_HEADER)	0x038 = header
+};
+
+XeCryptSha(char *DataBuffer1, DWORD DataSize1, char *DataBuffer2, DWORD DataSize2, char *DataBuffer3, DWORD DataSize3, char *DigestBuffer, DWORD DigestSize);
+XeCryptBnDwLePkcs1Format(char *sha1Hash, idk, char *outMemory, DWORD len); 
+StfsSynchronousWriteFile(r31Struct *s, char *dataToWrite, ULONG len, DWORD trueBlockNum);
+StfsSynchronousReadFile(r31Struct *s, char *outBuffer, ULONG len,  DWORD trueBlockNum);
+StfsFlushBlockCacheEntry(r31Struct *s, int indexInCache, BLOCKINFO *bi);
+StfsResetBlockCache(r31Struct *s);
+StfsComputeNumberOfDataBlocks(int unknown); // unknown = 0x10000 for me... ?
+StfsBuildVolumeDecriptor(r31Struct *s, volumeDescriptor *out);
+StfsFlushUpdateDirectoryEntries(r31Struct *s);
+StfsMoveBlockCacheEntry(r31Struct *s, DWORD indexInCache, idk);
+StfsMapExistingBlock(r31Struct *s, DWORD trueBlockNum, DWORD treeLevel, __out char **blockAddr, __out BLOCKINFO **bi); // returns 1 if it successfully mapped a block
+StfsMapNewBlock(r31Struct *s, DWORD trueBlockNum, DWORD treeLevel, char *hash?, __out char **blockAddr, __out BLOCKINFO **bi); 
+StfsMapWriteableDataBlock(r31Struct *s, DWORD trueBlockNum, DWORD treeLevel, __out char **blockAddr, __out BLOCKINFO **bi);
+StfsLookupBlockCacheEntry(r31Struct *s, DWORD trueBlockNum, DWORD treeLevel, __out DWORD *indexInCache, __out BLOCKINFO **bi);
+StfsMoveBlockCacheEntry(r31Struct *s, DWORD indexInCache, DWORD idk);
+StfsEndDataBlockUpdate(r31Struct *s, int blockNum, BLOCKINFO *bi, char *hashTable);
+StfsDereferenceBlock(r31Struct *s, char *someBlockInMemory);
+
+HvxKeysMarshal(DWORD idk, DWORD idk2, 0, char *outData, ...); // it takes a bunch of parameters
+
+
+DataFileSourceFile::Read(DWORD position, BYTE *outBuffer, DWORD length, DWORD *someOutValue)
+
+// our functions
+GetAddrOfHashInTable(DWORD trueBlockNum, DWORD treeLevel)
+{
+	DWORD num = trueBlockNum / dataBlocksPerHashTreeLevel[treeLevel];
+	return (num - ((num / 0xAA) * 0xAA)) * 0x18;
+}
