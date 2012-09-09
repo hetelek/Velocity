@@ -189,6 +189,7 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
     // load all the games played
     for (DWORD i = 0; i < dashGPD->gamesPlayed.size(); i++)
     {
+        QMessageBox::information(this, "", QString::number(i));
         // if the game doesn't have any achievements, no need to load it
         if (dashGPD->gamesPlayed.at(i).achievementCount == 0 && dashGPD->gamesPlayed.at(i).avatarAwardCount == 0)
             continue;
