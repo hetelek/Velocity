@@ -49,6 +49,7 @@ struct Certificate
     BYTE ownerConsoleID[5];
     string ownerConsolePartNumber;
     ConsoleType ownerConsoleType;
+    ConsoleTypeFlags consoleTypeFlags;
     string dateGeneration;
     DWORD publicExponent;
     BYTE publicModulus[0x80];

@@ -32,6 +32,8 @@ private:
     Certificate *cert;
 
     QComboBox *cmbxConsoleType;
+    QComboBox *cmbxTestKit;
+    QComboBox *cmbxRecoveryGenerated;
 };
 
 #endif // CERTIFICATEDIALOG_H

@@ -23,9 +23,13 @@ enum Level
 enum ConsoleType
 {
 	DevKit = 1,
-    Retail = 2,
+    Retail = 2
+};
+
+enum ConsoleTypeFlags
+{
     TestKit = 0x40000000,
-    DevKit2 = 0x80000000 //Recovery generated
+    RecoveryGenerated = 0x80000000
 };
 
 enum Magic

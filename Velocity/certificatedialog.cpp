@@ -18,16 +18,27 @@ CertificateDialog::CertificateDialog(Certificate *cert, QWidget *parent) : QDial
     cmbxConsoleType = new QComboBox;
     cmbxConsoleType->addItem("Devkit");
     cmbxConsoleType->addItem("Retail");
-    cmbxConsoleType->addItem("TestKit");
-    cmbxConsoleType->addItem("DevKit Recovery Generated");
     ui->tableWidget->setCellWidget(3, 0, cmbxConsoleType);
     cmbxConsoleType->setCurrentIndex(cert->ownerConsoleType - 1);
 
+    // set up the console type flags
+    cmbxTestKit = new QComboBox;
+    cmbxTestKit->addItem("No");
+    cmbxTestKit->addItem("Yes");
+    ui->tableWidget->setCellWidget(4, 0, cmbxTestKit);
+    cmbxTestKit->setCurrentIndex((cert->consoleTypeFlags & TestKit) >> 30);
+
+    cmbxRecoveryGenerated = new QComboBox;
+    cmbxRecoveryGenerated->addItem("No");
+    cmbxRecoveryGenerated->addItem("Yes");
+    ui->tableWidget->setCellWidget(5, 0, cmbxRecoveryGenerated);
+    cmbxRecoveryGenerated->setCurrentIndex((cert->consoleTypeFlags & RecoveryGenerated) >> 31);
+
     // set the date of generation
-    ui->tableWidget->setItem(4, 0, new QTableWidgetItem(QString::fromStdString(cert->dateGeneration)));
+    ui->tableWidget->setItem(6, 0, new QTableWidgetItem(QString::fromStdString(cert->dateGeneration)));
 
     // set the public exponent
-    ui->tableWidget->setItem(5, 0, new QTableWidgetItem("0x" + QString::number(cert->publicExponent, 16).toUpper()));
+    ui->tableWidget->setItem(7, 0, new QTableWidgetItem("0x" + QString::number(cert->publicExponent, 16).toUpper()));
 
     // set the public modulus
     ui->txtPubModulus->setPlainText(QtHelpers::ByteArrayToString(cert->publicModulus, 0x80, true));
@@ -68,12 +79,12 @@ void CertificateDialog::on_pushButton_clicked()
         QMessageBox::warning(this, "Invalid Value", "The length of the Console Part Number must be less than 20.\n");
         return;
     }
-    if (ui->tableWidget->item(4, 0)->text().length() != 8)
+    if (ui->tableWidget->item(6, 0)->text().length() != 8)
     {
         QMessageBox::warning(this, "Invalid Value", "The length of the Date of Generation must be 8.\n");
         return;
     }
-    if (!QtHelpers::VerifyHexString(ui->tableWidget->item(5, 0)->text()))
+    if (!QtHelpers::VerifyHexString(ui->tableWidget->item(7, 0)->text()))
     {
         QMessageBox::warning(this, "Invalid Value", "The Public Exponent must be all hexadecimal digits.\n");
         return;
@@ -82,9 +93,11 @@ void CertificateDialog::on_pushButton_clicked()
     cert->publicKeyCertificateSize = QtHelpers::ParseHexString(ui->tableWidget->itemAt(0, 0)->text());
     QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(1, 0)->text(), cert->ownerConsoleID, 5);
     cert->ownerConsolePartNumber = ui->tableWidget->item(2, 0)->text().toStdString();
+    cert->consoleTypeFlags = 0;
+    cert->consoleTypeFlags |= ((cmbxTestKit->currentIndex() << 30) | (cmbxRecoveryGenerated->currentIndex() << 31));
     cert->ownerConsoleType = (ConsoleType)(cmbxConsoleType->currentIndex() + 1);
-    cert->dateGeneration = ui->tableWidget->item(4, 0)->text().toStdString();
-    cert->publicExponent = QtHelpers::ParseHexString(ui->tableWidget->item(5, 0)->text());
+    cert->dateGeneration = ui->tableWidget->item(6, 0)->text().toStdString();
+    cert->publicExponent = QtHelpers::ParseHexString(ui->tableWidget->item(7, 0)->text());
 
     this->close();
 }

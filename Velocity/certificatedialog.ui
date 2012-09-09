@@ -45,6 +45,16 @@
      </row>
      <row>
       <property name="text">
+       <string>Test Kit</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Recovery Generated</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
        <string>Date of Generation</string>
       </property>
      </row>

@@ -133,8 +133,10 @@ void ReadCertificateEx(Certificate *cert, FileIO *io, DWORD address)
     io->readBytes((BYTE*)tempPartNum, 0x11);
     cert->ownerConsolePartNumber = string(tempPartNum);
 
-    cert->ownerConsoleType = (ConsoleType)io->readDword();
-    if (cert->ownerConsoleType != DevKit && cert->ownerConsoleType != Retail && cert->ownerConsoleType != TestKit && cert->ownerConsoleType != DevKit2)
+    DWORD temp = io->readDword();
+    cert->ownerConsoleType = (ConsoleType)(temp & 3);
+    cert->consoleTypeFlags = (temp & 0xFFFFFFFC);
+    if (cert->ownerConsoleType != DevKit && cert->ownerConsoleType != Retail)
         throw string("STFS: Invalid console type.\n");
 
     char tempGenDate[9] = {0};
@@ -156,7 +158,8 @@ void WriteCertificateEx(Certificate *cert, FileIO *io, DWORD address)
     io->write(cert->publicKeyCertificateSize);
     io->write(cert->ownerConsoleID, 5);
     io->write(cert->ownerConsolePartNumber.c_str(), 0x11);
-    io->write((DWORD)cert->ownerConsoleType);
+    DWORD temp = cert->consoleTypeFlags | cert->ownerConsoleType;
+    io->write(temp);
     io->write(cert->dateGeneration.c_str(), 8);
     io->write(cert->publicExponent);
     io->write(cert->publicModulus, 0x80);
@@ -187,10 +190,6 @@ string ConsoleTypeToString(ConsoleType type)
             return string("DevKit");
         case Retail:
             return string("Retail");
-        case TestKit:
-            return string("TestKit");
-        case DevKit2:
-            return string("DevKit2");
         default:
             throw string("STFS: Invalid console type.\n");
     }
