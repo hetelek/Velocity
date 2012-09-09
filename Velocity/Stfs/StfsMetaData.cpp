@@ -142,7 +142,6 @@ void StfsMetaData::WriteMetaData()
     // seek to the begining of the file
     io->setPosition(0);
 
-    memcpy(consoleID, certificate.ownerConsoleID, 5);
     if (!isPEC)
     {
 
@@ -223,9 +222,10 @@ void StfsMetaData::WriteMetaData()
         io->setPosition(0x571A);
         io->write(titleThumbnailImage, titleThumbnailImageSize);
     }
-
     else
     {
+        memcpy(consoleID, certificate.ownerConsoleID, 5);
+
         WriteCertificateEx(&certificate, io, 0);
         io->write(headerHash, 0x14);
 
