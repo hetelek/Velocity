@@ -86,17 +86,22 @@ void AvatarAwardGPD::UnlockAllAwards()
     io->flush();
 }
 
+string AvatarAwardGPD::GetGUID(struct AvatarAward *award)
+{
+    char guid[38];
+    WORD *seg = (WORD*)&award->awardFlags;
+    sprintf(guid, "%08x-%04x-%04x-%04x-%04x%08x\0", award->clothingType, seg[3], seg[2], seg[1], seg[0], award->titleID);
+
+    return string(guid);
+}
+
 string AvatarAwardGPD::getAwardImageURL(struct AvatarAward *award, bool little)
 {
     stringstream url;
     url << "http://avatar.xboxlive.com/global/t.";
     url << std::hex << award->titleID << "/avataritem/";
 
-    char guid[38];
-    WORD *seg = (WORD*)&award->awardFlags;
-    sprintf(guid, "%08x-%04x-%04x-%04x-%04x%08x\0", award->clothingType, seg[3], seg[2], seg[1], seg[0], award->titleID);
-
-    url << string(guid) << ((little) ? "/64" : "/128");
+    url << GetGUID(award) << ((little) ? "/64" : "/128");
 
     return url.str();
 }

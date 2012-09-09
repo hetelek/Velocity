@@ -23,11 +23,14 @@ public:
     // Description: unlock all of the avatar awards in this gpd
     void UnlockAllAwards();
 
-    // Description: get the URl of the image of the award passed in, hosted on xbox.com, 64x64
+    // Description: get the URL of the image of the award passed in, hosted on xbox.com, 64x64
     static string GetLittleAwardImageURL(struct AvatarAward *award);
 
-    // Description: get the URl of the image of the award passed in, hosted on xbox.com, 128x128
+    // Description: get the URL of the image of the award passed in, hosted on xbox.com, 128x128
     static string GetLargeAwardImageURL(struct AvatarAward *award);
+
+    // Description: get the GUID of the avatar award, used in URLs on xbox.com
+    static string GetGUID(struct AvatarAward *award);
 
     // Description: write the avatar award back to the gpd
     void WriteAvatarAward(struct AvatarAward *award);
