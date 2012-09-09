@@ -3,11 +3,15 @@
 
 // qt
 #include <QString>
+#include <QFile>
+#include <QFileDialog>
 #include <QDesktopServices>
 
 // other
 #include "winnames.h"
+#include <Stfs/StfsConstants.h>
 #include <ctype.h>
+#include <direct.h>
 
 class QtHelpers
 {
@@ -25,6 +29,8 @@ public:
     static bool VerifyDecimalString(QString str);
 
     static bool VerifyHexStringBuffer(QString bytes);
+
+    static std::string GetKVPath(ConsoleType type, QWidget *parent = 0);
 };
 
 #endif // QTHELPERS_H

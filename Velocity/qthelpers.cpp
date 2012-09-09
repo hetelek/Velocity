@@ -57,6 +57,22 @@ bool QtHelpers::VerifyHexString(QString str)
     return true;
 }
 
+std::string QtHelpers::GetKVPath(ConsoleType type, QWidget *parent)
+{
+    std::string kvName = "KV_";
+    if (type == Retail)
+        kvName += "R.bin";
+    else
+        kvName += "D.bin";
+
+    if (!QFile::exists(QString::fromStdString(kvName)))
+    {
+        QString path = QFileDialog::getOpenFileName(parent, "KV Location", DesktopLocation() + "/KV.bin");
+        kvName = path.toStdString();
+    }
+    return kvName;
+}
+
 bool QtHelpers::VerifyDecimalString(QString str)
 {
     for (DWORD i = 0; i< str.length(); i++)
