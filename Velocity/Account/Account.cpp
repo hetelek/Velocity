@@ -145,7 +145,7 @@ void Account::SetXUIDOnline()
 
 void Account::SetXUIDOffline()
 {
-    account.xuid = ((account.xuid & 0xFFFFFFFFFFFF) | 0xE000000000000000);
+    account.xuid = 0;
 }
 
 void Account::SetSubscriptionTeir(SubscriptionTeir teir)
