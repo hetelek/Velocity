@@ -936,7 +936,7 @@ void StfsPackage::Resign(string kvPath)
     {
         headerStart = 0x23C;
         hashLoc = 0x228;
-        size = 0x230;
+        size = 0xDC4;
         toSignLoc = 0x23C;
     }
     else
