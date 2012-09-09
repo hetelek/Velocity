@@ -142,6 +142,7 @@ void StfsMetaData::WriteMetaData()
     // seek to the begining of the file
     io->setPosition(0);
 
+    memcpy(consoleID, certificate.ownerConsoleID, 5);
     if (!isPEC)
     {
 
