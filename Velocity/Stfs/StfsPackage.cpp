@@ -930,7 +930,7 @@ void StfsPackage::Resign(string kvPath)
     if (kvIo.getPosition() == 0x4000)
         adder = 0x10;
 
-    DWORD headerStart, size, hashLoc, toSignLoc;
+    DWORD headerStart, size, hashLoc, toSignLoc, consoleIDLoc;
     // set the headerStart
     if (isPEC)
     {
@@ -938,6 +938,7 @@ void StfsPackage::Resign(string kvPath)
         hashLoc = 0x228;
         size = 0xDC4;
         toSignLoc = 0x23C;
+        consoleIDLoc = 0x275;
     }
     else
     {
@@ -945,35 +946,16 @@ void StfsPackage::Resign(string kvPath)
         hashLoc = 0x32C;
         size = 0x118;
         toSignLoc = 0x22C;
+        consoleIDLoc = 0x36C;
     }
 
     // calculate header size / first hash table address
     DWORD calculated = ((metaData->headerSize + 0xFFF) & 0xF000);
     DWORD headerSize = calculated - headerStart;
 
-    // read the data to hash
-    BYTE *buffer = new BYTE[headerSize];
-    io->setPosition(headerStart);
-    io->readBytes(buffer, headerSize);
-
-    // hash the header
-    sha1->clear();
-    sha1->update(buffer, headerSize);
-    sha1->final(metaData->headerHash);
-
-    delete[] buffer;
-
-    io->setPosition(hashLoc);
-    io->write(metaData->headerHash, 0x14);
-
-    io->setPosition(toSignLoc);
-
-    BYTE *dataToSign = new BYTE[size];
-    io->readBytes(dataToSign, size);
-
     // read the certificate
     kvIo.setPosition(0x9B8 + adder);
-     metaData->certificate.publicKeyCertificateSize = kvIo.readWord();
+    metaData->certificate.publicKeyCertificateSize = kvIo.readWord();
     kvIo.readBytes(metaData->certificate.ownerConsoleID, 5);
 
     char tempPartNum[0x15];
@@ -1014,6 +996,30 @@ void StfsPackage::Resign(string kvPath)
     Botan::AutoSeeded_RNG rng;
     Botan::RSA_PrivateKey pkey(rng, p, q, 0x10001, 0, n);
 
+    // write the console id
+    io->setPosition(consoleIDLoc);
+    io->write(metaData->certificate.ownerConsoleID, 5);
+
+    // read the data to hash
+    BYTE *buffer = new BYTE[headerSize];
+    io->setPosition(headerStart);
+    io->readBytes(buffer, headerSize);
+
+    // hash the header
+    sha1->clear();
+    sha1->update(buffer, headerSize);
+    sha1->final(metaData->headerHash);
+
+    delete[] buffer;
+
+    io->setPosition(hashLoc);
+    io->write(metaData->headerHash, 0x14);
+
+    io->setPosition(toSignLoc);
+
+    BYTE *dataToSign = new BYTE[size];
+    io->readBytes(dataToSign, size);
+
     Botan::PK_Signer signer(pkey, Botan::get_emsa("EMSA3(SHA-160)"));
     Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToSign, size, rng);
 
@@ -1024,9 +1030,9 @@ void StfsPackage::Resign(string kvPath)
     for (int i = 0; i < 0x10; i++)
         FileIO::swapEndian(&signature[i * 8], 1, 8);
 
+    // write the certficate
     memcpy(metaData->certificate.signature, signature, 0x80);
-
-    metaData->WriteMetaData();
+    metaData->WriteCertificate();
 }
 
 
