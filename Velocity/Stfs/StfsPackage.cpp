@@ -1026,7 +1026,7 @@ void StfsPackage::Resign(string kvPath)
 
     memcpy(metaData->certificate.signature, signature, 0x80);
 
-    metaData->WriteCertificate();
+    metaData->WriteMetaData();
 }
 
 
