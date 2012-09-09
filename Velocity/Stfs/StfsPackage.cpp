@@ -302,7 +302,7 @@ void StfsPackage::ExtractFile(FileEntry *entry, string outPath, void (*extractPr
     if (entry->flags & 1)
     {
         // allocate 0xAA blocks of memory, for maximum efficiency, yo
-        BYTE buffer[0xAA000];
+        BYTE *buffer = new BYTE[0xAA000];
 
         // seek to the begining of the file
         DWORD startAddress = BlockToAddress(entry->startingBlockNum);
@@ -374,6 +374,8 @@ void StfsPackage::ExtractFile(FileEntry *entry, string outPath, void (*extractPr
                 extractProgress(arg, entry->blocksForFile, entry->blocksForFile);
         }
 
+        // free the temp buffer
+        delete[] buffer;
     }
     else
     {
