@@ -915,7 +915,7 @@ void ProfileEditor::saveAll()
         return;
     }
 
-    QString path = QFileDialog::getOpenFileName(this, "KV Location", QtHelpers::DesktopLocation() + "/KV.bin");
+    string path = QtHelpers::GetKVPath(profile->metaData->certificate.ownerConsoleType, this);
     // save the avatar awards
     if (PEC != NULL)
     {
@@ -926,10 +926,8 @@ void ProfileEditor::saveAll()
 
         PEC->Rehash();
 
-        if (path.isEmpty())
-            return;
-
-        PEC->Resign(path.toStdString());
+        if (path != "")
+            PEC->Resign(path);
 
         delete PEC;
 
@@ -1009,7 +1007,8 @@ void ProfileEditor::saveAll()
 
     // fix the package
     profile->Rehash();
-    profile->Resign(path.toStdString());
+    if (path != "")
+        profile->Resign(path);
 }
 
 State ProfileEditor::getStateFromFlags(DWORD flags)

@@ -166,7 +166,7 @@ void PackageViewer::SetIcon(string name, QTreeWidgetItem *item)
 
 void PackageViewer::on_btnFix_clicked()
 {
-    bool success = true;
+    bool success = true, resigned = false;
     try
     {
         package->Rehash();
@@ -179,11 +179,13 @@ void PackageViewer::on_btnFix_clicked()
 
     try
     {
-        QString path = QFileDialog::getOpenFileName(this, "KV Location", QtHelpers::DesktopLocation() + "/KV.bin");
-        if (path.isEmpty())
-            return;
+        string path = QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType, this);
 
-        package->Resign(path.toStdString());
+        if (path != "")
+        {
+            package->Resign(path);
+            resigned = true;
+        }
     }
     catch (string error)
     {
@@ -192,7 +194,10 @@ void PackageViewer::on_btnFix_clicked()
     }
 
     if (success)
-        QMessageBox::information(this, "Success", "The package hash successfully been rehashed and resigned!");
+    {
+        QString resignedStr = (resigned ? " and resigned" : "");
+        QMessageBox::information(this, "Success", "The package has successfully been rehashed" + resignedStr + "!");
+    }
 }
 
 void PackageViewer::on_btnViewAll_clicked()
