@@ -77,6 +77,7 @@
     </property>
     <addaction name="actionProfile_Manager"/>
     <addaction name="actionTheme_Creator"/>
+    <addaction name="actionTitle_ID_Finder"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -157,6 +158,11 @@
    </property>
    <property name="text">
     <string>Avatar Asset</string>
+   </property>
+  </action>
+  <action name="actionTitle_ID_Finder">
+   <property name="text">
+    <string>Title ID Finder</string>
    </property>
   </action>
  </widget>

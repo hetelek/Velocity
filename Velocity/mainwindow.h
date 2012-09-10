@@ -58,6 +58,8 @@ private slots:
 
     void on_actionCreate_Package_triggered();
 
+    void on_actionTitle_ID_Finder_triggered();
+
 private:
     Ui::MainWindow *ui;
     vector<StfsPackage*> openPackages;

@@ -200,3 +200,7 @@ void MainWindow::on_actionCreate_Package_triggered()
     CreationWizard wizard(this);
     wizard.exec();
 }
+
+void MainWindow::on_actionTitle_ID_Finder_triggered()
+{
+}
