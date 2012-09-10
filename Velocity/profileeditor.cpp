@@ -805,7 +805,7 @@ void ProfileEditor::updateAvatarAward(TitleEntry *entry, AvatarAwardGPD *gpd, st
     // write the entry back to the gpd
     gpd->WriteAvatarAward(award);
 
-    entry->flags |= (DownloadAvatarAward | SyncAvatarAward);
+    entry->flags |= DownloadAvatarAward;
 
     // update the dash gpd
     dashGPD->WriteTitleEntry(entry);
