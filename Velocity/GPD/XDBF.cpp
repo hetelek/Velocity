@@ -730,6 +730,22 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
         }
     }
 
+    // if the sync is already in the queue, then we still need to increment it
+    for (DWORD i = 0; i < group->syncs.toSync.size(); i++)
+    {
+        if (group->syncs.toSync.at(i).entryID == entry->id)
+        {
+            SyncEntry sync = group->syncs.toSync.at(i);
+
+            // erase it so we can add it to the end
+            group->syncs.toSync.erase(group->syncs.toSync.begin() + i);
+
+            // add it to the front
+            sync.syncValue = group->syncData.nextSyncID++;
+            group->syncs.toSync.insert(group->syncs.toSync.begin(), sync);
+        }
+    }
+
     // re-write the new sync list
     writeSyncList(&group->syncs);
 
