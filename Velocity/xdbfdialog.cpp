@@ -70,44 +70,63 @@ void XdbfDialog::showContextMenu(QPoint p)
         return;
     else if (selectedItem->text() == "Extract Entry")
     {
-        Entry e = indexToEntry(ui->treeWidget->currentIndex().row());
-        XDBFEntry xentry;
-
-        // get the xdbf entry
-        if (e.type == Achievement)
-            xentry = gpd->xdbf->achievements.entries.at(e.index);
-        else if (e.type == Image)
-            xentry = gpd->xdbf->images.at(e.index);
-        else if (e.type == Setting)
-            xentry = gpd->xdbf->settings.entries.at(e.index);
-        else if (e.type == Title)
-            xentry = gpd->xdbf->titlesPlayed.entries.at(e.index);
-        else if (e.type == String)
-            xentry = gpd->xdbf->strings.at(e.index);
-        else if (e.type == AvatarAward)
-            xentry = gpd->xdbf->avatarAwards.entries.at(e.index);
-
-        // extract the entry into memory
-        BYTE *entryBuff = new BYTE[xentry.length];
-        gpd->xdbf->ExtractEntry(xentry, entryBuff);
+        QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
 
         // get the out path
-        QString outPath = QFileDialog::getSaveFileName(this, "Choose a place to extract the entry", QtHelpers::DesktopLocation() + "\\" + ui->treeWidget->currentItem()->text(0));
+        QString path;
+        if (items.count() > 1)
+            path = QFileDialog::getExistingDirectory(this, "Extract Directory", QtHelpers::DesktopLocation()) + "\\";
+        else
+            path = QFileDialog::getSaveFileName(this, "Choose a place to extract the entry", QtHelpers::DesktopLocation() + "\\" + ui->treeWidget->currentItem()->text(0));
 
-        if (outPath == "")
+        if (path.isEmpty())
             return;
 
-        // delete the file if it exists
-        if (QFile::exists(outPath))
-            QFile::remove(outPath);
+        for (int i = 0; i < items.count(); i++)
+        {
+            int index = -1;
+            for (int x = 0; x < ui->treeWidget->topLevelItemCount(); x++)
+                if (ui->treeWidget->topLevelItem(x) == items.at(i))
+                {
+                    index = x;
+                    break;
+                }
 
-        // write the data to a file
-        FileIO io(outPath.toStdString(), true);
-        io.write(entryBuff, xentry.length);
-        io.close();
+            Entry e = indexToEntry(index);
+            XDBFEntry xentry;
 
-        // free the temporary memory
-        delete[] entryBuff;
+            // get the xdbf entry
+            if (e.type == Achievement)
+                xentry = gpd->xdbf->achievements.entries.at(e.index);
+            else if (e.type == Image)
+                xentry = gpd->xdbf->images.at(e.index);
+            else if (e.type == Setting)
+                xentry = gpd->xdbf->settings.entries.at(e.index);
+            else if (e.type == Title)
+                xentry = gpd->xdbf->titlesPlayed.entries.at(e.index);
+            else if (e.type == String)
+                xentry = gpd->xdbf->strings.at(e.index);
+            else if (e.type == AvatarAward)
+                xentry = gpd->xdbf->avatarAwards.entries.at(e.index);
+
+            // extract the entry into memory
+            BYTE *entryBuff = new BYTE[xentry.length];
+            gpd->xdbf->ExtractEntry(xentry, entryBuff);
+
+            QString outPath = path;
+            if (items.count() > 1)
+                outPath += items.at(i)->text(0);
+
+            // write the data to a file
+            FileIO io(outPath.toStdString(), true);
+            io.write(entryBuff, xentry.length);
+            io.close();
+
+            // free the temporary memory
+            delete[] entryBuff;
+        }
+
+        QMessageBox::information(this, "Success", "All entries have been successfully extracted.");
     }
     else if (selectedItem->text() == "Replace Entry")
     {
