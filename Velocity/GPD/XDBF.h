@@ -58,7 +58,6 @@ private:
     bool ioPassedIn;
     XDBFHeader header;
     vector<XDBFFreeMemEntry> freeMemory;
-    DWORD totalFreeMemory;
 
     // Description: read in the XDBF header
     void readHeader();

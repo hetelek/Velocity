@@ -1,7 +1,7 @@
 #include "XDBF.h"
 #include <stdio.h>
 
-XDBF::XDBF(string gpdPath) : totalFreeMemory(0), ioPassedIn(false)
+XDBF::XDBF(string gpdPath) : ioPassedIn(false)
 {
     io = new FileIO(gpdPath);
 
@@ -11,7 +11,7 @@ XDBF::XDBF(string gpdPath) : totalFreeMemory(0), ioPassedIn(false)
     readFreeMemoryTable();
 }
 
-XDBF::XDBF(FileIO *io) : totalFreeMemory(0), ioPassedIn(true)
+XDBF::XDBF(FileIO *io) : ioPassedIn(true)
 {
     this->io = io;
 
@@ -308,7 +308,6 @@ void XDBF::readFreeMemoryTable()
     for (DWORD i = 0; i < header.freeMemTableEntryCount; i++)
     {
         XDBFFreeMemEntry entry = { io->readDword(), io->readDword() };
-        totalFreeMemory += entry.length;
         freeMemory.push_back(entry);
     }
 }
@@ -475,19 +474,12 @@ DWORD XDBF::AllocateMemory(DWORD size)
         XDBFFreeMemEntry temp = freeMemory.at(index);
         freeMemory.erase(freeMemory.begin() + index);
 
-        // update the total free memory
-        totalFreeMemory -= size;
-
         // update the header
         header.freeMemTableEntryCount--;
 
         // if there is more memory there than needed, then give some back
-        if (size != freeMemory.at(index).length)
+        if (size != temp.length)
             DeallocateMemory(GetRealAddress(temp.addressSpecifier + size), temp.length - size);
-
-        // upadate the last free mem table entry
-        freeMemory.at(freeMemory.size() - 1).addressSpecifier = 0xFFFFFFFF - totalFreeMemory;
-        freeMemory.at(freeMemory.size() - 1).length = totalFreeMemory;
 
         // update what needs to be updated
         writeFreeMemTable();
@@ -604,6 +596,12 @@ void XDBF::writeEntryListing()
 
 void XDBF::writeFreeMemTable()
 {
+    // update the last free memory table entry
+    io->setPosition(0, ios_base::end);
+    DWORD temp = GetSpecifier(io->getPosition());
+    freeMemory.at(freeMemory.size() - 1).addressSpecifier = temp;
+    freeMemory.at(freeMemory.size() - 1).length = (0xFFFFFFFF - temp);
+
     // seek to the free memory table position
     io->setPosition(0x18 + (header.entryTableLength * 0x12));
 
@@ -615,7 +613,6 @@ void XDBF::writeFreeMemTable()
     }
 
     // null out the rest of the table
-    DWORD temp = io->getPosition();
     for (DWORD i = 0; i < (header.freeMemTableLength - freeMemory.size()); i++)
         io->write((UINT64)0);
 }
@@ -635,15 +632,15 @@ void XDBF::writeEntryGroup(XDBFEntryGroup *group)
 {
     std::sort(group->entries.begin(), group->entries.end(), compareEntries);
 
-    // write all the entries
-    for (DWORD i = 0; i < group->entries.size(); i++)
-        writeEntry(&group->entries.at(i));
-
     // write the sync stuffs
     if (group->syncs.entry.type != 0)
         writeEntry(&group->syncs.entry);
     if (group->syncData.entry.type != 0)
         writeEntry(&group->syncData.entry);
+
+    // write all the entries
+    for (DWORD i = 0; i < group->entries.size(); i++)
+        writeEntry(&group->entries.at(i));
 }
 
 void XDBF::writeEntryGroup(vector<XDBFEntry> *group)
@@ -714,22 +711,6 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
         group->syncs.lengthChanged = true;
     }
 
-    // find the sync
-    for (DWORD i = 0; i < group->syncs.synced.size(); i++)
-    {
-        if (group->syncs.synced.at(i).entryID == entry->id)
-        {
-            SyncEntry sync = group->syncs.synced.at(i);
-
-            // erase it from the synced list
-            group->syncs.synced.erase(group->syncs.synced.begin() + i);
-
-            // add the sync to the queue
-            sync.syncValue = group->syncData.nextSyncID++;
-            group->syncs.toSync.push_back(sync);
-        }
-    }
-
     // if the sync is already in the queue, then we still need to increment it
     for (DWORD i = 0; i < group->syncs.toSync.size(); i++)
     {
@@ -742,7 +723,23 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
 
             // add it to the front
             sync.syncValue = group->syncData.nextSyncID++;
-            group->syncs.toSync.insert(group->syncs.toSync.begin(), sync);
+            group->syncs.toSync.push_back(sync);
+        }
+    }
+
+    // find the sync if it isn't already in the queue
+    for (DWORD i = 0; i < group->syncs.synced.size(); i++)
+    {
+        if (group->syncs.synced.at(i).entryID == entry->id)
+        {
+            SyncEntry sync = group->syncs.synced.at(i);
+
+            // erase it from the synced list
+            group->syncs.synced.erase(group->syncs.synced.begin() + i);
+
+            // add the sync to the queue
+            sync.syncValue = group->syncData.nextSyncID++;
+            group->syncs.toSync.push_back(sync);
         }
     }
 
