@@ -94,7 +94,8 @@ HEADERS  += mainwindow.h \
     stfstoolsdialog.h \
     progressdialog.h \
     stfsworkerthread.h \
-    singleprogressdialog.h
+    singleprogressdialog.h \
+    PluginInterfaces/igamemodder.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
