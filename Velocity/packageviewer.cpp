@@ -117,7 +117,7 @@ void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *pare
         SetIcon(entry->fileEntries.at(i).name, fileEntry);
 
         fileEntry->setText(0, QString::fromStdString(entry->fileEntries.at(i).name));
-        fileEntry->setText(1, "0x" + QString::number(entry->fileEntries.at(i).fileSize, 16).toUpper());
+        fileEntry->setText(1, QString::fromStdString(ByteSizeToString(entry->fileEntries.at(i).fileSize)));
         fileEntry->setText(2, "0x" + QString::number(package->BlockToAddress(entry->fileEntries.at(i).startingBlockNum), 16).toUpper());
         fileEntry->setText(3, "0x" + QString::number(entry->fileEntries.at(i).startingBlockNum, 16).toUpper());
     }
