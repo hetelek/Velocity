@@ -632,15 +632,30 @@ void XDBF::writeEntryGroup(XDBFEntryGroup *group)
 {
     std::sort(group->entries.begin(), group->entries.end(), compareEntries);
 
-    // write the sync stuffs
-    if (group->syncs.entry.type != 0)
-        writeEntry(&group->syncs.entry);
-    if (group->syncData.entry.type != 0)
-        writeEntry(&group->syncData.entry);
+    if (group->syncs.entry.type == AvatarAward)
+    {
+        // write the sync stuffs
+        if (group->syncs.entry.type != 0)
+            writeEntry(&group->syncs.entry);
+        if (group->syncData.entry.type != 0)
+            writeEntry(&group->syncData.entry);
 
-    // write all the entries
-    for (DWORD i = 0; i < group->entries.size(); i++)
-        writeEntry(&group->entries.at(i));
+        // write all the entries
+        for (DWORD i = 0; i < group->entries.size(); i++)
+            writeEntry(&group->entries.at(i));
+    }
+    else
+    {
+        // write all the entries
+        for (DWORD i = 0; i < group->entries.size(); i++)
+            writeEntry(&group->entries.at(i));
+
+        // write the sync stuffs
+        if (group->syncs.entry.type != 0)
+            writeEntry(&group->syncs.entry);
+        if (group->syncData.entry.type != 0)
+            writeEntry(&group->syncData.entry);
+    }
 }
 
 void XDBF::writeEntryGroup(vector<XDBFEntry> *group)
@@ -712,7 +727,7 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
     }
 
     // if the sync is already in the queue, then we still need to increment it
-    for (DWORD i = 0; i < group->syncs.toSync.size(); i++)
+   /* for (DWORD i = 0; i < group->syncs.toSync.size(); i++)
     {
         if (group->syncs.toSync.at(i).entryID == entry->id)
         {
@@ -725,7 +740,7 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
             sync.syncValue = group->syncData.nextSyncID++;
             group->syncs.toSync.push_back(sync);
         }
-    }
+    }*/
 
     // find the sync if it isn't already in the queue
     for (DWORD i = 0; i < group->syncs.synced.size(); i++)
