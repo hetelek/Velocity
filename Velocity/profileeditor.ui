@@ -1073,7 +1073,7 @@ p, li { white-space: pre-wrap; }
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <widget class="QWidget" name="layoutWidget">
+         <widget class="QWidget" name="layoutWidget_1">
           <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
             <widget class="QTreeWidget" name="aaGamelist">
