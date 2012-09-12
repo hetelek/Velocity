@@ -208,6 +208,9 @@ void PackageViewer::on_btnViewAll_clicked()
 
 void PackageViewer::showSaveImageContextMenu(QPoint point)
 {
+    if (ui->imgTile->pixmap()->isNull())
+        return;
+
     QPoint globalPos = ui->imgTile->mapToGlobal(point);
     QMenu contextMenu;
 
@@ -589,7 +592,11 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
         package->ExtractFile(imagePath.toStdString(), tempName);
 
         // display the image
-        ImageDialog dialog(QImage(QString::fromStdString(tempName)), this);
+        QImage image(QString::fromStdString(tempName));
+        if (image.isNull())
+            return;
+
+        ImageDialog dialog(image, this);
         dialog.exec();
 
         // delete the temp file
