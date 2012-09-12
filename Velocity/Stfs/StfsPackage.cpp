@@ -1226,7 +1226,10 @@ void StfsPackage::WriteFileListing(bool usePassed, vector<FileEntry> *outFis, ve
     }
 
     // write remaining null bytes
-    int remainer = 0x1000 - ((outFoldersAndFilesSize % 0x40) * 0x40);
+    DWORD remainingEntries = (outFoldersAndFilesSize % 0x40);
+    int remainer = 0;
+    if (remainingEntries > 0)
+        remainer = (0x40 - remainingEntries) * 0x40;
     BYTE *nullBytes = new BYTE[remainer];
     memset(nullBytes, 0, remainer);
     io->write(nullBytes, remainer);
