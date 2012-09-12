@@ -634,10 +634,8 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
 
 void PackageViewer::on_btnProfileEditor_clicked()
 {
-    ProfileEditor *editor = new ProfileEditor(package, true);
-    editor->show();
-    disposePackage = false;
-    delete ui;
+    ProfileEditor editorProfileEditor(package, false);
+    editorProfileEditor.exec();
 }
 
 void PackageViewer::on_btnStfsTools_clicked()
