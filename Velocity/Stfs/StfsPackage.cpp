@@ -223,7 +223,7 @@ void StfsPackage::ReadFileListing()
         {
             FileEntry fe;
 
-            // set the current positionz
+            // set the current position
             fe.fileEntryAddress = currentAddr + (i * 0x40);
 
             // calculate the entry index (in the file listing)
@@ -231,11 +231,16 @@ void StfsPackage::ReadFileListing()
 
             // read the name, if the length is 0 then break
             fe.name = io->readString(0x28);
-            if (fe.name.length() == 0)
-                break;
 
             // read the name length
             fe.nameLen = io->readByte();
+            if ((fe.nameLen & 0x3F) == 0)
+            {
+                io->setPosition(currentAddr + ((i + 1) * 0x40));
+                continue;
+            }
+            else if (fe.name.length() == 0)
+                break;
 
             // check for a mismatch in the total allocated blocks for the file
             fe.blocksForFile = io->readInt24(LittleEndian);
