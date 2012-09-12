@@ -244,7 +244,7 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
             item->setIcon(0, QIcon(QPixmap::fromImage(QImage::fromData(imageBuff))));
         }
         else
-            item->setIcon(0, QIcon(QPixmap(":\Images\HiddenAcheivement.png")));
+            item->setIcon(0, QIcon(QPixmap(":/Images/HiddenAchievement.png")));
 
         // add the item to the list
         if (dashGPD->gamesPlayed.at(i).achievementCount != 0)
