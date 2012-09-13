@@ -75,7 +75,14 @@
     <property name="title">
      <string>Tools</string>
     </property>
-    <addaction name="actionProfile_Manager"/>
+    <widget class="QMenu" name="menuProfile_Editor">
+     <property name="title">
+      <string>Profile Tools</string>
+     </property>
+     <addaction name="actionProfile_Creator"/>
+     <addaction name="actionProfile_Editor"/>
+    </widget>
+    <addaction name="menuProfile_Editor"/>
     <addaction name="actionTheme_Creator"/>
     <addaction name="actionTitle_ID_Finder"/>
    </widget>
@@ -104,15 +111,6 @@
    </property>
    <property name="text">
     <string>Create Package</string>
-   </property>
-  </action>
-  <action name="actionProfile_Manager">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/Images/ProfileEditorIcon35.png</normaloff>:/Images/ProfileEditorIcon35.png</iconset>
-   </property>
-   <property name="text">
-    <string>Profile Editor</string>
    </property>
   </action>
   <action name="actionTheme_Creator">
@@ -163,6 +161,16 @@
   <action name="actionTitle_ID_Finder">
    <property name="text">
     <string>Title ID Finder</string>
+   </property>
+  </action>
+  <action name="actionProfile_Creator">
+   <property name="text">
+    <string>Profile Creator</string>
+   </property>
+  </action>
+  <action name="actionProfile_Editor">
+   <property name="text">
+    <string>Profile Editor</string>
    </property>
   </action>
  </widget>

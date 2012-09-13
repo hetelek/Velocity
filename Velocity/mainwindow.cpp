@@ -105,7 +105,7 @@ void MainWindow::dropEvent(QDropEvent *event)
     }
 }
 
-void MainWindow::on_actionProfile_Manager_triggered()
+void MainWindow::on_actionProfile_Editor_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
 
@@ -125,6 +125,7 @@ void MainWindow::on_actionProfile_Manager_triggered()
         QMessageBox::critical(this, "Package Error", "An error has occurred while opening the package.\n\n" + QString::fromStdString(error));
     }
 }
+
 
 void MainWindow::on_actionAbout_triggered()
 {
@@ -203,4 +204,10 @@ void MainWindow::on_actionCreate_Package_triggered()
 
 void MainWindow::on_actionTitle_ID_Finder_triggered()
 {
+}
+
+void MainWindow::on_actionProfile_Creator_triggered()
+{
+    ProfileCreatorWizard wiz(this);
+    wiz.exec();
 }

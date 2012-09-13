@@ -18,6 +18,7 @@
 #include "strbdialog.h"
 #include "profileeditor.h"
 #include "creationwizard.h"
+#include "profilecreatorwizard.h"
 
 // other
 #include "ui_mainwindow.h"
@@ -46,8 +47,6 @@ protected:
     void dropEvent(QDropEvent *event);
 
 private slots:
-    void on_actionProfile_Manager_triggered();
-
     void on_actionAbout_triggered();
 
     void on_actionPackage_triggered();
@@ -59,6 +58,10 @@ private slots:
     void on_actionCreate_Package_triggered();
 
     void on_actionTitle_ID_Finder_triggered();
+
+    void on_actionProfile_Creator_triggered();
+
+    void on_actionProfile_Editor_triggered();
 
 private:
     Ui::MainWindow *ui;

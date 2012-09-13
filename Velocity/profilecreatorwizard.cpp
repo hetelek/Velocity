@@ -5,6 +5,7 @@ ProfileCreatorWizard::ProfileCreatorWizard(QWidget *parent) :
     QWizard(parent),
     ui(new Ui::ProfileCreatorWizard)
 {
+    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 }
 
