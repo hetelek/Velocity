@@ -44,5 +44,22 @@
         <file>Images/information.png</file>
         <file>Images/undo.png</file>
         <file>Images/lock.png</file>
+        <file>Images/profile creator.jpg</file>
+        <file>Images/avatarJumping.png</file>
+        <file>Images/2000A.png</file>
+        <file>Images/2000B.png</file>
+        <file>Images/2000C.png</file>
+        <file>Images/20000.png</file>
+        <file>Images/20001.png</file>
+        <file>Images/20002.png</file>
+        <file>Images/20003.png</file>
+        <file>Images/20004.png</file>
+        <file>Images/20005.png</file>
+        <file>Images/20006.png</file>
+        <file>Images/20007.png</file>
+        <file>Images/20008.png</file>
+        <file>Images/20009.png</file>
+        <file>Images/male avatar.png</file>
+        <file>Images/avatar female.png</file>
     </qresource>
 </RCC>
