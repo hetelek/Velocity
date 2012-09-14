@@ -4,15 +4,21 @@
 
 using namespace std;
 
-StfsMetaData::StfsMetaData(FileIO *io, bool isPEC) : isPEC(isPEC)
+StfsMetaData::StfsMetaData(FileIO *io, bool isPEC, bool read) : isPEC(isPEC)
 {
 	// set the io
 	this->io = io;
 
-	// store errors thrown
-	stringstream except;
+    if (read)
+        readMetadata();
+}
 
-	io->setPosition(0);
+void StfsMetaData::readMetadata()
+{
+    // store errors thrown
+    stringstream except;
+
+    io->setPosition(0);
 
     if (!isPEC)
     {

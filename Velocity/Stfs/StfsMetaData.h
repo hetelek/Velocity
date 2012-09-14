@@ -11,7 +11,7 @@ class StfsMetaData
 {
 public:
 	// Description: read in all of the metadata for the package
-    StfsMetaData(FileIO *io, bool isPEC = false);
+    StfsMetaData(FileIO *io, bool isPEC = false, bool read = true);
 
     // Description: write the console certificate
     void WriteCertificate();
@@ -77,5 +77,7 @@ public:
 private:
 	FileIO *io;
     bool isPEC;
+
+    void readMetadata();
 };
 
