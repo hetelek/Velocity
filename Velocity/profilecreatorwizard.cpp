@@ -204,9 +204,15 @@ bool ProfileCreatorWizard::verifyGamertag(QString gamertag)
     if (gamertag.length() == 0 || gamertag.length() > 15 || !gamertag.at(0).isLetter())
         return false;
 
+    QChar prevChar = 0;
     for (DWORD i = 1; i < gamertag.length(); i++)
-        if (!gamertag.at(i).isLetterOrNumber())
+    {
+        if (gamertag.at(i) == ' ' && prevChar == ' ')
             return false;
+        if (!gamertag.at(i).isLetterOrNumber() && gamertag.at(i) != ' ')
+            return false;
+        prevChar = gamertag.at(i);
+    }
     return true;
 }
 
