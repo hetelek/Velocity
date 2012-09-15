@@ -30,6 +30,9 @@ public:
 	// Description: write the setting entry to the file
 	void WriteSettingEntry(SettingEntry setting);
 
+    // Description: close all open resources attatched to the file
+    void Close();
+
 protected:
 	bool ioPassedIn;
 	FileIO *io;

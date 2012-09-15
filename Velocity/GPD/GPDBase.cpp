@@ -264,6 +264,11 @@ void GPDBase::WriteSettingEntry(SettingEntry setting)
     io->flush();
 }
 
+void GPDBase::Close()
+{
+    io->close();
+}
+
 GPDBase::~GPDBase(void)
 {
     // deallocate all of the image memory
