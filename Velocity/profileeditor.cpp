@@ -257,8 +257,11 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
 
     if (ui->gamesList->topLevelItemCount() >= 1)
     {
-        loadGameInfo(0);
-        loadAchievementInfo(0, 0);
+        ui->gamesList->setCurrentItem(ui->gamesList->topLevelItem(0));
+        ui->gamesList->topLevelItem(0)->setSelected(true);
+
+        ui->achievementsList->setCurrentItem(ui->achievementsList->topLevelItem(0));
+        ui->achievementsList->topLevelItem(0)->setSelected(true);
     }
     else
         ui->tabAchievements->setEnabled(false);
@@ -337,8 +340,11 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
 
     if (aaGames.size() >= 1)
     {
-        loadAwardGameInfo(0);
-        loadAvatarAwardInfo(0, 0);
+        ui->aaGamelist->setCurrentItem(ui->aaGamelist->topLevelItem(0));
+        ui->aaGamelist->topLevelItem(0)->setSelected(true);
+
+        ui->avatarAwardsList->setCurrentItem(ui->avatarAwardsList->topLevelItem(0));
+        ui->avatarAwardsList->topLevelItem(0)->setSelected(true);
     }
     else
         ui->tabAvatarAwards->setEnabled(false);
