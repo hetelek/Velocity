@@ -1480,6 +1480,10 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injec
     {
         io->setPosition(topTable.addressInFile);
 
+        delete[] topTable.entries;
+        topTable.entryCount = metaData->volumeDescriptor.allocatedBlockCount;
+        topTable.entries = new HashEntry[topTable.entryCount];
+
         for (DWORD i = 0; i < topTable.entryCount; i++)
         {
             io->readBytes(topTable.entries[i].blockHash, 0x14);
