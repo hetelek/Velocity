@@ -61,5 +61,6 @@
         <file>Images/20009.png</file>
         <file>Images/male avatar.png</file>
         <file>Images/avatar female.png</file>
+        <file>Images/defaultTitleImage.png</file>
     </qresource>
 </RCC>
