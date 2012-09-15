@@ -50,6 +50,8 @@ void ProfileCreatorWizard::onFinished(int status)
         BYTE tempBuffer[0x1000] = {0};
         for (DWORD i = 0; i < 0xD; i++)
             io.write(tempBuffer, 0x1000);
+        io.setPosition(0xA014);
+        io.write((DWORD)0x80FFFFFF);
 
         // set up the metadata for the profile
         StfsMetaData metadata(&io, MetadataDontFreeThumbnails | MetadataSkipRead);
@@ -138,6 +140,35 @@ void ProfileCreatorWizard::onFinished(int status)
         // add the account file to the package
         newProfile.InjectFile(accountTempPath.toStdString(), "Account");
 
+        // make a temporary copy of the dashboard gpd
+        QString dashGPDTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+        QFile::copy("C:\\Users\\Adam\\Desktop\\FFFE07D1.gpd", dashGPDTempPath);
+
+        // parse the GPD
+        DashboardGPD dashGPD(dashGPDTempPath.toStdString());
+
+        // change the gamerpicture key
+        wstring picKey = L"fffe07d10002000" + QString::number(ui->listWidget->currentIndex().row()).toStdWString() + L"0001000" + QString::number(ui->listWidget->currentIndex().row()).toStdWString();
+        dashGPD.gamerPictureKey.str = &picKey;
+        dashGPD.WriteSettingEntry(dashGPD.gamerPictureKey);
+
+        // if the avatar type is female, then we must change the avatar info setting
+        if (ui->rdiFemale->isChecked())
+        {
+            // read in the setting
+            FileIO io("C:\\Users\\Adam\\Desktop\\femaleAvatar.bin");
+            BYTE settingBuffer[0x3E8];
+            io.readBytes(settingBuffer, 0x3E8);
+
+            dashGPD.avatarInformation.binaryData.data = settingBuffer;
+            dashGPD.WriteSettingEntry(dashGPD.avatarInformation);
+        }
+
+        dashGPD.Close();
+
+        // inject the dash gpd into the profile
+        newProfile.InjectFile(dashGPDTempPath.toStdString(), "FFFE07D1.gpd");
+
         newProfile.Rehash();
         string path = QtHelpers::GetKVPath(newProfile.metaData->certificate.ownerConsoleType, this);
 
@@ -146,6 +177,7 @@ void ProfileCreatorWizard::onFinished(int status)
 
         // delete the temp files
         QFile::remove(accountTempPath);
+        QFile::remove(dashGPDTempPath);
     }
     catch (string error)
     {
