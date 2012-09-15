@@ -3,6 +3,8 @@
 FileIO::FileIO(string path, bool truncate) : filePath(path)
 {
     fstr = new fstream(path.c_str(), (std::_Ios_Openmode)(fstream::in | fstream::out | fstream::binary | (fstream::trunc * truncate)));
+    if (!fstr->is_open())
+        throw string("FileIO: Error opening file.\n");
 	endian = BigEndian;
 }
 
