@@ -4,12 +4,20 @@
 // qt
 #include <QWizard>
 #include <QMessageBox>
+#include <QBuffer>
+#include <QDir>
+#include <QUuid>
 #include "qthelpers.h"
 
 // xbox360
 #include "Stfs/StfsPackage.h"
 #include "Stfs/StfsMetaData.h"
 #include "GPD/DashboardGPD.h"
+#include "Account/Account.h"
+
+// other
+#include <stdlib.h>
+#include <time.h>
 
 namespace Ui {
 class ProfileCreatorWizard;
@@ -32,6 +40,7 @@ private slots:
 
 private:
     Ui::ProfileCreatorWizard *ui;
+    UINT64 profileID;
 };
 
 #endif // PROFILECREATORWIZARD_H
