@@ -12,6 +12,7 @@ Account::Account(std::string path, bool decrypt, ConsoleType type) : ioPassedIn(
     else
     {
         io = new FileIO(path);
+        outPath = path;
     }
 
 	parseFile();
@@ -184,8 +185,8 @@ void Account::SetOnlineServiceProvider(XboxLiveServiceProvider provider)
 void Account::Save(ConsoleType type)
 {
     writeFile();
-    if (decrypt)
-        encryptAccount(outPath, type, &path);
+    io->close();
+    encryptAccount(outPath, type, &path);
 }
 
 void Account::decryptAccount(std::string encryptedPath, std::string *outPath, ConsoleType type)
