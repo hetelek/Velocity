@@ -199,7 +199,27 @@ void ProfileCreatorWizard::onFinished(int status)
     }
 }
 
+bool ProfileCreatorWizard::verifyGamertag(QString gamertag)
+{
+    if (gamertag.length() == 0 || gamertag.length() > 15 || !gamertag.at(0).isLetter())
+        return false;
+
+    for (DWORD i = 1; i < gamertag.length(); i++)
+        if (!gamertag.at(i).isLetterOrNumber())
+            return false;
+    return true;
+}
+
 void ProfileCreatorWizard::on_txtGamertag_textChanged(const QString &arg1)
 {
-    button(QWizard::NextButton)->setEnabled(ui->txtGamertag->text() != "");
+    if (!verifyGamertag(ui->txtGamertag->text()))
+    {
+        ui->txtGamertag->setStyleSheet("color: rgb(255, 1, 1);");
+        button(QWizard::NextButton)->setEnabled(false);
+    }
+    else
+    {
+        ui->txtGamertag->setStyleSheet("");
+        button(QWizard::NextButton)->setEnabled(true);
+    }
 }

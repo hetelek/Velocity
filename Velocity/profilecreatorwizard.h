@@ -41,6 +41,8 @@ private slots:
 private:
     Ui::ProfileCreatorWizard *ui;
     UINT64 profileID;
+
+    bool verifyGamertag(QString gamertag);
 };
 
 #endif // PROFILECREATORWIZARD_H
