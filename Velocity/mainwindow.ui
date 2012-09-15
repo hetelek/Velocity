@@ -39,6 +39,21 @@
       <property name="horizontalScrollBarPolicy">
        <enum>Qt::ScrollBarAsNeeded</enum>
       </property>
+      <property name="background">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>160</red>
+         <green>160</green>
+         <blue>160</blue>
+        </color>
+       </brush>
+      </property>
+      <property name="viewMode">
+       <enum>QMdiArea::SubWindowView</enum>
+      </property>
+      <property name="documentMode">
+       <bool>false</bool>
+      </property>
      </widget>
     </item>
    </layout>
@@ -78,6 +93,10 @@
     <widget class="QMenu" name="menuProfile_Editor">
      <property name="title">
       <string>Profile Tools</string>
+     </property>
+     <property name="icon">
+      <iconset resource="Resources.qrc">
+       <normaloff>:/Images/ProfileEditorIcon35.png</normaloff>:/Images/ProfileEditorIcon35.png</iconset>
      </property>
      <addaction name="actionProfile_Creator"/>
      <addaction name="actionProfile_Editor"/>
