@@ -7,11 +7,18 @@
 
 using std::string;
 
+enum StfsMetadataFlags
+{
+    MetadataIsPEC = 1,
+    MetadataSkipRead = 2,
+    MetadataDontFreeThumbnails = 4
+};
+
 class StfsMetaData
 {
 public:
 	// Description: read in all of the metadata for the package
-    StfsMetaData(FileIO *io, bool isPEC = false, bool read = true);
+    StfsMetaData(FileIO *io, DWORD flags = 0);
 
     // Description: write the console certificate
     void WriteCertificate();
@@ -76,7 +83,7 @@ public:
 
 private:
 	FileIO *io;
-    bool isPEC;
+    DWORD flags;
 
     void readMetadata();
 };

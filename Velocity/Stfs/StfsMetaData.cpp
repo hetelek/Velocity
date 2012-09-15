@@ -4,12 +4,12 @@
 
 using namespace std;
 
-StfsMetaData::StfsMetaData(FileIO *io, bool isPEC, bool read) : isPEC(isPEC)
+StfsMetaData::StfsMetaData(FileIO *io, DWORD flags) : flags(flags)
 {
 	// set the io
 	this->io = io;
 
-    if (read)
+    if ((flags & MetadataSkipRead) == 0)
         readMetadata();
 }
 
@@ -20,7 +20,7 @@ void StfsMetaData::readMetadata()
 
     io->setPosition(0);
 
-    if (!isPEC)
+    if ((flags & MetadataIsPEC) == 0)
     {
         magic = (Magic)io->readDword();
 
@@ -137,10 +137,10 @@ void StfsMetaData::readMetadata()
 
 void StfsMetaData::WriteCertificate()
 {
-    if (magic != CON && !isPEC)
+    if (magic != CON && (flags & MetadataIsPEC) == 0)
         throw string("STFS: Error writing certificate. Package is strong signed and therefore doesn't have a certificate.\n");
 
-    WriteCertificateEx(&certificate, io, (isPEC) ? 0 : 4);
+    WriteCertificateEx(&certificate, io, (flags & MetadataIsPEC) ? 0 : 4);
 }
 
 void StfsMetaData::WriteMetaData()
@@ -148,7 +148,7 @@ void StfsMetaData::WriteMetaData()
     // seek to the begining of the file
     io->setPosition(0);
 
-    if (!isPEC)
+    if ((flags & MetadataIsPEC) == 0)
     {
 
         io->write(magic);
@@ -249,12 +249,12 @@ void StfsMetaData::WriteMetaData()
 
 void StfsMetaData::WriteVolumeDescriptor()
 {
-    WriteVolumeDescriptorEx(&volumeDescriptor, io, (isPEC) ? 0x244 : 0x379);
+    WriteVolumeDescriptorEx(&volumeDescriptor, io, (flags & MetadataIsPEC) ? 0x244 : 0x379);
 }
 
 StfsMetaData::~StfsMetaData()
 {
-    if (!isPEC)
+    if ((flags & MetadataIsPEC) == 0 && (flags & MetadataDontFreeThumbnails) == 0)
     {
         delete[] thumbnailImage;
         delete[] titleThumbnailImage;
