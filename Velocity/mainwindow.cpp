@@ -107,7 +107,7 @@ void MainWindow::dropEvent(QDropEvent *event)
 
 void MainWindow::on_actionProfile_Editor_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Profile"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
 
     if (fileName.isEmpty())
         return;
@@ -122,7 +122,7 @@ void MainWindow::on_actionProfile_Editor_triggered()
     }
     catch (string error)
     {
-        QMessageBox::critical(this, "Package Error", "An error has occurred while opening the package.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Profile Error", "An error has occurred while opening the profile.\n\n" + QString::fromStdString(error));
     }
 }
 
