@@ -61,18 +61,20 @@ void ProfileCreatorWizard::onFinished(int status)
 
         memset(metadata.licenseData, 0, sizeof(LicenseEntry) * 0x10);
         metadata.licenseData[0].type = Unrestricted;
+        metadata.licenseData[0].data = 0xFFFFFFFFFFFF;
 
         metadata.headerSize = 0x971A;
         metadata.contentType = Profile;
         metadata.metaDataVersion = 2;
         metadata.contentSize = 0;
         metadata.mediaID = 0;
-        metadata.version;
+        metadata.version = 0;
         metadata.baseVersion = 0;
         metadata.titleID = 0xFFFE07D1;
         metadata.platform = 0;
         metadata.executableType = 0;
         metadata.discNumber = 0;
+        metadata.discInSet = 0;
         metadata.savegameID = 0;
         memset(metadata.consoleID, 0, 5);
 
@@ -101,7 +103,7 @@ void ProfileCreatorWizard::onFinished(int status)
         metadata.displayName = s;
         metadata.displayDescription = L"";
         metadata.publisherName = L"";
-        metadata.titleName = L"Xbox360 Dashboard";
+        metadata.titleName = L"";
         metadata.transferFlags = 0x40;
 
         // set gamerpicture
@@ -169,6 +171,16 @@ void ProfileCreatorWizard::onFinished(int status)
         // inject the dash gpd into the profile
         newProfile.InjectFile(dashGPDTempPath.toStdString(), "FFFE07D1.gpd");
 
+        // create/inject the 64x64 image
+        QString img64Path = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+        ui->listWidget->currentItem()->icon().pixmap(64, 64).save(img64Path, "PNG");
+        newProfile.InjectFile(img64Path.toStdString(), "tile_64.png");
+
+        // create/inject the 32x32 image
+        QString img32Path = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+        ui->listWidget->currentItem()->icon().pixmap(32, 32).save(img32Path, "PNG");
+        newProfile.InjectFile(img32Path.toStdString(), "tile_32.png");
+
         newProfile.Rehash();
         string path = QtHelpers::GetKVPath(newProfile.metaData->certificate.ownerConsoleType, this);
 
@@ -178,6 +190,8 @@ void ProfileCreatorWizard::onFinished(int status)
         // delete the temp files
         QFile::remove(accountTempPath);
         QFile::remove(dashGPDTempPath);
+        QFile::remove(img64Path);
+        QFile::remove(img32Path);
     }
     catch (string error)
     {
