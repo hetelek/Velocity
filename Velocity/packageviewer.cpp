@@ -167,6 +167,23 @@ void PackageViewer::SetIcon(string name, QTreeWidgetItem *item)
 void PackageViewer::on_btnFix_clicked()
 {
     bool success = true, resigned = false;
+
+    // verify the profile and device id
+    if (!QtHelpers::VerifyHexStringBuffer(ui->txtProfileID->text()))
+    {
+        QMessageBox::warning(this, "Invalid Value", "The profile ID must be 16 hexadecimal digits.");
+        return;
+    }
+    if (!QtHelpers::VerifyHexStringBuffer(ui->txtDeviceID->text()))
+    {
+        QMessageBox::warning(this, "Invalid Value", "The device ID must be 40 hexadecimal digits.");
+        return;
+    }
+
+    // save the ids
+    QtHelpers::ParseHexStringBuffer(ui->txtProfileID->text(), package->metaData->profileID, 8);
+    QtHelpers::ParseHexStringBuffer(ui->txtDeviceID->text(), package->metaData->deviceID, 20);
+
     try
     {
         package->Rehash();
