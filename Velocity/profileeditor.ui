@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>Profile Editor</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="Resources.qrc">
+    <normaloff>:/Images/Leaner24.png</normaloff>:/Images/Leaner24.png</iconset>
+  </property>
   <layout class="QGridLayout" name="gridLayout_9">
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">

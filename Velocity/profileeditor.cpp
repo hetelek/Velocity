@@ -438,6 +438,9 @@ void ProfileEditor::loadGameInfo(int index)
         ui->achievementsList->insertTopLevelItem(ui->achievementsList->topLevelItemCount(), item);
     }
 
+    ui->achievementsList->setCurrentItem(ui->achievementsList->topLevelItem(0));
+    ui->achievementsList->topLevelItem(0)->setSelected(true);
+
     TitleEntry *title = games.at(index).titleEntry;
 
     ui->lblGameName->setText("Name: " + QString::fromStdWString(title->gameName));
@@ -569,6 +572,9 @@ void ProfileEditor::loadAwardGameInfo(int index)
 
         ui->avatarAwardsList->insertTopLevelItem(ui->avatarAwardsList->topLevelItemCount(), item);
     }
+
+    ui->avatarAwardsList->setCurrentItem(ui->avatarAwardsList->topLevelItem(0));
+    ui->avatarAwardsList->topLevelItem(0)->setSelected(true);
 
     TitleEntry *title = aaGames.at(index).titleEntry;
     ui->lblAwGameName->setText("Name: " + QString::fromStdWString(title->gameName));
