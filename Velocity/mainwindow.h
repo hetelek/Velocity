@@ -19,6 +19,7 @@
 #include "profileeditor.h"
 #include "creationwizard.h"
 #include "profilecreatorwizard.h"
+#include "themecreationwizard.h"
 
 // other
 #include "ui_mainwindow.h"
@@ -62,6 +63,8 @@ private slots:
     void on_actionProfile_Creator_triggered();
 
     void on_actionProfile_Editor_triggered();
+
+    void on_actionTheme_Creator_triggered();
 
 private:
     Ui::MainWindow *ui;

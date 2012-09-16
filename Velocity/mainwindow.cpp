@@ -22,6 +22,12 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event)
         event->acceptProposedAction();
 }
 
+void MainWindow::on_actionTheme_Creator_triggered()
+{
+    ThemeCreationWizard wiz(this);
+    wiz.exec();
+}
+
 void MainWindow::dropEvent(QDropEvent *event)
 {
     QList<QUrl> filePaths = event->mimeData()->urls();
@@ -208,6 +214,12 @@ void MainWindow::on_actionTitle_ID_Finder_triggered()
 
 void MainWindow::on_actionProfile_Creator_triggered()
 {
+    if (!QFile::exists("FFFE07D1.gpd"))
+    {
+        QMessageBox::critical(this, "File Not Found", "The file FFFE07D1.gpd was not found. This file must be in the same directory as this application.");
+        return;
+    }
+
     ProfileCreatorWizard wiz(this);
     wiz.exec();
 }
