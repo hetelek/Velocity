@@ -144,7 +144,7 @@ void ProfileCreatorWizard::onFinished(int status)
 
         // make a temporary copy of the dashboard gpd
         QString dashGPDTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
-        QFile::copy("C:\\Users\\Adam\\Desktop\\FFFE07D1.gpd", dashGPDTempPath);
+        QFile::copy("FFFE07D1.gpd", dashGPDTempPath);
 
         // parse the GPD
         DashboardGPD dashGPD(dashGPDTempPath.toStdString());
@@ -228,4 +228,12 @@ void ProfileCreatorWizard::on_txtGamertag_textChanged(const QString &arg1)
         ui->txtGamertag->setStyleSheet("");
         button(QWizard::NextButton)->setEnabled(true);
     }
+}
+
+void ProfileCreatorWizard::on_pushButton_clicked()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, "Choose a place to create the profile", QtHelpers::DesktopLocation() + "\\" + QString::number(profileID, 16).toUpper());
+
+    if (fileName != "")
+        ui->lblSavePath->setText(fileName);
 }

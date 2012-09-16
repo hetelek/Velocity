@@ -38,6 +38,8 @@ private slots:
 
     void onFinished(int status);
 
+    void on_pushButton_clicked();
+
 private:
     Ui::ProfileCreatorWizard *ui;
     UINT64 profileID;
