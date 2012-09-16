@@ -62,5 +62,7 @@
         <file>Images/male avatar.png</file>
         <file>Images/avatar female.png</file>
         <file>Images/defaultTitleImage.png</file>
+        <file>Images/theme.png</file>
+        <file>Images/watermark.png</file>
     </qresource>
 </RCC>
