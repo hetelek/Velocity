@@ -52,7 +52,8 @@ SOURCES += main.cpp \
     progressdialog.cpp \
     stfsworkerthread.cpp \
     singleprogressdialog.cpp \
-    profilecreatorwizard.cpp
+    profilecreatorwizard.cpp \
+    themecreationwizard.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -97,7 +98,8 @@ HEADERS  += mainwindow.h \
     stfsworkerthread.h \
     singleprogressdialog.h \
     PluginInterfaces/igamemodder.h \
-    profilecreatorwizard.h
+    profilecreatorwizard.h \
+    themecreationwizard.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -119,7 +121,8 @@ FORMS    += mainwindow.ui \
     stfstoolsdialog.ui \
     progressdialog.ui \
     singleprogressdialog.ui \
-    profilecreatorwizard.ui
+    profilecreatorwizard.ui \
+    themecreationwizard.ui
 
 RESOURCES += \
     Resources.qrc
