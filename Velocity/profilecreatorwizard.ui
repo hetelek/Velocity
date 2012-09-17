@@ -301,6 +301,9 @@ p, li { white-space: pre-wrap; }
             <property name="maxLength">
              <number>15</number>
             </property>
+            <property name="placeholderText">
+             <string>Gamertag</string>
+            </property>
            </widget>
           </item>
          </layout>
