@@ -559,6 +559,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
             if(changed)
                 package->ReplaceFile(tempNameStd, packagePath.toStdString());
 
+            gpd->Close();
             delete gpd;
 
             // delete the temp file
