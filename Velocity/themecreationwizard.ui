@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>549</width>
-    <height>430</height>
+    <width>592</width>
+    <height>425</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Wizard</string>
+   <string>Theme Creator</string>
   </property>
   <property name="windowIcon">
    <iconset resource="Resources.qrc">
@@ -310,7 +310,11 @@ p, li { white-space: pre-wrap; }
            </spacer>
           </item>
           <item>
-           <widget class="QLineEdit" name="txtName"/>
+           <widget class="QLineEdit" name="txtName">
+            <property name="placeholderText">
+             <string/>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -328,7 +332,7 @@ p, li { white-space: pre-wrap; }
          </spacer>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,0,0">
           <item>
            <spacer name="horizontalSpacer_4">
             <property name="orientation">
@@ -1017,6 +1021,89 @@ p, li { white-space: pre-wrap; }
        <size>
         <width>40</width>
         <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="pageSavePath">
+   <property name="title">
+    <string>Save Location</string>
+   </property>
+   <property name="subTitle">
+    <string>Choose a place to save the new theme</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_13">
+    <item>
+     <spacer name="verticalSpacer_18">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_14">
+      <item>
+       <widget class="QLabel" name="label_8">
+        <property name="minimumSize">
+         <size>
+          <width>175</width>
+          <height>175</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>175</width>
+          <height>175</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap resource="Resources.qrc">:/Images/theme.png</pixmap>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="1,0">
+        <item>
+         <widget class="QLabel" name="lblSavePath">
+          <property name="text">
+           <string>Desktop Location</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_6">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <spacer name="verticalSpacer_19">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
        </size>
       </property>
      </spacer>

@@ -5,6 +5,10 @@
 #include <QWizard>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QBuffer>
+#include <QTextStream>
+#include <QFile>
+#include <QUuid>
 #include "qthelpers.h"
 
 // xbox 360
@@ -77,10 +81,17 @@ private slots:
 
     void on_txtName_textChanged(const QString &arg1);
 
+    void onFinished(int status);
+
+    void on_pushButton_6_clicked();
+
 private:
     Ui::ThemeCreationWizard *ui;
+    QString wallpaper1, wallpaper2, wallpaper3, wallpaper4;
 
-    void openWallpaper(QLabel *imageViewer);
+    BYTE imagesLoaded;
+
+    void openWallpaper(QLabel *imageViewer, QString *saveStr);
 };
 
 #endif // THEMECREATIONWIZARD_H
