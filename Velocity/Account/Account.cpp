@@ -310,6 +310,11 @@ void Account::writeFile()
 	io->write(account.liveFlags);
 	io->write(account.gamertag);
 
+    // null the bytes out after the gamertag
+    io->setPosition(8 + (account.gamertag.length() * 2));
+    BYTE temp[0x20] = {0};
+    io->write(temp, 0x20 - (account.gamertag.length() * 2));
+
 	io->setPosition(0x28);
 	io->write(account.xuid);
 	io->write(account.cachedUserFlags);
