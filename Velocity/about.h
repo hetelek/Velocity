@@ -4,6 +4,9 @@
 #include <QDialog>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QFile>
+#include <phonon/MediaObject>
+#include <phonon/AudioOutput>
 
 namespace Ui {
 class About;
@@ -26,6 +29,9 @@ private slots:
 
 private:
     Ui::About *ui;
+
+    Phonon::MediaObject *developers;
+    Phonon::AudioOutput *audioOutput;
 };
 
 #endif // ABOUT_H

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network
+QT       += core gui network phonon
 
 TARGET = Velocity
 TEMPLATE = app

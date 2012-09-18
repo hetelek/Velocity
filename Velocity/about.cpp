@@ -1,5 +1,6 @@
 #include "about.h"
 #include "ui_about.h"
+#include <QMessageBox>
 
 About::About(QWidget *parent) :
     QDialog(parent),
@@ -8,6 +9,17 @@ About::About(QWidget *parent) :
     ui->setupUi(this);
     setFixedSize(sizeHint());
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
+    if (!QFile::exists("Developers.mp3"))
+        return;
+
+    developers = new Phonon::MediaObject(this);
+    audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
+
+    Phonon::createPath(developers, audioOutput);
+
+    developers->setCurrentSource(Phonon::MediaSource("Developers.mp3"));
+    developers->play();
 }
 
 About::~About()
