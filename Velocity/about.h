@@ -5,6 +5,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QFile>
+#include <QMessageBox>
 #include <phonon/MediaObject>
 #include <phonon/AudioOutput>
 
@@ -26,6 +27,8 @@ private slots:
     void on_pushButton_2_clicked();
 
     void on_pushButton_clicked();
+
+    void onSongFinished();
 
 private:
     Ui::About *ui;

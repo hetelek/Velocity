@@ -16,6 +16,8 @@ About::About(QWidget *parent) :
     developers = new Phonon::MediaObject(this);
     audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
 
+    connect(developers, SIGNAL(finished()), this, SLOT(onSongFinished()));
+
     Phonon::createPath(developers, audioOutput);
 
     developers->setCurrentSource(Phonon::MediaSource("Developers.mp3"));
@@ -25,6 +27,14 @@ About::About(QWidget *parent) :
 About::~About()
 {
     delete ui;
+}
+
+void About::onSongFinished()
+{
+    // for (;;) let's listen to it one more time;
+    developers->clear();
+    developers->setCurrentSource(Phonon::MediaSource("Developers.mp3"));
+    developers->play();
 }
 
 void About::on_label_3_linkActivated(const QString &link)
