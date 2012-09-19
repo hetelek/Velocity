@@ -6,13 +6,99 @@
 #include <QDebug>
 #endif
 
-StfsPackage::StfsPackage(string packagePath, bool isPEC) : isPEC(isPEC)
+StfsPackage::StfsPackage(string packagePath, DWORD flags) : flags(flags)
 {
     Botan::LibraryInitializer init;
     sha1 = new Botan::SHA_160;
 
-    io = new FileIO(packagePath);
-    metaData = new StfsMetaData(io, isPEC);
+    io = new FileIO(packagePath, (bool)(flags & StfsPackageCreate));
+
+    // if we need to create a file, then do it yo
+    if (flags & StfsPackageCreate)
+    {
+        DWORD headerSize = (flags & StfsPackagePEC) ? ((flags & StfsPackageFemale) ? 0x2000 : 0x1000) : ((flags & StfsPackageFemale) ? 0xB000 : 0xA000);
+        BYTE zeroBuffer[0x1000] = {0};
+
+        // write all null bytes for the header
+        for (DWORD i = 0; i < ((headerSize >> 0xC) + ((flags & StfsPackageFemale) ? 1 : 2) + 1); i++)
+            io->write(zeroBuffer, 0x1000);
+
+        // if it's female, then we need to write it to the volume descriptor
+        io->setPosition((flags & StfsPackagePEC) ? 0x246 : 0x37B);
+        io->write((flags & StfsPackageFemale) >> 2);
+    }
+
+    Parse();
+}
+
+void StfsPackage::Parse()
+{
+    if (flags & StfsPackageCreate)
+        metaData = new StfsMetaData(io, (flags & StfsPackagePEC) | MetadataSkipRead | MetadataDontFreeThumbnails);
+    else
+        metaData = new StfsMetaData(io, (flags & StfsPackagePEC));
+
+    // if the pacakge was created, then give all the metadata a default value
+    if (flags & StfsPackageCreate)
+    {
+        metaData->magic = CON;
+        metaData->certificate.publicKeyCertificateSize = 0x1A8;
+        metaData->certificate.ownerConsoleType = Retail;
+        metaData->certificate.consoleTypeFlags = 0;
+
+        memset(metaData->licenseData, 0, sizeof(LicenseEntry) * 0x10);
+        metaData->licenseData[0].type = Unrestricted;
+        metaData->licenseData[0].data = 0xFFFFFFFFFFFF;
+
+        DWORD headerSize;
+        if (flags & StfsPackagePEC)
+            headerSize = (flags & StfsPackageFemale) ? 0x2000 : 0x1000;
+        else
+            headerSize = (flags & StfsPackageFemale) ? 0xAD0E : 0x971A;
+
+        metaData->headerSize = headerSize;
+        metaData->contentType = 0;
+        metaData->metaDataVersion = 2;
+        metaData->contentSize = 0;
+        metaData->mediaID = 0;
+        metaData->version = 0;
+        metaData->baseVersion = 0;
+        metaData->titleID = 0;
+        metaData->platform = 0;
+        metaData->executableType = 0;
+        metaData->discNumber = 0;
+        metaData->discInSet = 0;
+        metaData->savegameID = 0;
+        memset(metaData->consoleID, 0, 5);
+        memset(metaData->profileID, 0, 8);
+
+        // volume descriptor
+        metaData->volumeDescriptor.size = 0x24;
+        metaData->volumeDescriptor.blockSeperation = flags & StfsPackageFemale;
+        metaData->volumeDescriptor.fileTableBlockCount = 1;
+        metaData->volumeDescriptor.fileTableBlockNum = 0;
+        metaData->volumeDescriptor.allocatedBlockCount = 1;
+        metaData->volumeDescriptor.unallocatedBlockCount = 0;
+
+        metaData->dataFileCount = 0;
+        metaData->dataFileCombinedSize = 0;
+        metaData->seasonNumber = 0;
+        metaData->episodeNumber = 0;
+        memset(metaData->seasonID, 0, 0x10);
+        memset(metaData->seriesID, 0, 0x10);
+        memset(metaData->deviceID, 0, 0x14);
+        metaData->displayName = L"";
+        metaData->displayDescription = L"";
+        metaData->publisherName = L"";
+        metaData->titleName = L"";
+        metaData->transferFlags = 0;
+        metaData->thumbnailImage = 0;
+        metaData->thumbnailImageSize = 0;
+        metaData->titleThumbnailImage = 0;
+        metaData->titleThumbnailImageSize = 0;
+
+        metaData->WriteMetaData();
+    }
 
     packageSex = (Sex)((~metaData->volumeDescriptor.blockSeperation) & 1);
 
@@ -106,7 +192,7 @@ DWORD StfsPackage::BlockToAddress(DWORD blockNum)
 
 bool StfsPackage::IsPEC()
 {
-    return isPEC;
+    return flags & StfsPackagePEC;
 }
 
 DWORD StfsPackage::ComputeLevelNBackingHashBlockNumber(DWORD blockNum, Level level)
@@ -800,7 +886,7 @@ void StfsPackage::Rehash()
     DWORD headerStart;
 
     // set the headerStart
-    if (isPEC)
+    if (flags & StfsPackagePEC)
         headerStart = 0x23C;
     else
         headerStart = 0x344;
@@ -937,7 +1023,7 @@ void StfsPackage::Resign(string kvPath)
 
     DWORD headerStart, size, hashLoc, toSignLoc, consoleIDLoc;
     // set the headerStart
-    if (isPEC)
+    if (flags & StfsPackagePEC)
     {
         headerStart = 0x23C;
         hashLoc = 0x228;

@@ -62,13 +62,20 @@ struct HashTable
     DWORD addressInFile;
 };
 
+enum StfsPackageFlags
+{
+    StfsPackagePEC = 1,
+    StfsPackageCreate = 2,
+    StfsPackageFemale = 4     // only used when creating a packge
+};
+
 class StfsPackage
 {
 public:
     StfsMetaData *metaData;
 
     // Description: initialize a stfs package
-    StfsPackage(string packgePath, bool isPEC = false);
+    StfsPackage(string packgePath, DWORD flags = 0);
 
     // Description: get the file listing of the package, forceUpdate reads from the package regardless
     FileListing GetFileListing(bool forceUpdate = false);
@@ -139,7 +146,7 @@ private:
     HashTable cached;
     DWORD tablesPerLevel[3];
 
-    bool isPEC;
+    DWORD flags;
 
     // Description: read the file listing from the file
     void ReadFileListing();
@@ -230,4 +237,7 @@ private:
 
     // Description: get the number of bytes to skip over the hash table
     DWORD GetHashTableSkipSize(DWORD tableAddress);
+
+    // Description: parse the file
+    void Parse();
 };
