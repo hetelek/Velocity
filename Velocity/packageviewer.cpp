@@ -633,7 +633,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
 
             package->ExtractFile(packagePath.toStdString(), tempName);
 
-            StfsPackage *pec = new StfsPackage(tempName, true);
+            StfsPackage *pec = new StfsPackage(tempName, StfsPackagePEC);
             PackageViewer dialog(pec, this);
             dialog.exec();
 

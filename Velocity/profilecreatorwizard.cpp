@@ -43,101 +43,57 @@ void ProfileCreatorWizard::onFinished(int status)
         return;
     try
     {
-        // create a new file
-        FileIO io(ui->lblSavePath->text().toStdString(), true);
-
-        // null out the first 0xD000 bytes
-        BYTE tempBuffer[0x1000] = {0};
-        for (DWORD i = 0; i < 0xD; i++)
-            io.write(tempBuffer, 0x1000);
-        io.setPosition(0xA014);
-        io.write((DWORD)0x80FFFFFF);
+        StfsPackage newProfile(ui->lblSavePath->text().toStdString(), StfsPackageCreate);
 
         // set up the metadata for the profile
-        StfsMetaData metadata(&io, MetadataDontFreeThumbnails | MetadataSkipRead);
-        metadata.magic = CON;
-        metadata.certificate.ownerConsoleType = (ui->cmbxType->currentIndex() == 0) ? Retail : DevKit;
-        metadata.certificate.consoleTypeFlags = 0;
+        newProfile.metaData->magic = CON;
+        newProfile.metaData->certificate.ownerConsoleType = (ui->cmbxType->currentIndex() == 0) ? Retail : DevKit;
 
-        memset(metadata.licenseData, 0, sizeof(LicenseEntry) * 0x10);
-        metadata.licenseData[0].type = Unrestricted;
-        metadata.licenseData[0].data = 0xFFFFFFFFFFFF;
-
-        metadata.headerSize = 0x971A;
-        metadata.contentType = Profile;
-        metadata.metaDataVersion = 2;
-        metadata.contentSize = 0;
-        metadata.mediaID = 0;
-        metadata.version = 0;
-        metadata.baseVersion = 0;
-        metadata.titleID = 0xFFFE07D1;
-        metadata.platform = 0;
-        metadata.executableType = 0;
-        metadata.discNumber = 0;
-        metadata.discInSet = 0;
-        metadata.savegameID = 0;
-        memset(metadata.consoleID, 0, 5);
+        newProfile.metaData->contentType = Profile;
+        newProfile.metaData->metaDataVersion = 2;
+        newProfile.metaData->titleID = 0xFFFE07D1;
 
         // set the profile id
         UINT64 temp = profileID;
         for (DWORD i = 0; i < 8; i++)
             ((BYTE*)&temp)[i] = ((BYTE*)&profileID)[7 - i];
-        memcpy(metadata.profileID, &temp, 8);
+        memcpy(newProfile.metaData->profileID, &temp, 8);
 
-        // volume descriptor
-        metadata.volumeDescriptor.size = 0x24;
-        metadata.volumeDescriptor.blockSeperation = 0;
-        metadata.volumeDescriptor.fileTableBlockCount = 1;
-        metadata.volumeDescriptor.fileTableBlockNum = 0;
-        metadata.volumeDescriptor.allocatedBlockCount = 1;
-        metadata.volumeDescriptor.unallocatedBlockCount = 0;
-
-        metadata.dataFileCount = 0;
-        metadata.dataFileCombinedSize = 0;
-        metadata.seasonNumber = 0;
-        metadata.episodeNumber = 0;
-        memset(metadata.seasonID, 0, 0x10);
-        memset(metadata.seriesID, 0, 0x10);
-        memset(metadata.deviceID, 0, 0x14);
         std::wstring s = QtHelpers::ByteArrayToString((BYTE*)&temp, 8, false).toStdWString();
-        metadata.displayName = s;
-        metadata.displayDescription = L"";
-        metadata.publisherName = L"";
-        metadata.titleName = L"";
-        metadata.transferFlags = 0x40;
+        newProfile.metaData->displayName = s;
+        newProfile.metaData->transferFlags = 0x40;
 
         // set gamerpicture
         QByteArray ba1;
         QBuffer buffer1(&ba1);
         buffer1.open(QIODevice::WriteOnly);
         ui->listWidget->currentItem()->icon().pixmap(64, 64).save(&buffer1, "PNG");
-        metadata.thumbnailImage = ba1.data();
-        metadata.thumbnailImageSize = ba1.length();
+        newProfile.metaData->thumbnailImage = ba1.data();
+        newProfile.metaData->thumbnailImageSize = ba1.length();
 
         // set title thumbnail image
         QByteArray ba2;
         QBuffer buffer2(&ba2);
         buffer2.open(QIODevice::WriteOnly);
         QPixmap(":/Images/defaultTitleImage.png").save(&buffer2, "PNG");
-        metadata.titleThumbnailImage = ba2.data();
-        metadata.titleThumbnailImageSize = ba2.length();
+        newProfile.metaData->titleThumbnailImage = ba2.data();
+        newProfile.metaData->titleThumbnailImageSize = ba2.length();
 
-        metadata.WriteMetaData();
-        io.close();
-
-        StfsPackage newProfile(ui->lblSavePath->text().toStdString(), false);
+        newProfile.metaData->WriteMetaData();
 
         // create the account file
         QString accountTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
 
         FileIO accountIo(accountTempPath.toStdString(), true);
+
+        BYTE tempBuffer[380] = {0};
         accountIo.write(tempBuffer, 380);
         accountIo.close();
 
         // write the gamertag, and encrypt the file
-        Account account(accountTempPath.toStdString(), false, metadata.certificate.ownerConsoleType);
+        Account account(accountTempPath.toStdString(), false, newProfile.metaData->certificate.ownerConsoleType);
         account.SetGamertag(ui->txtGamertag->text().toStdWString());
-        account.Save(metadata.certificate.ownerConsoleType);
+        account.Save(newProfile.metaData->certificate.ownerConsoleType);
 
         // add the account file to the package
         newProfile.InjectFile(accountTempPath.toStdString(), "Account");
@@ -158,7 +114,7 @@ void ProfileCreatorWizard::onFinished(int status)
         if (ui->rdiFemale->isChecked())
         {
             // read in the setting
-            FileIO io("C:\\Users\\Adam\\Desktop\\femaleAvatar.bin");
+            FileIO io("femaleAvatar.bin");
             BYTE settingBuffer[0x3E8];
             io.readBytes(settingBuffer, 0x3E8);
 

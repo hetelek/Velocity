@@ -293,7 +293,7 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
     // parse the PEC STFS package
     try
     {
-        PEC = new StfsPackage(pecTempPath, true);
+        PEC = new StfsPackage(pecTempPath, StfsPackagePEC);
     }
     catch (string error)
     {

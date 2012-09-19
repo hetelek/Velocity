@@ -29,83 +29,39 @@ void ThemeCreationWizard::onFinished(int status)
         return;
     try
     {
+        StfsPackage theme(ui->lblSavePath->text().toStdString(), StfsPackageCreate);
+
         // create a new file
-        FileIO io(ui->lblSavePath->text().toStdString(), true);
+        theme.metaData->magic = CON;
+        theme.metaData->certificate.ownerConsoleType = (ui->cmbxType->currentIndex() == 0) ? Retail : DevKit;
+        theme.metaData->certificate.consoleTypeFlags = 0;
 
-        // null out the first 0xD000 bytes
-        BYTE tempBuffer[0x1000] = {0};
-        for (DWORD i = 0; i < 0xD; i++)
-            io.write(tempBuffer, 0x1000);
-        io.setPosition(0xA014);
-        io.write((DWORD)0x80FFFFFF);
+        theme.metaData->contentType = Theme;
+        theme.metaData->metaDataVersion = 2;
+        theme.metaData->titleID = 0xFFFE07D1;
 
-        // set up the metadata for the theme
-        StfsMetaData metadata(&io, MetadataDontFreeThumbnails | MetadataSkipRead);
-        metadata.magic = CON;
-        metadata.certificate.ownerConsoleType = (ui->cmbxType->currentIndex() == 0) ? Retail : DevKit;
-        metadata.certificate.consoleTypeFlags = 0;
-
-        memset(metadata.licenseData, 0, sizeof(LicenseEntry) * 0x10);
-        metadata.licenseData[0].type = Unrestricted;
-        metadata.licenseData[0].data = 0xFFFFFFFFFFFF;
-
-        metadata.headerSize = 0x971A;
-        metadata.contentType = Theme;
-        metadata.metaDataVersion = 2;
-        metadata.contentSize = 0;
-        metadata.mediaID = 0;
-        metadata.version = 0;
-        metadata.baseVersion = 0;
-        metadata.titleID = 0xFFFE07D1;
-        metadata.platform = 0;
-        metadata.executableType = 0;
-        metadata.discNumber = 0;
-        metadata.discInSet = 0;
-        metadata.savegameID = 0;
-        memset(metadata.consoleID, 0, 5);
-        memset(metadata.profileID, 0, 8);
-
-        // volume descriptor
-        metadata.volumeDescriptor.size = 0x24;
-        metadata.volumeDescriptor.blockSeperation = 0;
-        metadata.volumeDescriptor.fileTableBlockCount = 1;
-        metadata.volumeDescriptor.fileTableBlockNum = 0;
-        metadata.volumeDescriptor.allocatedBlockCount = 1;
-        metadata.volumeDescriptor.unallocatedBlockCount = 0;
-
-        metadata.dataFileCount = 0;
-        metadata.dataFileCombinedSize = 0;
-        metadata.seasonNumber = 0;
-        metadata.episodeNumber = 0;
-        memset(metadata.seasonID, 0, 0x10);
-        memset(metadata.seriesID, 0, 0x10);
-        memset(metadata.deviceID, 0, 0x14);
-        metadata.displayName = ui->txtName->text().toStdWString();
-        metadata.displayDescription = L"";
-        metadata.publisherName = L"";
-        metadata.titleName = L"Xbox360 Dashboard";
-        metadata.transferFlags = 0x40;
+        theme.metaData->displayName = ui->txtName->text().toStdWString();
+        theme.metaData->titleName = L"Xbox360 Dashboard";
+        theme.metaData->transferFlags = 0x40;
 
         // set gamerpicture
         QByteArray ba1;
         QBuffer buffer1(&ba1);
         buffer1.open(QIODevice::WriteOnly);
         ui->imgThumbnail->pixmap()->save(&buffer1, "PNG");
-        metadata.thumbnailImage = ba1.data();
-        metadata.thumbnailImageSize = ba1.length();
+        theme.metaData->thumbnailImage = ba1.data();
+        theme.metaData->thumbnailImageSize = ba1.length();
 
         // set title thumbnail image
         QByteArray ba2;
         QBuffer buffer2(&ba2);
         buffer2.open(QIODevice::WriteOnly);
         QPixmap(":/Images/defaultTitleImage.png").save(&buffer2, "PNG");
-        metadata.titleThumbnailImage = ba2.data();
-        metadata.titleThumbnailImageSize = ba2.length();
+        theme.metaData->titleThumbnailImage = ba2.data();
+        theme.metaData->titleThumbnailImageSize = ba2.length();
 
-        metadata.WriteMetaData();
-        io.close();
-
-        StfsPackage theme(ui->lblSavePath->text().toStdString(), false);
+        theme.metaData->WriteMetaData();
+        theme.Rehash();
 
         // inject the wallpapers
         theme.InjectFile(wallpaper1.toStdString(), "Wallpaper1");
@@ -140,7 +96,7 @@ void ThemeCreationWizard::onFinished(int status)
 
         // fix the package
         theme.Rehash();
-        theme.Resign(QtHelpers::GetKVPath(metadata.certificate.ownerConsoleType, this));
+        theme.Resign(QtHelpers::GetKVPath(theme.metaData->certificate.ownerConsoleType, this));
 
         // delete the temp files
         QFile::remove(paramsFilePath);
