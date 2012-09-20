@@ -75,13 +75,20 @@ void StfsMetaData::readMetadata()
         dataFileCount = io->readDword();
         dataFileCombinedSize = io->readDword();
 
-        // skip padding
-        io->setPosition(0x3B1);
+        // read the avatar metadata if needed
+        if (contentType == AvatarItem)
+        {
+            io->setPosition(0x3D9);
+            io->swapEndian();
 
-        io->readBytes(seriesID, 0x10);
-        io->readBytes(seasonID, 0x10);
-        seasonNumber = io->readWord();
-        episodeNumber = io->readWord();
+            subCategory = io->readDword();
+            colorizable = io->readDword();
+
+            io->swapEndian();
+
+            io->readBytes(guid, 0x10);
+            skeletonVersion = io->readByte();
+        }
 
         // skip padding
         io->setPosition(0x3FD);
@@ -195,13 +202,20 @@ void StfsMetaData::WriteMetaData()
         io->write(dataFileCount);
         io->write(dataFileCombinedSize);
 
-        // skip padding
-        io->setPosition(0x3B1);
+        // write the avatar asset metadata if needed
+        if (contentType == AvatarItem)
+        {
+            io->setPosition(0x3D9);
+            io->swapEndian();
 
-        io->write(seriesID, 0x10);
-        io->write(seasonID, 0x10);
-        io->write(seasonNumber);
-        io->write(episodeNumber);
+            io->write((DWORD)subCategory);
+            io->write((DWORD)colorizable);
+
+            io->swapEndian();
+
+            io->write(guid, 0x10);
+            io->write((BYTE)skeletonVersion);
+        }
 
         // skip padding
         io->setPosition(0x3FD);

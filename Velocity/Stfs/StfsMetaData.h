@@ -3,6 +3,7 @@
 #include "FileIO.h"
 #include "StfsConstants.h"
 #include "StfsDefinitions.h"
+#include "../AvatarAsset/AvatarAssetDefinintions.h"
 #include <iostream>
 
 using std::string;
@@ -12,6 +13,16 @@ enum StfsMetadataFlags
     MetadataIsPEC = 1,
     MetadataSkipRead = 2,
     MetadataDontFreeThumbnails = 4
+};
+
+enum OnlineContentResumeState
+{
+    FileHeadersNotReady = 0x46494C48,
+    NewFolder = 0x666F6C64,
+    NewFolderResum_Attempt1 = 0x666F6C31,
+    NewFolderResumeAttempt2 = 0x666F6C32,
+    NewFolderResumeAttemptUnknown = 0x666F6C3F,
+    NewFolderResumeAttemptSpecific = 0x666F6C40
 };
 
 class StfsMetaData
@@ -70,13 +81,31 @@ public:
 	DWORD thumbnailImageSize;
 	DWORD titleThumbnailImageSize;
 
-	// metadata v2
-	BYTE seriesID[0x10];
-	BYTE seasonID[0x10];
-	WORD seasonNumber;
-	WORD episodeNumber;
-	wstring additionalDisplayNames;
-	wstring additionalDisplayDescriptions;
+    // credit to Eaton for all the extra metadata stuff
+
+    // Avatar Asset
+    AssetSubcategory subCategory;
+    DWORD colorizable;
+    BYTE guid[0x10];
+    SkeletonVersion skeletonVersion;
+
+    // media
+    BYTE seriesID[0x10];
+    BYTE seasonID[0x10];
+    WORD seasonNumber;
+    WORD episodeNumber;
+
+    // installer progress cache data
+    OnlineContentResumeState resumeState;
+    DWORD currentFileIndex;
+    UINT64 currentFileOffset;
+    UINT64 bytesProcessed;
+    time_t lastModified;
+    BYTE cabResumeData[5584];
+
+    // installer update data
+    DWORD ibaseVersion;
+    DWORD iversion;
 
 	BYTE *thumbnailImage;
 	BYTE *titleThumbnailImage;
