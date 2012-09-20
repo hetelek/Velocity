@@ -1,7 +1,8 @@
 #include "profileeditor.h"
 #include "ui_profileeditor.h"
 
-ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent) : QDialog(parent), ui(new Ui::ProfileEditor), profile(profile), dispose(dispose), PEC(NULL)
+ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent) :
+    QDialog(parent), ui(new Ui::ProfileEditor), profile(profile), dispose(dispose), PEC(NULL), downloader(NULL)
 {
     ui->setupUi(this);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -349,6 +350,41 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
     else
         ui->tabAvatarAwards->setEnabled(false);
 
+    // setup the context menu
+    ui->avatarAwardsList->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->avatarAwardsList, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showAvatarContextMenu(QPoint)));
+}
+
+void ProfileEditor::showAvatarContextMenu(QPoint point)
+{
+    QPoint globalPos = ui->avatarAwardsList->mapToGlobal(point);
+    QMenu contextMenu;
+
+    contextMenu.addAction(QPixmap(":/Images/download.png"), "Download Award");
+    QAction *selectedItem = contextMenu.exec(globalPos);
+
+    if (selectedItem == NULL)
+        return;
+    else if (selectedItem->text() == "Download Award")
+    {
+        QMessageBox::StandardButton button = QMessageBox::question(this, "Warning", "You are about to download an avatar award file. Unfortunatly the awards downloaded like this will only work on a JTAG/RGH/Dev.\r\n\r\nDo you want to continue?",
+                                                                   QMessageBox::Yes, QMessageBox::No);
+
+        if (button != QMessageBox::Yes)
+            return;
+
+        QString titleID = QString::number(aaGames.at(ui->aaGamelist->currentIndex().row()).titleEntry->titleID, 16);
+        QString guid = QString::fromStdString(AvatarAwardGPD::GetGUID(&aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row())));
+
+        downloader = new AvatarAssetDownloader(titleID, guid);
+        connect(downloader, SIGNAL(FinishedDownloading()), this, SLOT(onAssetsDoneDownloading()));
+    }
+}
+
+void ProfileEditor::onAssetsDoneDownloading()
+{
+    QMessageBox::information(this, "", downloader->GetV1TempPath() + "\r\n" + downloader->GetV2TempPath());
+    delete downloader;
 }
 
 void ProfileEditor::addToDashGPD(SettingEntry *entry, SettingEntryType type, UINT64 id)

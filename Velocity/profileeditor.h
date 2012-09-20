@@ -30,6 +30,7 @@
 #include <vector>
 #include <stdio.h>
 #include "achievementcreationwizard.h"
+#include "AvatarAssetDownloader.h"
 
 using namespace std;
 
@@ -239,11 +240,16 @@ private slots:
 
     void on_txtAwardGameSearch_textChanged(const QString &arg1);
 
+    void showAvatarContextMenu(QPoint point);
+
+    void onAssetsDoneDownloading();
+
 private:
     Ui::ProfileEditor *ui;
     StfsPackage *profile;
     DashboardGPD *dashGPD;
     Account *account;
+    AvatarAssetDownloader *downloader;
     vector<string> tempFiles;
     vector<GameEntry> games;
     vector<AvatarAwardGameEntry> aaGames;
@@ -252,6 +258,12 @@ private:
     string dashGPDTempPath;
     string accountTempPath;
     bool dispose;
+
+    bool v1Downloaded;
+    bool v2Downloaded;
+
+    QString v1TempPath;
+    QString v2TempPath;
 
     void addToDashGPD(SettingEntry *entry, SettingEntryType type, UINT64 id);
 
