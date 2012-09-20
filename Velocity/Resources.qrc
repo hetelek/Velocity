@@ -64,5 +64,6 @@
         <file>Images/defaultTitleImage.png</file>
         <file>Images/theme.png</file>
         <file>Images/watermark.png</file>
+        <file>Images/download.png</file>
     </qresource>
 </RCC>
