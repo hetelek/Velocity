@@ -12,7 +12,6 @@ enum AssetSubcategory
     CostumeFirst = 100,
     CostumeFormalSuit = 0x67,
     CostumeLast = 0x6a,
-    Nig = 0,
     CostumeLongDress = 0x65,
     CostumeShortDress = 100,
     EarringsDanglers = 0x387,
