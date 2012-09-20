@@ -53,7 +53,8 @@ SOURCES += main.cpp \
     stfsworkerthread.cpp \
     singleprogressdialog.cpp \
     profilecreatorwizard.cpp \
-    themecreationwizard.cpp
+    themecreationwizard.cpp \
+    AvatarAssetDownloader.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -99,7 +100,8 @@ HEADERS  += mainwindow.h \
     singleprogressdialog.h \
     PluginInterfaces/igamemodder.h \
     profilecreatorwizard.h \
-    themecreationwizard.h
+    themecreationwizard.h \
+    AvatarAssetDownloader.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
