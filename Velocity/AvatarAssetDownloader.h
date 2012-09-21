@@ -21,6 +21,7 @@ public:
     QString GetV2TempPath();
     QString GetGUID();
     QString GetTitleID();
+    void BeginDownload();
 
 signals:
     void FinishedDownloading();

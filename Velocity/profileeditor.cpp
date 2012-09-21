@@ -385,6 +385,7 @@ void ProfileEditor::showAvatarContextMenu(QPoint point)
 
         downloader = new AvatarAssetDownloader(titleID, guid);
         connect(downloader, SIGNAL(FinishedDownloading()), this, SLOT(onAssetsDoneDownloading()));
+        downloader->BeginDownload();
     }
 }
 

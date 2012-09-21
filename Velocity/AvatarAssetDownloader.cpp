@@ -9,7 +9,10 @@ AvatarAssetDownloader::AvatarAssetDownloader(QString titleID, QString guid, QObj
 
     connect(http, SIGNAL(done(bool)), this, SLOT(onDone(bool)));
     connect(http, SIGNAL(requestFinished(int,bool)), this, SLOT(onRequestFinished(int,bool)));
+}
 
+void AvatarAssetDownloader::BeginDownload()
+{
     http->get("http://download.xboxlive.com/content/" + titleID + "/avataritems/" + guid + ".bin");
 }
 
