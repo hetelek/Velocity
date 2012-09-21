@@ -223,3 +223,9 @@ void MainWindow::on_actionProfile_Creator_triggered()
     ProfileCreatorWizard wiz(this);
     wiz.exec();
 }
+
+void MainWindow::on_actionGame_Adder_triggered()
+{
+    GameAdderDialog dialog(this);
+    dialog.exec();
+}

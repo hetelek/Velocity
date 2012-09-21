@@ -20,6 +20,7 @@
 #include "creationwizard.h"
 #include "profilecreatorwizard.h"
 #include "themecreationwizard.h"
+#include "gameadderdialog.h"
 
 // other
 #include "ui_mainwindow.h"
@@ -65,6 +66,8 @@ private slots:
     void on_actionProfile_Editor_triggered();
 
     void on_actionTheme_Creator_triggered();
+
+    void on_actionGame_Adder_triggered();
 
 private:
     Ui::MainWindow *ui;
