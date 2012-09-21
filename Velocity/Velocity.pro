@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network phonon
+QT       += core gui network xml phonon
 
 TARGET = Velocity
 TEMPLATE = app
@@ -54,7 +54,8 @@ SOURCES += main.cpp \
     singleprogressdialog.cpp \
     profilecreatorwizard.cpp \
     themecreationwizard.cpp \
-    AvatarAssetDownloader.cpp
+    AvatarAssetDownloader.cpp \
+    gameadderdialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -101,7 +102,8 @@ HEADERS  += mainwindow.h \
     PluginInterfaces/igamemodder.h \
     profilecreatorwizard.h \
     themecreationwizard.h \
-    AvatarAssetDownloader.h
+    AvatarAssetDownloader.h \
+    gameadderdialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -124,7 +126,8 @@ FORMS    += mainwindow.ui \
     progressdialog.ui \
     singleprogressdialog.ui \
     profilecreatorwizard.ui \
-    themecreationwizard.ui
+    themecreationwizard.ui \
+    gameadderdialog.ui
 
 RESOURCES += \
     Resources.qrc
