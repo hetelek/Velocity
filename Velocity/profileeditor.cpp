@@ -376,6 +376,13 @@ void ProfileEditor::showAvatarContextMenu(QPoint point)
         QString titleID = QString::number(aaGames.at(ui->aaGamelist->currentIndex().row()).titleEntry->titleID, 16);
         QString guid = QString::fromStdString(AvatarAwardGPD::GetGUID(&aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row())));
 
+        // get a path for the new asset
+        QString assetFileName = guid.replace("-", "").toUpper();
+        assetSavePath = QFileDialog::getSaveFileName(this, "Choose a place to save the asset", QtHelpers::DesktopLocation() + "\\" + assetFileName, "*");
+
+        if (assetSavePath == "")
+            return;
+
         downloader = new AvatarAssetDownloader(titleID, guid);
         connect(downloader, SIGNAL(FinishedDownloading()), this, SLOT(onAssetsDoneDownloading()));
     }
@@ -383,8 +390,43 @@ void ProfileEditor::showAvatarContextMenu(QPoint point)
 
 void ProfileEditor::onAssetsDoneDownloading()
 {
-    QMessageBox::information(this, "", downloader->GetV1TempPath() + "\r\n" + downloader->GetV2TempPath());
-    delete downloader;
+    try
+    {
+        struct AvatarAward *award = &aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row());
+
+        StfsPackage newAsset(assetSavePath.toStdString(), StfsPackageCreate | StfsPackageFemale);
+        newAsset.metaData->magic = PIRS;
+        newAsset.metaData->certificate.ownerConsoleType = profile->metaData->certificate.ownerConsoleType;
+
+        // unlock the asset
+        newAsset.metaData->licenseData[0].bits = 1;
+
+        // set all the needed metadata
+        newAsset.metaData->contentType = AvatarItem;
+        newAsset.metaData->displayName = award->name;
+        newAsset.metaData->subCategory = award->subcategory;
+        newAsset.metaData->colorizable = award->colorizable;
+        QtHelpers::ParseHexStringBuffer(downloader->GetGUID().replace("-", "").toUpper(), newAsset.metaData->guid, 0x10);
+        newAsset.metaData->skeletonVersion = Nxe; //TODO: figure out where the skeleton version is in the guid
+
+        newAsset.InjectFile(downloader->GetV1TempPath().toStdString(), "asset.bin");
+        newAsset.InjectFile(downloader->GetV2TempPath().toStdString(), "asset_v2.bin");
+
+        newAsset.Rehash();
+        newAsset.Resign(QtHelpers::GetKVPath(newAsset.metaData->certificate.ownerConsoleType, this));
+
+        delete downloader;
+
+        QMessageBox::information(this, "Asset Downloaded", "Successfully downloaded the avatar asset.");
+    }
+    catch (string error)
+    {
+        QMessageBox::critical(this, "Error", "An error occurred while creating the asset package.\n\n" + QString::fromStdString(error));
+    }
+    catch (...)
+    {
+        QMessageBox::critical(this, "Error", "An unknown error occurred while creating the asset package.");
+    }
 }
 
 void ProfileEditor::addToDashGPD(SettingEntry *entry, SettingEntryType type, UINT64 id)

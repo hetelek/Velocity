@@ -250,6 +250,7 @@ private:
     DashboardGPD *dashGPD;
     Account *account;
     AvatarAssetDownloader *downloader;
+    QString assetSavePath;
     vector<string> tempFiles;
     vector<GameEntry> games;
     vector<AvatarAwardGameEntry> aaGames;
