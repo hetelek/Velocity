@@ -412,7 +412,7 @@ struct AvatarAward
 	DWORD flags;
     time_t unlockTime;
 	AssetSubcategory subcategory;
-	DWORD unknown;
+    DWORD colorizable;
 	wstring name;
 	wstring unlockedDescription;
 	wstring lockedDescription;

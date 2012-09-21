@@ -56,7 +56,7 @@ struct AvatarAward AvatarAwardGPD::readAvatarAwardEntry(XDBFEntry entry)
 
     // read the rest of the entry
     award.subcategory = (AssetSubcategory)io->readDword();
-    award.unknown = io->readDword();
+    award.colorizable = io->readDword();
     award.name = io->readWString();
     award.unlockedDescription = io->readWString();
     award.lockedDescription = io->readWString();
@@ -146,7 +146,7 @@ void AvatarAwardGPD::WriteAvatarAward(struct AvatarAward *award)
 
     // write the rest of the entry
     io->write(award->subcategory);
-    io->write(award->unknown);
+    io->write(award->colorizable);
     io->write(award->name);
     io->write(award->unlockedDescription);
     io->write(award->lockedDescription);
