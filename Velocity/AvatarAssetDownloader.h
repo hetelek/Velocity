@@ -19,6 +19,8 @@ public:
     explicit AvatarAssetDownloader(QString titleID, QString guid, QObject *parent = 0);
     QString GetV1TempPath();
     QString GetV2TempPath();
+    QString GetGUID();
+    QString GetTitleID();
 
 signals:
     void FinishedDownloading();

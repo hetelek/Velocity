@@ -23,6 +23,16 @@ QString AvatarAssetDownloader::GetV2TempPath()
     return v2TempPath;
 }
 
+QString AvatarAssetDownloader::GetGUID()
+{
+    return guid;
+}
+
+QString AvatarAssetDownloader::GetTitleID()
+{
+    return titleID;
+}
+
 void AvatarAssetDownloader::onRequestFinished(int id, bool error)
 {
     if (error)
