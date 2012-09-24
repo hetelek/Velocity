@@ -436,6 +436,10 @@ void ProfileEditor::onAssetsDoneDownloading()
         newAsset.metaData->thumbnailImage = baScaled.data();
         newAsset.metaData->thumbnailImageSize = baScaled.length();
 
+        GameGPD *gpd = aaGames.at(ui->aaGamelist->currentIndex().row()).gameGPD;
+        newAsset.metaData->titleThumbnailImage = gpd->thumbnail.image;
+        newAsset.metaData->titleThumbnailImageSize = gpd->thumbnail.length;
+
         newAsset.Rehash();
 
         delete downloader;
