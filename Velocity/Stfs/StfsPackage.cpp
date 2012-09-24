@@ -1636,7 +1636,7 @@ FileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPackage
         prevBlock = block;
 
         // read the data
-        BYTE *dataBlock = data + (counter * 0x1000);
+        BYTE *dataBlock = data + (counter++ * 0x1000);
 
         io->setPosition(BlockToAddress(block));
         io->write(dataBlock, 0x1000);
@@ -1645,7 +1645,7 @@ FileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPackage
 
         // update the progress if needed
         if (injectProgress != NULL)
-            injectProgress(arg, ++counter, entry.blocksForFile);
+            injectProgress(arg, counter, entry.blocksForFile);
     }
 
     if(fileSize != 0)
