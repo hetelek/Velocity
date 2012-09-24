@@ -47,8 +47,11 @@ void AvatarAssetDownloader::onRequestFinished(int id, bool error)
     // all assets have a YTGR header that's 0x140 bytes
     if (fileSize < 0x140)
     {
-        v2Done = true;
-        http->get("http://download.xboxlive.com/content/" + titleID + "/avataritems/v2/" + guid + ".bin");
+        if (!v2Done)
+        {
+            v2Done = true;
+            http->get("http://download.xboxlive.com/content/" + titleID + "/avataritems/v2/" + guid + ".bin");
+        }
         return;
     }
 
