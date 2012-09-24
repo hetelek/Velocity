@@ -57,8 +57,9 @@ void XdbfDialog::showContextMenu(QPoint p)
     QPoint globalPos = ui->treeWidget->mapToGlobal(p);
     QMenu contextMenu;
 
-    contextMenu.addAction(QPixmap(":/Images/extract.png"), "Extract Entry");
-    contextMenu.addAction(QPixmap(":/Images/replace.png"), "Replace Entry");
+    contextMenu.addAction(QPixmap(":/Images/extract.png"), "Extract Selected");
+    if (ui->treeWidget->selectedItems().count() == 1)
+        contextMenu.addAction(QPixmap(":/Images/replace.png"), "Replace Entry");
     contextMenu.addSeparator();
     contextMenu.addAction(QPixmap(":/Images/convert.png"), "Address Converter");
     contextMenu.addSeparator();
@@ -68,7 +69,7 @@ void XdbfDialog::showContextMenu(QPoint p)
 
     if (selectedItem == NULL)
         return;
-    else if (selectedItem->text() == "Extract Entry")
+    else if (selectedItem->text() == "Extract Selected")
     {
         QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
 
@@ -79,7 +80,7 @@ void XdbfDialog::showContextMenu(QPoint p)
         else
             path = QFileDialog::getSaveFileName(this, "Choose a place to extract the entry", QtHelpers::DesktopLocation() + "\\" + ui->treeWidget->currentItem()->text(0));
 
-        if (path.isEmpty())
+        if (path == "" || path == "\\")
             return;
 
         for (int i = 0; i < items.count(); i++)
