@@ -107,6 +107,9 @@ public:
     // Description: inject a file into the package
     FileEntry InjectFile(string path, string pathInPackage, void(*injectProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
+    // Description: inject raw data into the package
+    FileEntry InjectData(BYTE *data, DWORD length, string pathInPackage, void(*injectProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+
     // Description: replace an existing file into the package
     void ReplaceFile(string path, string pathInPackage, void(*replaceProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 

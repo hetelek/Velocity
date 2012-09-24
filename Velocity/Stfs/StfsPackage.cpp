@@ -74,7 +74,7 @@ void StfsPackage::Parse()
 
         // volume descriptor
         metaData->volumeDescriptor.size = 0x24;
-        metaData->volumeDescriptor.blockSeperation = flags & StfsPackageFemale;
+        metaData->volumeDescriptor.blockSeperation = ((flags & StfsPackageFemale) >> 2);
         metaData->volumeDescriptor.fileTableBlockCount = 1;
         metaData->volumeDescriptor.fileTableBlockNum = 0;
         metaData->volumeDescriptor.allocatedBlockCount = 1;
@@ -1556,6 +1556,7 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injec
         if (injectProgress != NULL)
             injectProgress(arg, entry.blocksForFile, entry.blocksForFile);
     }
+    fileIn.close();
 
     SetNextBlock(block, INT24_MAX);
 
@@ -1581,6 +1582,116 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injec
     return entry;
 }
 
+FileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPackage, void (*injectProgress)(void *, DWORD, DWORD), void *arg)
+{
+    if(FileExists(pathInPackage))
+        throw string("STFS: File already exists in the package.\n");
+
+    // split the string and open a io
+    vector<string> split = SplitString(pathInPackage, "\\");
+    FileListing *folder = NULL;
+
+    int size = split.size();
+    string fileName;
+    if(size > 1)
+    {
+        // get the name
+        fileName = split.at(size - 1);
+        split.erase(split.begin() + (size - 1));
+
+        // find the directory we'd like to inject to
+        FindDirectoryListing(split, &fileListing, &folder);
+        if(folder == NULL)
+            throw string("STFS: The given folder could not be found.\n");
+    }
+    else
+    {
+        fileName = pathInPackage;
+        folder = &fileListing;
+    }
+
+    DWORD fileSize = length;
+
+    // set up the entry
+    FileEntry entry;
+    entry.name = fileName;
+    entry.fileSize = fileSize;
+    entry.flags = 0;
+    entry.pathIndicator = folder->folder.entryIndex;
+    entry.startingBlockNum = -1;
+    entry.blocksForFile = ((fileSize + 0xFFF) & 0xFFFFFFF000) >> 0xC;
+
+    INT24 block, prevBlock = -1;
+    DWORD counter = 0;
+    while(fileSize >= 0x1000)
+    {
+        block = AllocateBlock();
+
+        if (entry.startingBlockNum == -1)
+            entry.startingBlockNum = block;
+
+        if (prevBlock != -1)
+            SetNextBlock(prevBlock, block);
+
+        prevBlock = block;
+
+        // read the data
+        BYTE *dataBlock = data + (counter * 0x1000);
+
+        io->setPosition(BlockToAddress(block));
+        io->write(dataBlock, 0x1000);
+
+        fileSize -= 0x1000;
+
+        // update the progress if needed
+        if (injectProgress != NULL)
+            injectProgress(arg, ++counter, entry.blocksForFile);
+    }
+
+    if(fileSize != 0)
+    {
+        block = AllocateBlock();
+
+        if (entry.startingBlockNum == -1)
+            entry.startingBlockNum = block;
+
+        if (prevBlock != -1)
+            SetNextBlock(prevBlock, block);
+
+        BYTE *blockData = data + (length - fileSize);
+        io->setPosition(BlockToAddress(block));
+        io->write(blockData, fileSize);
+
+        fileSize = 0;
+
+        // update the progress if needed
+        if (injectProgress != NULL)
+            injectProgress(arg, entry.blocksForFile, entry.blocksForFile);
+    }
+
+    SetNextBlock(block, INT24_MAX);
+
+    folder->fileEntries.push_back(entry);
+    WriteFileListing();
+
+    if (topLevel == Zero)
+    {
+        io->setPosition(topTable.addressInFile);
+
+        delete[] topTable.entries;
+        topTable.entryCount = metaData->volumeDescriptor.allocatedBlockCount;
+        topTable.entries = new HashEntry[topTable.entryCount];
+
+        for (DWORD i = 0; i < topTable.entryCount; i++)
+        {
+            io->readBytes(topTable.entries[i].blockHash, 0x14);
+            topTable.entries[i].status = io->readByte();
+            topTable.entries[i].nextBlock = io->readInt24();
+        }
+    }
+
+    return entry;
+}
 
 void StfsPackage::ReplaceFile(string path, FileEntry *entry, string pathInPackage, void (*replaceProgress)(void *, DWORD, DWORD), void *arg)
 {
