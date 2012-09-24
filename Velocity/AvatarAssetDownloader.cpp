@@ -50,8 +50,11 @@ void AvatarAssetDownloader::onRequestFinished(int id, bool error)
         if (!v2Done)
         {
             v2Done = true;
+            v1TempPath = "";
             http->get("http://download.xboxlive.com/content/" + titleID + "/avataritems/v2/" + guid + ".bin");
         }
+        else
+            v2TempPath = "";
         return;
     }
 
