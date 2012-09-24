@@ -377,7 +377,8 @@ void ProfileEditor::showAvatarContextMenu(QPoint point)
         QString guid = QString::fromStdString(AvatarAwardGPD::GetGUID(&aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row())));
 
         // get a path for the new asset
-        QString assetFileName = guid.replace("-", "").toUpper();
+        QString assetFileName = guid;
+        assetFileName = assetFileName.replace("-", "").toUpper();
         assetSavePath = QFileDialog::getSaveFileName(this, "Choose a place to save the asset", QtHelpers::DesktopLocation() + "\\" + assetFileName, "*");
 
         if (assetSavePath == "")
@@ -404,19 +405,30 @@ void ProfileEditor::onAssetsDoneDownloading()
 
         // set all the needed metadata
         newAsset.metaData->contentType = AvatarItem;
+        newAsset.metaData->titleID = award->titleID;
         newAsset.metaData->displayName = award->name;
         newAsset.metaData->subCategory = award->subcategory;
         newAsset.metaData->colorizable = award->colorizable;
         QtHelpers::ParseHexStringBuffer(downloader->GetGUID().replace("-", "").toUpper(), newAsset.metaData->guid, 0x10);
         newAsset.metaData->skeletonVersion = Nxe; //TODO: figure out where the skeleton version is in the guid
+        newAsset.metaData->WriteMetaData();
 
         newAsset.InjectFile(downloader->GetV1TempPath().toStdString(), "asset.bin");
         newAsset.InjectFile(downloader->GetV2TempPath().toStdString(), "asset_v2.bin");
 
-        newAsset.Rehash();
-        newAsset.Resign(QtHelpers::GetKVPath(newAsset.metaData->certificate.ownerConsoleType, this));
+        // get the thumbnail
+
+        BYTE data[0x2005];
+        for (int i = 0; i < 0x2005; i++)
+            data[i] = i % 2;
+        newAsset.InjectData(data, 0x2005, "rawInject");
+        //ui->imgAvatar->pixmap()->save()
+
+        //newAsset.Rehash();
 
         delete downloader;
+
+        newAsset.Resign(QtHelpers::GetKVPath(newAsset.metaData->certificate.ownerConsoleType, this));
 
         QMessageBox::information(this, "Asset Downloaded", "Successfully downloaded the avatar asset.");
     }
