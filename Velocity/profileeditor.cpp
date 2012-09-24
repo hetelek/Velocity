@@ -422,11 +422,19 @@ void ProfileEditor::onAssetsDoneDownloading()
         newAsset.InjectFile(downloader->GetV2TempPath().toStdString(), "asset_v2.bin");
 
         // get the thumbnail
-        QByteArray ba;
-        QBuffer buffer(&ba);
-        buffer.open(QIODevice::WriteOnly);
-        ui->imgAw->pixmap()->save(&buffer, "PNG");
-        newAsset.InjectData(ba.data(), ba.length(), "icon.png");
+        QByteArray baThumb;
+        QBuffer buffThumb(&baThumb);
+        buffThumb.open(QIODevice::WriteOnly);
+        ui->imgAw->pixmap()->save(&buffThumb, "PNG");
+        newAsset.InjectData(baThumb.data(), baThumb.length(), "icon.png");
+
+        QByteArray baScaled;
+        QBuffer buffScaled(&baScaled);
+        buffScaled.open(QIODevice::WriteOnly);
+        QPixmap scaled = ui->imgAw->pixmap()->scaled(QSize(64, 64));
+        scaled.save(&buffScaled, "PNG");
+        newAsset.metaData->thumbnailImage = baScaled.data();
+        newAsset.metaData->thumbnailImageSize = baScaled.length();
 
         newAsset.Rehash();
 
