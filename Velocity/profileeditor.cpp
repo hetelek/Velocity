@@ -422,14 +422,13 @@ void ProfileEditor::onAssetsDoneDownloading()
         newAsset.InjectFile(downloader->GetV2TempPath().toStdString(), "asset_v2.bin");
 
         // get the thumbnail
+        QByteArray ba;
+        QBuffer buffer(&ba);
+        buffer.open(QIODevice::WriteOnly);
+        ui->imgAw->pixmap()->save(&buffer, "PNG");
+        newAsset.InjectData(ba.data(), ba.length(), "icon.png");
 
-        BYTE data[0x2005];
-        for (int i = 0; i < 0x2005; i++)
-            data[i] = i % 2;
-        newAsset.InjectData(data, 0x2005, "rawInject");
-        //ui->imgAvatar->pixmap()->save()
-
-        //newAsset.Rehash();
+        newAsset.Rehash();
 
         delete downloader;
 
