@@ -7,11 +7,16 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
     ui->setupUi(this);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    ui->achievementsList->header()->resizeSection(0, 150);
-    ui->achievementsList->header()->resizeSection(1, 235);
+    ui->achievementsList->header()->resizeSection(0, 350);
+    ui->achievementsList->header()->resizeSection(1, 125);
+    ui->achievementsList->header()->resizeSection(2, 125);
 
-    ui->avatarAwardsList->header()->resizeSection(0, 150);
-    ui->avatarAwardsList->header()->resizeSection(1, 235);
+    ui->avatarAwardsList->header()->resizeSection(0, 350);
+    ui->avatarAwardsList->header()->resizeSection(1, 125);
+    ui->avatarAwardsList->header()->resizeSection(2, 125);
+
+    ui->lblAchName->setFont(QFont("Arial", 10));
+    ui->lblAwName->setFont(QFont("Arial", 10));
 
     // verify that the package is a profile
     if (profile->metaData->contentType != Profile)
@@ -522,9 +527,8 @@ void ProfileEditor::loadGameInfo(int index)
     {
         QTreeWidgetItem *item = new QTreeWidgetItem;
         item->setText(0, QString::fromStdWString(curGPD->achievements.at(i).name).replace("\n", ""));
-        item->setText(1, QString::fromStdWString((curGPD->achievements.at(i).flags & Unlocked) ? curGPD->achievements.at(i).unlockedDescription : curGPD->achievements.at(i).lockedDescription).replace("\n", ""));
-        item->setText(2, QString::fromStdString(XDBFHelpers::GetAchievementState(&curGPD->achievements.at(i))));
-        item->setText(3, QString::number(curGPD->achievements.at(i).gamerscore));
+        item->setText(1, QString::fromStdString(XDBFHelpers::GetAchievementState(&curGPD->achievements.at(i))));
+        item->setText(2, QString::number(curGPD->achievements.at(i).gamerscore));
 
         ui->achievementsList->insertTopLevelItem(ui->achievementsList->topLevelItemCount(), item);
     }
@@ -596,12 +600,12 @@ void ProfileEditor::loadAchievementInfo(int gameIndex, int chievIndex)
         return;
 
     AchievementEntry entry = games.at(gameIndex).gpd->achievements.at(chievIndex);
-    ui->lblAchName->setText("Name: " + QString::fromStdWString(entry.name));
-    ui->lblAchLockDesc->setText("Locked Description: " + QString::fromStdWString(entry.lockedDescription));
-    ui->lblAchUnlDesc->setText("Unlocked Description: " + QString::fromStdWString(entry.unlockedDescription));
-    ui->lblAchType->setText("Type: " + QString::fromStdString(GameGPD::GetAchievementType(&entry)));
-    ui->lblAchGamescore->setText("Gamerscore: " + QString::number(entry.gamerscore));
-    ui->lblAchSecret->setText(QString("Secret: ") + ((entry.flags & Secret) ? "Yes" : "No"));
+    ui->lblAchName->setText(QString::fromStdWString(entry.name));
+    ui->lblAchLockDesc->setText("Locked: <span style=\"color:#4f4f4f;\">" + QString::fromStdWString(entry.lockedDescription) + "</span>");
+    ui->lblAchUnlDesc->setText("Unlocked: <span style=\"color:#4f4f4f;\">" + QString::fromStdWString(entry.unlockedDescription) + "</span>");
+    ui->lblAchType->setText("Type: <span style=\"color:#4f4f4f;\">" + QString::fromStdString(GameGPD::GetAchievementType(&entry)) + "</span>");
+    ui->lblAchGamescore->setText(QString::number(entry.gamerscore));
+    ui->lblAchSecret->setText(QString("Secret: <span style=\"color:#4f4f4f;\">") + ((entry.flags & Secret) ? "Yes" : "No") + "</span>");
 
     if (entry.flags & UnlockedOnline)
     {
@@ -651,15 +655,14 @@ void ProfileEditor::loadAwardGameInfo(int index)
     {
         QTreeWidgetItem *item = new QTreeWidgetItem;
         item->setText(0, QString::fromStdWString(gpd->avatarAwards.at(i).name).replace("\n", ""));
-        item->setText(1, QString::fromStdWString((gpd->avatarAwards.at(i).flags & Unlocked) ? gpd->avatarAwards.at(i).unlockedDescription : gpd->avatarAwards.at(i).lockedDescription).replace("\n", ""));
-        item->setText(2, QString::fromStdString(XDBFHelpers::AssetGenderToString(gpd->GetAssetGender(&gpd->avatarAwards.at(i)))));
+        item->setText(1, QString::fromStdString(XDBFHelpers::AssetGenderToString(gpd->GetAssetGender(&gpd->avatarAwards.at(i)))));
 
         if (gpd->avatarAwards.at(i).flags & UnlockedOnline)
-            item->setText(3, "Unlocked Online");
+            item->setText(2, "Unlocked Online");
         else if (gpd->avatarAwards.at(i).flags & Unlocked)
-            item->setText(3, "Unlocked Offline");
+            item->setText(2, "Unlocked Offline");
         else
-            item->setText(3, "Locked");
+            item->setText(2, "Locked");
 
         ui->avatarAwardsList->insertTopLevelItem(ui->avatarAwardsList->topLevelItemCount(), item);
     }
@@ -707,21 +710,21 @@ void ProfileEditor::loadAvatarAwardInfo(int gameIndex, int awardIndex)
     struct AvatarAward *award = &aaGames.at(gameIndex).gpd->avatarAwards.at(awardIndex);
 
     // update the ui
-    ui->lblAwName->setText("Name: " + QString::fromStdWString(award->name));
-    ui->lblAwLockDesc->setText("Locked Description: " + QString::fromStdWString(award->lockedDescription));
-    ui->lblAwUnlDesc->setText("Unlocked Description: " + QString::fromStdWString(award->unlockedDescription));
+    ui->lblAwName->setText(QString::fromStdWString(award->name));
+    ui->lblAwLockDesc->setText("Locked: <span style=\"color:#4f4f4f;\">" + QString::fromStdWString(award->lockedDescription) + "</span>");
+    ui->lblAwUnlDesc->setText("Unlocked: <span style=\"color:#4f4f4f;\">" + QString::fromStdWString(award->unlockedDescription) + "</span>");
 
     try
     {
-         ui->lblAwType->setText("Type: " + QString::fromStdString(XDBFHelpers::AssetSubcategoryToString(award->subcategory)));
+         ui->lblAwType->setText("Type: <span style=\"color:#4f4f4f;\">" + QString::fromStdString(XDBFHelpers::AssetSubcategoryToString(award->subcategory)) + "</span>");
     }
     catch (...)
     {
-        ui->lblAwType->setText("Type: <i>Unknown</i>");
+        ui->lblAwType->setText("Unlocked: <span style=\"color:#4f4f4f;\"><i>Unknown</i></span>");
     }
 
-    ui->lblAwGender->setText("Gender: " + QString::fromStdString(XDBFHelpers::AssetGenderToString(aaGames.at(gameIndex).gpd->GetAssetGender(award))));
-    ui->lblAwSecret->setText(QString("Secret: ") + ((award->flags & 0xFFFF) ? "No" : "Yes"));
+    ui->lblAwGender->setText("Gender: <span style=\"color:#4f4f4f;\">" + QString::fromStdString(XDBFHelpers::AssetGenderToString(aaGames.at(gameIndex).gpd->GetAssetGender(award))) + "</span>");
+    ui->lblAwSecret->setText(QString("Secret: <span style=\"color:#4f4f4f;\">") + ((award->flags & 0xFFFF) ? "No" : "Yes") + "</span>");
 
     if (award->flags & UnlockedOnline)
     {
@@ -776,8 +779,8 @@ void ProfileEditor::on_btnUnlockAllAchvs_clicked()
     for (DWORD i = 0; i < ui->achievementsList->topLevelItemCount(); i++)
     {
         QTreeWidgetItem *item = ui->achievementsList->topLevelItem(i);
-        if (item->text(2) != "Unlocked Online")
-            item->setText(2, "Unlocked Offline");
+        if (item->text(1) != "Unlocked Online")
+            item->setText(1, "Unlocked Offline");
     }
 
     games.at(index).titleEntry->achievementsUnlocked = games.at(index).titleEntry->achievementCount;
@@ -1164,9 +1167,8 @@ void ProfileEditor::on_btnCreateAch_clicked()
         // add the achievement to the UI
         QTreeWidgetItem *item = new QTreeWidgetItem;
         item->setText(0, QString::fromStdWString(entry.name));
-        item->setText(1, QString::fromStdWString(entry.lockedDescription));
-        item->setText(2, "Locked");
-        item->setText(3, QString::number(entry.gamerscore));
+        item->setText(1, "Locked");
+        item->setText(2, QString::number(entry.gamerscore));
         ui->achievementsList->insertTopLevelItem(ui->achievementsList->topLevelItemCount(), item);
 
         // update the title entry
@@ -1197,7 +1199,7 @@ void ProfileEditor::on_cmbxAchState_currentIndexChanged(int index)
     if (index == 0)
     {
         // update the list text
-        ui->achievementsList->topLevelItem(chievIndex)->setText(2, "Locked");
+        ui->achievementsList->topLevelItem(chievIndex)->setText(1, "Locked");
 
         // update the title entry
         updateAchievement(games.at(gameIndex).titleEntry, &gpd->achievements.at(chievIndex), StateLocked, gpd);
@@ -1207,7 +1209,7 @@ void ProfileEditor::on_cmbxAchState_currentIndexChanged(int index)
     else if (index == 1)
     {
         // update the list text
-        ui->achievementsList->topLevelItem(chievIndex)->setText(2, "Unlocked Offline");
+        ui->achievementsList->topLevelItem(chievIndex)->setText(1, "Unlocked Offline");
 
         // update the title entry
         updateAchievement(games.at(gameIndex).titleEntry, &gpd->achievements.at(chievIndex), StateUnlockedOffline, gpd);
@@ -1220,7 +1222,7 @@ void ProfileEditor::on_cmbxAchState_currentIndexChanged(int index)
     else
     {
         // update the list text
-        ui->achievementsList->topLevelItem(chievIndex)->setText(2, "Unlocked Online");
+        ui->achievementsList->topLevelItem(chievIndex)->setText(1, "Unlocked Online");
 
         // update the title entry
         updateAchievement(games.at(gameIndex).titleEntry, &gpd->achievements.at(chievIndex), StateUnlockedOnline, gpd);
@@ -1255,7 +1257,7 @@ void ProfileEditor::on_cmbxAwState_currentIndexChanged(int index)
     if (index == 0)
     {
         // update the list text
-        ui->avatarAwardsList->topLevelItem(awardIndex)->setText(3, "Locked");
+        ui->avatarAwardsList->topLevelItem(awardIndex)->setText(2, "Locked");
 
         // update the title entry
         updateAvatarAward(aaGames.at(gameIndex).titleEntry, gpd, &gpd->avatarAwards.at(awardIndex), StateLocked);
@@ -1264,7 +1266,7 @@ void ProfileEditor::on_cmbxAwState_currentIndexChanged(int index)
     else if (index == 1)
     {
         // update the list text
-        ui->avatarAwardsList->topLevelItem(awardIndex)->setText(3, "Unlocked Offline");
+        ui->avatarAwardsList->topLevelItem(awardIndex)->setText(2, "Unlocked Offline");
 
         // update the title entry
         updateAvatarAward(aaGames.at(gameIndex).titleEntry, gpd, &gpd->avatarAwards.at(awardIndex), StateUnlockedOffline);
@@ -1275,7 +1277,7 @@ void ProfileEditor::on_cmbxAwState_currentIndexChanged(int index)
     else
     {
         // update the list text
-        ui->avatarAwardsList->topLevelItem(awardIndex)->setText(3, "Unlocked Online");
+        ui->avatarAwardsList->topLevelItem(awardIndex)->setText(2, "Unlocked Online");
 
         // update the title entry
         updateAvatarAward(aaGames.at(gameIndex).titleEntry, gpd, &gpd->avatarAwards.at(awardIndex), StateUnlockedOnline);
