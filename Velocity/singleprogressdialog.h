@@ -19,7 +19,7 @@ class SingleProgressDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit SingleProgressDialog(StfsPackage *package, QString externalFile, QString packageFilePath, QWidget *parent = 0);
+    explicit SingleProgressDialog(StfsPackage *package, QString externalFile, QString packageFilePath, StfsJob job, FileEntry *entry = NULL, QWidget *parent = 0);
     void startReplace();
     ~SingleProgressDialog();
 
@@ -30,6 +30,8 @@ private:
     Ui::SingleProgressDialog *ui;
 
     StfsPackage *package;
+    StfsJob job;
+    FileEntry *entry;
     QString externalFile;
     QString packageFilePath;
 };

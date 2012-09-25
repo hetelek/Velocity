@@ -17,6 +17,10 @@ void StfsWorkerThread::run()
         case Replace:
             package->ReplaceFile(externalPath.toStdString(), packageFilePath.toStdString(), progessUpdatedExternal, this);
             break;
+        case Inject:
+            FileEntry temp = package->InjectFile(externalPath.toStdString(), packageFilePath.toStdString(), progessUpdatedExternal, this);
+            *packageFile = temp;
+            break;
     }
 }
 

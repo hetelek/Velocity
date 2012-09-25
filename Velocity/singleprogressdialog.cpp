@@ -1,16 +1,22 @@
 #include "singleprogressdialog.h"
 #include "ui_singleprogressdialog.h"
 
-SingleProgressDialog::SingleProgressDialog(StfsPackage *package, QString externalFile, QString packageFilePath, QWidget *parent) :
-    QDialog(parent), ui(new Ui::SingleProgressDialog), package(package), externalFile(externalFile), packageFilePath(packageFilePath)
+SingleProgressDialog::SingleProgressDialog(StfsPackage *package, QString externalFile, QString packageFilePath, StfsJob job, FileEntry *entry, QWidget *parent) :
+    QDialog(parent), ui(new Ui::SingleProgressDialog), package(package), externalFile(externalFile), packageFilePath(packageFilePath), job(job), entry(entry)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+
+    if (job == Inject)
+    {
+        setWindowTitle("Injecting File");
+        ui->lblIcon->setPixmap(QPixmap(":/Images/add.png"));
+    }
 }
 
 void SingleProgressDialog::startReplace()
 {
-    StfsWorkerThread thread(package, Replace, NULL, externalFile, this, packageFilePath);
+    StfsWorkerThread thread(package, job, entry, externalFile, this, packageFilePath);
 
     connect(&thread, SIGNAL(progressUpdated(DWORD,DWORD)), this, SLOT(onProgressUpdated(DWORD, DWORD)));
 
@@ -22,10 +28,10 @@ void SingleProgressDialog::onProgressUpdated(DWORD blocksReplaced, DWORD totalBl
     ui->progressBar->setMaximum(totalBlockCount);
     ui->progressBar->setValue(blocksReplaced);
 
-    if (blocksReplaced == totalBlockCount)
-        this->close();
-
     QApplication::processEvents();
+
+    if (blocksReplaced == totalBlockCount)
+        close();
 }
 
 SingleProgressDialog::~SingleProgressDialog()
