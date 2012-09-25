@@ -1501,6 +1501,10 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injec
     // set up the entry
     FileEntry entry;
     entry.name = fileName;
+
+    if (fileName.length() > 0x28)
+        throw string("STFS: File entry name length cannot be greater than 40(0x28) characters.\n");
+
     entry.fileSize = fileSize;
     entry.flags = 0;
     entry.pathIndicator = folder->folder.entryIndex;
