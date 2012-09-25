@@ -468,7 +468,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             SetIcon(injectedEntry.name, fileEntry);
 
             fileEntry->setText(0, QString::fromStdString(injectedEntry.name));
-            fileEntry->setText(1, "0x" + QString::number(injectedEntry.fileSize, 16).toUpper());
+            fileEntry->setText(1, QString::fromStdString(injectedEntry.fileSize));
             fileEntry->setText(2, "0x" + QString::number(package->BlockToAddress(injectedEntry.startingBlockNum), 16).toUpper());
             fileEntry->setText(3, "0x" + QString::number(injectedEntry.startingBlockNum, 16).toUpper());
 
