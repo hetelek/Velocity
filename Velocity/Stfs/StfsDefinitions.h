@@ -6,6 +6,7 @@
 #include "FileIO.h"
 #include <iostream>
 #include <sstream>
+#include <time.h>
 
 using std::string;
 
@@ -89,5 +90,7 @@ string LicenseTypeToString(LicenseType type);
 MSTime DWORDToMSTime(DWORD winTime);
 
 DWORD MSTimeToDWORD(MSTime time);
+
+MSTime TimetToMSTime(time_t time);
 
 #endif // STFSDEFINITIONS_H

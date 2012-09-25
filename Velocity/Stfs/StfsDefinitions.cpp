@@ -99,6 +99,21 @@ MSTime DWORDToMSTime(DWORD winTime)
     return time;
 }
 
+MSTime TimetToMSTime(time_t time)
+{
+    struct tm *timeInfo = localtime(&time);
+
+    MSTime toReturn;
+    toReturn.year = timeInfo->tm_year - 4;
+    toReturn.month = timeInfo->tm_mon + 1;
+    toReturn.monthDay = timeInfo->tm_mday;
+    toReturn.hours = timeInfo->tm_hour;
+    toReturn.minutes = timeInfo->tm_min;
+    toReturn.seconds = timeInfo->tm_sec;
+
+    return toReturn;
+}
+
 void WriteVolumeDescriptorEx(VolumeDescriptor *descriptor, FileIO *io, DWORD address)
 {
     // volume descriptor position
