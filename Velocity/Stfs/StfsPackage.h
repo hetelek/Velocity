@@ -5,6 +5,7 @@
 #include <sstream>
 #include <math.h>
 #include <map>
+#include <time.h>
 #include <stdlib.h>
 #include "../FileIO.h"
 #include "StfsMetaData.h"

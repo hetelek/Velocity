@@ -1506,6 +1506,8 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injec
     entry.pathIndicator = folder->folder.entryIndex;
     entry.startingBlockNum = -1;
     entry.blocksForFile = ((fileSize + 0xFFF) & 0xFFFFFFF000) >> 0xC;
+    entry.createdTimeStamp = MSTimeToDWORD(TimetToMSTime(time(NULL)));
+    entry.accessTimeStamp = entry.createdTimeStamp;
 
     INT24 block, prevBlock = -1;
     DWORD counter = 0;
