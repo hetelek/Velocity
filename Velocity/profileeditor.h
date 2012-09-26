@@ -30,7 +30,7 @@
 #include <vector>
 #include <stdio.h>
 #include "achievementcreationwizard.h"
-#include "AvatarAssetDownloader.h"
+#include "avatarassetdownloader.h"
 
 using namespace std;
 
