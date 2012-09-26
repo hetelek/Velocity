@@ -180,9 +180,12 @@ void PackageViewer::on_btnFix_clicked()
         return;
     }
 
-    // save the ids
-    QtHelpers::ParseHexStringBuffer(ui->txtProfileID->text(), package->metaData->profileID, 8);
-    QtHelpers::ParseHexStringBuffer(ui->txtDeviceID->text(), package->metaData->deviceID, 20);
+    // save the ids if it's not PEC
+    if (!package->IsPEC())
+    {
+        QtHelpers::ParseHexStringBuffer(ui->txtProfileID->text(), package->metaData->profileID, 8);
+        QtHelpers::ParseHexStringBuffer(ui->txtDeviceID->text(), package->metaData->deviceID, 20);
+    }
 
     try
     {
@@ -407,6 +410,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
             package->RenameFile(newName, packagePath.toStdString());
             items.at(0)->setText(0, QString::fromStdString(newName));
+            QMessageBox::information(this, "Success", "The file has been renamed.");
         }
         catch (string error)
         {
@@ -424,7 +428,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
         try
         {
-            SingleProgressDialog *dialog = new SingleProgressDialog(package, path, packagePath, Replace, NULL, this);
+            SingleProgressDialog *dialog = new SingleProgressDialog(package, path, packagePath, this);
             dialog->setModal(true);
             dialog->show();
             dialog->startReplace();
@@ -455,27 +459,21 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
         try
         {
-            FileEntry *injectedEntry = new FileEntry;
-            injectedEntry->name = "Adam is cool";
-            SingleProgressDialog *dialog = new SingleProgressDialog(package, path, packagePath, Inject, injectedEntry, this);
-            dialog->setModal(true);
-            dialog->show();
-            dialog->startReplace();
-
+            FileEntry injectedEntry = package->InjectFile(path.toStdString(), packagePath.toStdString());
             listing = package->GetFileListing();
 
             QTreeWidgetItem *fileEntry;
-            if (injectedEntry->pathIndicator != 0xFFFF)
+            if (injectedEntry.pathIndicator != 0xFFFF)
                 fileEntry = new QTreeWidgetItem(items.at(0));
             else
                 fileEntry = new QTreeWidgetItem(ui->treeWidget);
 
-            SetIcon(injectedEntry->name, fileEntry);
+            SetIcon(injectedEntry.name, fileEntry);
 
-            fileEntry->setText(0, QString::fromStdString(injectedEntry->name));
-            fileEntry->setText(1, QString::fromStdString(ByteSizeToString(injectedEntry->fileSize)));
-            fileEntry->setText(2, "0x" + QString::number(package->BlockToAddress(injectedEntry->startingBlockNum), 16).toUpper());
-            fileEntry->setText(3, "0x" + QString::number(injectedEntry->startingBlockNum, 16).toUpper());
+            fileEntry->setText(0, QString::fromStdString(injectedEntry.name));
+            fileEntry->setText(1, "0x" + QString::number(injectedEntry.fileSize, 16).toUpper());
+            fileEntry->setText(2, "0x" + QString::number(package->BlockToAddress(injectedEntry.startingBlockNum), 16).toUpper());
+            fileEntry->setText(3, "0x" + QString::number(injectedEntry.startingBlockNum, 16).toUpper());
 
             QMessageBox::information(this, "Success", "The file has been injected.");
         }
