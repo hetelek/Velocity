@@ -226,6 +226,14 @@ void MainWindow::on_actionProfile_Creator_triggered()
 
 void MainWindow::on_actionGame_Adder_triggered()
 {
-    GameAdderDialog dialog(this);
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
+    if (fileName.isEmpty())
+        return;
+
+    StfsPackage *package = new StfsPackage(fileName.toStdString());
+
+    GameAdderDialog dialog(package, this);
     dialog.exec();
+
+    package->Close();
 }
