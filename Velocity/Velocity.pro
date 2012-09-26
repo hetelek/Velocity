@@ -54,8 +54,9 @@ SOURCES += main.cpp \
     singleprogressdialog.cpp \
     profilecreatorwizard.cpp \
     themecreationwizard.cpp \
-    AvatarAssetDownloader.cpp \
-    gameadderdialog.cpp
+    gameadderdialog.cpp \
+    avatarassetdownloader.cpp \
+    gpddownloader.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -102,8 +103,9 @@ HEADERS  += mainwindow.h \
     PluginInterfaces/igamemodder.h \
     profilecreatorwizard.h \
     themecreationwizard.h \
-    AvatarAssetDownloader.h \
-    gameadderdialog.h
+    gameadderdialog.h \
+    avatarassetdownloader.h \
+    gpddownloader.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \

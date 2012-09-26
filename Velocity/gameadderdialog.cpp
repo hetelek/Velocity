@@ -3,16 +3,33 @@
 
 Q_DECLARE_METATYPE(TitleEntry)
 
-GameAdderDialog::GameAdderDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::GameAdderDialog)
-{           
+GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent) : QDialog(parent), ui(new Ui::GameAdderDialog), package(package)
+{
     ui->setupUi(this);
+
+    allowInjection = false;
 
     ui->treeWidgetAllGames->header()->resizeSection(0, 182);
     ui->treeWidgetQueue->header()->resizeSection(0, 182);
 
-    mainDir = "http://localhost/";
+    // make sure the dashboard gpd exists
+
+    try
+    {
+        dashGPDTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+        package->ExtractFile("FFFE07D1.gpd", dashGPDTempPath.toStdString());
+        dashGPD = new DashboardGPD(dashGPDTempPath.toStdString());
+    }
+    catch(string error)
+    {
+        QMessageBox::critical(this, "File Error", "The dashboard GPD could not be extracted/opened.\n\n" + QString::fromStdString(error));
+        this->close();
+        return;
+    }
+
+    mainDir = "http://127.0.0.1/";
+    downloader = new GPDDownloader("127.0.0.1", "/gpds/");
+    connect(downloader, SIGNAL(FinishedDownloading(QString, QString, QString)), this, SLOT(finishedDownloadingGPD(QString, QString, QString)));
 
     manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gameReplyFinished(QNetworkReply*)));
@@ -58,15 +75,16 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
         entry.titleID = titleId.toULong(0, 16);
         entry.achievementCount = achievementCount.toULong();
         entry.totalGamerscore = totalGamerscore.toULong();
-        entry.avatarAwardCount = totalAwardCount.toStdString().c_str()[0];
-        entry.maleAvatarAwardCount = maleAwardCount.toStdString().c_str()[0];
-        entry.femaleAvatarAwardCount = femaleAwardCount.toStdString().c_str()[0];
+        entry.avatarAwardCount = (BYTE)totalAwardCount.toInt();
+        entry.maleAvatarAwardCount = (BYTE)maleAwardCount.toInt();
+        entry.femaleAvatarAwardCount = (BYTE)femaleAwardCount.toInt();
 
         entry.achievementsUnlocked = 0;
         entry.achievementsUnlockedOnline = 0;
         entry.avatarAwardsEarned = 0;
         entry.femaleAvatarAwardsEarned = 0;
         entry.maleAvatarAwardsEarned = 0;
+        entry.gamerscoreUnlocked = 0;
         entry.lastPlayed = QDateTime::currentDateTime().toTime_t();
 
         item->setData(0, Qt::UserRole, QVariant::fromValue(entry));
@@ -117,8 +135,64 @@ void GameAdderDialog::showRemoveContextMenu_AllGames(QPoint point)
             item->setData(0, Qt::UserRole, items.at(i)->data(0, Qt::UserRole));
             ui->treeWidgetQueue->addTopLevelItem(item);
 
+            allowInjection = true;
+
             delete items.at(i);
         }
+    }
+}
+
+void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath, QString titleId)
+{
+    if (!allowInjection)
+    {
+        QFile::remove(gamePath);
+
+        if (!awardPath.isEmpty())
+            QFile::remove(awardPath);
+
+        return;
+    }
+
+    try
+    {
+        titleId = titleId.toUpper();
+        titleId += ".gpd";
+        package->InjectFile(gamePath.toStdString(), titleId.toStdString());
+        QFile::remove(gamePath);
+
+        if (!awardPath.isEmpty())
+        {
+            QString tempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+            package->ExtractFile("PEC", tempPath.toStdString());
+
+            StfsPackage pack(tempPath.toStdString(), StfsPackagePEC);
+            pack.InjectFile(awardPath.toStdString(), titleId.toStdString());
+
+            std::string kvPath = QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType);
+
+            pack.Resign(kvPath);
+            pack.Rehash();
+
+            pack.Close();
+
+            package->ReplaceFile(tempPath.toStdString(), "PEC");
+            package->Resign(kvPath);
+            package->Rehash();
+
+            package->Close();
+
+            QFile::remove(awardPath);
+            QFile::remove(tempPath);
+        }
+    }
+    catch (std::string error)
+    {
+        QMessageBox::critical(this, "Error Occured", "An error occured while injecting the game(s).\n\n" + QString::fromStdString(error));
+    }
+    catch(...)
+    {
+        QMessageBox::critical(this, "Error Occured", "An unknown error occured while injecting the game(s).");
     }
 }
 
@@ -160,7 +234,12 @@ void GameAdderDialog::showRemoveContextMenu_QueuedGames(QPoint point)
 void GameAdderDialog::on_treeWidgetAllGames_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
     if (current == NULL)
+    {
+        ui->lblGameName->setText("Game Name: <i>N/A</i>");
+        ui->lblTitleID->setText("Title ID: <i>N/A</i>");
+        ui->imgThumbnail->setPixmap(QPixmap());
         return;
+    }
 
     TitleEntry entry = current->data(0, Qt::UserRole).value<TitleEntry>();
 
@@ -170,4 +249,40 @@ void GameAdderDialog::on_treeWidgetAllGames_currentItemChanged(QTreeWidgetItem *
 
     ui->lblGameName->setText("Game Name: " + QString::fromStdWString(entry.gameName));
     ui->lblTitleID->setText("Title ID: " + QString::number(entry.titleID, 16).toUpper());
+}
+
+void GameAdderDialog::on_pushButton_2_clicked()
+{
+    close();
+}
+
+void GameAdderDialog::on_pushButton_clicked()
+{
+    for (int i = 0; i < ui->treeWidgetQueue->topLevelItemCount(); i++)
+    {
+        TitleEntry entry = ui->treeWidgetQueue->topLevelItem(i)->data(0, Qt::UserRole).value<TitleEntry>();
+        dashGPD->CreateTitleEntry(&entry);
+        dashGPD->gamePlayedCount.int32++;
+
+        downloader->BeginDownload(QString::number(entry.titleID, 16), entry.avatarAwardCount != 0);
+    }
+
+    try
+    {
+        dashGPD->WriteSettingEntry(dashGPD->gamePlayedCount);
+    }
+    catch (std::string error)
+    {
+        QMessageBox::critical(this, "Error Writing Entry", "The entry was not written successfully.\n\n" + QString::fromStdString(error));
+    }
+    dashGPD->Close();
+
+    try
+    {
+        package->ReplaceFile(dashGPDTempPath.toStdString(), "FFFE07D1.gpd");
+    }
+    catch (std::string error)
+    {
+        QMessageBox::critical(this, "Error Replacing GPD", "The dashboard GPD could not be replaced.\n\n" + QString::fromStdString(error));
+    }
 }
