@@ -460,7 +460,6 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         try
         {
             FileEntry *injectedEntry = new FileEntry;
-            injectedEntry->name = "Adam is cool";
             SingleProgressDialog *dialog = new SingleProgressDialog(package, path, packagePath, Inject, injectedEntry, this);
             dialog->setModal(true);
             dialog->show();
