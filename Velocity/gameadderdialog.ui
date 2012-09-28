@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_2">
+  <layout class="QHBoxLayout" name="horizontalLayout_3">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
@@ -85,29 +85,74 @@
     </layout>
    </item>
    <item>
-    <widget class="QTreeWidget" name="treeWidgetQueue">
-     <attribute name="headerDefaultSectionSize">
-      <number>100</number>
-     </attribute>
-     <column>
-      <property name="text">
-       <string>Game Name</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Gamerscore</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Award Count</string>
-      </property>
-     </column>
-    </widget>
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <item>
+      <widget class="QTreeWidget" name="treeWidgetQueue">
+       <attribute name="headerDefaultSectionSize">
+        <number>100</number>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>Game Name</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Gamerscore</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Award Count</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>Add Games</string>
+         </property>
+         <property name="icon">
+          <iconset resource="Resources.qrc">
+           <normaloff>:/Images/add.png</normaloff>:/Images/add.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>Cancel</string>
+         </property>
+         <property name="icon">
+          <iconset resource="Resources.qrc">
+           <normaloff>:/Images/cancel.png</normaloff>:/Images/cancel.png</iconset>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="Resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
