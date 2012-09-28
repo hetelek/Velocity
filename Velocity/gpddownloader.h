@@ -10,19 +10,18 @@
 
 // other
 #include "winnames.h"
+#include "GPD/DashboardGPD.h"
 #include "FileIO.h"
 
 class GPDDownloader : public QObject
 {
     Q_OBJECT
 public:
-    explicit GPDDownloader(QString host, QString gpdDirectory, QObject *parent = 0);
-    void BeginDownload(QString titleId, bool hasAvatarAwards = false);
-    QString GetTempAwardGPDPath();
-    QString GetTempGameGPDPath();
+    explicit GPDDownloader(TitleEntry entry, bool hasAwards = false, QObject *parent = 0);
+    void BeginDownload();
 
 signals:
-    void FinishedDownloading(QString gameGPDPath, QString awardGPDPath, QString titleID);
+    void FinishedDownloading(QString gameGPDPath, QString awardGPDPath, TitleEntry entry);
 
 public slots:
     void onDone(bool);
@@ -31,8 +30,8 @@ public slots:
 private:
     QHttp *http;
     QString gpdDirectory, titleID, awardGPD, gameGPD;
-
-    bool gpdFinished, awardGPDFinished;
+    TitleEntry entry;
+    bool hasAwards, gpdWritten;
 };
 
 #endif // GPDDOWNLOADER_H

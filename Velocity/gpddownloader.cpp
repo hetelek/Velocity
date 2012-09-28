@@ -1,51 +1,33 @@
 #include "gpddownloader.h"
 
-GPDDownloader::GPDDownloader(QString host, QString gpdDirectory, QObject *parent) : gpdDirectory(gpdDirectory)
+GPDDownloader::GPDDownloader(TitleEntry entry, bool hasAwards, QObject *parent) : entry(entry), hasAwards(hasAwards)
 {
-    gpdDirectory = gpdDirectory.trimmed();
+    gpdDirectory = "/gpds/";
+    gpdWritten = false;
 
     http = new QHttp(this);
-    http->setHost(host);
+    http->setHost("127.0.0.1");
 
     connect(http, SIGNAL(done(bool)), this, SLOT(onDone(bool)));
     connect(http, SIGNAL(requestFinished(int, bool)), this, SLOT(onRequestFinished(int, bool)));
 }
 
-void GPDDownloader::BeginDownload(QString titleId, bool hasAvatarAwards)
+void GPDDownloader::BeginDownload()
 {
-    // setup
-    titleID = titleId;
-    gpdFinished = false;
-    awardGPDFinished = !hasAvatarAwards;
-
-    // clear the current paths
-    awardGPD.clear();
-    gameGPD.clear();
-
-    // begin the download
-    http->get(gpdDirectory + titleID.toUpper() + ".gpd");
-}
-
-QString GPDDownloader::GetTempAwardGPDPath()
-{
-    return awardGPD;
-}
-
-QString GPDDownloader::GetTempGameGPDPath()
-{
-    return gameGPD;
+    http->get(gpdDirectory + QString::number(entry.titleID, 16).toUpper() + ".gpd");
 }
 
 void GPDDownloader::onRequestFinished(int id, bool error)
 {
     if (error)
         return;
+    else if (http->bytesAvailable() < 1)
+        return;
 
     QString tempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
 
-    if (!gpdFinished)
+    if (!gpdWritten)
     {
-        gpdFinished = true;
         gameGPD = tempPath;
 
         // create a new temporary file
@@ -58,8 +40,10 @@ void GPDDownloader::onRequestFinished(int id, bool error)
         // clean up
         v1File.flush();
         v1File.close();
+
+        gpdWritten = true;
     }
-    else if (awardGPDFinished)
+    else
     {
         awardGPD = tempPath;
 
@@ -75,18 +59,15 @@ void GPDDownloader::onRequestFinished(int id, bool error)
         v1File.close();
     }
 
-    if (!awardGPDFinished)
+    if (hasAwards)
     {
-        awardGPDFinished = true;
-        http->get(gpdDirectory + "awards/" + titleID + ".gpd");
-        return;
+        hasAwards = false;
+        http->get(gpdDirectory + "awards/" + QString::number(entry.titleID, 16).toUpper() + ".gpd");
     }
 }
 
 void GPDDownloader::onDone(bool error)
 {
     if (!error)
-    {
-        emit FinishedDownloading(gameGPD, awardGPD, titleID);
-    }
+        emit FinishedDownloading(gameGPD, awardGPD, entry);
 }
