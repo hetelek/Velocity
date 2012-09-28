@@ -287,33 +287,39 @@ void PackageViewer::on_txtSearch_textChanged(const QString &arg1)
 void PackageViewer::showRemoveContextMenu(QPoint point)
 {
     int amount = ui->treeWidget->selectedItems().length();
-    if (amount < 1)
-            return;
 
-    bool isFolder = ui->treeWidget->selectedItems()[0]->text(3) == "N/A";
     QPoint globalPos = ui->treeWidget->mapToGlobal(point);
-
     QMenu contextMenu;
 
-    if (!isFolder)
+    bool isFolder = false;
+    if (amount == 0)
     {
-        contextMenu.addAction(QPixmap(":/Images/extract.png"), "Extract Selected");
-        contextMenu.addAction(QPixmap(":/Images/delete.png"), "Remove Selected");
+        contextMenu.addAction(QPixmap(":/Images/add.png"), "Inject Here");
     }
-
-    if (amount == 1)
+    else
     {
-        contextMenu.addSeparator();
-        contextMenu.addAction(QPixmap(":/Images/rename.png"), "Rename Selected");
+        isFolder = ui->treeWidget->selectedItems()[0]->text(3) == "N/A";
 
         if (!isFolder)
-            contextMenu.addAction(QPixmap(":/Images/replace.png"), "Replace File");
-    }
+        {
+            contextMenu.addAction(QPixmap(":/Images/extract.png"), "Extract Selected");
+            contextMenu.addAction(QPixmap(":/Images/delete.png"), "Remove Selected");
+        }
 
-    contextMenu.addSeparator();
-    contextMenu.addAction(QPixmap(":/Images/add.png"), "Inject Here");
-    contextMenu.addSeparator();
-    contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
+        if (amount == 1)
+        {
+            contextMenu.addSeparator();
+            contextMenu.addAction(QPixmap(":/Images/rename.png"), "Rename Selected");
+
+            if (!isFolder)
+                contextMenu.addAction(QPixmap(":/Images/replace.png"), "Replace File");
+        }
+
+        contextMenu.addSeparator();
+        contextMenu.addAction(QPixmap(":/Images/add.png"), "Inject Here");
+        contextMenu.addSeparator();
+        contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
+    }
 
     QAction *selectedItem = contextMenu.exec(globalPos);
     if(selectedItem == NULL)
@@ -321,9 +327,6 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
     QList <QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
     int totalCount = items.count(), successCount = 0;
-
-    if (totalCount < 1)
-        return;
 
     if (selectedItem->text() == "Extract Selected")
     {
@@ -444,17 +447,20 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
     else if (selectedItem->text() == "Inject Here")
     {
         QString packagePath;
-        GetPackagePath(items.at(0), &packagePath, true);
 
         QString path = QFileDialog::getOpenFileName(this, "New File", QtHelpers::DesktopLocation());
         if (path.isEmpty())
             return;
 
+        if (totalCount > 1)
+        {
+            GetPackagePath(items.at(0), &packagePath, true);
+
+            if (isFolder && items.at(0)->parent() == NULL)
+                packagePath.append(items.at(0)->text(0) + "\\");
+        }
+
         QFileInfo pathInfo(path);
-
-        if (isFolder && items.at(0)->parent() == NULL)
-            packagePath.append(items.at(0)->text(0) + "\\");
-
         packagePath.append(pathInfo.fileName());
 
         try
