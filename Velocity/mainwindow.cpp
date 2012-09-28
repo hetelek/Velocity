@@ -204,8 +204,27 @@ void MainWindow::on_actionSTRB_File_triggered()
 
 void MainWindow::on_actionCreate_Package_triggered()
 {
-    CreationWizard wizard(this);
+    QString packagePath;
+    CreationWizard wizard(&packagePath, this);
     wizard.exec();
+
+    if (packagePath == "error")
+        return;
+
+    try
+    {
+        StfsPackage *package = new StfsPackage(packagePath.toStdString());
+
+        PackageViewer *viewer = new PackageViewer(package, this);
+        ui->mdiArea->addSubWindow(viewer);
+        viewer->show();
+
+        ui->statusBar->showMessage("Stfs package created successfully.", 3000);
+    }
+    catch (string error)
+    {
+        QMessageBox::critical(this, "Package Error", "An error has occurred while opening the package.\n\n" + QString::fromStdString(error));
+    }
 }
 
 void MainWindow::on_actionTitle_ID_Finder_triggered()
