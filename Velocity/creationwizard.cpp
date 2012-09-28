@@ -22,7 +22,7 @@ void CreationWizard::onCurrentIdChanged(int id)
 {
     switch (id)
     {
-    case 2:
+    case 3:
         ui->lwContentTypes->clear();
         // populate content type list
 
@@ -71,10 +71,10 @@ void CreationWizard::onCurrentIdChanged(int id)
         ui->lwContentTypes->item(0)->setSelected(true);
         break;
 
-    case 3:
+    case 4:
         button(QWizard::NextButton)->setEnabled(false);
         break;
-    case 5:
+    case 6:
         ui->lblSavePath->setText(QtHelpers::DesktopLocation() + "\\" + ui->txtDisplayName->text());
         break;
     }
@@ -162,7 +162,7 @@ void CreationWizard::onFinished(int status)
     // set the metadata
     DWORD magics[3] = { CON, LIVE, PIRS };
     package.metaData->magic = magics[ui->cmbxMagic->currentIndex()];
-    package.metaData->certificate.ownerConsoleType = Retail; // TODO: add combox so the user can choose the console type
+    package.metaData->certificate.ownerConsoleType = (ui->cmbxType->currentIndex() == 0) ? Retail : DevKit;
     package.metaData->contentType = getContentType();
     package.metaData->titleID = QtHelpers::ParseHexString(ui->txtTitleID->text());
     package.metaData->displayName = ui->txtDisplayName->text().toStdWString();
