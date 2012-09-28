@@ -611,7 +611,7 @@ void ProfileEditor::loadAchievementInfo(int gameIndex, int chievIndex)
         return;
 
     AchievementEntry entry = games.at(gameIndex).gpd->achievements.at(chievIndex);
-    ui->lblAchName->setText(QString::fromStdWString(entry.name));
+    ui->lblAchName->setText(QString::fromStdWString(entry.name).trimmed());
     ui->lblAchLockDesc->setText("Locked: <span style=\"color:#4f4f4f;\">" + QString::fromStdWString(entry.lockedDescription) + "</span>");
     ui->lblAchUnlDesc->setText("Unlocked: <span style=\"color:#4f4f4f;\">" + QString::fromStdWString(entry.unlockedDescription) + "</span>");
     ui->lblAchType->setText("Type: <span style=\"color:#4f4f4f;\">" + QString::fromStdString(GameGPD::GetAchievementType(&entry)) + "</span>");
