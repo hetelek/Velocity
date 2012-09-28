@@ -63,8 +63,8 @@
         <file>Images/avatar female.png</file>
         <file>Images/defaultTitleImage.png</file>
         <file>Images/theme.png</file>
-        <file>Images/watermark.png</file>
         <file>Images/download.png</file>
         <file>Images/gamerscore.png</file>
+        <file>Images/watermark.png</file>
     </qresource>
 </RCC>
