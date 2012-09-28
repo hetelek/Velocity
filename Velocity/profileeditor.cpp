@@ -549,11 +549,14 @@ void ProfileEditor::loadGameInfo(int index)
 
     TitleEntry *title = games.at(index).titleEntry;
 
-    ui->lblGameName->setText("Name: " + QString::fromStdWString(title->gameName));
-    ui->lblGameTitleID->setText("TitleID: " + QString::number(title->titleID, 16).toUpper());
-    ui->lblGameLastPlayed->setText("Last Played: " + QDateTime::fromTime_t(title->lastPlayed).toString());
-    ui->lblGameAchvs->setText("Achievements: " + QString::number(title->achievementsUnlocked) + " out of " + QString::number(title->achievementCount) + " unlocked");
-    ui->lblGameGamerscore->setText("Gamerscore: " + QString::number(title->gamerscoreUnlocked) + " out of " + QString::number(title->totalGamerscore) + " unlocked");
+    ui->lblGameName->setText("<span style=\"color:#4f4f4f;\">" + QString::fromStdWString(title->gameName) + "</span>");
+    ui->lblGameTitleID->setText("<span style=\"color:#4f4f4f;\">" + QString::number(title->titleID, 16).toUpper() + "</span>");
+    if (title->lastPlayed == 0x67D6Ca80)
+        ui->lblGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">N/A</span>");
+    else
+        ui->lblGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">" + QDateTime::fromTime_t(title->lastPlayed).toString(Qt::DefaultLocaleLongDate) + "</span>");
+    ui->lblGameAchvs->setText("<span style=\"color:#4f4f4f;\">" + QString::number(title->achievementsUnlocked) + " out of " + QString::number(title->achievementCount) + " unlocked" + "</span>");
+    ui->lblGameGamerscore->setText("<span style=\"color:#4f4f4f;\">" + QString::number(title->gamerscoreUnlocked) + " out of " + QString::number(title->totalGamerscore) + " unlocked" + "</span>");
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinishedBoxArt(QNetworkReply*)));
@@ -682,10 +685,13 @@ void ProfileEditor::loadAwardGameInfo(int index)
     ui->avatarAwardsList->topLevelItem(0)->setSelected(true);
 
     TitleEntry *title = aaGames.at(index).titleEntry;
-    ui->lblAwGameName->setText("Name: " + QString::fromStdWString(title->gameName));
-    ui->lblAwGameTitleID->setText("TitleID: " + QString::number(title->titleID, 16).toUpper());
-    ui->lblAwGameLastPlayed->setText("Last Played: " + QDateTime::fromTime_t(title->lastPlayed).toString());
-    ui->lblAwGameAwards->setText("Awards: " + QString::number(title->avatarAwardsEarned) + " out of " + QString::number(title->avatarAwardCount) + " unlocked");
+    ui->lblAwGameName->setText("<span style=\"color:#4f4f4f;\">" + QString::fromStdWString(title->gameName) + "</span>");
+    ui->lblAwGameTitleID->setText("<span style=\"color:#4f4f4f;\">" + QString::number(title->titleID, 16).toUpper() + "</span>");
+    if (title->lastPlayed == 0x67D6Ca80)
+        ui->lblAwGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">N/A</span>");
+    else
+        ui->lblAwGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">" + QDateTime::fromTime_t(title->lastPlayed).toString(Qt::DefaultLocaleLongDate) + "</span>");
+    ui->lblAwGameAwards->setText("<span style=\"color:#4f4f4f;\">" + QString::number(title->avatarAwardsEarned) + " out of " + QString::number(title->avatarAwardCount) + " unlocked" + "</span>");
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinishedAwBoxArt(QNetworkReply*)));

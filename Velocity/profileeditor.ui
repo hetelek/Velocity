@@ -33,7 +33,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tabGeneralSettings">
       <attribute name="title">
@@ -769,15 +769,90 @@
             <attribute name="title">
              <string>Game</string>
             </attribute>
-            <layout class="QGridLayout" name="gridLayout_11">
-             <item row="0" column="0">
-              <widget class="QLabel" name="lblGameName">
-               <property name="text">
-                <string>Name: </string>
-               </property>
-              </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout_12">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="1,2">
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_19">
+                 <item>
+                  <widget class="QLabel" name="lblGameName1">
+                   <property name="text">
+                    <string>Name: </string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblGameTitleID1">
+                   <property name="text">
+                    <string>TitleID:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblGameLastPlayed1">
+                   <property name="text">
+                    <string>Last Played:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblGameAchvs1">
+                   <property name="text">
+                    <string>Achievements:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblGameGamerscore1">
+                   <property name="text">
+                    <string>Gamerscore:</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_18">
+                 <item>
+                  <widget class="QLabel" name="lblGameName">
+                   <property name="text">
+                    <string>-</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblGameTitleID">
+                   <property name="text">
+                    <string>-</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblGameLastPlayed">
+                   <property name="text">
+                    <string>-</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblGameAchvs">
+                   <property name="text">
+                    <string>-</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblGameGamerscore">
+                   <property name="text">
+                    <string>-</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
              </item>
-             <item row="0" column="1" rowspan="5">
+             <item>
               <widget class="QLabel" name="imgBoxArt">
                <property name="minimumSize">
                 <size>
@@ -799,7 +874,7 @@
                </property>
               </widget>
              </item>
-             <item row="0" column="2" rowspan="5">
+             <item>
               <layout class="QVBoxLayout" name="verticalLayout_14">
                <item>
                 <widget class="QPushButton" name="btnUnlockAllAchvs">
@@ -853,34 +928,6 @@
                 </widget>
                </item>
               </layout>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="lblGameTitleID">
-               <property name="text">
-                <string>TitleID:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="lblGameLastPlayed">
-               <property name="text">
-                <string>Last Played:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="lblGameAchvs">
-               <property name="text">
-                <string>Achievements:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="0">
-              <widget class="QLabel" name="lblGameGamerscore">
-               <property name="text">
-                <string>Gamerscore:</string>
-               </property>
-              </widget>
              </item>
             </layout>
            </widget>
@@ -1190,15 +1237,76 @@ p, li { white-space: pre-wrap; }
             <attribute name="title">
              <string>Game</string>
             </attribute>
-            <layout class="QGridLayout" name="gridLayout_8">
-             <item row="0" column="0">
-              <widget class="QLabel" name="lblAwGameName">
-               <property name="text">
-                <string>Name:</string>
-               </property>
-              </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout_14">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="1,2">
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_21">
+                 <item>
+                  <widget class="QLabel" name="lblAwGameName1">
+                   <property name="text">
+                    <string>Name:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblAwGameTitleID1">
+                   <property name="text">
+                    <string>TitleID:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblAwGameLastPlayed1">
+                   <property name="text">
+                    <string>Last Played:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblAwGameAwards1">
+                   <property name="text">
+                    <string>Awards:</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_20">
+                 <item>
+                  <widget class="QLabel" name="lblAwGameName">
+                   <property name="text">
+                    <string>-</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblAwGameTitleID">
+                   <property name="text">
+                    <string>-</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblAwGameLastPlayed">
+                   <property name="text">
+                    <string>-</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblAwGameAwards">
+                   <property name="text">
+                    <string>-</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
              </item>
-             <item row="0" column="1" rowspan="4">
+             <item>
               <widget class="QLabel" name="imgAwBoxArt">
                <property name="minimumSize">
                 <size>
@@ -1220,7 +1328,7 @@ p, li { white-space: pre-wrap; }
                </property>
               </widget>
              </item>
-             <item row="0" column="2" rowspan="4">
+             <item>
               <layout class="QVBoxLayout" name="verticalLayout_13">
                <item>
                 <widget class="QPushButton" name="btnUnlockAllAwards">
@@ -1274,27 +1382,6 @@ p, li { white-space: pre-wrap; }
                 </widget>
                </item>
               </layout>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="lblAwGameTitleID">
-               <property name="text">
-                <string>TitleID:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="lblAwGameLastPlayed">
-               <property name="text">
-                <string>Last Played:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="lblAwGameAwards">
-               <property name="text">
-                <string>Awards:</string>
-               </property>
-              </widget>
              </item>
             </layout>
            </widget>
