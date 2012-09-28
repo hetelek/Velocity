@@ -26,6 +26,10 @@ StfsPackage::StfsPackage(string packagePath, DWORD flags) : flags(flags)
         // if it's female, then we need to write it to the volume descriptor
         io->setPosition((flags & StfsPackagePEC) ? 0x246 : 0x37B);
         io->write((flags & StfsPackageFemale) >> 2);
+
+        // set the first block to allocated
+        io->setPosition(0xA014);
+        io->write(0x80);
     }
 
     Parse();
