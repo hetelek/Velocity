@@ -28,8 +28,6 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent) : QDialo
     }
 
     mainDir = "http://127.0.0.1/";
-    downloader = new GPDDownloader("127.0.0.1", "/gpds/");
-    connect(downloader, SIGNAL(FinishedDownloading(QString, QString, QString)), this, SLOT(finishedDownloadingGPD(QString, QString, QString)));
 
     manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gameReplyFinished(QNetworkReply*)));
@@ -142,7 +140,7 @@ void GameAdderDialog::showRemoveContextMenu_AllGames(QPoint point)
     }
 }
 
-void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath, QString titleId)
+void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath, TitleEntry entry)
 {
     if (!allowInjection)
     {
@@ -156,43 +154,98 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
 
     try
     {
-        titleId = titleId.toUpper();
-        titleId += ".gpd";
-        package->InjectFile(gamePath.toStdString(), titleId.toStdString());
+        // inject the gpd
+        QString gpdName = QString::number(entry.titleID, 16).toUpper() + ".gpd";
+        package->InjectFile(gamePath.toStdString(), gpdName.toStdString());
         QFile::remove(gamePath);
 
+        std::string kvPath = QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType);
         if (!awardPath.isEmpty())
         {
-            QString tempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
-            package->ExtractFile("PEC", tempPath.toStdString());
+            // create the PEC file if it doesn't exist in the package
+            if (!package->FileExists("PEC"))
+            {
+                // create the PEC
+                QString pecTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+                StfsPackage pecPackage(pecTempPath.toStdString(), StfsPackagePEC | StfsPackageCreate);
 
-            StfsPackage pack(tempPath.toStdString(), StfsPackagePEC);
-            pack.InjectFile(awardPath.toStdString(), titleId.toStdString());
+                // set the metadata
+                memcpy(pecPackage.metaData->profileID, package->metaData->profileID, 8);
+                pecPackage.metaData->certificate.ownerConsoleType = package->metaData->certificate.ownerConsoleType;
 
-            std::string kvPath = QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType);
+                // rehash and resign
+                pecPackage.Rehash();
+                pecPackage.Resign(kvPath);
+                pecPackage.Close();
 
-            pack.Resign(kvPath);
-            pack.Rehash();
+                // inject the PEC to the package
+                package->InjectFile(pecTempPath.toStdString(), "PEC");
 
-            pack.Close();
+                // cleanup
+                QFile::remove(pecTempPath);
+            }
+            else
+            {
+                QString tempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+                package->ExtractFile("PEC", tempPath.toStdString());
 
-            package->ReplaceFile(tempPath.toStdString(), "PEC");
+                // open and inject the gpd to the PEC
+                StfsPackage pecPackage(tempPath.toStdString(), StfsPackagePEC);
+                pecPackage.InjectFile(awardPath.toStdString(), gpdName.toStdString());
+
+                // rehash and resign
+                pecPackage.Resign(kvPath);
+                pecPackage.Rehash();
+                pecPackage.Close();
+
+                // replace the old PEC file
+                package->ReplaceFile(tempPath.toStdString(), "PEC");
+
+                QFile::remove(tempPath);
+            }
+
+            // rehash and resign
             package->Resign(kvPath);
             package->Rehash();
 
+            // cleanup
             package->Close();
-
             QFile::remove(awardPath);
-            QFile::remove(tempPath);
         }
+
+        // update the dash gpd
+        dashGPD->CreateTitleEntry(&entry);
+        dashGPD->gamePlayedCount.int32++;
     }
     catch (std::string error)
     {
-        QMessageBox::critical(this, "Error Occured", "An error occured while injecting the game(s).\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error Occured", "An error occured while injecting the game.\n\n" + QString::fromStdString(error));
     }
     catch(...)
     {
         QMessageBox::critical(this, "Error Occured", "An unknown error occured while injecting the game(s).");
+    }
+
+    if (downloadedCount++ == totalDownloadCount)
+    {
+        try
+        {
+            dashGPD->WriteSettingEntry(dashGPD->gamePlayedCount);
+        }
+        catch (std::string error)
+        {
+            QMessageBox::critical(this, "Error Writing Entry", "The entry was not written successfully.\n\n" + QString::fromStdString(error));
+        }
+        dashGPD->Close();
+
+        try
+        {
+            package->ReplaceFile(dashGPDTempPath.toStdString(), "FFFE07D1.gpd");
+        }
+        catch (std::string error)
+        {
+            QMessageBox::critical(this, "Error Replacing GPD", "The dashboard GPD could not be replaced.\n\n" + QString::fromStdString(error));
+        }
     }
 }
 
@@ -251,38 +304,34 @@ void GameAdderDialog::on_treeWidgetAllGames_currentItemChanged(QTreeWidgetItem *
     ui->lblTitleID->setText("Title ID: " + QString::number(entry.titleID, 16).toUpper());
 }
 
-void GameAdderDialog::on_pushButton_2_clicked()
+void GameAdderDialog::on_pushButton_clicked()
 {
     close();
 }
 
-void GameAdderDialog::on_pushButton_clicked()
+void GameAdderDialog::on_pushButton_2_clicked()
 {
-    for (int i = 0; i < ui->treeWidgetQueue->topLevelItemCount(); i++)
+    int totalCount = ui->treeWidgetQueue->topLevelItemCount();
+    if (totalCount < 1)
+        return;
+
+    totalDownloadCount = totalCount;
+    downloadedCount = 1;
+
+    // create the setting entry if it doesn't exist
+    if (dashGPD->gamePlayedCount.entry.type == 0)
+    {
+        dashGPD->gamePlayedCount.type = Int32;
+        dashGPD->gamePlayedCount.int32 = 0;
+        dashGPD->CreateSettingEntry(&dashGPD->gamePlayedCount, GamercardTitlesPlayed);
+    }
+
+    for (int i = 0; i < totalCount; i++)
     {
         TitleEntry entry = ui->treeWidgetQueue->topLevelItem(i)->data(0, Qt::UserRole).value<TitleEntry>();
-        dashGPD->CreateTitleEntry(&entry);
-        dashGPD->gamePlayedCount.int32++;
 
-        downloader->BeginDownload(QString::number(entry.titleID, 16), entry.avatarAwardCount != 0);
-    }
-
-    try
-    {
-        dashGPD->WriteSettingEntry(dashGPD->gamePlayedCount);
-    }
-    catch (std::string error)
-    {
-        QMessageBox::critical(this, "Error Writing Entry", "The entry was not written successfully.\n\n" + QString::fromStdString(error));
-    }
-    dashGPD->Close();
-
-    try
-    {
-        package->ReplaceFile(dashGPDTempPath.toStdString(), "FFFE07D1.gpd");
-    }
-    catch (std::string error)
-    {
-        QMessageBox::critical(this, "Error Replacing GPD", "The dashboard GPD could not be replaced.\n\n" + QString::fromStdString(error));
+        GPDDownloader *downloader = new GPDDownloader(entry, entry.avatarAwardCount != 0, this);
+        connect(downloader, SIGNAL(FinishedDownloading(QString, QString, TitleEntry)), this, SLOT(finishedDownloadingGPD(QString, QString, TitleEntry)));
+        downloader->BeginDownload();
     }
 }

@@ -35,7 +35,7 @@ private slots:
     void gameReplyFinished(QNetworkReply*);
     void showRemoveContextMenu_QueuedGames(QPoint point);
     void showRemoveContextMenu_AllGames(QPoint point);
-    void finishedDownloadingGPD(QString gamePath, QString awardPath, QString titleId);
+    void finishedDownloadingGPD(QString gamePath, QString awardPath, TitleEntry entry);
     void thumbnailReplyFinished(QNetworkReply *aReply);
     void on_pushButton_2_clicked();
     void on_pushButton_clicked();
@@ -44,11 +44,12 @@ private:
     Ui::GameAdderDialog *ui;
     QString mainDir;
     QNetworkAccessManager *manager;
-    GPDDownloader *downloader;
     DashboardGPD *dashGPD;
     QString dashGPDTempPath;
     StfsPackage *package;
+
     bool allowInjection;
+    int totalDownloadCount, downloadedCount;
 };
 
 #endif // GAMEADDERDIALOG_H
