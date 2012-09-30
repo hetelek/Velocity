@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>537</width>
-    <height>379</height>
+    <width>542</width>
+    <height>365</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>500</width>
+    <height>344</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Package Creation Wizard</string>
@@ -66,8 +72,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'arial'; font-size:10pt; color:#222222; background-color:#ffffff;&quot;&gt;    Welcome to Velocity's package creation wizard! Here you will be guided through a series of pages where you will select various options which your package will depend on. The file format of the package will be STFS, which is used on the Xbox360.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'arial'; font-size:10pt; color:#222222; background-color:#ffffff;&quot;&gt;    The &lt;/span&gt;&lt;span style=&quot; font-family:'arial'; font-size:10pt; font-style:italic; color:#222222; background-color:#ffffff;&quot;&gt;Secure Transacted File System&lt;/span&gt;&lt;span style=&quot; font-family:'arial'; font-size:10pt; color:#222222; background-color:#ffffff;&quot;&gt; (STFS) is used to store save game files, marketplace items, gamer pictures, or any other accessible content. STFS provides two important benefits to the Xbox 360 title developer: content security and content reliability. Continue to the next page to begin.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'arial'; font-size:10pt; color:#222222; background-color:#ffffff;&quot;&gt;    Welcome to Velocity's package creation wizard! Here you will be guided through a series of pages where you will select various options which your package will depend on. The file format of the package will be STFS, which is used on the Xbox360.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
