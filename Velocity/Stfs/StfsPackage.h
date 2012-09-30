@@ -227,6 +227,9 @@ private:
     // Description: allocate a data block in the package, and return a block number
     INT24 AllocateBlock();
 
+    // Description: allocate 'blockCount' consecutive data blocks
+    INT24 AllocateBlocks(DWORD blockCount);
+
     // Description: calculate the level of the topmost hash table
     Level CalcualateTopLevel();
 
@@ -241,6 +244,9 @@ private:
 
     // Description: get the number of bytes to skip over the hash table
     DWORD GetHashTableSkipSize(DWORD tableAddress);
+
+    // Description: get the number of blocks until the next hash table
+    DWORD GetBlocksUntilNextHashTable(DWORD currentBlock);
 
     // Description: parse the file
     void Parse();
