@@ -684,6 +684,7 @@ void ProfileEditor::loadAwardGameInfo(int index)
     ui->avatarAwardsList->setCurrentItem(ui->avatarAwardsList->topLevelItem(0));
     ui->avatarAwardsList->topLevelItem(0)->setSelected(true);
 
+    // set the title information
     TitleEntry *title = aaGames.at(index).titleEntry;
     ui->lblAwGameName->setText("<span style=\"color:#4f4f4f;\">" + QString::fromStdWString(title->gameName) + "</span>");
     ui->lblAwGameTitleID->setText("<span style=\"color:#4f4f4f;\">" + QString::number(title->titleID, 16).toUpper() + "</span>");
@@ -693,6 +694,7 @@ void ProfileEditor::loadAwardGameInfo(int index)
         ui->lblAwGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">" + QDateTime::fromTime_t(title->lastPlayed).toString(Qt::DefaultLocaleLongDate) + "</span>");
     ui->lblAwGameAwards->setText("<span style=\"color:#4f4f4f;\">" + QString::number(title->avatarAwardsEarned) + " out of " + QString::number(title->avatarAwardCount) + " unlocked" + "</span>");
 
+    // download the box art image
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinishedAwBoxArt(QNetworkReply*)));
     string tmp = DashboardGPD::GetSmallBoxArtURL(title);
