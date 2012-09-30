@@ -87,11 +87,13 @@ private slots:
 
 private:
     Ui::ThemeCreationWizard *ui;
-    QString wallpaper1, wallpaper2, wallpaper3, wallpaper4;
+    QImage wallpaper1, wallpaper2, wallpaper3, wallpaper4;
 
     BYTE imagesLoaded;
 
-    void openWallpaper(QLabel *imageViewer, QString *saveStr);
+    void openWallpaper(QLabel *imageViewer, QImage *saveImage);
+
+    void injectImage(StfsPackage *theme, QImage *image, QString fileName);
 };
 
 #endif // THEMECREATIONWIZARD_H

@@ -64,10 +64,10 @@ void ThemeCreationWizard::onFinished(int status)
         theme.Rehash();
 
         // inject the wallpapers
-        theme.InjectFile(wallpaper1.toStdString(), "Wallpaper1");
-        theme.InjectFile(wallpaper2.toStdString(), "Wallpaper2");
-        theme.InjectFile(wallpaper3.toStdString(), "Wallpaper3");
-        theme.InjectFile(wallpaper4.toStdString(), "Wallpaper4");
+        injectImage(&theme, &wallpaper1, "Wallpaper1");
+        injectImage(&theme, &wallpaper2, "Wallpaper2");
+        injectImage(&theme, &wallpaper3, "Wallpaper3");
+        injectImage(&theme, &wallpaper4, "Wallpaper4");
 
         // create the parameters.ini file
         QString paramsFilePath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
@@ -106,6 +106,16 @@ void ThemeCreationWizard::onFinished(int status)
     {
         QMessageBox::critical(this, "Error", "An error occured while creating the theme.\n\n" + QString::fromStdString(error));
     }
+}
+
+void ThemeCreationWizard::injectImage(StfsPackage *theme, QImage *image, QString fileName)
+{
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    image->save(&buffer, "JPG");
+
+    theme->InjectData(ba.data(), ba.length(), fileName.toStdString());
 }
 
 void ThemeCreationWizard::onCurrentIdChanged(int index)
@@ -151,7 +161,7 @@ void ThemeCreationWizard::on_pushButton_clicked()
     ui->imgThumbnail->setPixmap(thumbnail);
 }
 
-void ThemeCreationWizard::openWallpaper(QLabel *imageViewer, QString *saveStr)
+void ThemeCreationWizard::openWallpaper(QLabel *imageViewer, QImage *saveImage)
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Choose a wallpaper image", QtHelpers::DesktopLocation(), "JPG File (*jpg)");
 
@@ -166,7 +176,7 @@ void ThemeCreationWizard::openWallpaper(QLabel *imageViewer, QString *saveStr)
         return;
     }
 
-    *saveStr = fileName;
+    *saveImage = QImage(fileName);
 
     imageViewer->setPixmap(thumbnail);
     imageViewer->setScaledContents(true);
