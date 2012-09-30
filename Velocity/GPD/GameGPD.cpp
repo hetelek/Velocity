@@ -204,6 +204,6 @@ void GameGPD::init()
 
 GameGPD::~GameGPD(void)
 {
-    //if (!ioPassedIn)
-        //io->close();
+    if (!ioPassedIn)
+       io->close();
 }

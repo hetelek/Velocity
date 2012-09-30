@@ -205,5 +205,6 @@ WORD AvatarAwardGPD::getNextAwardIndex()
 
 AvatarAwardGPD::~AvatarAwardGPD(void)
 {
-
+    if (!ioPassedIn)
+        io->close();
 }
