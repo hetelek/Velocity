@@ -10,6 +10,18 @@
     <height>53</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>433</width>
+    <height>53</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>433</width>
+    <height>53</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Replacing File</string>
   </property>
