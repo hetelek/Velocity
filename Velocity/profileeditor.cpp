@@ -492,10 +492,15 @@ ProfileEditor::~ProfileEditor()
 
     // free all of the avatar award gpds
     for (DWORD i = 0; i < aaGames.size(); i++)
+    {
+        if (aaGames.at(i).titleEntry->achievementCount == 0)
+            delete aaGames.at(i).gameGPD;
         delete aaGames.at(i).gpd;
+    }
 
     saveAll();
 
+    dashGPD->Close();
     delete dashGPD;
 
     delete account;
