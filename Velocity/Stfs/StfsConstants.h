@@ -39,6 +39,12 @@ enum Magic
 	PIRS = 0x50495253
 };
 
+enum FileEntryFlags
+{
+    ConsecutiveBlocks = 1,
+    Folder = 2
+};
+
 enum ContentType
 {
 	App = 0x7000,
