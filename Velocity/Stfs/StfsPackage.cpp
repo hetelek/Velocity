@@ -1393,6 +1393,9 @@ INT24 StfsPackage::AllocateBlock()
         {
             lengthToWrite += (packageSex + 1) * 0x1000;
             tablesPerLevel[i] = recalcTablesPerLevel[i];
+
+            if ((i + 1) == topLevel)
+                topTable.entryCount++;
         }
     }
 
