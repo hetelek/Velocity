@@ -27,6 +27,7 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent) : QDialo
         return;
     }
 
+    pecTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
     mainDir = "http://127.0.0.1/";
 
     manager = new QNetworkAccessManager(this);
@@ -154,62 +155,34 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
 
     try
     {
-        // inject the gpd
         QString gpdName = QString::number(entry.titleID, 16).toUpper() + ".gpd";
+
+        // inject the game gpd
         package->InjectFile(gamePath.toStdString(), gpdName.toStdString());
         QFile::remove(gamePath);
 
-        std::string kvPath = QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType);
         if (!awardPath.isEmpty())
         {
-            // create the PEC file if it doesn't exist in the package
-            if (!package->FileExists("PEC"))
+            if  (pecPackage == NULL)
             {
-                // create the PEC
-                QString pecTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
-                StfsPackage pecPackage(pecTempPath.toStdString(), StfsPackagePEC | StfsPackageCreate);
+                DWORD flags = StfsPackagePEC;
 
-                // set the metadata
-                memcpy(pecPackage.metaData->profileID, package->metaData->profileID, 8);
-                pecPackage.metaData->certificate.ownerConsoleType = package->metaData->certificate.ownerConsoleType;
+                if (!package->FileExists("PEC"))
+                {
+                    flags |= StfsPackageCreate;
+                    existed = false;
+                }
+                else
+                {
+                    package->ExtractFile("PEC", pecTempPath.toStdString());
+                    existed = true;
+                }
 
-                // rehash and resign
-                pecPackage.Rehash();
-                pecPackage.Resign(kvPath);
-                pecPackage.Close();
-
-                // inject the PEC to the package
-                package->InjectFile(pecTempPath.toStdString(), "PEC");
-
-                // cleanup
-                QFile::remove(pecTempPath);
-            }
-            else
-            {
-                QString tempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
-                package->ExtractFile("PEC", tempPath.toStdString());
-
-                // open and inject the gpd to the PEC
-                StfsPackage pecPackage(tempPath.toStdString(), StfsPackagePEC);
-                pecPackage.InjectFile(awardPath.toStdString(), gpdName.toStdString());
-
-                // rehash and resign
-                pecPackage.Resign(kvPath);
-                pecPackage.Rehash();
-                pecPackage.Close();
-
-                // replace the old PEC file
-                package->ReplaceFile(tempPath.toStdString(), "PEC");
-
-                QFile::remove(tempPath);
+                pecPackage = new StfsPackage(pecTempPath.toStdString(), flags);
             }
 
-            // rehash and resign
-            package->Resign(kvPath);
-            package->Rehash();
-
-            // cleanup
-            package->Close();
+            // inject the gpd and delete it
+            pecPackage->InjectFile(awardPath.toStdString(), gpdName.toStdString());
             QFile::remove(awardPath);
         }
 
@@ -235,6 +208,7 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
         catch (std::string error)
         {
             QMessageBox::critical(this, "Error Writing Entry", "The entry was not written successfully.\n\n" + QString::fromStdString(error));
+            close();
         }
         dashGPD->Close();
 
@@ -245,7 +219,44 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
         catch (std::string error)
         {
             QMessageBox::critical(this, "Error Replacing GPD", "The dashboard GPD could not be replaced.\n\n" + QString::fromStdString(error));
+            close();
         }
+
+        std::string kvPath = QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType);
+        try
+        {
+            if (pecPackage != NULL)
+            {
+                pecPackage->Rehash();
+                pecPackage->Resign(kvPath);
+
+                pecPackage->Close();
+
+                if (!existed)
+                    package->InjectFile(pecTempPath.toStdString(), "PEC");
+                else
+                    package->ReplaceFile(pecTempPath.toStdString(), "PEC");
+
+                QFile::remove(pecTempPath);
+            }
+        }
+        catch (std::string error)
+        {
+            QMessageBox::critical(this, "PEC Error" , "The PEC file could not be replaced/injected.\n\n" + QString::fromStdString(error));
+            close();
+        }
+
+        try
+        {
+            package->Rehash();
+            package->Resign(kvPath);
+        }
+        catch (std::string error)
+        {
+            QMessageBox::critical(this, "Fixing Error" , "The package could not be rehashed/resigned.\n\n" + QString::fromStdString(error));
+        }
+
+        close();
     }
 }
 

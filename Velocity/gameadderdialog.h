@@ -45,10 +45,10 @@ private:
     QString mainDir;
     QNetworkAccessManager *manager;
     DashboardGPD *dashGPD;
-    QString dashGPDTempPath;
-    StfsPackage *package;
+    QString dashGPDTempPath, pecTempPath;
+    StfsPackage *package, *pecPackage;
 
-    bool allowInjection;
+    bool allowInjection, existed;
     int totalDownloadCount, downloadedCount;
 };
 
