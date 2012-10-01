@@ -9,6 +9,8 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent) : QDialo
 
     allowInjection = false;
 
+    pecPackage = NULL;
+
     ui->treeWidgetAllGames->header()->resizeSection(0, 182);
     ui->treeWidgetQueue->header()->resizeSection(0, 182);
 
