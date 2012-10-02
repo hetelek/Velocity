@@ -55,15 +55,18 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
     QDomDocument doc;
     doc.setContent(gameListXML);
 
+    vector<TitleEntry> gamesPlayed = dashGPD->gamesPlayed;
+
     QDomNodeList elem = doc.firstChild().childNodes();
     for (int i = 0; i < elem.count(); i++)
     {
         QString gameName = elem.at(i).firstChildElement("name").text();
 
         bool alreadyExists = false;
-        for (int i = 0; i < dashGPD->gamesPlayed.size(); i++)
-            if (dashGPD->gamesPlayed.at(i).gameName == gameName.toStdWString())
+        for (int i = 0; i < gamesPlayed.size(); i++)
+            if (gamesPlayed.at(i).gameName == gameName.toStdWString())
             {
+                gamesPlayed.erase(gamesPlayed.begin() + i);
                 alreadyExists = true;
                 break;
             }
