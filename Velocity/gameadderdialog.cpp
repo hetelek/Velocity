@@ -335,14 +335,25 @@ void GameAdderDialog::on_treeWidgetAllGames_currentItemChanged(QTreeWidgetItem *
 
 void GameAdderDialog::on_pushButton_clicked()
 {
-    close();
+    if (pecPackage != NULL)
+    {
+        pecPackage->Close();
+        QFile::remove(pecTempPath);
+    }
+
+    dashGPD->Close();
+    QFile::remove(dashGPDTempPath);
+    this->close();
 }
 
 void GameAdderDialog::on_pushButton_2_clicked()
 {
     int totalCount = ui->treeWidgetQueue->topLevelItemCount();
     if (totalCount < 1)
+    {
+        QMessageBox::warning(this, "No Games", "You have selected no games to add.");
         return;
+    }
 
     totalDownloadCount = totalCount;
     downloadedCount = 1;
@@ -363,7 +374,4 @@ void GameAdderDialog::on_pushButton_2_clicked()
         connect(downloader, SIGNAL(FinishedDownloading(QString, QString, TitleEntry)), this, SLOT(finishedDownloadingGPD(QString, QString, TitleEntry)));
         downloader->BeginDownload();
     }
-
-    if (totalCount == 0)
-        this->close();
 }
