@@ -98,7 +98,7 @@ void StfsPackage::Parse()
 
         // set the first block to allocated
         io->setPosition(((headerSize + 0xFFF) & 0xFFFFF000) + 0x14);
-        io->write(0x80);
+        io->write((BYTE)0x80);
     }
 
     packageSex = (Sex)((~metaData->volumeDescriptor.blockSeperation) & 1);
