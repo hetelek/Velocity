@@ -59,6 +59,18 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
     for (int i = 0; i < elem.count(); i++)
     {
         QString gameName = elem.at(i).firstChildElement("name").text();
+
+        bool alreadyExists = false;
+        for (int i = 0; i < dashGPD->gamesPlayed.size(); i++)
+            if (dashGPD->gamesPlayed.at(i).gameName == gameName.toStdWString())
+            {
+                alreadyExists = true;
+                break;
+            }
+
+        if (alreadyExists)
+            continue;
+
         QString titleId = elem.at(i).firstChildElement("titleid").text();
         QString achievementCount = elem.at(i).firstChildElement("achievementcount").text();
         QString totalGamerscore = elem.at(i).firstChildElement("totalgamerscore").text();
@@ -93,8 +105,11 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
         ui->treeWidgetAllGames->addTopLevelItem(item);
     }
 
-    ui->treeWidgetAllGames->setCurrentItem(ui->treeWidgetAllGames->topLevelItem(0));
-    ui->treeWidgetAllGames->topLevelItem(0)->setSelected(true);
+    if (ui->treeWidgetAllGames->topLevelItemCount() > 0)
+    {
+        ui->treeWidgetAllGames->setCurrentItem(ui->treeWidgetAllGames->topLevelItem(0));
+        ui->treeWidgetAllGames->topLevelItem(0)->setSelected(true);
+    }
 }
 
 void GameAdderDialog::thumbnailReplyFinished(QNetworkReply *aReply)
