@@ -232,6 +232,7 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
         try
         {
             package->ReplaceFile(dashGPDTempPath.toStdString(), "FFFE07D1.gpd");
+            QFile::remove(dashGPDTempPath);
         }
         catch (std::string error)
         {
@@ -362,4 +363,7 @@ void GameAdderDialog::on_pushButton_2_clicked()
         connect(downloader, SIGNAL(FinishedDownloading(QString, QString, TitleEntry)), this, SLOT(finishedDownloadingGPD(QString, QString, TitleEntry)));
         downloader->BeginDownload();
     }
+
+    if (totalCount == 0)
+        this->close();
 }
