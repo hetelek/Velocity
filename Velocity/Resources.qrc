@@ -66,5 +66,8 @@
         <file>Images/download.png</file>
         <file>Images/gamerscore.png</file>
         <file>Images/watermark.png</file>
+        <file>Images/go.png</file>
+        <file>Images/id.png</file>
+        <file>Images/xbox.png</file>
     </qresource>
 </RCC>
