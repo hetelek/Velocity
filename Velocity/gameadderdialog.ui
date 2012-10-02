@@ -18,6 +18,9 @@
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
       <widget class="QTreeWidget" name="treeWidgetAllGames">
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
        <attribute name="headerDefaultSectionSize">
         <number>100</number>
        </attribute>
@@ -88,6 +91,9 @@
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
       <widget class="QTreeWidget" name="treeWidgetQueue">
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
        <attribute name="headerDefaultSectionSize">
         <number>100</number>
        </attribute>
