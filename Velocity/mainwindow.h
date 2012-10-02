@@ -21,6 +21,7 @@
 #include "profilecreatorwizard.h"
 #include "themecreationwizard.h"
 #include "gameadderdialog.h"
+#include "titleidfinderdialog.h"
 
 // other
 #include "ui_mainwindow.h"

@@ -229,6 +229,9 @@ void MainWindow::on_actionCreate_Package_triggered()
 
 void MainWindow::on_actionTitle_ID_Finder_triggered()
 {
+    TitleIdFinderDialog *dialog = new TitleIdFinderDialog(ui->statusBar, this);
+    ui->mdiArea->addSubWindow(dialog);
+    dialog->show();
 }
 
 void MainWindow::on_actionProfile_Creator_triggered()
