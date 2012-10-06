@@ -22,6 +22,8 @@ void StfsWorkerThread::run()
             *packageFile = temp;
             break;
     }
+
+    exec();
 }
 
 void progessUpdatedExternal(StfsWorkerThread *thread, DWORD blocksExtracted, DWORD totalBlockCount)
