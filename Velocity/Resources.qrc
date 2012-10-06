@@ -7,9 +7,6 @@
         <file>Images/Github16.png</file>
         <file>Images/Leaner.png</file>
         <file>Images/Leaner24.png</file>
-        <file>Images/OpenIcon35.png</file>
-        <file>Images/ProfileEditorIcon35.png</file>
-        <file>Images/ThemeCreator35.png</file>
         <file>Images/AccountFileIcon.png</file>
         <file>Images/FolderFileIcon.png</file>
         <file>Images/GpdFileIcon.png</file>
@@ -62,12 +59,17 @@
         <file>Images/male avatar.png</file>
         <file>Images/avatar female.png</file>
         <file>Images/defaultTitleImage.png</file>
-        <file>Images/theme.png</file>
         <file>Images/download.png</file>
         <file>Images/gamerscore.png</file>
         <file>Images/watermark.png</file>
         <file>Images/go.png</file>
         <file>Images/id.png</file>
         <file>Images/xbox.png</file>
+        <file>Images/gamerpicture.png</file>
+        <file>Images/open.png</file>
+        <file>Images/profile.png</file>
+        <file>Images/find.png</file>
+        <file>Images/themebig.png</file>
+        <file>Images/themesmall.png</file>
     </qresource>
 </RCC>
