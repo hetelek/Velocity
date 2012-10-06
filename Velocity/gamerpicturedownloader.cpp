@@ -14,8 +14,6 @@ void GamerPictureDownloader::start(Priority p)
     manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamerpictureNetworkReply(QNetworkReply*)));
 
-    exec();
-
     amount = 0;
     startDownloads();
 }
