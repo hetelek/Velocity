@@ -22,6 +22,7 @@
 #include "themecreationwizard.h"
 #include "gameadderdialog.h"
 #include "titleidfinderdialog.h"
+#include "gamerpicturepackdialog.h"
 
 // other
 #include "ui_mainwindow.h"
@@ -69,6 +70,8 @@ private slots:
     void on_actionTheme_Creator_triggered();
 
     void on_actionGame_Adder_triggered();
+
+    void on_actionGamer_Picture_Pack_Creator_triggered();
 
 private:
     Ui::MainWindow *ui;

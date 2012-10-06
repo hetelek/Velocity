@@ -77,7 +77,7 @@
      </property>
      <property name="icon">
       <iconset resource="Resources.qrc">
-       <normaloff>:/Images/OpenIcon35.png</normaloff>:/Images/OpenIcon35.png</iconset>
+       <normaloff>:/Images/open.png</normaloff>:/Images/open.png</iconset>
      </property>
      <addaction name="actionPackage"/>
      <addaction name="actionXDBF_File"/>
@@ -96,7 +96,7 @@
      </property>
      <property name="icon">
       <iconset resource="Resources.qrc">
-       <normaloff>:/Images/ProfileEditorIcon35.png</normaloff>:/Images/ProfileEditorIcon35.png</iconset>
+       <normaloff>:/Images/profile.png</normaloff>:/Images/profile.png</iconset>
      </property>
      <addaction name="actionProfile_Creator"/>
      <addaction name="actionProfile_Editor"/>
@@ -105,6 +105,7 @@
     <addaction name="menuProfile_Editor"/>
     <addaction name="actionTheme_Creator"/>
     <addaction name="actionTitle_ID_Finder"/>
+    <addaction name="actionGamer_Picture_Pack_Creator"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -127,7 +128,7 @@
   <action name="actionCreate_Package">
    <property name="icon">
     <iconset resource="Resources.qrc">
-     <normaloff>:/Images/CreateFile35.png</normaloff>:/Images/CreateFile35.png</iconset>
+     <normaloff>:/Images/new file.png</normaloff>:/Images/new file.png</iconset>
    </property>
    <property name="text">
     <string>Create Package</string>
@@ -136,7 +137,7 @@
   <action name="actionTheme_Creator">
    <property name="icon">
     <iconset resource="Resources.qrc">
-     <normaloff>:/Images/ThemeCreator35.png</normaloff>:/Images/ThemeCreator35.png</iconset>
+     <normaloff>:/Images/themesmall.png</normaloff>:/Images/themesmall.png</iconset>
    </property>
    <property name="text">
     <string>Theme Creator</string>
@@ -179,6 +180,10 @@
    </property>
   </action>
   <action name="actionTitle_ID_Finder">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/find.png</normaloff>:/Images/find.png</iconset>
+   </property>
    <property name="text">
     <string>Title ID Finder</string>
    </property>
@@ -187,15 +192,33 @@
    <property name="text">
     <string>Profile Creator</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionProfile_Editor">
    <property name="text">
     <string>Profile Editor</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionGame_Adder">
    <property name="text">
     <string>Game Adder</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionGamer_Picture_Pack_Creator">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/gamerpicture.png</normaloff>:/Images/gamerpicture.png</iconset>
+   </property>
+   <property name="text">
+    <string>Gamer Picture Pack Creator</string>
    </property>
   </action>
  </widget>
