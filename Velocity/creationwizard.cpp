@@ -157,35 +157,43 @@ void CreationWizard::onFinished(int status)
     if (status != 1)
         return;
 
-    StfsPackage package(ui->lblSavePath->text().toStdString(), ((ui->cmbxMagic->currentIndex() != 0) ? StfsPackageFemale : 0) | StfsPackageCreate);
+    try
+    {
+        StfsPackage package(ui->lblSavePath->text().toStdString(), ((ui->cmbxMagic->currentIndex() != 0) ? StfsPackageFemale : 0) | StfsPackageCreate);
 
-    // set the metadata
-    DWORD magics[3] = { CON, LIVE, PIRS };
-    package.metaData->magic = magics[ui->cmbxMagic->currentIndex()];
-    package.metaData->certificate.ownerConsoleType = (ui->cmbxType->currentIndex() == 0) ? Retail : DevKit;
-    package.metaData->contentType = getContentType();
-    package.metaData->titleID = QtHelpers::ParseHexString(ui->txtTitleID->text());
-    package.metaData->displayName = ui->txtDisplayName->text().toStdWString();
-    package.metaData->titleName = ui->txtTitleName->text().toStdWString();
+        // set the metadata
+        DWORD magics[3] = { CON, LIVE, PIRS };
+        package.metaData->magic = magics[ui->cmbxMagic->currentIndex()];
+        package.metaData->certificate.ownerConsoleType = (ui->cmbxType->currentIndex() == 0) ? Retail : DevKit;
+        package.metaData->contentType = getContentType();
+        package.metaData->titleID = QtHelpers::ParseHexString(ui->txtTitleID->text());
+        package.metaData->displayName = ui->txtDisplayName->text().toStdWString();
+        package.metaData->titleName = ui->txtTitleName->text().toStdWString();
 
-    // set the thumbnails
-    QByteArray ba1;
-    QBuffer buffer1(&ba1);
-    buffer1.open(QIODevice::WriteOnly);
-    ui->imgThumbnail->pixmap()->save(&buffer1, "PNG");
-    package.metaData->thumbnailImage = ba1.data();
-    package.metaData->thumbnailImageSize = ba1.length();
+        // set the thumbnails
+        QByteArray ba1;
+        QBuffer buffer1(&ba1);
+        buffer1.open(QIODevice::WriteOnly);
+        ui->imgThumbnail->pixmap()->save(&buffer1, "PNG");
+        package.metaData->thumbnailImage = ba1.data();
+        package.metaData->thumbnailImageSize = ba1.length();
 
-    QByteArray ba2;
-    QBuffer buffer2(&ba2);
-    buffer2.open(QIODevice::WriteOnly);
-    ui->imgTitleThumbnail->pixmap()->save(&buffer2, "PNG");
-    package.metaData->titleThumbnailImage = ba2.data();
-    package.metaData->titleThumbnailImageSize = ba2.length();
+        QByteArray ba2;
+        QBuffer buffer2(&ba2);
+        buffer2.open(QIODevice::WriteOnly);
+        ui->imgTitleThumbnail->pixmap()->save(&buffer2, "PNG");
+        package.metaData->titleThumbnailImage = ba2.data();
+        package.metaData->titleThumbnailImageSize = ba2.length();
 
-    // fix the pacakge
-    package.Rehash();
-    package.Resign(QtHelpers::GetKVPath(package.metaData->certificate.ownerConsoleType, this));
+        // fix the pacakge
+        package.Rehash();
+        package.Resign(QtHelpers::GetKVPath(package.metaData->certificate.ownerConsoleType, this));
+    }
+    catch (string error)
+    {
+        QMessageBox::critical(this, "Error", "An error occured while creating the package.\n\n" + QString::fromStdString(error));
+        return;
+    }
 
     *fileName = ui->lblSavePath->text();
 }
