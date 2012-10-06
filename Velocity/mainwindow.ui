@@ -192,24 +192,33 @@
    <property name="text">
     <string>Profile Creator</string>
    </property>
+   <property name="softKeyRole">
+    <enum>QAction::NoSoftKey</enum>
+   </property>
    <property name="iconVisibleInMenu">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionProfile_Editor">
    <property name="text">
     <string>Profile Editor</string>
    </property>
+   <property name="softKeyRole">
+    <enum>QAction::NoSoftKey</enum>
+   </property>
    <property name="iconVisibleInMenu">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionGame_Adder">
    <property name="text">
     <string>Game Adder</string>
    </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
+   </property>
    <property name="iconVisibleInMenu">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionGamer_Picture_Pack_Creator">
