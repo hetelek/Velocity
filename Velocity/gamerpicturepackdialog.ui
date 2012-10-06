@@ -39,6 +39,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="pushButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -84,7 +87,20 @@
         <widget class="QListWidget" name="listGameNames"/>
        </item>
        <item>
+        <widget class="QLineEdit" name="txtPackName">
+         <property name="maxLength">
+          <number>64</number>
+         </property>
+         <property name="placeholderText">
+          <string>Pack Name</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="btnCreatePack">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Create Pack</string>
          </property>
@@ -142,7 +158,26 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <widget class="QListWidget" name="listPack"/>
+          <widget class="QListWidget" name="listPack">
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
+           <property name="dragDropMode">
+            <enum>QAbstractItemView::NoDragDrop</enum>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>64</width>
+             <height>64</height>
+            </size>
+           </property>
+           <property name="movement">
+            <enum>QListView::Static</enum>
+           </property>
+           <property name="viewMode">
+            <enum>QListView::IconMode</enum>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>

@@ -19,6 +19,8 @@ class GamerPictureDownloader : public QThread
     Q_OBJECT
 public:
     explicit GamerPictureDownloader(QObject *parent = 0);
+    ~GamerPictureDownloader();
+
     void SetTitleID(QString titleID);
     void start(Priority = InheritPriority);
     

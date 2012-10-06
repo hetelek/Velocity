@@ -2,6 +2,13 @@
 
 GamerPictureDownloader::GamerPictureDownloader(QObject *parent) : QThread(parent)
 {
+    manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamerpictureNetworkReply(QNetworkReply*)));
+}
+
+GamerPictureDownloader::~GamerPictureDownloader()
+{
+    delete manager;
 }
 
 void GamerPictureDownloader::SetTitleID(QString titleID)
@@ -11,9 +18,6 @@ void GamerPictureDownloader::SetTitleID(QString titleID)
 
 void GamerPictureDownloader::start(Priority p)
 {
-    manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamerpictureNetworkReply(QNetworkReply*)));
-
     amount = 0;
     startDownloads();
 }
@@ -39,7 +43,7 @@ void GamerPictureDownloader::gamerpictureNetworkReply(QNetworkReply *reply)
         QPixmap pixmap;
         pixmap.loadFromData(reply->readAll(), "PNG");
         if (!pixmap.isNull())
-            emit GamerPictureDownloaded(pixmap, reply->url().toString().mid(reply->url().toString().length() - 4));
+            emit GamerPictureDownloaded(pixmap, titleID + reply->url().toString().mid(reply->url().toString().length() - 4));
     }
     reply->deleteLater();
 
