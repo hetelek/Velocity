@@ -14,7 +14,7 @@ SingleProgressDialog::SingleProgressDialog(StfsPackage *package, QString externa
     }
 }
 
-void SingleProgressDialog::startReplace()
+void SingleProgressDialog::startJob()
 {
     StfsWorkerThread thread(package, job, entry, externalFile, this, packageFilePath);
 

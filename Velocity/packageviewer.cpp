@@ -434,7 +434,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             SingleProgressDialog *dialog = new SingleProgressDialog(package, path, packagePath, Replace, NULL, this);
             dialog->setModal(true);
             dialog->show();
-            dialog->startReplace();
+            dialog->startJob();
 
         }
         catch(string error)
@@ -469,7 +469,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             SingleProgressDialog *dialog = new SingleProgressDialog(package, path, packagePath, Inject, injectedEntry, this);
             dialog->setModal(true);
             dialog->show();
-            dialog->startReplace();
+            dialog->startJob();
 
             listing = package->GetFileListing();
 

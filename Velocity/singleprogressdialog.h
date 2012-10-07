@@ -20,7 +20,7 @@ class SingleProgressDialog : public QDialog
     
 public:
     explicit SingleProgressDialog(StfsPackage *package, QString externalFile, QString packageFilePath, StfsJob job, FileEntry *entry = NULL, QWidget *parent = 0);
-    void startReplace();
+    void startJob();
     ~SingleProgressDialog();
 
 private slots:
