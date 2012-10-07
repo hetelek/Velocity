@@ -32,6 +32,8 @@ void TitleIdFinder::replyFinished(QNetworkReply *reply)
             matches.push_back(t);
     }
 
+    reply->deleteLater();
+
     emit SearchFinished(matches);
 }
 
