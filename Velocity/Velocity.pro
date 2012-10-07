@@ -12,6 +12,7 @@ TEMPLATE = app
 include(Stfs/Botan.pri)
 INCLUDEPATH += "C:/botan/include"
 LIBS += "C:/botan/libBotan.a"
+VERSION = 1.0.0
 
 UI_DIR = ..\Velocity
 
