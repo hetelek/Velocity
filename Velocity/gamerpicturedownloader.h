@@ -9,6 +9,7 @@
 #include <QPixmap>
 #include <QMutex>
 #include <QDebug>
+#include <QApplication>
 
 #include "winnames.h"
 
@@ -22,10 +23,10 @@ public:
     ~GamerPictureDownloader();
 
     void SetTitleID(QString titleID);
-    void start(Priority = InheritPriority);
+    void run();
     
 signals:
-    void GamerPictureDownloaded(QPixmap picture, QString id);
+    void GamerPictureDownloaded(QImage picture, QString id);
     
 public slots:
     void gamerpictureNetworkReply(QNetworkReply*);
@@ -35,6 +36,7 @@ private:
 
     QString titleID;
     QNetworkAccessManager *manager;
+    QList<QNetworkReply*> repliesToDelete;
 
     int amount;
 };

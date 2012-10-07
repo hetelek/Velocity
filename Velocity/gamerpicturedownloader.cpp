@@ -1,14 +1,14 @@
 #include "gamerpicturedownloader.h"
 
-GamerPictureDownloader::GamerPictureDownloader(QObject *parent) : QThread(parent)
+GamerPictureDownloader::GamerPictureDownloader(QObject *parent) : QThread(parent), manager(NULL)
 {
-    manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamerpictureNetworkReply(QNetworkReply*)));
+
 }
 
 GamerPictureDownloader::~GamerPictureDownloader()
 {
-    delete manager;
+    if (manager != NULL)
+        delete manager;
 }
 
 void GamerPictureDownloader::SetTitleID(QString titleID)
@@ -16,14 +16,23 @@ void GamerPictureDownloader::SetTitleID(QString titleID)
     this->titleID = titleID;
 }
 
-void GamerPictureDownloader::start(Priority p)
+void GamerPictureDownloader::run()
 {
+    manager = new QNetworkAccessManager;
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamerpictureNetworkReply(QNetworkReply*)));
+    manager->moveToThread(QApplication::instance()->thread());
+    manager->setCache(NULL);
+
     amount = 0;
     startDownloads();
 }
 
 void GamerPictureDownloader::startDownloads()
 {
+    for (DWORD i = 0; i < repliesToDelete.size(); i++)
+        delete repliesToDelete.at(i);
+    repliesToDelete.clear();
+
     const int searchValues[] = {0, 0x400, 0x1000, 0x8000, 0xFFFF};
     for (int x = 0; x < 4; x++)
     {
@@ -40,13 +49,11 @@ void GamerPictureDownloader::gamerpictureNetworkReply(QNetworkReply *reply)
 {
     if (reply->bytesAvailable() != 0)
     {
-        QPixmap pixmap;
-        pixmap.loadFromData(reply->readAll(), "PNG");
-        if (!pixmap.isNull())
-            emit GamerPictureDownloaded(pixmap, titleID + reply->url().toString().mid(reply->url().toString().length() - 4));
+        QImage image;
+        image.loadFromData(reply->readAll(), "PNG");
+        if (!image.isNull())
+            emit GamerPictureDownloaded(image, titleID + reply->url().toString().mid(reply->url().toString().length() - 4));
     }
-    reply->deleteLater();
-
 
     QMutex m;
     m.lock();
@@ -55,4 +62,6 @@ void GamerPictureDownloader::gamerpictureNetworkReply(QNetworkReply *reply)
         startDownloads();
 
     m.unlock();
+
+    repliesToDelete.push_back(reply);
 }

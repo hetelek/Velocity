@@ -14,7 +14,7 @@ GamerPicturePackDialog::GamerPicturePackDialog(QStatusBar *statusBar, QWidget *p
     searchedTitleIDs = new QList<DWORD>;
 
     downloader = new GamerPictureDownloader(this);
-    connect(downloader, SIGNAL(GamerPictureDownloaded(QPixmap,QString)), this, SLOT(gamerPictureDownloaded(QPixmap,QString)));
+    connect(downloader, SIGNAL(GamerPictureDownloaded(QImage,QString)), this, SLOT(gamerPictureDownloaded(QImage,QString)));
 
     ui->listSearch->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->listSearch, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenuSearch(QPoint)));
@@ -177,13 +177,13 @@ void GamerPicturePackDialog::findGamerPictures(QString titleID)
     statusBar->showMessage("Searching for gamerpictures....", 0x7FFFFFFF);
 
     downloader->SetTitleID(titleID);
-    downloader->start();
+    downloader->run();
 }
 
-void GamerPicturePackDialog::gamerPictureDownloaded(QPixmap picture, QString id)
+void GamerPicturePackDialog::gamerPictureDownloaded(QImage picture, QString id)
 {
     QListWidgetItem *item = new QListWidgetItem(ui->listSearch);
-    item->setIcon(QIcon(picture));
+    item->setIcon(QIcon(QPixmap::fromImage(picture)));
     ui->listSearch->addItem(item);
 
     searchedIDs->push_back(id);

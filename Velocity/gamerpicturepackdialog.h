@@ -42,7 +42,7 @@ private slots:
     void on_pushButton_clicked();
     void onTitleIDSearchReturn(QList<struct Title>);
     void on_listGameNames_itemClicked(QListWidgetItem *item);
-    void gamerPictureDownloaded(QPixmap, QString);
+    void gamerPictureDownloaded(QImage, QString);
     void on_listSearch_itemDoubleClicked(QListWidgetItem *item);
     void on_listPack_itemDoubleClicked(QListWidgetItem *item);
     void showContextMenuSearch(QPoint p);
