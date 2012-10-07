@@ -3,10 +3,72 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    LoadAllPlugins();
     setCentralWidget(ui->mdiArea);
     ui->mdiArea->setAcceptDrops(false);
     setAcceptDrops(true);
+}
+
+void MainWindow::LoadPlugin(QString filename, bool addToMenu)
+{
+    QPluginLoader loader(filename);
+    QObject *possiblePlugin = loader.instance();
+
+    if (possiblePlugin)
+    {
+        IGameModder *plugin = qobject_cast<IGameModder*>(possiblePlugin);
+
+        if (plugin)
+        {
+            if (addToMenu)
+            {
+                QAction *action = new QAction(plugin->ToolName(), this);
+                action->setData(QVariant(filename));
+                connect(action, SIGNAL(triggered()), this, SLOT(on_actionGame_Modder_triggered()));
+                ui->menuGame_Modders->addAction(action);
+            }
+            else
+            {
+                QWidget *widget = plugin->GetDialog();
+
+                QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Save Game"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
+                if (fileName.isNull())
+                {
+                    delete possiblePlugin;
+                    return;
+                }
+
+                //ui->mdiArea->addSubWindow(widget);
+
+                StfsPackage *package;
+                try
+                {
+                    package = new StfsPackage(fileName.toStdString());
+                }
+                catch (string error)
+                {
+                    QMessageBox::critical(this, "Opening Error", "Could not open save game package.\n\n" + QString::fromStdString(error));
+                    return;
+                }
+                catch (...)
+                {
+                    QMessageBox::critical(this, "Opening Error", "Could not open save game package for an unknown reason.");
+                    return;
+                }
+
+                widget->show();
+                plugin->LoadPackage(package, this);
+            }
+        }
+    }
+}
+
+void MainWindow::LoadAllPlugins()
+{
+    QDir path (QDir::currentPath() + "/plugins");
+
+    foreach (QString filename, path.entryList(QDir::Files))
+        LoadPlugin(path.absolutePath() + "/" + filename, true);
 }
 
 MainWindow::~MainWindow()
@@ -264,4 +326,13 @@ void MainWindow::on_actionGamer_Picture_Pack_Creator_triggered()
 {
     GamerPicturePackDialog dialog(ui->statusBar);
     dialog.exec();
+}
+
+void MainWindow::on_actionGame_Modder_triggered()
+{
+    if (sender())
+    {
+        QAction *menuAction = (QAction*)sender();
+        LoadPlugin(menuAction->data().toString(), false);
+    }
 }

@@ -5,6 +5,7 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include <QDebug>
+#include <QDir>
 #include <QMessageBox>
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -25,6 +26,7 @@
 #include "gamerpicturepackdialog.h"
 
 // other
+#include "PluginInterfaces/igamemodder.h"
 #include "ui_mainwindow.h"
 #include "Stfs/StfsPackage.h"
 #include "GPD/GPDBase.h"
@@ -44,6 +46,8 @@ class MainWindow : public QMainWindow
     
 public:
     explicit MainWindow(QWidget *parent = 0);
+    void LoadPlugin(QString filename, bool addToMenu);
+    void LoadAllPlugins();
     ~MainWindow();
 
 protected:
@@ -72,6 +76,8 @@ private slots:
     void on_actionGame_Adder_triggered();
 
     void on_actionGamer_Picture_Pack_Creator_triggered();
+
+    void on_actionGame_Modder_triggered();
 
 private:
     Ui::MainWindow *ui;

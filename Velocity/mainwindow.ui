@@ -113,8 +113,20 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuPlugins">
+    <property name="title">
+     <string>Plugins</string>
+    </property>
+    <widget class="QMenu" name="menuGame_Modders">
+     <property name="title">
+      <string>Game Modders</string>
+     </property>
+    </widget>
+    <addaction name="menuGame_Modders"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuProfile"/>
+   <addaction name="menuPlugins"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
@@ -228,6 +240,16 @@
    </property>
    <property name="text">
     <string>Gamer Picture Pack Creator</string>
+   </property>
+  </action>
+  <action name="actionSome_Game">
+   <property name="text">
+    <string>Some Game</string>
+   </property>
+  </action>
+  <action name="actionReload">
+   <property name="text">
+    <string>Reload</string>
    </property>
   </action>
  </widget>
