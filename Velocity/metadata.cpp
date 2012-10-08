@@ -215,6 +215,41 @@ Metadata::Metadata(StfsPackage *package, QWidget *parent) :
         // set the image sizes
         ui->tableWidget->setItem(25 + offset, 0, new QTableWidgetItem(QString::number(package->metaData->thumbnailImageSize)));
         ui->tableWidget->setItem(26 + offset, 0, new QTableWidgetItem(QString::number(package->metaData->titleThumbnailImageSize)));
+
+        switch (package->metaData->installerType)
+        {
+            case SystemUpdate:
+            case TitleUpdate:
+            {
+                // installer type
+                cmbxInstallerType = new QComboBox;
+                cmbxInstallerType->addItem("System Update");
+                cmbxInstallerType->addItem("Title Update");
+                cmbxInstallerType->setCurrentIndex(package->metaData->installerType == TitleUpdate);
+
+                ui->tableWidget->insertRow(27 + offset);
+                ui->tableWidget->setVerticalHeaderItem(27 + offset, new QTableWidgetItem("Installer Type"));
+                ui->tableWidget->setCellWidget(27 + offset, 0, cmbxInstallerType);
+
+                // base version
+                ui->tableWidget->insertRow(28 + offset);
+                ui->tableWidget->setVerticalHeaderItem(28 + offset, new QTableWidgetItem("Installer Base Verison"));
+                QString baseVersion = QString::number(package->metaData->installerBaseVersion.major) + "." +
+                        QString::number(package->metaData->installerBaseVersion.minor) + "." +
+                        QString::number(package->metaData->installerBaseVersion.build) + "." +
+                        QString::number(package->metaData->installerBaseVersion.revision);
+                ui->tableWidget->setItem(28 + offset, 0, new QTableWidgetItem(baseVersion));
+
+                // version
+                ui->tableWidget->insertRow(29 + offset);
+                ui->tableWidget->setVerticalHeaderItem(29 + offset, new QTableWidgetItem("Installer Verison"));
+                QString version = QString::number(package->metaData->installerVersion.major) + "." +
+                        QString::number(package->metaData->installerVersion.minor) + "." +
+                        QString::number(package->metaData->installerVersion.build) + "." +
+                        QString::number(package->metaData->installerVersion.revision);
+                ui->tableWidget->setItem(29 + offset, 0, new QTableWidgetItem(version));
+            }
+        }
     }
 }
 
@@ -379,6 +414,25 @@ void Metadata::on_pushButton_clicked()
             QMessageBox::warning(this, "Invalid Value", "The Title Thumbnail Image Size must be all digits.\n");
             return;
         }
+        if (package->metaData->installerType == TitleUpdate || package->metaData->installerType == SystemUpdate)
+        {
+            Version tempbv, tempv;
+            if (!QtHelpers::ParseVersionString(ui->tableWidget->item(28 + offset, 0)->text(), &tempbv))
+            {
+                QMessageBox::warning(this, "Invalid Value", "Invalid value for the installer base version. The version should be in the following format, at or below the values provided:\n\n15.15.65535.255\n");
+                return;
+            }
+            if (!QtHelpers::ParseVersionString(ui->tableWidget->item(29 + offset, 0)->text(), &tempv))
+            {
+                QMessageBox::warning(this, "Invalid Value", "Invalid value for the installer version. The version should be in the following format, at or below the values provided:\n\n15.15.65535.255\n");
+                return;
+            }
+
+            package->metaData->installerBaseVersion = tempbv;
+            package->metaData->installerVersion = tempv;
+
+            package->metaData->installerType = (cmbxInstallerType->currentIndex() == 0) ? SystemUpdate : TitleUpdate;
+        }
 
         // update all the values
         QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(3, 0)->text(), package->metaData->headerHash, 0x14);
@@ -412,6 +466,8 @@ void Metadata::on_pushButton_clicked()
         package->metaData->titleName = ui->tableWidget->item(23 + offset, 0)->text().toStdWString();
         package->metaData->thumbnailImageSize = ui->tableWidget->item(25 + offset, 0)->text().toULong();
         package->metaData->titleThumbnailImageSize = ui->tableWidget->item(26 + offset, 0)->text().toULong();
+
+
     }
 
     try

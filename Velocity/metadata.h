@@ -41,6 +41,7 @@ private:
     QComboBox *cmbxMagic;
     QComboBox *cmbxSubcategory;
     QComboBox *cmbxSkeletonVersion;
+    QComboBox *cmbxInstallerType;
     QPushButton *btnCertificate;
     QPushButton *btnVolDesc;
     QPushButton *btnLicense;
