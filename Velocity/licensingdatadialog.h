@@ -5,10 +5,17 @@
 #include <QDialog>
 #include <QMessageBox>
 #include <QTableWidgetItem>
+#include <QComboBox>
 #include "qthelpers.h"
 
 // xbox360
 #include "Stfs/StfsDefinitions.h"
+
+struct LicenseTypeStruct
+{
+    QString name;
+    LicenseType value;
+};
 
 namespace Ui {
 class LicensingDataDialog;
@@ -32,6 +39,8 @@ private slots:
 private:
     Ui::LicensingDataDialog *ui;
     LicenseEntry *entryTable;
+
+    QComboBox *cmbxLicenseTypes[16];
 };
 
 #endif // LICENSINGDATADIALOG_H
