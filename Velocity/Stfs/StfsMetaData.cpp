@@ -88,6 +88,9 @@ void StfsMetaData::readMetadata()
 
             io->readBytes(guid, 0x10);
             skeletonVersion = io->readByte();
+
+            if (skeletonVersion < 1 || skeletonVersion > 3)
+                throw string("STFS: Invalid skeleton version.");
         }
 
         // skip padding
@@ -175,7 +178,7 @@ void StfsMetaData::WriteMetaData()
         io->setPosition(0x22C);
         for (DWORD i = 0; i < 0x10; i++)
         {
-            io->write((UINT64)((licenseData[i].type << 48) | licenseData[i].data));
+            io->write(((UINT64)licenseData[i].type << 48) | (UINT64)licenseData[i].data);
             io->write(licenseData[i].bits);
             io->write(licenseData[i].flags);
         }
