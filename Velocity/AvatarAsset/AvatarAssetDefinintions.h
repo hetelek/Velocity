@@ -104,7 +104,8 @@ enum BinaryAssetType
 enum SkeletonVersion
 {
     Nxe = 1,
-    Natal
+    Natal,
+    NxeAndNatal
 };
 
 enum AssetGender
