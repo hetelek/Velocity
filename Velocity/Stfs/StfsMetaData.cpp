@@ -44,6 +44,23 @@ void StfsMetaData::readMetadata()
             licenseData[i].data = (tempYo & 0xFFFFFFFFFFFF);
             licenseData[i].bits = io->readDword();
             licenseData[i].flags = io->readDword();
+
+            switch (licenseData[i].type)
+            {
+                case 0:
+                case 0xFFFF:
+                case 9:
+                case 3:
+                case 0xF000:
+                case 0xE000:
+                case 0xD000:
+                case 0xC000:
+                case 0xB000:
+                    break;
+                default:
+                    except << "STFS: Invalid license type at index " << i << ".\n";
+                    throw except.str();
+            }
         }
 
         // header hash / content id
