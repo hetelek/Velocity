@@ -146,14 +146,14 @@ void GamerPicturePackDialog::on_pushButton_clicked()
         manager->get(QNetworkRequest(QUrl("http://gamercard.xbox.com/en-US/" + ui->txtSearch->text() + ".card")));
 }
 
-void GamerPicturePackDialog::onTitleIDSearchReturn(QList<Title> titlesFound)
+void GamerPicturePackDialog::onTitleIDSearchReturn(QList<struct Title> titlesFound)
 {
     if (titlesFound.size() == 0)
         return;
 
     statusBar->showMessage("Search returned " + QString::number(titlesFound.size()) + " result(s)", 3000);
 
-    currentTitles = new QList<Title>(titlesFound);
+    currentTitles = new QList<struct Title>(titlesFound);
 
     // clear the current names
     ui->listGameNames->clear();
