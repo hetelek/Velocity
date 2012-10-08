@@ -1,7 +1,76 @@
 #include "metadata.h"
 #include "ui_metadata.h"
 
-Metadata::Metadata(StfsPackage *package, QWidget *parent) : QDialog(parent), ui(new Ui::Metadata), package(package)
+AssetSubcategoryStruct subcategoryStructs[] =
+{
+    { "Carryable, Carryable", 0x44c },
+    { "Costume, Casual Suit", 0x68 },
+    { "Costume, Costume", 0x69 },
+    { "Costume, Formal Suit", 0x67 },
+    { "Costume, Long Dress", 0x65 },
+    { "Costume, Short Dress", 100 },
+    { "Earrings, Danglers", 0x387 },
+    { "Earrings, Largehoops", 0x38b },
+    { "Earrings, Single Dangler", 0x386 },
+    { "Earrings, Single Large Hoop", 0x38a },
+    { "Earrings, Single Small Hoop", 0x388 },
+    { "Earrings, Single Stud", 900 },
+    { "Earrings, Small Hoops", 0x389 },
+    { "Earrings, Studs", 0x385 },
+    { "Glasses, Costume", 0x2be },
+    { "Glasses, Glasses", 700 },
+    { "Glasses, Sunglasses", 0x2bd },
+    { "Gloves, Fingerless", 600 },
+    { "Gloves, Full Fingered", 0x259 },
+    { "Hat, Baseball Cap", 0x1f6 },
+    { "Hat, Beanie", 500 },
+    { "Hat, Bearskin", 0x1fc },
+    { "Hat, Brimmed", 0x1f8 },
+    { "Hat, Costume", 0x1fb },
+    { "Hat, Fez", 0x1f9 },
+    { "Hat, FlatCap", 0x1f5 },
+    { "Hat, Headwrap", 0x1fa },
+    { "Hat, Helmet", 0x1fd },
+    { "Hat, PeakCap", 0x1f7 },
+    { "Ring, Left", 0x3e9 },
+    { "Ring, Right", 0x3e8 },
+    { "Shirt, Coat", 210 },
+    { "Shirt, Hoodie", 0xd0 },
+    { "Shirt, Jacket", 0xd1 },
+    { "Shirt, Long Sleeve Shirt", 0xce },
+    { "Shirt, Long Sleeve Tee", 0xcc },
+    { "Shirt, Polo", 0xcb },
+    { "Shirt, Short Sleeve Shirt", 0xcd },
+    { "Shirt, Sports Tee", 200 },
+    { "Shirt, Sweater", 0xcf },
+    { "Shirt, Tee", 0xc9 },
+    { "Shirt, Vest", 0xca },
+    { "Shoes, Costume", 0x197 },
+    { "Shoes, Formal", 0x193 },
+    { "Shoes, Heels", 0x191 },
+    { "Shoes, High Boots", 0x196 },
+    { "Shoes, Pumps", 0x192 },
+    { "Shoes, Sandals", 400 },
+    { "Shoes, Short Boots", 0x195 },
+    { "Shoes, Trainers", 0x194 },
+    { "Trousers, Cargo", 0x131 },
+    { "Trousers, Hotpants", 300 },
+    { "Trousers, Jeans", 0x132 },
+    { "Trousers, Kilt", 0x134 },
+    { "Trousers, Leggings", 0x12f },
+    { "Trousers, Long Shorts", 0x12e },
+    { "Trousers, Long Skirt", 0x135 },
+    { "Trousers, Shorts", 0x12d },
+    { "Trousers, Short Skirt", 0x133 },
+    { "Trousers, Trousers", 0x130 },
+    { "Wristwear, Bands", 0x322 },
+    { "Wristwear, Bracelet", 800 },
+    { "Wristwear, Sweatbands", 0x323 },
+    { "Wristwear, Watch", 0x321 }
+};
+
+Metadata::Metadata(StfsPackage *package, QWidget *parent) :
+    QDialog(parent), ui(new Ui::Metadata), package(package), cmbxSubcategory(NULL), cmbxSkeletonVersion(NULL), offset(0)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -88,35 +157,64 @@ Metadata::Metadata(StfsPackage *package, QWidget *parent) : QDialog(parent), ui(
         ui->tableWidget->setItem(17, 0, new QTableWidgetItem(QString::number(package->metaData->dataFileCount)));
         ui->tableWidget->setItem(18, 0, new QTableWidgetItem(QString::number(package->metaData->dataFileCombinedSize)));
 
-        // set the series id
-        ui->tableWidget->setItem(19, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(package->metaData->seriesID, 16, false)));
+        // add special metadata
+        if (package->metaData->contentType == AvatarItem)
+        {
+            ui->tableWidget->insertRow(19);
+            ui->tableWidget->setVerticalHeaderItem(19, new QTableWidgetItem("Asset Subcategory"));
 
-        // set the season id
-        ui->tableWidget->setItem(20, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(package->metaData->seasonID, 16, false)));
+            // populate the subcategory combobox
+            cmbxSubcategory = new QComboBox;
+            for (DWORD i = 0; i < 64; i++)
+            {
+                cmbxSubcategory->addItem(subcategoryStructs[i].name);
+                if (package->metaData->subCategory == subcategoryStructs[i].value)
+                    cmbxSubcategory->setCurrentIndex(i);
+            }
+            ui->tableWidget->setCellWidget(19, 0, cmbxSubcategory);
 
-        // set some more simple ones
-        ui->tableWidget->setItem(21, 0, new QTableWidgetItem(QString::number(package->metaData->seasonNumber)));
-        ui->tableWidget->setItem(22, 0, new QTableWidgetItem(QString::number(package->metaData->episodeNumber)));
+            ui->tableWidget->insertRow(20);
+            ui->tableWidget->setVerticalHeaderItem(20, new QTableWidgetItem("Colorizable"));
+            ui->tableWidget->setItem(20, 0, new QTableWidgetItem(QString::number(package->metaData->colorizable)));
+
+            ui->tableWidget->insertRow(21);
+            ui->tableWidget->setVerticalHeaderItem(21, new QTableWidgetItem("GUID"));
+            ui->tableWidget->setItem(21, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(package->metaData->guid, 0x10, false)));
+
+            ui->tableWidget->insertRow(22);
+            ui->tableWidget->setVerticalHeaderItem(22, new QTableWidgetItem("Skeleton Version"));
+
+            // set the skeleton version combobox
+            cmbxSkeletonVersion = new QComboBox;
+            cmbxSkeletonVersion->addItem("Nxe");
+            cmbxSkeletonVersion->addItem("Natal");
+            cmbxSkeletonVersion->addItem("Both");
+
+            cmbxSkeletonVersion->setCurrentIndex(package->metaData->skeletonVersion - 1);
+            ui->tableWidget->setCellWidget(22, 0, cmbxSkeletonVersion);
+
+            offset = 4;
+        }
 
         // set the device id
-        ui->tableWidget->setItem(23, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(package->metaData->deviceID, 0x14, false)));
+        ui->tableWidget->setItem(19 + offset, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(package->metaData->deviceID, 0x14, false)));
 
         // set the strings
-        ui->tableWidget->setItem(24, 0, new QTableWidgetItem(QString::fromStdWString(package->metaData->displayName)));
-        ui->tableWidget->setItem(25, 0, new QTableWidgetItem(QString::fromStdWString(package->metaData->displayDescription)));
-        ui->tableWidget->setItem(26, 0, new QTableWidgetItem(QString::fromStdWString(package->metaData->publisherName)));
-        ui->tableWidget->setItem(27, 0, new QTableWidgetItem(QString::fromStdWString(package->metaData->titleName)));
+        ui->tableWidget->setItem(20 + offset, 0, new QTableWidgetItem(QString::fromStdWString(package->metaData->displayName)));
+        ui->tableWidget->setItem(21 + offset, 0, new QTableWidgetItem(QString::fromStdWString(package->metaData->displayDescription)));
+        ui->tableWidget->setItem(22 + offset, 0, new QTableWidgetItem(QString::fromStdWString(package->metaData->publisherName)));
+        ui->tableWidget->setItem(23 + offset, 0, new QTableWidgetItem(QString::fromStdWString(package->metaData->titleName)));
 
         // set the transfer flags button
         btnTransFlags = new QPushButton();
         btnTransFlags->setText("View Transfer Flags");
         btnTransFlags->setIcon(QIcon(":/Images/flag.png"));
-        ui->tableWidget->setCellWidget(28, 0, btnTransFlags);
+        ui->tableWidget->setCellWidget(24 + offset, 0, btnTransFlags);
         connect(btnTransFlags, SIGNAL(clicked()), this, SLOT(btnTransFlagsClicked()));
 
         // set the image sizes
-        ui->tableWidget->setItem(29, 0, new QTableWidgetItem(QString::number(package->metaData->thumbnailImageSize)));
-        ui->tableWidget->setItem(30, 0, new QTableWidgetItem(QString::number(package->metaData->titleThumbnailImageSize)));
+        ui->tableWidget->setItem(25 + offset, 0, new QTableWidgetItem(QString::number(package->metaData->thumbnailImageSize)));
+        ui->tableWidget->setItem(26 + offset, 0, new QTableWidgetItem(QString::number(package->metaData->titleThumbnailImageSize)));
     }
 }
 
@@ -149,6 +247,10 @@ Metadata::~Metadata()
 {
     if (!package->IsPEC())
         delete cmbxMagic;
+    if (cmbxSubcategory != NULL)
+        delete cmbxSubcategory;
+    if (cmbxSkeletonVersion != NULL)
+        delete cmbxSkeletonVersion;
     delete ui;
 }
 
@@ -232,57 +334,47 @@ void Metadata::on_pushButton_clicked()
             QMessageBox::warning(this, "Invalid Value", "The Data File Combined Size must be all digits.\n");
             return;
         }
-        if (!QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(19, 0)->text()) || ui->tableWidget->item(19, 0)->text().length() != 0x20)
+        if (package->metaData->contentType == AvatarItem && !QtHelpers::VerifyDecimalString(ui->tableWidget->item(20, 0)->text()))
         {
-            QMessageBox::warning(this, "Invalid Value", "The Series ID must be 32 hexadecimal digits.\n");
+            QMessageBox::warning(this, "Invalid Value", "The Colorizable value must be all digits.\n");
             return;
         }
-        if (!QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(20, 0)->text()) || ui->tableWidget->item(20, 0)->text().length() != 0x20)
+        if (package->metaData->contentType == AvatarItem && (!QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(21, 0)->text()) || ui->tableWidget->item(21, 0)->text().length() != 0x20))
         {
-            QMessageBox::warning(this, "Invalid Value", "The Season ID must be 32 hexadecimal digits.\n");
+            QMessageBox::warning(this, "Invalid Value", "The GUID must be 16 hexadecimal digits.\n");
             return;
         }
-        if (!QtHelpers::VerifyDecimalString(ui->tableWidget->item(21, 0)->text()))
-        {
-            QMessageBox::warning(this, "Invalid Value", "The Season Number must be all digits.\n");
-            return;
-        }
-        if (!QtHelpers::VerifyDecimalString(ui->tableWidget->item(22, 0)->text()))
-        {
-            QMessageBox::warning(this, "Invalid Value", "The Episode Number must be all digits.\n");
-            return;
-        }
-        if (!QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(23, 0)->text()) || ui->tableWidget->item(23, 0)->text().length() != 40)
+        if (!QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(19 + offset, 0)->text()) || ui->tableWidget->item(19 + offset, 0)->text().length() != 40)
         {
             QMessageBox::warning(this, "Invalid Value", "The Device ID must be 40 hexadecimal digits.\n");
             return;
         }
-        if (ui->tableWidget->item(24, 0)->text().length() > 0x80)
+        if (ui->tableWidget->item(20 + offset, 0)->text().length() > 0x80)
         {
             QMessageBox::warning(this, "Invalid Length", "The maximum length for the Display Name is 128.\n");
             return;
         }
-        if (ui->tableWidget->item(25, 0)->text().length() > 0x80)
+        if (ui->tableWidget->item(21 + offset, 0)->text().length() > 0x80)
         {
             QMessageBox::warning(this, "Invalid Length", "The maximum length for the Display Description is 128.\n");
             return;
         }
-        if (ui->tableWidget->item(26, 0)->text().length() > 0x80)
+        if (ui->tableWidget->item(22 + offset, 0)->text().length() > 0x80)
         {
             QMessageBox::warning(this, "Invalid Length", "The maximum length for the Publisher Name is 128.\n");
             return;
         }
-        if (ui->tableWidget->item(27, 0)->text().length() > 0x80)
+        if (ui->tableWidget->item(23 + offset, 0)->text().length() > 0x80)
         {
             QMessageBox::warning(this, "Invalid Length", "The maximum length for the Title Name is 128.\n");
             return;
         }
-        if (!QtHelpers::VerifyDecimalString(ui->tableWidget->item(29, 0)->text()))
+        if (!QtHelpers::VerifyDecimalString(ui->tableWidget->item(25 + offset, 0)->text()))
         {
             QMessageBox::warning(this, "Invalid Value", "The Thumbnail Image Size must be all digits.\n");
             return;
         }
-        if (!QtHelpers::VerifyDecimalString(ui->tableWidget->item(30, 0)->text()))
+        if (!QtHelpers::VerifyDecimalString(ui->tableWidget->item(26 + offset, 0)->text()))
         {
             QMessageBox::warning(this, "Invalid Value", "The Title Thumbnail Image Size must be all digits.\n");
             return;
@@ -304,17 +396,22 @@ void Metadata::on_pushButton_clicked()
         QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(15, 0)->text(), package->metaData->profileID, 8);
         package->metaData->dataFileCount = ui->tableWidget->item(17, 0)->text().toULong();
         package->metaData->dataFileCombinedSize = ui->tableWidget->item(18, 0)->text().toULongLong();
-        QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(19, 0)->text(), package->metaData->seriesID, 0x10);
-        QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(20, 0)->text(), package->metaData->seasonID, 0x10);
-        package->metaData->seasonNumber = ui->tableWidget->item(21, 0)->text().toUShort();
-        package->metaData->episodeNumber = ui->tableWidget->item(22, 0)->text().toUShort();
-        QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(23, 0)->text(), package->metaData->deviceID, 0x14);
-        package->metaData->displayName = ui->tableWidget->item(24, 0)->text().toStdWString();
-        package->metaData->displayDescription = ui->tableWidget->item(25, 0)->text().toStdWString();
-        package->metaData->publisherName = ui->tableWidget->item(26, 0)->text().toStdWString();
-        package->metaData->titleName = ui->tableWidget->item(27, 0)->text().toStdWString();
-        package->metaData->thumbnailImageSize = ui->tableWidget->item(29, 0)->text().toULong();
-        package->metaData->titleThumbnailImageSize = ui->tableWidget->item(30, 0)->text().toULong();
+
+        if (package->metaData->contentType == AvatarItem)
+        {
+            package->metaData->subCategory = subcategoryStructs[cmbxSubcategory->currentIndex()].value;
+            package->metaData->colorizable = ui->tableWidget->item(20, 0)->text().toULong();
+            QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(21, 0)->text(), package->metaData->guid, 0x10);
+            package->metaData->skeletonVersion = cmbxSkeletonVersion->currentIndex() + 1;
+        }
+
+        QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(19 + offset, 0)->text(), package->metaData->deviceID, 0x14);
+        package->metaData->displayName = ui->tableWidget->item(20 + offset, 0)->text().toStdWString();
+        package->metaData->displayDescription = ui->tableWidget->item(21 + offset, 0)->text().toStdWString();
+        package->metaData->publisherName = ui->tableWidget->item(22 + offset, 0)->text().toStdWString();
+        package->metaData->titleName = ui->tableWidget->item(23 + offset, 0)->text().toStdWString();
+        package->metaData->thumbnailImageSize = ui->tableWidget->item(25 + offset, 0)->text().toULong();
+        package->metaData->titleThumbnailImageSize = ui->tableWidget->item(26 + offset, 0)->text().toULong();
     }
 
     try

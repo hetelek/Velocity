@@ -20,6 +20,12 @@ namespace Ui {
 class Metadata;
 }
 
+struct AssetSubcategoryStruct
+{
+    QString name;
+    AssetSubcategory value;
+};
+
 class Metadata : public QDialog
 {
     Q_OBJECT
@@ -33,10 +39,13 @@ private:
     StfsPackage *package;
 
     QComboBox *cmbxMagic;
+    QComboBox *cmbxSubcategory;
+    QComboBox *cmbxSkeletonVersion;
     QPushButton *btnCertificate;
     QPushButton *btnVolDesc;
     QPushButton *btnLicense;
     QPushButton *btnTransFlags;
+    DWORD offset;
 
 private slots:
     void btnCertificateClicked();

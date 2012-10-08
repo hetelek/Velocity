@@ -120,26 +120,6 @@
      </row>
      <row>
       <property name="text">
-       <string>Series ID</string>
-      </property>
-     </row>
-     <row>
-      <property name="text">
-       <string>Season ID</string>
-      </property>
-     </row>
-     <row>
-      <property name="text">
-       <string>Season Number</string>
-      </property>
-     </row>
-     <row>
-      <property name="text">
-       <string>Episode Number</string>
-      </property>
-     </row>
-     <row>
-      <property name="text">
        <string>Device ID</string>
       </property>
      </row>
