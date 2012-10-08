@@ -113,7 +113,7 @@ void ThemeCreationWizard::injectImage(StfsPackage *theme, QImage *image, QString
     QByteArray ba;
     QBuffer buffer(&ba);
     buffer.open(QIODevice::WriteOnly);
-    image->save(&buffer, "JPG");
+    image->scaled(1280, 720).save(&buffer, "JPG");
 
     theme->InjectData(ba.data(), ba.length(), fileName.toStdString());
 }
@@ -163,18 +163,12 @@ void ThemeCreationWizard::on_pushButton_clicked()
 
 void ThemeCreationWizard::openWallpaper(QLabel *imageViewer, QImage *saveImage)
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Choose a wallpaper image", QtHelpers::DesktopLocation(), "JPG File (*jpg)");
+    QString fileName = QFileDialog::getOpenFileName(this, "Choose a wallpaper image", QtHelpers::DesktopLocation(), "Image Files (*.jpg *.jpeg *.png)");
 
     if (fileName == "")
         return;
 
     QPixmap thumbnail(fileName);
-
-    if (thumbnail.isNull() || thumbnail.width() != 1280 || thumbnail.height() != 720)
-    {
-        QMessageBox::warning(this, "Invalid Image", "Wallpaper must be a 1280x720 JPG image.");
-        return;
-    }
 
     *saveImage = QImage(fileName);
 
