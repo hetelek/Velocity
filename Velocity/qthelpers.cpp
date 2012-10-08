@@ -80,3 +80,39 @@ bool QtHelpers::VerifyDecimalString(QString str)
             return false;
     return true;
 }
+
+bool QtHelpers::ParseVersionString(QString version, Version *out)
+{
+    QStringList segs = version.split('.');
+
+    if (segs.length() != 4)
+        return false;
+
+    bool ok;
+    out->major = segs.at(0).toUShort(&ok);
+    if (!ok)
+        return false;
+
+    out->minor = segs.at(1).toUShort(&ok);
+    if (!ok)
+        return false;
+
+    out->build = segs.at(2).toUShort(&ok);
+    if (!ok)
+        return false;
+
+    out->revision = segs.at(3).toUShort(&ok);
+    if (!ok)
+        return false;
+
+    if (out->major > 15)
+        return false;
+    if (out->minor > 15)
+        return false;
+    if (out->build > 0xFFFF)
+        return false;
+    if (out->revision > 0xFF)
+        return false;
+
+    return true;
+}
