@@ -45,6 +45,16 @@ enum FileEntryFlags
     Folder = 2
 };
 
+enum InstallerType
+{
+    None = 0,
+    SystemUpdate = 0x53555044,
+    TitleUpdate = 0x54555044,
+    SystemUpdateProgressCache = 0x50245355,
+    TitleUpdateProgressCache = 0x50245455,
+    TitleContentProgressCache = 0x50245443
+};
+
 enum ContentType
 {
 	App = 0x7000,
@@ -86,6 +96,11 @@ enum BlockStatusLevelZero
 	PreviouslyAllocated = 0x40,
 	Allocated = 0x80,
 	NewlyAllocated = 0xC0
+};
+
+struct Version
+{
+    WORD major, minor, build, revision;
 };
 
 #endif
