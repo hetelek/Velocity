@@ -225,6 +225,8 @@ void GamerPicturePackDialog::switchImage(QListWidgetItem *currentItem, QListWidg
 
     // delete the old item
     delete currentItem;
+
+    ui->btnCreatePack->setEnabled(ui->listPack->count() != 0);
 }
 
 void GamerPicturePackDialog::showContextMenuSearch(QPoint p)
@@ -279,11 +281,14 @@ void GamerPicturePackDialog::showContextMenu(QPoint p, QListWidget *current, QLi
         DWORD itemCount = current->count();
         for (DWORD i = 0; i < itemCount; i++)
             switchImage(current->item(0), current, toAddTo, currentStrs, toAddToStrs);
+
+        ui->btnCreatePack->setEnabled(ui->listPack->count() != 0);
     }
     else if (selectedItem->text() == "Clear All")
     {
         current->clear();
         currentStrs->clear();
+        ui->btnCreatePack->setEnabled(ui->listPack->count() != 0);
     }
 }
 
@@ -294,7 +299,7 @@ QString GamerPicturePackDialog::getImageName(QString id, bool big)
 
 void GamerPicturePackDialog::on_txtPackName_textChanged(const QString &arg1)
 {
-    ui->btnCreatePack->setEnabled(arg1 != "");
+    ui->btnCreatePack->setEnabled(arg1 != "" && ui->listPack->count() != 0);
 }
 
 void GamerPicturePackDialog::on_btnCreatePack_clicked()
