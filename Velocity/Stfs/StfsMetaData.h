@@ -4,6 +4,8 @@
 #include "StfsConstants.h"
 #include "StfsDefinitions.h"
 #include "../AvatarAsset/AvatarAssetDefinintions.h"
+#include "../GPD/XDBFHelpers.h"
+#include "winnames.h"
 #include <iostream>
 
 using std::string;
@@ -82,6 +84,7 @@ public:
 	DWORD titleThumbnailImageSize;
 
     // credit to Eaton for all the extra metadata stuff
+    InstallerType installerType;
 
     // Avatar Asset
     AssetSubcategory subCategory;
@@ -104,8 +107,8 @@ public:
     BYTE cabResumeData[5584];
 
     // installer update data
-    DWORD ibaseVersion;
-    DWORD iversion;
+    Version installerBaseVersion;
+    Version installerVersion;
 
 	BYTE *thumbnailImage;
 	BYTE *titleThumbnailImage;

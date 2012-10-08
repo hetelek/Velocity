@@ -4,7 +4,7 @@
 
 using namespace std;
 
-StfsMetaData::StfsMetaData(FileIO *io, DWORD flags) : flags(flags)
+StfsMetaData::StfsMetaData(FileIO *io, DWORD flags) : flags(flags), installerType(0)
 {
 	// set the io
 	this->io = io;
@@ -137,6 +137,51 @@ void StfsMetaData::readMetadata()
         io->readBytes(titleThumbnailImage, titleThumbnailImageSize);
         io->setPosition(0x971A);
 
+        if (((headerSize + 0xFFF) & 0xFFFFF000) - 0x971A < 0x15F4)
+            return;
+
+        installerType = io->readDword();
+        switch (installerType)
+        {
+            case SystemUpdate:
+            case TitleUpdate:
+            {
+                DWORD tempbv = io->readDword();
+                installerBaseVersion.major = tempbv >> 28;
+                installerBaseVersion.minor = (tempbv >> 24) & 0xF;
+                installerBaseVersion.build = (tempbv >> 8) & 0xFFFF;
+                installerBaseVersion.revision = tempbv & 0xFF;
+
+                DWORD tempv = io->readDword();
+                installerVersion.major = tempv >> 28;
+                installerVersion.minor = (tempv >> 24) & 0xF;
+                installerVersion.build = (tempv >> 8) & 0xFFFF;
+                installerVersion.revision = tempv & 0xFF;
+
+                break;
+            }
+            case SystemUpdateProgressCache:
+            case TitleUpdateProgressCache:
+            case TitleContentProgressCache:
+            {
+                resumeState = io->readDword();
+                currentFileIndex = io->readDword();
+                currentFileOffset = io->readUInt64();
+                bytesProcessed = io->readUInt64();
+
+                FILETIME time;
+                time.dwHighDateTime = io->readDword();
+                time.dwLowDateTime = io->readDword();
+
+                io->readBytes(cabResumeData, 0x15D0);
+                break;
+            }
+            case None:
+                break;
+            default:
+                throw string("STFS: Invalid Installer Type value.");
+        }
+
     #ifdef DEBUG
         if(metaDataVersion != 2)
             throw string("STFS: Metadata version is not 2.\n");
@@ -261,6 +306,53 @@ void StfsMetaData::WriteMetaData()
         io->write(thumbnailImage, thumbnailImageSize);
         io->setPosition(0x571A);
         io->write(titleThumbnailImage, titleThumbnailImageSize);
+
+        if (((headerSize + 0xFFF) & 0xFFFFF000) - 0x971A < 0x15F4)
+            return;
+
+        io->write(installerType);
+        switch (installerType)
+        {
+            case SystemUpdate:
+            case TitleUpdate:
+            {
+                DWORD tempbv = 0;
+                tempbv |= (installerBaseVersion.major & 0xF) << 28;
+                tempbv |= (installerBaseVersion.minor & 0xF) << 24;
+                tempbv |= (installerBaseVersion.build & 0xFFFF) << 8;
+                tempbv |= installerBaseVersion.revision & 0xFF;
+                io->write(tempbv);
+
+                DWORD tempv = 0;
+                tempv |= (installerVersion.major & 0xF) << 28;
+                tempv |= (installerVersion.minor & 0xF) << 24;
+                tempv |= (installerVersion.build & 0xFFFF) << 8;
+                tempv |= installerVersion.revision & 0xFF;
+                io->write(tempv);
+
+                break;
+            }
+
+            case SystemUpdateProgressCache:
+            case TitleUpdateProgressCache:
+            case TitleContentProgressCache:
+            {
+                io->write(resumeState);
+                io->write(currentFileIndex);
+                io->write(currentFileOffset);
+                io->write(bytesProcessed);
+
+                FILETIME time = XDBFHelpers::TimeTtoFILETIME(lastModified);
+                io->write(time.dwHighDateTime);
+                io->write(time.dwLowDateTime);
+
+                io->write(cabResumeData, 0x15D0);
+                break;
+            }
+
+            case None:
+                break;
+        }
     }
     else
     {
