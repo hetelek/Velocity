@@ -69,8 +69,18 @@ AssetSubcategoryStruct subcategoryStructs[] =
     { "Wristwear, Watch", (AssetSubcategory)0x321 }
 };
 
+OnlineResumeStateStruct resumeStates[] =
+{
+    { "File Headers Not Ready", (OnlineContentResumeState)0x46494C48 },
+    { "New Folder", (OnlineContentResumeState)0x666F6C64 },
+    { "New Folder Resume Attempt1", (OnlineContentResumeState)0x666F6C31 },
+    { "New Folder Resume Attempt2", (OnlineContentResumeState)0x666F6C32 },
+    { "New Folder Resume Attempt Unknown", (OnlineContentResumeState)0x666F6C3F },
+    { "New Folder Resume Attempt Specific", (OnlineContentResumeState)0x666F6C40 }
+};
+
 Metadata::Metadata(StfsPackage *package, QWidget *parent) :
-    QDialog(parent), ui(new Ui::Metadata), package(package), cmbxSubcategory(NULL), cmbxSkeletonVersion(NULL), offset(0)
+    QDialog(parent), ui(new Ui::Metadata), package(package), cmbxSubcategory(NULL), cmbxSkeletonVersion(NULL), offset(0), cmbxResumeState(NULL), lastModified(NULL)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -85,7 +95,7 @@ Metadata::Metadata(StfsPackage *package, QWidget *parent) :
     else
     {
         // set the magic
-        cmbxMagic = new QComboBox();
+        cmbxMagic = new QComboBox;
         cmbxMagic->addItem("CON ");
         cmbxMagic->addItem("LIVE");
         cmbxMagic->addItem("PIRS");
@@ -248,6 +258,57 @@ Metadata::Metadata(StfsPackage *package, QWidget *parent) :
                         QString::number(package->metaData->installerVersion.build) + "." +
                         QString::number(package->metaData->installerVersion.revision);
                 ui->tableWidget->setItem(29 + offset, 0, new QTableWidgetItem(version));
+                break;
+            }
+            case SystemUpdateProgressCache:
+            case TitleUpdateProgressCache:
+            case TitleContentProgressCache:
+            {
+                // set resume state combobox
+                cmbxResumeState = new QComboBox;
+                int indexSet = -1;
+                for (DWORD i = 0; i < 6; i++)
+                {
+                    cmbxResumeState->addItem(resumeStates[i].name);
+                    if (package->metaData->resumeState == resumeStates[i].value)
+                    {
+                        cmbxResumeState->setCurrentIndex(i);
+                        indexSet = i;
+                    }
+                }
+                if (indexSet == -1)
+                {
+                    cmbxResumeState->addItem("Unknown");
+                    cmbxResumeState->setCurrentIndex(6);
+                }
+
+                // add to it to the list
+                ui->tableWidget->insertRow(27 + offset);
+                ui->tableWidget->setVerticalHeaderItem(27 + offset, new QTableWidgetItem("Online Resume State"));
+                ui->tableWidget->setCellWidget(27 + offset, 0, cmbxResumeState);
+
+                // current file index
+                ui->tableWidget->insertRow(28 + offset);
+                ui->tableWidget->setVerticalHeaderItem(28 + offset, new QTableWidgetItem("Current File Index"));
+                ui->tableWidget->setItem(28 + offset, 0, new QTableWidgetItem(QString::number(package->metaData->currentFileIndex)));
+
+                // current file offset
+                ui->tableWidget->insertRow(29 + offset);
+                ui->tableWidget->setVerticalHeaderItem(29 + offset, new QTableWidgetItem("Current File Offset"));
+                ui->tableWidget->setItem(29 + offset, 0, new QTableWidgetItem(QString::number(package->metaData->currentFileOffset)));
+
+                // current file index
+                ui->tableWidget->insertRow(30 + offset);
+                ui->tableWidget->setVerticalHeaderItem(30 + offset, new QTableWidgetItem("Bytes Processed"));
+                ui->tableWidget->setItem(30 + offset, 0, new QTableWidgetItem(QString::number(package->metaData->bytesProcessed)));
+
+                // last modified
+                lastModified = new QDateTimeEdit;
+                lastModified->setDateTime(QDateTime::fromTime_t(package->metaData->lastModified));
+
+                ui->tableWidget->insertRow(31 + offset);
+                ui->tableWidget->setVerticalHeaderItem(31 + offset, new QTableWidgetItem("Last Modified"));
+                ui->tableWidget->setCellWidget(31 + offset, 0, lastModified);
             }
         }
     }
@@ -286,6 +347,10 @@ Metadata::~Metadata()
         delete cmbxSubcategory;
     if (cmbxSkeletonVersion != NULL)
         delete cmbxSkeletonVersion;
+    if (cmbxResumeState != NULL)
+        delete cmbxResumeState;
+    if (lastModified != NULL)
+        delete lastModified;
     delete ui;
 }
 
@@ -433,6 +498,24 @@ void Metadata::on_pushButton_clicked()
 
             package->metaData->installerType = (cmbxInstallerType->currentIndex() == 0) ? SystemUpdate : TitleUpdate;
         }
+        if (package->metaData->installerType == TitleUpdateProgressCache || package->metaData->installerType == SystemUpdateProgressCache || package->metaData->installerType == TitleContentProgressCache)
+        {
+            if (!QtHelpers::VerifyDecimalString(ui->tableWidget->item(28 + offset, 0)->text()))
+            {
+                QMessageBox::warning(this, "Invalid Value", "The Current File Index must be all digits.\n");
+                return;
+            }
+            if (!QtHelpers::VerifyDecimalString(ui->tableWidget->item(29 + offset, 0)->text()))
+            {
+                QMessageBox::warning(this, "Invalid Value", "The Current File Offset must be all digits.\n");
+                return;
+            }
+            if (!QtHelpers::VerifyDecimalString(ui->tableWidget->item(30 + offset, 0)->text()))
+            {
+                QMessageBox::warning(this, "Invalid Value", "The Bytes Processed must be all digits.\n");
+                return;
+            }
+        }
 
         // update all the values
         QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(3, 0)->text(), package->metaData->headerHash, 0x14);
@@ -467,6 +550,15 @@ void Metadata::on_pushButton_clicked()
         package->metaData->thumbnailImageSize = ui->tableWidget->item(25 + offset, 0)->text().toULong();
         package->metaData->titleThumbnailImageSize = ui->tableWidget->item(26 + offset, 0)->text().toULong();
 
+        if (package->metaData->installerType == TitleUpdateProgressCache || package->metaData->installerType == SystemUpdateProgressCache || package->metaData->installerType == TitleContentProgressCache)
+        {
+            if (cmbxResumeState->currentIndex() != 6)
+                package->metaData->resumeState = resumeStates[cmbxResumeState->currentIndex()].value;
+            package->metaData->currentFileIndex = ui->tableWidget->item(28 + offset, 0)->text().toULong();
+            package->metaData->currentFileOffset = ui->tableWidget->item(29 + offset, 0)->text().toULongLong();
+            package->metaData->bytesProcessed = ui->tableWidget->item(30 + offset, 0)->text().toULongLong();
+            package->metaData->lastModified = lastModified->dateTime().toTime_t();
+        }
 
     }
 

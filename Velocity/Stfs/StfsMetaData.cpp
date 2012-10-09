@@ -172,6 +172,7 @@ void StfsMetaData::readMetadata()
                 FILETIME time;
                 time.dwHighDateTime = io->readDword();
                 time.dwLowDateTime = io->readDword();
+                lastModified = XDBFHelpers::FILETIMEtoTimeT(time);
 
                 io->readBytes(cabResumeData, 0x15D0);
                 break;
