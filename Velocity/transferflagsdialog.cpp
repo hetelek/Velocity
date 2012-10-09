@@ -1,7 +1,8 @@
 #include "transferflagsdialog.h"
 #include "ui_transferflagsdialog.h"
 
-TransferFlagsDialog::TransferFlagsDialog(BYTE *flags, QWidget *parent) :QDialog(parent), ui(new Ui::TransferFlagsDialog), flags(flags)
+TransferFlagsDialog::TransferFlagsDialog(QStatusBar *statusBar, BYTE *flags, QWidget *parent) :
+    QDialog(parent), ui(new Ui::TransferFlagsDialog), flags(flags), statusBar(statusBar)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -60,6 +61,8 @@ TransferFlagsDialog::TransferFlagsDialog(BYTE *flags, QWidget *parent) :QDialog(
 
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showRemoveContextMenu(QPoint)));
+
+    statusBar->showMessage("Transfer flags loaded successfully", 3000);
 }
 
 void TransferFlagsDialog::showRemoveContextMenu(QPoint pos)
@@ -123,5 +126,7 @@ void TransferFlagsDialog::on_pushButton_3_clicked()
         QTreeWidgetItem *item = ui->treeWidget->topLevelItem(i);
         *flags |= QtHelpers::ParseHexString(item->text(1));
     }
+
+    statusBar->showMessage("Transfer flags saved successfully", 3000);
     this->close();
 }

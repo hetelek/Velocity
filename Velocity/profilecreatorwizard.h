@@ -7,6 +7,7 @@
 #include <QBuffer>
 #include <QDir>
 #include <QUuid>
+#include <QStatusBar>
 #include "qthelpers.h"
 
 // xbox360
@@ -28,7 +29,7 @@ class ProfileCreatorWizard : public QWizard
     Q_OBJECT
     
 public:
-    explicit ProfileCreatorWizard(QWidget *parent = 0);
+    explicit ProfileCreatorWizard(QStatusBar *statusBar, QWidget *parent = 0);
     ~ProfileCreatorWizard();
     
 private slots:
@@ -43,6 +44,7 @@ private slots:
 private:
     Ui::ProfileCreatorWizard *ui;
     UINT64 profileID;
+    QStatusBar *statusBar;
 
     bool verifyGamertag(QString gamertag);
 };

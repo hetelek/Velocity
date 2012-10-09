@@ -12,6 +12,7 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QDateTimeEdit>
+#include <QStatusBar>
 #include "qthelpers.h"
 
 // xbox360
@@ -39,12 +40,13 @@ class Metadata : public QDialog
     Q_OBJECT
     
 public:
-    explicit Metadata(StfsPackage *package, QWidget *parent = 0);
+    explicit Metadata(QStatusBar *statusBar, StfsPackage *package, QWidget *parent = 0);
     ~Metadata();
     
 private:
     Ui::Metadata *ui;
     StfsPackage *package;
+    QStatusBar *statusBar;
 
     QComboBox *cmbxMagic;
     QComboBox *cmbxSubcategory;

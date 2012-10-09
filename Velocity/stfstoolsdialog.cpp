@@ -6,7 +6,10 @@ StfsToolsDialog::StfsToolsDialog(StfsPackage *package, QWidget *parent) : QDialo
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
-    ui->spnBlock->setMaximum(package->metaData->volumeDescriptor.allocatedBlockCount - 1);
+    if (package->metaData->volumeDescriptor.allocatedBlockCount == 0)
+        ui->spnBlock->setMaximum(0);
+    else
+        ui->spnBlock->setMaximum(package->metaData->volumeDescriptor.allocatedBlockCount - 1);
 
     ui->lblAddr->setText("0x" + QString::number(package->BlockToAddress(0), 16).toUpper());
     ui->lblHashAddr->setText("0x" + QString::number(package->GetHashAddressOfBlock(0), 16).toUpper());

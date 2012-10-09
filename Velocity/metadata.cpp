@@ -79,8 +79,8 @@ OnlineResumeStateStruct resumeStates[] =
     { "New Folder Resume Attempt Specific", (OnlineContentResumeState)0x666F6C40 }
 };
 
-Metadata::Metadata(StfsPackage *package, QWidget *parent) :
-    QDialog(parent), ui(new Ui::Metadata), package(package), cmbxSubcategory(NULL), cmbxSkeletonVersion(NULL), offset(0), cmbxResumeState(NULL), lastModified(NULL)
+Metadata::Metadata(QStatusBar *statusBar, StfsPackage *package, QWidget *parent) :
+    QDialog(parent), ui(new Ui::Metadata), package(package), cmbxSubcategory(NULL), cmbxSkeletonVersion(NULL), offset(0), cmbxResumeState(NULL), lastModified(NULL), statusBar(statusBar)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -312,30 +312,32 @@ Metadata::Metadata(StfsPackage *package, QWidget *parent) :
             }
         }
     }
+
+    statusBar->showMessage("Loaded metadata successfully", 3000);
 }
 
 void Metadata::btnCertificateClicked()
 {
-    CertificateDialog cert(&package->metaData->certificate, this);
+    CertificateDialog cert(statusBar, &package->metaData->certificate, this);
     cert.exec();
 }
 
 void Metadata::btnVolDescClicked()
 {
-    VolumeDescriptorDialog dialog(&package->metaData->volumeDescriptor, this);
+    VolumeDescriptorDialog dialog(statusBar, &package->metaData->volumeDescriptor, this);
     dialog.exec();
 }
 
 void Metadata::btnTransFlagsClicked()
 {
-    TransferFlagsDialog dialog(&package->metaData->transferFlags, this);
+    TransferFlagsDialog dialog(statusBar, &package->metaData->transferFlags, this);
     dialog.exec();
 }
 
 void Metadata::btnLicenseClicked()
 {
     bool unlockable = (package->metaData->contentType == AvatarItem || package->metaData->contentType == ArcadeGame || package->metaData->contentType == MarketPlaceContent);
-    LicensingDataDialog dialog(package->metaData->licenseData, unlockable, this);
+    LicensingDataDialog dialog(statusBar, package->metaData->licenseData, unlockable, this);
     dialog.exec();
 }
 
@@ -565,6 +567,7 @@ void Metadata::on_pushButton_clicked()
     try
     {
         package->metaData->WriteMetaData();
+        statusBar->showMessage("Saved metadata successfully", 3000);
     }
     catch(string error)
     {

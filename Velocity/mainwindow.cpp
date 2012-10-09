@@ -86,7 +86,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 
 void MainWindow::on_actionTheme_Creator_triggered()
 {
-    ThemeCreationWizard wiz(this);
+    ThemeCreationWizard wiz(ui->statusBar, this);
     wiz.exec();
 }
 
@@ -118,7 +118,7 @@ void MainWindow::dropEvent(QDropEvent *event)
                 {
                     StfsPackage *package = new StfsPackage(fileName);
 
-                    PackageViewer *viewer = new PackageViewer(package, this);
+                    PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this);
                     ui->mdiArea->addSubWindow(viewer);
                     viewer->show();
 
@@ -135,12 +135,12 @@ void MainWindow::dropEvent(QDropEvent *event)
                 try
                 {
                     GPDBase *gpd = new GPDBase(fileName);
+                    ui->statusBar->showMessage("GPD parsed successfully", 3000);
 
-                    XdbfDialog *dialog = new XdbfDialog(gpd, NULL, this);
+                    XdbfDialog *dialog = new XdbfDialog(ui->statusBar, gpd, NULL, this);
                     ui->mdiArea->addSubWindow(dialog);
                     dialog->show();
 
-                    ui->statusBar->showMessage("XDBF file loaded successfully.", 3000);
                 }
                 catch (string error)
                 {
@@ -158,7 +158,7 @@ void MainWindow::dropEvent(QDropEvent *event)
                     ui->mdiArea->addSubWindow(dialog);
                     dialog->show();
 
-                    ui->statusBar->showMessage("STRB file loaded successfully.", 3000);
+                    ui->statusBar->showMessage("STRB file parsed successfully", 3000);
                 }
                 catch (string error)
                 {
@@ -184,7 +184,7 @@ void MainWindow::on_actionProfile_Editor_triggered()
     {
         StfsPackage *package = new StfsPackage(fileName.toStdString());
 
-        ProfileEditor *editor = new ProfileEditor(package, true, this);
+        ProfileEditor *editor = new ProfileEditor(ui->statusBar, package, true, this);
         ui->mdiArea->addSubWindow(editor);
         editor->show();
     }
@@ -211,7 +211,7 @@ void MainWindow::on_actionPackage_triggered()
     {
         StfsPackage *package = new StfsPackage(fileName.toStdString());
 
-        PackageViewer *viewer = new PackageViewer(package, this);
+        PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this);
         ui->mdiArea->addSubWindow(viewer);
         viewer->show();
 
@@ -233,8 +233,9 @@ void MainWindow::on_actionXDBF_File_triggered()
     try
     {
         GPDBase *gpd = new GPDBase(fileName.toStdString());
+        ui->statusBar->showMessage("GPD parsed successfully", 3000);
 
-        XdbfDialog *dialog = new XdbfDialog(gpd, NULL, this);
+        XdbfDialog *dialog = new XdbfDialog(ui->statusBar, gpd, NULL, this);
         ui->mdiArea->addSubWindow(dialog);
         dialog->show();
     }
@@ -277,7 +278,7 @@ void MainWindow::on_actionCreate_Package_triggered()
     {
         StfsPackage *package = new StfsPackage(packagePath.toStdString());
 
-        PackageViewer *viewer = new PackageViewer(package, this);
+        PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this);
         ui->mdiArea->addSubWindow(viewer);
         viewer->show();
 
@@ -304,7 +305,7 @@ void MainWindow::on_actionProfile_Creator_triggered()
         return;
     }
 
-    ProfileCreatorWizard wiz(this);
+    ProfileCreatorWizard wiz(ui->statusBar, this);
     wiz.exec();
 }
 

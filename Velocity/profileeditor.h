@@ -10,10 +10,10 @@
 #include <QDir>
 #include <QUuid>
 #include <QFileDialog>
-#include <QColorDialog>
 #include <QBuffer>
 #include <QLabel>
 #include <QMenu>
+#include <QStatusBar>
 #include "qthelpers.h"
 
 // xbox360
@@ -188,7 +188,7 @@ class ProfileEditor : public QDialog
     Q_OBJECT
     
 public:
-    explicit ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent = 0);
+    explicit ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool dispose, QWidget *parent = 0);
     ~ProfileEditor();
     
 private slots:
@@ -259,6 +259,7 @@ private:
     string dashGPDTempPath;
     string accountTempPath;
     bool dispose;
+    QStatusBar *statusBar;
 
     bool v1Downloaded;
     bool v2Downloaded;
@@ -273,8 +274,6 @@ private:
     void updateAchievement(TitleEntry *entry, AchievementEntry *chiev, State toSet, GameGPD *gpd);
 
     State getStateFromFlags(DWORD flags);
-
-    void getAvatarColor(QPushButton *sender);
 
     void saveAll();
 

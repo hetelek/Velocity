@@ -1,7 +1,8 @@
 #include "certificatedialog.h"
 #include "ui_certificatedialog.h"
 
-CertificateDialog::CertificateDialog(Certificate *cert, QWidget *parent) : QDialog(parent), ui(new Ui::CertificateDialog), cert(cert)
+CertificateDialog::CertificateDialog(QStatusBar *statusBar, Certificate *cert, QWidget *parent) :
+    QDialog(parent), ui(new Ui::CertificateDialog), cert(cert), statusBar(statusBar)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -48,6 +49,8 @@ CertificateDialog::CertificateDialog(Certificate *cert, QWidget *parent) : QDial
 
     // set the signature
     ui->txtSig->setPlainText(QtHelpers::ByteArrayToString(cert->signature, 0x80, true));
+
+    statusBar->showMessage("Certificate loaded successfully", 3000);
 }
 
 CertificateDialog::~CertificateDialog()
@@ -97,6 +100,8 @@ void CertificateDialog::on_pushButton_clicked()
     cert->ownerConsoleType = (ConsoleType)(cmbxConsoleType->currentIndex() + 1);
     cert->dateGeneration = ui->tableWidget->item(6, 0)->text().toStdString();
     cert->publicExponent = QtHelpers::ParseHexString(ui->tableWidget->item(7, 0)->text());
+
+    statusBar->showMessage("Certificate saved successfully", 3000);
 
     this->close();
 }

@@ -1,7 +1,8 @@
 #include "volumedescriptordialog.h"
 #include "ui_volumedescriptordialog.h"
 
-VolumeDescriptorDialog::VolumeDescriptorDialog(VolumeDescriptor *desc, QWidget *parent) : QDialog(parent), ui(new Ui::VolumeDescriptorDialog), desc(desc)
+VolumeDescriptorDialog::VolumeDescriptorDialog(QStatusBar *statusBar, VolumeDescriptor *desc, QWidget *parent) :
+    QDialog(parent), ui(new Ui::VolumeDescriptorDialog), desc(desc), statusBar(statusBar)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -40,6 +41,8 @@ VolumeDescriptorDialog::VolumeDescriptorDialog(VolumeDescriptor *desc, QWidget *
     // load block counts
     ui->tableWidget->setItem(6, 0, new QTableWidgetItem(QString::number(desc->allocatedBlockCount)));
     ui->tableWidget->setItem(7, 0, new QTableWidgetItem(QString::number(desc->unallocatedBlockCount)));
+
+    statusBar->showMessage("Volume Descriptor loaded successfully", 3000);
 }
 
 VolumeDescriptorDialog::~VolumeDescriptorDialog()
@@ -115,6 +118,8 @@ void VolumeDescriptorDialog::on_pushButton_clicked()
     // update the block counts
     desc->allocatedBlockCount = ui->tableWidget->item(6, 0)->text().toULong();
     desc->unallocatedBlockCount = ui->tableWidget->item(7, 0)->text().toULong();
+
+    statusBar->showMessage("Volume Descriptor saved successfully", 3000);
 
     this->close();
 }

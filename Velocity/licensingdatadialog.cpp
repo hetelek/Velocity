@@ -14,7 +14,8 @@ LicenseTypeStruct licenseTypes[] =
     { "Unknown4", (LicenseType)0xB000 },
 };
 
-LicensingDataDialog::LicensingDataDialog(LicenseEntry *entryTable, bool unlockable, QWidget *parent) : QDialog(parent), ui(new Ui::LicensingDataDialog), entryTable(entryTable)
+LicensingDataDialog::LicensingDataDialog(QStatusBar *statusBar, LicenseEntry *entryTable, bool unlockable, QWidget *parent) :
+    QDialog(parent), ui(new Ui::LicensingDataDialog), entryTable(entryTable), statusBar(statusBar)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -41,6 +42,8 @@ LicensingDataDialog::LicensingDataDialog(LicenseEntry *entryTable, bool unlockab
         ui->tableWidget->setItem(i, 2, new QTableWidgetItem("0x" + QString::number(entryTable[i].bits, 16).toUpper()));
         ui->tableWidget->setItem(i, 3, new QTableWidgetItem("0x" + QString::number(entryTable[i].flags, 16).toUpper()));
     }
+
+    statusBar->showMessage("Licenses loaded successfully", 3000);
 }
 
 LicensingDataDialog::~LicensingDataDialog()
@@ -78,6 +81,8 @@ void LicensingDataDialog::on_pushButton_clicked()
         entryTable[i].bits = QtHelpers::ParseHexString(ui->tableWidget->item(i, 2)->text());
         entryTable[i].flags = QtHelpers::ParseHexString(ui->tableWidget->item(i, 3)->text());
     }
+
+    statusBar->showMessage("Licenses saved successfully", 3000);
 
     this->close();
 }

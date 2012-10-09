@@ -1,8 +1,8 @@
 #include "profileeditor.h"
 #include "ui_profileeditor.h"
 
-ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent) :
-    QDialog(parent), ui(new Ui::ProfileEditor), profile(profile), dispose(dispose), PEC(NULL), downloader(NULL)
+ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool dispose, QWidget *parent) :
+    QDialog(parent), ui(new Ui::ProfileEditor), profile(profile), dispose(dispose), PEC(NULL), downloader(NULL), statusBar(statusBar)
 {
     ui->setupUi(this);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -358,6 +358,8 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
     // setup the context menu
     ui->avatarAwardsList->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->avatarAwardsList, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showAvatarContextMenu(QPoint)));
+
+    statusBar->showMessage("Profile loaded successfully", 3000);
 }
 
 void ProfileEditor::showAvatarContextMenu(QPoint point)
@@ -392,6 +394,7 @@ void ProfileEditor::showAvatarContextMenu(QPoint point)
         downloader = new AvatarAssetDownloader(titleID, guid);
         connect(downloader, SIGNAL(FinishedDownloading()), this, SLOT(onAssetsDoneDownloading()));
         downloader->BeginDownload();
+        statusBar->showMessage("Requesting asset...", 3000);
     }
 }
 
@@ -446,6 +449,7 @@ void ProfileEditor::onAssetsDoneDownloading()
 
         newAsset.Resign(QtHelpers::GetKVPath(newAsset.metaData->certificate.ownerConsoleType, this));
 
+         statusBar->showMessage("Asset downloaded successfully", 3000);
         QMessageBox::information(this, "Asset Downloaded", "Successfully downloaded the avatar asset.");
     }
     catch (string error)
@@ -499,6 +503,7 @@ ProfileEditor::~ProfileEditor()
     }
 
     saveAll();
+    statusBar->showMessage("Saved all changes", 3000);
 
     dashGPD->Close();
     delete dashGPD;
@@ -832,6 +837,7 @@ void ProfileEditor::on_btnExtractGPD_clicked()
     try
     {
         profile->ExtractFile(gpdName.toStdString(), filePath.toStdString());
+        statusBar->showMessage("Extracted GPD successfully", 3000);
         QMessageBox::information(this, "Success", "Successfully extracted " + gpdName + " from your profile.\n");
     }
     catch (string error)
@@ -855,6 +861,7 @@ void ProfileEditor::on_btnExtractGPD_2_clicked()
     try
     {
         PEC->ExtractFile(gpdName.toStdString(), filePath.toStdString());
+        statusBar->showMessage("Extracted GPD successfully", 3000);
         QMessageBox::information(this, "Success", "Successfully extracted " + gpdName + " from your profile.\n");
     }
     catch (string error)
@@ -893,8 +900,8 @@ void ProfileEditor::on_btnUnlockAllAwards_clicked()
     aaGames.at(index).titleEntry->flags |= (DownloadAvatarAward | SyncAvatarAward);
 
     dashGPD->WriteTitleEntry(aaGames.at(index).titleEntry);
-
     ui->lblAwGameAwards->setText("Awards: " + QString::number(aaGames.at(index).titleEntry->avatarAwardsEarned) + " out of " + QString::number(aaGames.at(index).titleEntry->avatarAwardCount) + " unlocked");
+    statusBar->showMessage("All awards unlocked for " + QString::fromStdWString(aaGames.at(index).titleEntry->gameName), 3000);
 }
 
 void ProfileEditor::updateAvatarAward(TitleEntry *entry, AvatarAwardGPD *gpd, struct AvatarAward *award, State toSet)
@@ -939,6 +946,8 @@ void ProfileEditor::updateAvatarAward(TitleEntry *entry, AvatarAwardGPD *gpd, st
 
     // update the dash gpd
     dashGPD->WriteTitleEntry(entry);
+
+    statusBar->showMessage("Updated " + QString::fromStdWString(award->name), 3000);
 }
 
 void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev, State toSet, GameGPD *gpd)
@@ -1029,6 +1038,8 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
         gpd->WriteAchievementEntry(chiev);
 
         dashGPD->WriteTitleEntry(entry);
+
+        statusBar->showMessage("Updated " + QString::fromStdWString(chiev->name), 3000);
     }
     catch (string error)
     {
@@ -1149,12 +1160,6 @@ State ProfileEditor::getStateFromFlags(DWORD flags)
         return StateUnlockedOffline;
     else
         return StateLocked;
-}
-
-void ProfileEditor::getAvatarColor(QPushButton *sender)
-{
-    QColor color = QColorDialog::getColor(sender->palette().background().color(), this);
-    sender->setStyleSheet("* { background-color: rgb(" + QString::number(color.red()) + "," + QString::number(color.green()) + "," + QString::number(color.blue()) + ") }");
 }
 
 void ProfileEditor::on_btnCreateAch_clicked()
@@ -1383,6 +1388,8 @@ void ProfileEditor::on_dteAchTimestamp_dateTimeChanged(const QDateTime &date)
     ui->dteAchTimestamp->setDateTime(QDateTime::fromTime_t(entry->unlockTime));
     games.at(ui->gamesList->currentIndex().row()).gpd->WriteAchievementEntry(entry);
     games.at(ui->gamesList->currentIndex().row()).updated = true;
+
+    statusBar->showMessage("Updated " + QString::fromStdWString(entry->name), 3000);
 }
 
 void ProfileEditor::on_dteAwTimestamp_dateTimeChanged(const QDateTime &date)
@@ -1399,6 +1406,8 @@ void ProfileEditor::on_dteAwTimestamp_dateTimeChanged(const QDateTime &date)
     entry->unlockTime = date.toTime_t();
     aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->WriteAvatarAward(entry);
     aaGames.at(ui->aaGamelist->currentIndex().row()).updated = true;
+
+   statusBar->showMessage("Updated " + QString::fromStdWString(entry->name), 3000);
 }
 
 void ProfileEditor::on_txtGameSearch_textChanged(const QString &arg1)

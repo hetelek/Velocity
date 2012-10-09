@@ -44,7 +44,7 @@ class PackageViewer : public QDialog
     Q_OBJECT
     
 public:
-    explicit PackageViewer(StfsPackage *package, QWidget *parent = 0);
+    explicit PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidget *parent = 0);
     ~PackageViewer();
     
 private slots:
@@ -75,6 +75,7 @@ private:
     bool disposePackage;
     FileListing listing;
     QWidget *parent;
+    QStatusBar *statusBar;
 
     void showAllItems();
 

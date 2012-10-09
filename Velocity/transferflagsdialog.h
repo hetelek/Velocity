@@ -4,6 +4,7 @@
 // qt
 #include <QDialog>
 #include <QMenu>
+#include <QStatusBar>
 #include "qthelpers.h"
 
 // other
@@ -28,7 +29,7 @@ class TransferFlagsDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit TransferFlagsDialog(BYTE *flags, QWidget *parent = 0);
+    explicit TransferFlagsDialog(QStatusBar *statusBar, BYTE *flags, QWidget *parent = 0);
     ~TransferFlagsDialog();
     
 private slots:
@@ -43,6 +44,7 @@ private slots:
 private:
     Ui::TransferFlagsDialog *ui;
     BYTE *flags;
+    QStatusBar *statusBar;
 
     vector<Flag> availableFlags;
     vector<Flag> usedFlags;

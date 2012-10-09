@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QTableWidgetItem>
 #include <QComboBox>
+#include <QStatusBar>
 #include "qthelpers.h"
 
 // xbox360
@@ -26,7 +27,7 @@ class LicensingDataDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit LicensingDataDialog(LicenseEntry *entryTable, bool unlockable, QWidget *parent = 0);
+    explicit LicensingDataDialog(QStatusBar *statusBar, LicenseEntry *entryTable, bool unlockable, QWidget *parent = 0);
     ~LicensingDataDialog();
     
 private slots:
@@ -39,6 +40,7 @@ private slots:
 private:
     Ui::LicensingDataDialog *ui;
     LicenseEntry *entryTable;
+    QStatusBar *statusBar;
 
     QComboBox *cmbxLicenseTypes[16];
 };

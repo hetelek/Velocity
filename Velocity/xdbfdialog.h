@@ -9,6 +9,7 @@
 #include <QMenu>
 #include <QFile>
 #include <QFileDialog>
+#include <QStatusBar>
 #include "qthelpers.h"
 
 // xbox360
@@ -37,7 +38,7 @@ class XdbfDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit XdbfDialog(GPDBase *gpd, bool *modified = NULL, QWidget *parent = 0);
+    explicit XdbfDialog(QStatusBar *statusBar, GPDBase *gpd, bool *modified = NULL, QWidget *parent = 0);
     ~XdbfDialog();
     
 private slots:
@@ -49,6 +50,7 @@ private:
     Ui::XdbfDialog *ui;
     GPDBase *gpd;
     bool *modified;
+    QStatusBar *statusBar;
 
     void addEntriesToTable(vector<XDBFEntry> entries, QString type);
 

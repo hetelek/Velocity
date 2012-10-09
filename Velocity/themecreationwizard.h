@@ -9,6 +9,7 @@
 #include <QTextStream>
 #include <QFile>
 #include <QUuid>
+#include <QStatusBar>
 #include "qthelpers.h"
 
 // xbox 360
@@ -63,7 +64,7 @@ class ThemeCreationWizard : public QWizard
     Q_OBJECT
     
 public:
-    explicit ThemeCreationWizard(QWidget *parent = 0);
+    explicit ThemeCreationWizard(QStatusBar *statusBar, QWidget *parent = 0);
     ~ThemeCreationWizard();
 
 private slots:
@@ -88,6 +89,7 @@ private slots:
 private:
     Ui::ThemeCreationWizard *ui;
     QImage wallpaper1, wallpaper2, wallpaper3, wallpaper4;
+    QStatusBar *statusBar;
 
     BYTE imagesLoaded;
 

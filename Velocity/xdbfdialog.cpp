@@ -1,7 +1,8 @@
 #include "xdbfdialog.h"
 #include "ui_xdbfdialog.h"
 
-XdbfDialog::XdbfDialog(GPDBase *gpd, bool *modified, QWidget *parent) : QDialog(parent), ui(new Ui::XdbfDialog), gpd(gpd), modified(modified)
+XdbfDialog::XdbfDialog(QStatusBar *statusBar, GPDBase *gpd, bool *modified, QWidget *parent) :
+    QDialog(parent), ui(new Ui::XdbfDialog), gpd(gpd), modified(modified), statusBar(statusBar)
 {
     ui->setupUi(this);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -127,7 +128,7 @@ void XdbfDialog::showContextMenu(QPoint p)
             delete[] entryBuff;
         }
 
-        QMessageBox::information(this, "Success", "All entries have been successfully extracted.");
+        statusBar->showMessage("Selected entries extracted successfully", 3000);
     }
     else if (selectedItem->text() == "Replace Entry")
     {
@@ -173,7 +174,7 @@ void XdbfDialog::showContextMenu(QPoint p)
         if (modified != NULL)
             *modified = true;
 
-        QMessageBox::information(this, "Success", "Successfully replaced the entry.");
+        statusBar->showMessage("Entry replaced successfully", 3000);
     }
     else if (selectedItem->text() == "Address Converter")
     {
@@ -205,7 +206,7 @@ void XdbfDialog::showContextMenu(QPoint p)
         if (modified != NULL)
             *modified = true;
 
-        QMessageBox::information(this, "Success", "Successfully cleaned the GPD.");
+        statusBar->showMessage("Cleaned GPD successfully", 3000);
     }
 }
 
@@ -285,6 +286,9 @@ void XdbfDialog::on_treeWidget_doubleClicked(const QModelIndex &index)
                 case TimeStamp:
                     QMessageBox::about(this, "Setting", "<html><center><h3>Timestamp Setting</h3><br />" + QDateTime::fromTime_t(setting.timeStamp).toString() + "</center></html>");
                     break;
+                default:
+                    statusBar->showMessage("Cannot view this type of entry", 3000);
+                    break;
             }
             break;
         }
@@ -296,5 +300,8 @@ void XdbfDialog::on_treeWidget_doubleClicked(const QModelIndex &index)
             dialog.exec();
             break;
         }
+        default:
+            statusBar->showMessage("Cannot view this type of entry", 3000);
+            break;
     }
 }

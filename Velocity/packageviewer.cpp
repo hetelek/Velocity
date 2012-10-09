@@ -1,11 +1,8 @@
 #include "packageviewer.h"
 #include "ui_packageviewer.h"
 
-PackageViewer::PackageViewer(StfsPackage *package, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::PackageViewer),
-    package(package),
-    parent (parent)
+PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidget *parent) :
+    QDialog(parent),ui(new Ui::PackageViewer), package(package), parent (parent), statusBar(statusBar)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -216,13 +213,14 @@ void PackageViewer::on_btnFix_clicked()
     if (success)
     {
         QString resignedStr = (resigned ? " and resigned" : "");
-        QMessageBox::information(this, "Success", "The package has successfully been rehashed" + resignedStr + "!");
+        statusBar->showMessage("Rehashed" + resignedStr + " successfully", 3000);
+        QMessageBox::information(this, "Success", "The package has successfully been rehashed" + resignedStr + ".");
     }
 }
 
 void PackageViewer::on_btnViewAll_clicked()
 {
-    Metadata meta(package);
+    Metadata meta(statusBar, package);
     meta.exec();
 }
 
@@ -247,7 +245,7 @@ void PackageViewer::showSaveImageContextMenu(QPoint point)
 
         ui->imgTile->pixmap()->save(imageSavePath, "PNG");
 
-        QMessageBox::information(this, "Success", "Successfully saved the thumbnail image.");
+        statusBar->showMessage("Thumbnail image saved successfully", 3000);
     }
 }
 
@@ -371,7 +369,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             return;
         }
 
-        QMessageBox::information(this, "Success", "All selected files have been extracted.");
+        statusBar->showMessage("Selected files extracted successfully", 3000);
 
     }
     else if (selectedItem->text() == "Remove Selected")
@@ -393,7 +391,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         }
 
         if (successCount == totalCount)
-            QMessageBox::information(this, "Success", "All selected files have been deleted.");
+            statusBar->showMessage("Selected files removed successfully", 3000);
         else
             QMessageBox::warning(this, "Warning", "Some files could not be deleted.\n\nSuccessful Deletions: " + QString::number(successCount) + " / " + QString::number(totalCount));
     }
@@ -413,7 +411,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
             package->RenameFile(newName, packagePath.toStdString());
             items.at(0)->setText(0, QString::fromStdString(newName));
-            QMessageBox::information(this, "Success", "The file has been renamed.");
+            statusBar->showMessage("File renamed successfully", 3000);
         }
         catch (string error)
         {
@@ -442,7 +440,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             QMessageBox::critical(this, "Error", "Failed to replace file.\n\n" + QString::fromStdString(error));
         }
 
-        QMessageBox::information(this, "Success", "Successfully replaced file.");
+        statusBar->showMessage("File replaced successfully", 3000);
     }
     else if (selectedItem->text() == "Inject Here")
     {
@@ -486,7 +484,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             fileEntry->setText(2, "0x" + QString::number(package->BlockToAddress(injectedEntry->startingBlockNum), 16).toUpper());
             fileEntry->setText(3, "0x" + QString::number(injectedEntry->startingBlockNum, 16).toUpper());
 
-            QMessageBox::information(this, "Success", "The file has been injected.");
+            statusBar->showMessage("File injected successfully", 3000);
         }
         catch(string error)
         {
@@ -566,8 +564,10 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
 
             // parse the gpd
             GPDBase *gpd = new GPDBase(tempNameStd);
+            statusBar->showMessage("GPD parsed successfully", 3000);
+
             bool changed;
-            XdbfDialog dialog(gpd, &changed, this);
+            XdbfDialog dialog(statusBar, gpd, &changed, this);
             dialog.exec();
 
             if(changed)
@@ -603,6 +603,8 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
 
             // show the avatar asset dialog
             AvatarAsset *asset = new AvatarAsset(tempName);
+            statusBar->showMessage("STRB file parsed successfully", 3000);
+
             StrbDialog dialog(asset, this);
             dialog.exec();
 
@@ -648,7 +650,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
             package->ExtractFile(packagePath.toStdString(), tempName);
 
             StfsPackage *pec = new StfsPackage(tempName, StfsPackagePEC);
-            PackageViewer dialog(pec, this);
+            PackageViewer dialog(statusBar, pec, this);
             dialog.exec();
 
             // replace the PEC with the modified one
@@ -666,7 +668,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
 
 void PackageViewer::on_btnProfileEditor_clicked()
 {
-    ProfileEditor editorProfileEditor(package, false);
+    ProfileEditor editorProfileEditor(statusBar, package, false);
     editorProfileEditor.exec();
 }
 

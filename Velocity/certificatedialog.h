@@ -5,6 +5,7 @@
 #include <QDialog>
 #include <QComboBox>
 #include <QMessageBox>
+#include <QStatusBar>
 #include "qthelpers.h"
 
 // xbox360
@@ -19,7 +20,7 @@ class CertificateDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit CertificateDialog(Certificate *cert, QWidget *parent = 0);
+    explicit CertificateDialog(QStatusBar *statusBar, Certificate *cert, QWidget *parent);
     ~CertificateDialog();
     
 private slots:
@@ -30,6 +31,7 @@ private slots:
 private:
     Ui::CertificateDialog *ui;
     Certificate *cert;
+    QStatusBar *statusBar;
 
     QComboBox *cmbxConsoleType;
     QComboBox *cmbxTestKit;

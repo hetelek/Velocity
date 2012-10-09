@@ -5,6 +5,7 @@
 #include <QDialog>
 #include <QComboBox>
 #include <QMessageBox>
+#include <QStatusBar>
 #include "qthelpers.h"
 
 // xbox360
@@ -19,7 +20,7 @@ class VolumeDescriptorDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit VolumeDescriptorDialog(VolumeDescriptor *desc, QWidget *parent = 0);
+    explicit VolumeDescriptorDialog(QStatusBar *statusBar, VolumeDescriptor *desc, QWidget *parent = 0);
     ~VolumeDescriptorDialog();
     
 private slots:
@@ -32,6 +33,7 @@ private slots:
 private:
     Ui::VolumeDescriptorDialog *ui;
     VolumeDescriptor *desc;
+    QStatusBar *statusBar;
 
     QComboBox *cmbxHashTable;
     QComboBox *cmbxPackageType;

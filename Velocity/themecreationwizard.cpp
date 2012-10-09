@@ -1,8 +1,8 @@
 #include "themecreationwizard.h"
 #include "ui_themecreationwizard.h"
 
-ThemeCreationWizard::ThemeCreationWizard(QWidget *parent) :
-    QWizard(parent), ui(new Ui::ThemeCreationWizard), imagesLoaded(0)
+ThemeCreationWizard::ThemeCreationWizard(QStatusBar *statusBar, QWidget *parent) :
+    QWizard(parent), ui(new Ui::ThemeCreationWizard), imagesLoaded(0), statusBar(statusBar)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -101,6 +101,8 @@ void ThemeCreationWizard::onFinished(int status)
         // delete the temp files
         QFile::remove(paramsFilePath);
         QFile::remove(dashStyleFilePath);
+
+        statusBar->showMessage("Theme created successfully", 3000);
     }
     catch (string error)
     {

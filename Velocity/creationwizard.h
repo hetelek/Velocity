@@ -20,7 +20,7 @@ class CreationWizard : public QWizard
     Q_OBJECT
 
 public:
-    explicit CreationWizard(QString *fileName, QWidget *parent = 0);
+    explicit CreationWizard(QString *fileName = 0, QWidget *parent = NULL);
     ~CreationWizard();
 
 private slots:

@@ -1,9 +1,8 @@
 #include "profilecreatorwizard.h"
 #include "ui_profilecreatorwizard.h"
 
-ProfileCreatorWizard::ProfileCreatorWizard(QWidget *parent) :
-    QWizard(parent),
-    ui(new Ui::ProfileCreatorWizard)
+ProfileCreatorWizard::ProfileCreatorWizard(QStatusBar *statusBar, QWidget *parent) :
+    QWizard(parent), ui(new Ui::ProfileCreatorWizard), statusBar(statusBar)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -148,6 +147,8 @@ void ProfileCreatorWizard::onFinished(int status)
         QFile::remove(dashGPDTempPath);
         QFile::remove(img64Path);
         QFile::remove(img32Path);
+
+        statusBar->showMessage("Created profile successfully", 3000);
     }
     catch (string error)
     {
