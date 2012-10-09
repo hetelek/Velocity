@@ -4,7 +4,11 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network xml phonon
+QT       += core gui network xml
+
+mac | win32 {
+    QT += phonon
+}
 
 TARGET = Velocity
 TEMPLATE = app
@@ -13,8 +17,8 @@ win32:include(Stfs/Botan.pri)
 win32:INCLUDEPATH += "C:/botan/include"
 win32:LIBS += "C:/botan/libBotan.a"
 
-mac:INCLUDEPATH += "/usr/local/include/botan-1.10"
-mac:LIBS += "/usr/local/lib/libbotan-1.10.a"
+unix:INCLUDEPATH += "/usr/local/include/botan-1.10"
+unix:LIBS += "/usr/local/lib/libbotan-1.10.a"
 
 VERSION = 1.0.0
 
