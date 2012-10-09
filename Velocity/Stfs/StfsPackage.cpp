@@ -1112,7 +1112,7 @@ void StfsPackage::Resign(string kvPath)
     BYTE *dataToSign = new BYTE[size];
     io->readBytes(dataToSign, size);
 
-#ifdef __APPLE__
+#ifdef __unix
     Botan::PK_Signer signer(pkey, "EMSA3(SHA-160)");
 #elif _WIN32
     Botan::PK_Signer signer(pkey, Botan::get_emsa("EMSA3(SHA-160)"));
