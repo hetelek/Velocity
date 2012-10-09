@@ -184,9 +184,14 @@ void MainWindow::on_actionProfile_Editor_triggered()
     {
         StfsPackage *package = new StfsPackage(fileName.toStdString());
 
-        ProfileEditor *editor = new ProfileEditor(ui->statusBar, package, true, this);
-        ui->mdiArea->addSubWindow(editor);
-        editor->show();
+        bool ok;
+        ProfileEditor *editor = new ProfileEditor(ui->statusBar, package, true, &ok, this);
+
+        if (ok)
+        {
+            ui->mdiArea->addSubWindow(editor);
+            editor->show();
+        }
     }
     catch (string error)
     {

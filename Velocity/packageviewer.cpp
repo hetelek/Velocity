@@ -668,8 +668,11 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
 
 void PackageViewer::on_btnProfileEditor_clicked()
 {
-    ProfileEditor editorProfileEditor(statusBar, package, false);
-    editorProfileEditor.exec();
+    bool ok;
+    ProfileEditor editorProfileEditor(statusBar, package, false, &ok);
+
+    if (ok)
+        editorProfileEditor.exec();
 }
 
 void PackageViewer::on_btnStfsTools_clicked()

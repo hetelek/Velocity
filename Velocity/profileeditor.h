@@ -188,7 +188,7 @@ class ProfileEditor : public QDialog
     Q_OBJECT
     
 public:
-    explicit ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool dispose, QWidget *parent = 0);
+    explicit ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool dispose, bool *ok, QWidget *parent = 0);
     ~ProfileEditor();
     
 private slots:
@@ -260,6 +260,7 @@ private:
     string accountTempPath;
     bool dispose;
     QStatusBar *statusBar;
+    bool *ok;
 
     bool v1Downloaded;
     bool v2Downloaded;

@@ -1,9 +1,11 @@
 #include "profileeditor.h"
 #include "ui_profileeditor.h"
 
-ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool dispose, QWidget *parent) :
-    QDialog(parent), ui(new Ui::ProfileEditor), profile(profile), dispose(dispose), PEC(NULL), downloader(NULL), statusBar(statusBar)
+ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool dispose, bool *ok, QWidget *parent) :
+    QDialog(parent), ui(new Ui::ProfileEditor), profile(profile), dispose(dispose), PEC(NULL), downloader(NULL), statusBar(statusBar), ok(ok), dashGPD(NULL), account(NULL)
 {
+    *ok = true;
+
     ui->setupUi(this);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
@@ -21,24 +23,24 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     // verify that the package is a profile
     if (profile->metaData->contentType != Profile)
     {
+        *ok = false;
         QMessageBox::critical(this, "Invalid Package", "Package opened isn't a profile.\n");
-        this->close();
         return;
     }
 
     // make sure the dashboard gpd exists
     if (!profile->FileExists("FFFE07D1.gpd"))
     {
+        *ok = false;
         QMessageBox::critical(this, "File Not Found", "Dashboard GPD, FFFE07D1.gpd, wasn't found.\n");
-        this->close();
         return;
     }
 
     // make sure the account file exists
     if (!profile->FileExists("Account"))
     {
+        *ok = false;
         QMessageBox::critical(this, "File Not Found", "The Account file wasn't found.\n");
-        this->close();
         return;
     }
 
@@ -203,8 +205,9 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         QString gpdName = QString::number(dashGPD->gamesPlayed.at(i).titleID, 16).toUpper() + ".gpd";
         if (!profile->FileExists(gpdName.toStdString()))
         {
+            *ok = false;
             QMessageBox::critical(this, "File Not Found", "Couldn't find file \"" + gpdName + "\".");
-            this->close();
+            return;
         }
 
         // extract the gpd
@@ -220,8 +223,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         }
         catch (string error)
         {
+            *ok = false;
             QMessageBox::critical(this, "File Load Error", "Error loading game GPD, '" + gpdName + "'.\n\n" + QString::fromStdString(error));
-            this->close();
             return;
         }
 
@@ -280,9 +283,9 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     bool pecExists = profile->FileExists("PEC");
     if (!pecExists && aaGames.size() != 0)
     {
+        *ok = false;
         QMessageBox::critical(this, "File Not Found", "Games have been found with avatar awards, but no PEC file exists.\n");
         ui->tabAvatarAwards->setEnabled(false);
-        this->close();
         return;
     }
     else if (!pecExists)
@@ -303,8 +306,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     }
     catch (string error)
     {
+        *ok = false;
         QMessageBox::critical(this, "File Load Error", "Error loading PEC file.\n\n" + QString::fromStdString(error));
-        this->close();
         return;
     }
 
@@ -317,8 +320,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         // make sure the GPD exists
         if (!PEC->FileExists(gpdName.toStdString()))
         {
+            *ok = false;
             QMessageBox::critical(this, "File Not Error", "Avatar Award GPD '" + gpdName + "' was not found in the PEC.\n");
-            this->close();
             return;
         }
 
@@ -335,8 +338,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         }
         catch (string error)
         {
+            *ok = false;
             QMessageBox::critical(this, "File Load Error", "Error loading the Avatar Award GPD '" + gpdName + "'.\n\n" + QString::fromStdString(error));
-            this->close();
             return;
         }
         aaGames.at(i).gpd = gpd;
@@ -502,13 +505,20 @@ ProfileEditor::~ProfileEditor()
         delete aaGames.at(i).gpd;
     }
 
-    saveAll();
-    statusBar->showMessage("Saved all changes", 3000);
+    if (*ok)
+    {
+        saveAll();
+        statusBar->showMessage("Saved all changes", 3000);
+    }
 
-    dashGPD->Close();
-    delete dashGPD;
+    if (dashGPD != NULL)
+    {
+        dashGPD->Close();
+        delete dashGPD;
+    }
 
-    delete account;
+    if (account != NULL)
+        delete account;
 
     if (dispose)
         delete profile;
