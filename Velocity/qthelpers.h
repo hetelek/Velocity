@@ -11,7 +11,10 @@
 #include "winnames.h"
 #include <Stfs/StfsConstants.h>
 #include <ctype.h>
-#include <direct.h>
+
+#ifdef _WIN32
+    #include <direct.h>
+#endif
 
 class QtHelpers
 {
