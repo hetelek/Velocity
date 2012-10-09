@@ -9,7 +9,7 @@
 class IGameModder
 {
 public:
-    virtual IGameModder() { }
+    IGameModder() { }
     virtual ~IGameModder() { }
 
     virtual void LoadPackage(StfsPackage *package, QWidget *parent = NULL) const = 0;
