@@ -225,7 +225,7 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
 
 #ifdef __APPLE__
     rc4.cipher(restOfFile, restOfFile, 0x184);
-#elif
+#elif _WIN32
     rc4.encrypt(restOfFile, 0x184);
 #endif
 
