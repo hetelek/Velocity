@@ -89,10 +89,10 @@ void LicensingDataDialog::on_pushButton_2_clicked()
 
 void LicensingDataDialog::on_btnUnlock_clicked()
 {
-    QMessageBox::StandardButton btn = QMessageBox::question(this, "Continue?", "Content unlocked this way can only be used on a JTAG/RGH/Dev. If you try and play on a retail, it will show up as corrupt.\n\nAre you sure that you want to unlock this content?",
+    int btn = QMessageBox::question(this, "Continue?", "Content unlocked this way can only be used on a JTAG/RGH/Dev. If you try and play on a retail, it will show up as corrupt.\n\nAre you sure that you want to unlock this content?",
                                                             QMessageBox::Yes, QMessageBox::No);
 
-    if (btn != QMessageBox::Yes)
+    if (btn != (int)QMessageBox::Yes)
         return;
 
     entryTable[0].type = Unrestricted;

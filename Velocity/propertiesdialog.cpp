@@ -98,8 +98,8 @@ PropertiesDialog::PropertiesDialog(FileEntry *entry, QString location, bool *cha
         dateStr = "<i>N/A</i>";
     ui->lblAccessed->setText(dateStr);
 
-    ui->cbConsecutive->setCheckState((entry->flags & 1) << 1);
-    ui->cbFolder->setCheckState(folder << 1);
+    ui->cbConsecutive->setCheckState((Qt::CheckState)((entry->flags & 1) << 1));
+    ui->cbFolder->setCheckState((Qt::CheckState)(folder << 1));
 
     if (hasChildren)
         ui->cbFolder->setEnabled(false);

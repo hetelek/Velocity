@@ -34,7 +34,7 @@ void ThemeCreationWizard::onFinished(int status)
         // create a new file
         theme.metaData->magic = CON;
         theme.metaData->certificate.ownerConsoleType = (ui->cmbxType->currentIndex() == 0) ? Retail : DevKit;
-        theme.metaData->certificate.consoleTypeFlags = 0;
+        theme.metaData->certificate.consoleTypeFlags = (ConsoleTypeFlags)0;
 
         theme.metaData->contentType = Theme;
         theme.metaData->metaDataVersion = 2;
@@ -49,7 +49,7 @@ void ThemeCreationWizard::onFinished(int status)
         QBuffer buffer1(&ba1);
         buffer1.open(QIODevice::WriteOnly);
         ui->imgThumbnail->pixmap()->save(&buffer1, "PNG");
-        theme.metaData->thumbnailImage = ba1.data();
+        theme.metaData->thumbnailImage = (BYTE*)ba1.data();
         theme.metaData->thumbnailImageSize = ba1.length();
 
         // set title thumbnail image
@@ -57,7 +57,7 @@ void ThemeCreationWizard::onFinished(int status)
         QBuffer buffer2(&ba2);
         buffer2.open(QIODevice::WriteOnly);
         QPixmap(":/Images/defaultTitleImage.png").save(&buffer2, "PNG");
-        theme.metaData->titleThumbnailImage = ba2.data();
+        theme.metaData->titleThumbnailImage = (BYTE*)ba2.data();
         theme.metaData->titleThumbnailImageSize = ba2.length();
 
         theme.metaData->WriteMetaData();
@@ -115,7 +115,7 @@ void ThemeCreationWizard::injectImage(StfsPackage *theme, QImage *image, QString
     buffer.open(QIODevice::WriteOnly);
     image->scaled(1280, 720).save(&buffer, "JPG");
 
-    theme->InjectData(ba.data(), ba.length(), fileName.toStdString());
+    theme->InjectData((BYTE*)ba.data(), ba.length(), fileName.toStdString());
 }
 
 void ThemeCreationWizard::onCurrentIdChanged(int index)

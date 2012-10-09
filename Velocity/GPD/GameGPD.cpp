@@ -133,7 +133,7 @@ void GameGPD::CreateAchievement(AchievementEntry *entry, BYTE *thumbnail, DWORD 
 
 string GameGPD::GetAchievementType(AchievementEntry *entry)
 {
-	return XDBFHelpers::AchievementTypeToString((DWORD)(entry->flags & 7));
+    return XDBFHelpers::AchievementTypeToString((AchievementFlags)(entry->flags & 7));
 }
 
 void GameGPD::DeleteAchievement(AchievementEntry *entry)

@@ -163,9 +163,9 @@ void CreationWizard::onFinished(int status)
 
         // set the metadata
         DWORD magics[3] = { CON, LIVE, PIRS };
-        package.metaData->magic = magics[ui->cmbxMagic->currentIndex()];
+        package.metaData->magic = (Magic)magics[ui->cmbxMagic->currentIndex()];
         package.metaData->certificate.ownerConsoleType = (ui->cmbxType->currentIndex() == 0) ? Retail : DevKit;
-        package.metaData->contentType = getContentType();
+        package.metaData->contentType = (ContentType)getContentType();
         package.metaData->titleID = QtHelpers::ParseHexString(ui->txtTitleID->text());
         package.metaData->displayName = ui->txtDisplayName->text().toStdWString();
         package.metaData->titleName = ui->txtTitleName->text().toStdWString();
@@ -175,14 +175,14 @@ void CreationWizard::onFinished(int status)
         QBuffer buffer1(&ba1);
         buffer1.open(QIODevice::WriteOnly);
         ui->imgThumbnail->pixmap()->save(&buffer1, "PNG");
-        package.metaData->thumbnailImage = ba1.data();
+        package.metaData->thumbnailImage = (BYTE*)ba1.data();
         package.metaData->thumbnailImageSize = ba1.length();
 
         QByteArray ba2;
         QBuffer buffer2(&ba2);
         buffer2.open(QIODevice::WriteOnly);
         ui->imgTitleThumbnail->pixmap()->save(&buffer2, "PNG");
-        package.metaData->titleThumbnailImage = ba2.data();
+        package.metaData->titleThumbnailImage = (BYTE*)ba2.data();
         package.metaData->titleThumbnailImageSize = ba2.length();
 
         // fix the pacakge

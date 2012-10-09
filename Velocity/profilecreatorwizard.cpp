@@ -68,7 +68,7 @@ void ProfileCreatorWizard::onFinished(int status)
         QBuffer buffer1(&ba1);
         buffer1.open(QIODevice::WriteOnly);
         ui->listWidget->currentItem()->icon().pixmap(64, 64).save(&buffer1, "PNG");
-        newProfile.metaData->thumbnailImage = ba1.data();
+        newProfile.metaData->thumbnailImage = (BYTE*)ba1.data();
         newProfile.metaData->thumbnailImageSize = ba1.length();
 
         // set title thumbnail image
@@ -76,7 +76,7 @@ void ProfileCreatorWizard::onFinished(int status)
         QBuffer buffer2(&ba2);
         buffer2.open(QIODevice::WriteOnly);
         QPixmap(":/Images/defaultTitleImage.png").save(&buffer2, "PNG");
-        newProfile.metaData->titleThumbnailImage = ba2.data();
+        newProfile.metaData->titleThumbnailImage = (BYTE*)ba2.data();
         newProfile.metaData->titleThumbnailImageSize = ba2.length();
 
         newProfile.metaData->WriteMetaData();

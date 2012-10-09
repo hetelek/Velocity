@@ -65,9 +65,9 @@ ProfileEditor::ProfileEditor(StfsPackage *profile, bool dispose, QWidget *parent
     ui->lblParentalControlled->setText(((account->IsParentalControlled()) ? "Yes" : "No"));
     ui->lblCreditCard->setText(((account->IsPaymentInstrumentCreditCard()) ? "Yes" : "No"));
     ui->lblXUID->setText(QString::number(account->GetXUID(), 16).toUpper());
-    ui->chxLIVE->setCheckState(account->IsLiveEnabled() << 1);
-    ui->chxRecovering->setCheckState(account->IsRecovering() << 1);
-    ui->chxPasscode->setCheckState(account->IsPasscodeEnabled() << 1);
+    ui->chxLIVE->setCheckState((Qt::CheckState)(account->IsLiveEnabled() << 1));
+    ui->chxRecovering->setCheckState((Qt::CheckState)(account->IsRecovering() << 1));
+    ui->chxPasscode->setCheckState((Qt::CheckState)(account->IsPasscodeEnabled() << 1));
     ui->cmbxConsoleType->setCurrentIndex((profile->metaData->certificate.ownerConsoleType == DevKit) ? 0 : 1);
 
     // load passcode
@@ -372,7 +372,7 @@ void ProfileEditor::showAvatarContextMenu(QPoint point)
         return;
     else if (selectedItem->text() == "Download Award")
     {
-        QMessageBox::StandardButton button = QMessageBox::question(this, "Warning", "You are about to download an avatar award file. Unfortunatly the awards downloaded like this will only work on a JTAG/RGH/Dev.\r\n\r\nDo you want to continue?",
+        int button = QMessageBox::question(this, "Warning", "You are about to download an avatar award file. Unfortunatly the awards downloaded like this will only work on a JTAG/RGH/Dev.\n\nDo you want to continue?",
                                                                    QMessageBox::Yes, QMessageBox::No);
 
         if (button != QMessageBox::Yes)
@@ -426,14 +426,14 @@ void ProfileEditor::onAssetsDoneDownloading()
         QBuffer buffThumb(&baThumb);
         buffThumb.open(QIODevice::WriteOnly);
         ui->imgAw->pixmap()->save(&buffThumb, "PNG");
-        newAsset.InjectData(baThumb.data(), baThumb.length(), "icon.png");
+        newAsset.InjectData((BYTE*)baThumb.data(), baThumb.length(), "icon.png");
 
         QByteArray baScaled;
         QBuffer buffScaled(&baScaled);
         buffScaled.open(QIODevice::WriteOnly);
         QPixmap scaled = ui->imgAw->pixmap()->scaled(QSize(64, 64));
         scaled.save(&buffScaled, "PNG");
-        newAsset.metaData->thumbnailImage = baScaled.data();
+        newAsset.metaData->thumbnailImage = (BYTE*)baScaled.data();
         newAsset.metaData->thumbnailImageSize = baScaled.length();
 
         GameGPD *gpd = aaGames.at(ui->aaGamelist->currentIndex().row()).gameGPD;
@@ -790,11 +790,11 @@ void ProfileEditor::on_btnUnlockAllAchvs_clicked()
     if (index < 0)
         return;
 
-    QMessageBox::StandardButton btn = QMessageBox::question(this, "Are you sure?", "Are you sure that you want to unlock all of the achievements for " +
+    int btn = QMessageBox::question(this, "Are you sure?", "Are you sure that you want to unlock all of the achievements for " +
                           QString::fromStdWString(games.at(index).titleEntry->gameName) + " offline?", QMessageBox::Yes, QMessageBox::No);
 
     if (btn != QMessageBox::Yes)
-        return;
+       return;
 
     games.at(index).gpd->UnlockAllAchievementsOffline();
     games.at(index).updated = true;
@@ -869,11 +869,11 @@ void ProfileEditor::on_btnUnlockAllAwards_clicked()
     if (index < 0)
         return;
 
-    QMessageBox::StandardButton btn = QMessageBox::question(this, "Are you sure?", "Are you sure that you want to unlock all of the avatar awards for " +
+    int btn = QMessageBox::question(this, "Are you sure?", "Are you sure that you want to unlock all of the avatar awards for " +
                           QString::fromStdWString(aaGames.at(index).titleEntry->gameName) + " offline?", QMessageBox::Yes, QMessageBox::No);
 
     if (btn != QMessageBox::Yes)
-        return;
+      return;
 
     aaGames.at(index).gpd->UnlockAllAwards();
     aaGames.at(index).updated = true;
@@ -1091,7 +1091,7 @@ void ProfileEditor::saveAll()
             break;
     }
 
-    profile->metaData->certificate.ownerConsoleType = ui->cmbxConsoleType->currentIndex() + 1;
+    profile->metaData->certificate.ownerConsoleType = (ConsoleType)(ui->cmbxConsoleType->currentIndex() + 1);
 
     account->Save(profile->metaData->certificate.ownerConsoleType);
     profile->ReplaceFile(accountTempPath, "Account");
@@ -1186,7 +1186,7 @@ void ProfileEditor::on_btnCreateAch_clicked()
         entry.imageID = last + 1;
 
         // add the achievement to the game
-        game->CreateAchievement(&entry, ba.data(), ba.length());
+        game->CreateAchievement(&entry, (BYTE*)ba.data(), ba.length());
 
         // add the achievement to the UI
         QTreeWidgetItem *item = new QTreeWidgetItem;

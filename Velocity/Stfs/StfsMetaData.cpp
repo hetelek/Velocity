@@ -98,16 +98,20 @@ void StfsMetaData::readMetadata()
             io->setPosition(0x3D9);
             io->swapEndian();
 
-            subCategory = io->readDword();
+            subCategory = (AssetSubcategory)io->readDword();
             colorizable = io->readDword();
 
             io->swapEndian();
 
             io->readBytes(guid, 0x10);
+<<<<<<< HEAD
             skeletonVersion = io->readByte();
 
             if (skeletonVersion < 1 || skeletonVersion > 3)
                 throw string("STFS: Invalid skeleton version.");
+=======
+            skeletonVersion = (SkeletonVersion)io->readByte();
+>>>>>>> fixed casting issues
         }
 
         // skip padding

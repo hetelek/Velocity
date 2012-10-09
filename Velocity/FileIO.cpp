@@ -10,7 +10,7 @@ FileIO::FileIO(string path, bool truncate) : filePath(path)
 
 void FileIO::setPosition(streampos pos, ios_base::seek_dir dir)
 {
-	fstr->seekp(pos, dir);
+    fstr->seekp(pos, (std::_Ios_Seekdir)dir);
 }
 
 streampos FileIO::getPosition()

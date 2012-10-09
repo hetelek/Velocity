@@ -60,7 +60,7 @@ void AvatarAssetDownloader::onRequestFinished(int id, bool error)
 
     // read the crap away, we don't need it
     BYTE temp[0x140];
-    http->read(temp, 0x140);
+    http->read((char*)temp, 0x140);
 
     QString tempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
     if (!v1Done)

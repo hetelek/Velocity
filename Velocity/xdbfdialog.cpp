@@ -182,10 +182,10 @@ void XdbfDialog::showContextMenu(QPoint p)
     }
     else if (selectedItem->text() == "Clean")
     {
-        QMessageBox::StandardButton btn = QMessageBox::question(this, "Continue?", "Cleaning the GPD will remove all of the unused memory that is in the file. This could potentially reduce the size of the GPD.\n\nDo you want to continue?", QMessageBox::Yes, QMessageBox::No);
+        int btn = QMessageBox::question(this, "Continue?", "Cleaning the GPD will remove all of the unused memory that is in the file. This could potentially reduce the size of the GPD.\n\nDo you want to continue?", QMessageBox::Yes, QMessageBox::No);
 
         if (btn != QMessageBox::Yes)
-            return;
+          return;
 
         // clean the GPD
         try

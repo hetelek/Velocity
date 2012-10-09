@@ -93,8 +93,7 @@ void CertificateDialog::on_pushButton_clicked()
     cert->publicKeyCertificateSize = QtHelpers::ParseHexString(ui->tableWidget->itemAt(0, 0)->text());
     QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(1, 0)->text(), cert->ownerConsoleID, 5);
     cert->ownerConsolePartNumber = ui->tableWidget->item(2, 0)->text().toStdString();
-    cert->consoleTypeFlags = 0;
-    cert->consoleTypeFlags |= ((cmbxTestKit->currentIndex() << 30) | (cmbxRecoveryGenerated->currentIndex() << 31));
+    cert->consoleTypeFlags = (ConsoleTypeFlags)((cmbxTestKit->currentIndex() << 30) | (cmbxRecoveryGenerated->currentIndex() << 31));
     cert->ownerConsoleType = (ConsoleType)(cmbxConsoleType->currentIndex() + 1);
     cert->dateGeneration = ui->tableWidget->item(6, 0)->text().toStdString();
     cert->publicExponent = QtHelpers::ParseHexString(ui->tableWidget->item(7, 0)->text());
