@@ -160,7 +160,10 @@ void GamerPicturePackDialog::onTitleIDSearchReturn(QList<struct Title> titlesFou
 
     // display all the titles found in the widget
     for (DWORD i = 0; i < titlesFound.size(); i++)
-        ui->listGameNames->addItem(titlesFound.at(i).titleName.replace("&#174;", "®").replace("&#39;", "'").replace("&amp;","&").replace("&gt;",">").replace("&lt;","<").replace("â", "").replace("¢", ""));
+    {
+        QString newStr = ((QString*)&titlesFound.at(i).titleName)->replace("&#174;", "®").replace("&#39;", "'").replace("&amp;","&").replace("&gt;",">").replace("&lt;","<").replace("â", "").replace("¢", "");
+        ui->listGameNames->addItem(newStr);
+    }
 }
 
 void GamerPicturePackDialog::on_listGameNames_itemClicked(QListWidgetItem *item)
@@ -322,7 +325,7 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
         QBuffer buffer1(&ba1);
         buffer1.open(QIODevice::WriteOnly);
         QPixmap(":/Images/20001.png").save(&buffer1, "PNG");
-        picturePack.metaData->thumbnailImage = ba1.data();
+        picturePack.metaData->thumbnailImage = (BYTE*)ba1.data();
         picturePack.metaData->thumbnailImageSize = ba1.length();
 
         // set title thumbnail image
@@ -330,7 +333,7 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
         QBuffer buffer2(&ba2);
         buffer2.open(QIODevice::WriteOnly);
         QPixmap(":/Images/defaultTitleImage.png").save(&buffer2, "PNG");
-        picturePack.metaData->titleThumbnailImage = ba2.data();
+        picturePack.metaData->titleThumbnailImage = (BYTE*)ba2.data();
         picturePack.metaData->titleThumbnailImageSize = ba2.length();
 
         // add all the gamerpictures to the pacakge
@@ -341,14 +344,14 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
             QBuffer buffLrg(&large);
             buffLrg.open(QIODevice::WriteOnly);
             ui->listPack->item(i)->icon().pixmap(64, 64).save(&buffLrg, "PNG");
-            picturePack.InjectData(large.data(), large.length(), getImageName(addedIDs->at(i), true).toStdString() + ".png");
+            picturePack.InjectData((BYTE*)large.data(), large.length(), getImageName(addedIDs->at(i), true).toStdString() + ".png");
 
             // inject the 32x32 image
             QByteArray small;
             QBuffer buffSm(&small);
             buffSm.open(QIODevice::WriteOnly);
             ui->listPack->item(i)->icon().pixmap(32, 32).save(&buffSm, "PNG");
-            picturePack.InjectData(small.data(), small.length(), getImageName(addedIDs->at(i), false).toStdString() + ".png");
+            picturePack.InjectData((BYTE*)small.data(), small.length(), getImageName(addedIDs->at(i), false).toStdString() + ".png");
         }
 
         // fix the package

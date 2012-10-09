@@ -36,7 +36,9 @@ void TitleIdFinderDialog::onRequestFinished(QList<Title> matches)
     for (DWORD i = 0; i < matches.length(); i++)
     {
         QTreeWidgetItem *item = new QTreeWidgetItem();
-        item->setText(0, matches.at(i).titleName.replace("&#174;", "®").replace("&#39;", "'").replace("&amp;","&").replace("&gt;",">").replace("&lt;","<").replace("â", "").replace("¢", ""));
+
+        QString newStr = ((QString*)&matches.at(i).titleName)->replace("&#174;", "®").replace("&#39;", "'").replace("&amp;","&").replace("&gt;",">").replace("&lt;","<").replace("â", "").replace("¢", "");
+        item->setText(0, newStr);
         item->setText(1, QString::number(matches.at(i).titleID, 16).toUpper());
 
         ui->treeWidget->addTopLevelItem(item);
