@@ -150,7 +150,7 @@ void ReadCertificateEx(Certificate *cert, FileIO *io, DWORD address)
 
     DWORD temp = io->readDword();
     cert->ownerConsoleType = (ConsoleType)(temp & 3);
-    cert->consoleTypeFlags = (temp & 0xFFFFFFFC);
+    cert->consoleTypeFlags = (ConsoleTypeFlags)(temp & 0xFFFFFFFC);
     if (cert->ownerConsoleType != DevKit && cert->ownerConsoleType != Retail)
         throw string("STFS: Invalid console type.\n");
 
