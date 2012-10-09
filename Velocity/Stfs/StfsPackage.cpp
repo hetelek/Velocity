@@ -41,7 +41,7 @@ void StfsPackage::Parse()
         metaData->magic = CON;
         metaData->certificate.publicKeyCertificateSize = 0x1A8;
         metaData->certificate.ownerConsoleType = Retail;
-        metaData->certificate.consoleTypeFlags = 0;
+        metaData->certificate.consoleTypeFlags = (ConsoleTypeFlags)0;
 
         memset(metaData->licenseData, 0, sizeof(LicenseEntry) * 0x10);
         metaData->licenseData[0].type = Unrestricted;
@@ -54,7 +54,7 @@ void StfsPackage::Parse()
             headerSize = (flags & StfsPackageFemale) ? 0xAD0E : 0x971A;
 
         metaData->headerSize = headerSize;
-        metaData->contentType = 0;
+        metaData->contentType = (ContentType)0;
         metaData->metaDataVersion = 2;
         metaData->contentSize = 0;
         metaData->mediaID = 0;
@@ -1055,7 +1055,7 @@ void StfsPackage::Resign(string kvPath)
     kvIo.readBytes((BYTE*)tempPartNum, 0x14);
     metaData->certificate.ownerConsolePartNumber = string(tempPartNum);
 
-    metaData->certificate.ownerConsoleType = kvIo.readByte();
+    metaData->certificate.ownerConsoleType = (ConsoleType)kvIo.readByte();
 
     char tempGenDate[9] = {0};
     kvIo.readBytes((BYTE*)tempGenDate, 8);
@@ -1112,7 +1112,12 @@ void StfsPackage::Resign(string kvPath)
     BYTE *dataToSign = new BYTE[size];
     io->readBytes(dataToSign, size);
 
+#ifdef __APPLE__
+    Botan::PK_Signer signer(pkey, "EMSA3(SHA-160)");
+#elif _WIN32
     Botan::PK_Signer signer(pkey, Botan::get_emsa("EMSA3(SHA-160)"));
+#endif
+
     Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToSign, size, rng);
 
     // 8 byte swap the new signature
@@ -1560,7 +1565,7 @@ void StfsPackage::UpdateEntry(string pathInPackage, FileEntry entry)
     GetFileEntry(SplitString(pathInPackage, "\\"), &fileListing, NULL, &entry, true);
 }
 
-FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injectProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL)
+FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injectProgress)(void*, DWORD, DWORD), void *arg)
 {
     if(FileExists(pathInPackage))
         throw string("STFS: File already exists in the package.\n");
