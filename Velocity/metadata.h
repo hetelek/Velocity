@@ -11,10 +11,12 @@
 #include <QDialog>
 #include <QComboBox>
 #include <QPushButton>
+#include <QDateTimeEdit>
 #include "qthelpers.h"
 
 // xbox360
 #include "Stfs/StfsPackage.h"
+#include "Stfs/StfsConstants.h"
 
 namespace Ui {
 class Metadata;
@@ -24,6 +26,12 @@ struct AssetSubcategoryStruct
 {
     QString name;
     AssetSubcategory value;
+};
+
+struct OnlineResumeStateStruct
+{
+    QString name;
+    OnlineContentResumeState value;
 };
 
 class Metadata : public QDialog
@@ -42,6 +50,10 @@ private:
     QComboBox *cmbxSubcategory;
     QComboBox *cmbxSkeletonVersion;
     QComboBox *cmbxInstallerType;
+    QComboBox *cmbxResumeState;
+
+    QDateTimeEdit *lastModified;
+
     QPushButton *btnCertificate;
     QPushButton *btnVolDesc;
     QPushButton *btnLicense;
