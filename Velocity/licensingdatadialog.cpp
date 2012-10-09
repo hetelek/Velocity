@@ -3,15 +3,15 @@
 
 LicenseTypeStruct licenseTypes[] =
 {
-    { "Unused", 0 },
-    { "Unrestricted", 0xFFFF },
-    { "Console Profile", 9 },
-    { "Windows Profile", 3 },
-    { "Console", 0xF000 },
-    { "Unknown1", 0xE000 },
-    { "Unknown2", 0xD000 },
-    { "Unknown3", 0xC000 },
-    { "Unknown4", 0xB000 },
+    { "Unused", (LicenseType)0 },
+    { "Unrestricted", (LicenseType)0xFFFF },
+    { "Console Profile", (LicenseType)9 },
+    { "Windows Profile", (LicenseType)3 },
+    { "Console", (LicenseType)0xF000 },
+    { "Unknown1", (LicenseType)0xE000 },
+    { "Unknown2", (LicenseType)0xD000 },
+    { "Unknown3", (LicenseType)0xC000 },
+    { "Unknown4", (LicenseType)0xB000 },
 };
 
 LicensingDataDialog::LicensingDataDialog(LicenseEntry *entryTable, bool unlockable, QWidget *parent) : QDialog(parent), ui(new Ui::LicensingDataDialog), entryTable(entryTable)

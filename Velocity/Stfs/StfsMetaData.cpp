@@ -4,7 +4,7 @@
 
 using namespace std;
 
-StfsMetaData::StfsMetaData(FileIO *io, DWORD flags) : flags(flags), installerType(0)
+StfsMetaData::StfsMetaData(FileIO *io, DWORD flags) : flags(flags), installerType((InstallerType)0)
 {
 	// set the io
 	this->io = io;
@@ -104,14 +104,10 @@ void StfsMetaData::readMetadata()
             io->swapEndian();
 
             io->readBytes(guid, 0x10);
-<<<<<<< HEAD
-            skeletonVersion = io->readByte();
+            skeletonVersion = (SkeletonVersion)io->readByte();
 
             if (skeletonVersion < 1 || skeletonVersion > 3)
                 throw string("STFS: Invalid skeleton version.");
-=======
-            skeletonVersion = (SkeletonVersion)io->readByte();
->>>>>>> fixed casting issues
         }
 
         // skip padding
@@ -144,7 +140,7 @@ void StfsMetaData::readMetadata()
         if (((headerSize + 0xFFF) & 0xFFFFF000) - 0x971A < 0x15F4)
             return;
 
-        installerType = io->readDword();
+        installerType = (InstallerType)io->readDword();
         switch (installerType)
         {
             case SystemUpdate:
@@ -168,7 +164,7 @@ void StfsMetaData::readMetadata()
             case TitleUpdateProgressCache:
             case TitleContentProgressCache:
             {
-                resumeState = io->readDword();
+                resumeState = (OnlineContentResumeState)io->readDword();
                 currentFileIndex = io->readDword();
                 currentFileOffset = io->readUInt64();
                 bytesProcessed = io->readUInt64();
