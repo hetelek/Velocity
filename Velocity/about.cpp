@@ -9,6 +9,7 @@ About::About(QWidget *parent) :
     setFixedSize(sizeHint());
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
+#ifndef __linux
     if (!QFile::exists("Developers.mp3"))
         return;
 
@@ -21,6 +22,7 @@ About::About(QWidget *parent) :
 
     developers->setCurrentSource(Phonon::MediaSource("Developers.mp3"));
     developers->play();
+#endif
 }
 
 About::~About()
@@ -28,12 +30,15 @@ About::~About()
     delete ui;
 }
 
+
 void About::onSongFinished()
 {
+#ifndef __linux
     // for (;;) let's listen to it one more time;
     developers->clear();
     developers->setCurrentSource(Phonon::MediaSource("Developers.mp3"));
     developers->play();
+#endif
 }
 
 void About::on_label_3_linkActivated(const QString &link)

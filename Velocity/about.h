@@ -6,8 +6,11 @@
 #include <QUrl>
 #include <QFile>
 #include <QMessageBox>
-#include <phonon/MediaObject>
-#include <phonon/AudioOutput>
+
+#ifndef __linux
+    #include <phonon/MediaObject>
+    #include <phonon/AudioOutput>
+#endif
 
 namespace Ui {
 class About;
@@ -33,8 +36,10 @@ private slots:
 private:
     Ui::About *ui;
 
+#ifndef __linux
     Phonon::MediaObject *developers;
     Phonon::AudioOutput *audioOutput;
+#endif
 };
 
 #endif // ABOUT_H

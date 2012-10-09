@@ -13,7 +13,7 @@
 #include <QMessageBox>
 
 // other
-#include "QtHelpers.h"
+#include "qthelpers.h"
 #include "GPD/DashboardGPD.h"
 #include "gpddownloader.h"
 #include "Stfs/StfsPackage.h"

@@ -1,4 +1,4 @@
-#include "avatarassetdownloader.h"
+#include "AvatarAssetDownloader.h"
 #include <QMessageBox>
 
 AvatarAssetDownloader::AvatarAssetDownloader(QString titleID, QString guid, QObject *parent) :
