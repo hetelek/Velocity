@@ -9,9 +9,13 @@ QT       += core gui network xml phonon
 TARGET = Velocity
 TEMPLATE = app
 
-include(Stfs/Botan.pri)
-INCLUDEPATH += "C:/botan/include"
-LIBS += "C:/botan/libBotan.a"
+win32:include(Stfs/Botan.pri)
+win32:INCLUDEPATH += "C:/botan/include"
+win32:LIBS += "C:/botan/libBotan.a"
+
+mac:INCLUDEPATH += "/usr/local/include/botan-1.10"
+mac:LIBS += "/usr/local/lib/libbotan-1.10.a"
+
 VERSION = 1.0.0
 
 UI_DIR = ..\Velocity
