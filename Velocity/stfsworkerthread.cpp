@@ -24,7 +24,7 @@ void StfsWorkerThread::run()
     }
 }
 
-void progessUpdatedExternal(StfsWorkerThread *thread, DWORD blocksExtracted, DWORD totalBlockCount)
+void progessUpdatedExternal(void *thread, DWORD blocksExtracted, DWORD totalBlockCount)
 {
-    emit thread->progressUpdated(blocksExtracted, totalBlockCount);
+    emit ((StfsWorkerThread*)thread)->progressUpdated(blocksExtracted, totalBlockCount);
 }

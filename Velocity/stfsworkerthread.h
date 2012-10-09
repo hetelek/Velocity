@@ -17,7 +17,7 @@ enum StfsJob
 
 class StfsWorkerThread;
 
-void progessUpdatedExternal(StfsWorkerThread *thread, DWORD blocksExtracted, DWORD totalBlockCount);
+void progessUpdatedExternal(void *thread, DWORD blocksExtracted, DWORD totalBlockCount);
 
 class StfsWorkerThread : public QThread
 {
@@ -37,7 +37,7 @@ private:
     QString externalPath;
     QString packageFilePath;
 
-    friend void progessUpdatedExternal(StfsWorkerThread *thread, DWORD blocksExtracted, DWORD totalBlockCount);
+    friend void progessUpdatedExternal(void *thread, DWORD blocksExtracted, DWORD totalBlockCount);
 };
 
 #endif // STFSWORKERTHREAD_H
