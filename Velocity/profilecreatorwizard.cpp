@@ -99,7 +99,7 @@ void ProfileCreatorWizard::onFinished(int status)
 
         // make a temporary copy of the dashboard gpd
         QString dashGPDTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
-        QFile::copy("FFFE07D1.gpd", dashGPDTempPath);
+        QFile::copy(QtHelpers::ExecutingDirectory() + "FFFE07D1.gpd", dashGPDTempPath);
 
         // parse the GPD
         DashboardGPD dashGPD(dashGPDTempPath.toStdString());
@@ -124,7 +124,7 @@ void ProfileCreatorWizard::onFinished(int status)
         dashGPD.Close();
 
         // inject the dash gpd into the profile
-        newProfile.InjectFile(dashGPDTempPath.toStdString(), "FFFE07D1.gpd");
+        newProfile.InjectFile(dashGPDTempPath.toStdString(), (QtHelpers::ExecutingDirectory() + "FFFE07D1.gpd").toStdString());
 
         // create/inject the 64x64 image
         QString img64Path = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");

@@ -26,6 +26,7 @@
 #include "gamerpicturepackdialog.h"
 
 // other
+#include <qthelpers.h>
 #include "PluginInterfaces/igamemodder.h"
 #include "ui_mainwindow.h"
 #include "Stfs/StfsPackage.h"

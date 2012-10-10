@@ -38,8 +38,6 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu)
                     return;
                 }
 
-                //ui->mdiArea->addSubWindow(widget);
-
                 StfsPackage *package;
                 try
                 {
@@ -65,7 +63,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu)
 
 void MainWindow::LoadAllPlugins()
 {
-    QDir path (QDir::currentPath() + "/plugins");
+    QDir path (QtHelpers::ExecutingDirectory() + "plugins");
 
     foreach (QString filename, path.entryList(QDir::Files))
         LoadPlugin(path.absolutePath() + "/" + filename, true);
@@ -304,7 +302,7 @@ void MainWindow::on_actionTitle_ID_Finder_triggered()
 
 void MainWindow::on_actionProfile_Creator_triggered()
 {
-    if (!QFile::exists("FFFE07D1.gpd"))
+    if (!QFile::exists(QtHelpers::ExecutingDirectory() + "FFFE07D1.gpd"))
     {
         QMessageBox::critical(this, "File Not Found", "The file FFFE07D1.gpd was not found. This file must be in the same directory as this application.");
         return;

@@ -2,7 +2,7 @@
 #define ABOUT_H
 
 #include <QDialog>
-#include <QDesktopServices>
+#include <qthelpers.h>
 #include <QUrl>
 #include <QFile>
 #include <QMessageBox>
