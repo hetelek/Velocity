@@ -87,7 +87,6 @@ void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *pare
     QTreeWidgetItem *item;
 
     bool isRootEntry = entry->folder.entryIndex == 0xFFFF;
-    //bool isRoot = entry->folder.pathIndicator == 0xFFFF;
 
     for (int i = 0; i < entry->folderEntries.size(); i++)
     {
