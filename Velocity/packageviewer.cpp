@@ -87,27 +87,31 @@ void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *pare
     QTreeWidgetItem *item;
 
     bool isRootEntry = entry->folder.entryIndex == 0xFFFF;
-    bool isRoot = entry->folder.pathIndicator == 0xFFFF;
+    //bool isRoot = entry->folder.pathIndicator == 0xFFFF;
 
-    if (!isRootEntry)
+    for (int i = 0; i < entry->folderEntries.size(); i++)
     {
-        if (!isRoot)
-            item = new QTreeWidgetItem(parent);
+        QTreeWidgetItem *folder;
+        if (entry->folderEntries.at(i).folder.pathIndicator != 0xFFFF)
+            folder = new QTreeWidgetItem(parent);
         else
-            item = new QTreeWidgetItem(ui->treeWidget);
+            folder = new QTreeWidgetItem(ui->treeWidget);
 
-        item->setText(0, QString::fromStdString(entry->folder.name));
-        item->setIcon(0, QIcon(":/Images/FolderFileIcon.png"));
-        item->setText(1, "0");
-        item->setText(2, "N/A");
-        item->setText(3, "N/A");
+        folder->setText(0, QString::fromStdString(entry->folderEntries.at(i).folder.name));
+        folder->setIcon(0, QIcon(":/Images/FolderFileIcon.png"));
+        folder->setText(1, "0");
+        folder->setText(2, "N/A");
+        folder->setText(3, "N/A");
+
+        PopulateTreeWidget(&entry->folderEntries.at(i), folder);
     }
 
+    // add all files
     for (DWORD i = 0; i < entry->fileEntries.size(); i++)
     {
         QTreeWidgetItem *fileEntry;
         if (!isRootEntry)
-            fileEntry = new QTreeWidgetItem(item);
+            fileEntry = new QTreeWidgetItem(parent);
         else
             fileEntry = new QTreeWidgetItem(ui->treeWidget);
 
@@ -118,9 +122,6 @@ void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *pare
         fileEntry->setText(2, "0x" + QString::number(package->BlockToAddress(entry->fileEntries.at(i).startingBlockNum), 16).toUpper());
         fileEntry->setText(3, "0x" + QString::number(entry->fileEntries.at(i).startingBlockNum, 16).toUpper());
     }
-
-    for (int i = 0; i < entry->folderEntries.size(); i++)
-        PopulateTreeWidget(&entry->folderEntries.at(i), item);
 }
 
 void PackageViewer::GetPackagePath(QTreeWidgetItem *item, QString *out, bool folderOnly)
