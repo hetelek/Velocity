@@ -24,11 +24,17 @@ public:
 	// Description: delete the setting entry passed in from the xdbf file
 	void DeleteSettingEntry(SettingEntry setting);
 
-	// Description: create a new setting entry, leave the entry field of the setting entry struct blanc, this function will set that info
+    // Description: create a new setting entry, leave the entry field of the setting entry struct blank, this function will set that info
 	void CreateSettingEntry(SettingEntry *setting, UINT64 entryID);
 
-	// Description: write the setting entry to the file
+    // Description: create a new image entry
+    void CreateImageEntry(ImageEntry *image, UINT64 entryID);
+
+    // Description: write the setting entry to the file
 	void WriteSettingEntry(SettingEntry setting);
+
+    // Description: write the image entry to the file
+    void WriteImageEntry(ImageEntry image);
 
     // Description: close all open resources attatched to the file
     void Close();

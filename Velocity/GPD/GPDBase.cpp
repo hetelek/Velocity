@@ -185,6 +185,19 @@ void GPDBase::CreateSettingEntry(SettingEntry *setting, UINT64 entryID)
     WriteSettingEntry(*setting);
 }
 
+void GPDBase::CreateImageEntry(ImageEntry *image, UINT64 entryID)
+{
+    // create XDBF entry
+    image->initialLength = image->length;
+    image->entry = xdbf->CreateEntry(Image, entryID, image->length);
+
+    // add the new entry to the list
+    images.push_back(*image);
+
+    // write the image
+    WriteImageEntry(*image);
+}
+
 void GPDBase::WriteSettingEntry(SettingEntry setting)
 {
     // get the address of the entry in the file
@@ -262,6 +275,21 @@ void GPDBase::WriteSettingEntry(SettingEntry setting)
     xdbf->UpdateEntry(&setting.entry);
 
     io->flush();
+}
+
+void GPDBase::WriteImageEntry(ImageEntry image)
+{
+    // allocate memory if needed
+    if (image.length != image.initialLength)
+    {
+        xdbf->DeallocateMemory(xdbf->GetRealAddress(image.entry.addressSpecifier), image.entry.length);
+        image.entry.length = image.length;
+        image.entry.addressSpecifier = xdbf->GetSpecifier(xdbf->AllocateMemory(image.entry.length));
+    }
+
+    // write the image
+    io->setPosition(xdbf->GetRealAddress(image.entry.addressSpecifier));
+    io->write(image.image, image.length);
 }
 
 void GPDBase::Close()
