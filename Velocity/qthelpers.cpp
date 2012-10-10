@@ -59,13 +59,13 @@ bool QtHelpers::VerifyHexString(QString str)
 
 std::string QtHelpers::GetKVPath(ConsoleType type, QWidget *parent)
 {
-    std::string kvName = "KV_";
+    std::string kvName = ExecutingDirectory().toStdString() + "KV_";
     if (type == Retail)
         kvName += "R.bin";
     else
         kvName += "D.bin";
 
-    if (!QFile::exists(QString::fromStdString(kvName)))
+    if (!QFile::exists( QString::fromStdString(kvName)))
     {
         QString path = QFileDialog::getOpenFileName(parent, "KV Location", DesktopLocation() + "/KV.bin");
         kvName = path.toStdString();
@@ -115,4 +115,9 @@ bool QtHelpers::ParseVersionString(QString version, Version *out)
         return false;
 
     return true;
+}
+
+QString QtHelpers::ExecutingDirectory()
+{
+    return QCoreApplication::applicationDirPath() + "/";
 }

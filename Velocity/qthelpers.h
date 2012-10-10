@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QDesktopServices>
+#include <QCoreApplication>
 
 // other
 #include "winnames.h"
@@ -36,6 +37,8 @@ public:
     static std::string GetKVPath(ConsoleType type, QWidget *parent = 0);
 
     static bool ParseVersionString(QString version, Version *out);
+
+    static QString ExecutingDirectory();
 };
 
 #endif // QTHELPERS_H
