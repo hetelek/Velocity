@@ -121,6 +121,30 @@ void ProfileCreatorWizard::onFinished(int status)
             dashGPD.WriteSettingEntry(dashGPD.avatarInformation);
         }
 
+        // inject the image of the avatar
+        QString imagePath;
+        if (ui->rdiMale->isChecked())
+            imagePath = QtHelpers::ExecutingDirectory() + "/male default.png";
+        else
+            imagePath = QtHelpers::ExecutingDirectory() + "/female default.png";
+
+        FileIO io(imagePath.toStdString());
+
+        io.setPosition(0, ios_base::end);
+        DWORD fileLen = io.getPosition();
+        BYTE *imageBuff = new BYTE[fileLen];
+
+        io.setPosition(0);
+        io.readBytes(imageBuff, fileLen);
+        io.close();
+
+        // inject the image
+        ImageEntry image;
+        image.image = imageBuff;
+        image.length = fileLen;
+
+        dashGPD.CreateImageEntry(&image, AvatarImage);
+
         dashGPD.Close();
 
         // inject the dash gpd into the profile
