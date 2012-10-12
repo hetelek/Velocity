@@ -84,8 +84,6 @@ PackageViewer::~PackageViewer()
 
 void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *parent)
 {
-    QTreeWidgetItem *item;
-
     bool isRootEntry = entry->folder.entryIndex == 0xFFFF;
 
     for (int i = 0; i < entry->folderEntries.size(); i++)
@@ -98,7 +96,7 @@ void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *pare
 
         folder->setText(0, QString::fromStdString(entry->folderEntries.at(i).folder.name));
         folder->setIcon(0, QIcon(":/Images/FolderFileIcon.png"));
-        folder->setText(1, "0");
+        folder->setText(1, "0 bytes");
         folder->setText(2, "N/A");
         folder->setText(3, "N/A");
 
