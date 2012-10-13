@@ -141,7 +141,6 @@ void StfsPackage::Parse()
         topTable.entryCount++;
     else if (metaData->volumeDescriptor.allocatedBlockCount > 0xAA && (metaData->volumeDescriptor.allocatedBlockCount % 0xAA != 0))
         topTable.entryCount++;
-    topTable.entries = new HashEntry[0xAA];
 
     for (DWORD i = 0; i < topTable.entryCount; i++)
     {
@@ -718,7 +717,6 @@ HashTable StfsPackage::GetLevelNHashTable(DWORD index, Level lvl)
     toReturn.addressInFile = baseHashAddress;
     io->setPosition(toReturn.addressInFile);
 
-    toReturn.entries = new HashEntry[toReturn.entryCount];
     for  (DWORD i = 0; i < toReturn.entryCount; i++)
     {
         io->readBytes(toReturn.entries[i].blockHash, 0x14);
@@ -1419,6 +1417,7 @@ INT24 StfsPackage::AllocateBlock()
         metaData->volumeDescriptor.blockSeperation &= 0xFD;
         topTable.addressInFile = GetHashTableAddress(0, topLevel);
         topTable.entryCount = 2;
+        topTable.trueBlockNumber = ComputeLevelNBackingHashBlockNumber(0, topLevel);
 
         // clear the top table
         memset(topTable.entries, 0, sizeof(HashEntry) * 0xAA);
@@ -1682,9 +1681,7 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injec
     {
         io->setPosition(topTable.addressInFile);
 
-        delete[] topTable.entries;
         topTable.entryCount = metaData->volumeDescriptor.allocatedBlockCount;
-        topTable.entries = new HashEntry[topTable.entryCount];
 
         for (DWORD i = 0; i < topTable.entryCount; i++)
         {
@@ -1792,9 +1789,7 @@ FileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPackage
     {
         io->setPosition(topTable.addressInFile);
 
-        delete[] topTable.entries;
         topTable.entryCount = metaData->volumeDescriptor.allocatedBlockCount;
-        topTable.entries = new HashEntry[topTable.entryCount];
 
         for (DWORD i = 0; i < topTable.entryCount; i++)
         {

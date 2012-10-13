@@ -59,7 +59,7 @@ struct HashTable
     Level level;
     DWORD trueBlockNumber;
     DWORD entryCount;
-    HashEntry *entries;
+    HashEntry entries[0xAA];
     DWORD addressInFile;
 };
 
