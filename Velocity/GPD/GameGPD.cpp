@@ -124,7 +124,11 @@ void GameGPD::CreateAchievement(AchievementEntry *entry, BYTE *thumbnail, DWORD 
     memcpy(imageCopy, thumbnail, thumbnailLen);
 
     // add the image to the vector
-    ImageEntry image = { imageCopy, thumbnailLen, imageEntry, thumbnailLen };
+    ImageEntry image;
+    image.image = imageCopy;
+    image.length = thumbnailLen;
+    image.entry = imageEntry;
+
     images.push_back(image);
 
     xdbf->UpdateEntry(&entry->entry);

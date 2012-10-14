@@ -119,6 +119,13 @@ struct ImageEntry
 
 	XDBFEntry entry;
 	DWORD initialLength;
+
+    ImageEntry()
+    {
+        image = NULL;
+        length = 0;
+        initialLength = 0;
+    }
 };
 
 enum AchievementFlags
