@@ -84,17 +84,69 @@ void XdbfDialog::showContextMenu(QPoint p)
         if (path == "" || path == "\\")
             return;
 
-        for (int i = 0; i < items.count(); i++)
+        try
         {
-            int index = -1;
-            for (int x = 0; x < ui->treeWidget->topLevelItemCount(); x++)
-                if (ui->treeWidget->topLevelItem(x) == items.at(i))
-                {
-                    index = x;
-                    break;
-                }
+            for (int i = 0; i < items.count(); i++)
+            {
+                int index = -1;
+                for (int x = 0; x < ui->treeWidget->topLevelItemCount(); x++)
+                    if (ui->treeWidget->topLevelItem(x) == items.at(i))
+                    {
+                        index = x;
+                        break;
+                    }
 
-            Entry e = indexToEntry(index);
+                Entry e = indexToEntry(index);
+                XDBFEntry xentry;
+
+                // get the xdbf entry
+                if (e.type == Achievement)
+                    xentry = gpd->xdbf->achievements.entries.at(e.index);
+                else if (e.type == Image)
+                    xentry = gpd->xdbf->images.at(e.index);
+                else if (e.type == Setting)
+                    xentry = gpd->xdbf->settings.entries.at(e.index);
+                else if (e.type == Title)
+                    xentry = gpd->xdbf->titlesPlayed.entries.at(e.index);
+                else if (e.type == String)
+                    xentry = gpd->xdbf->strings.at(e.index);
+                else if (e.type == AvatarAward)
+                    xentry = gpd->xdbf->avatarAwards.entries.at(e.index);
+
+                // extract the entry into memory
+                BYTE *entryBuff = new BYTE[xentry.length];
+                gpd->xdbf->ExtractEntry(xentry, entryBuff);
+
+                QString outPath = path;
+                if (items.count() > 1)
+                    outPath += items.at(i)->text(0);
+
+                // write the data to a file
+                FileIO io(outPath.toStdString(), true);
+                io.write(entryBuff, xentry.length);
+                io.close();
+
+                // free the temporary memory
+                delete[] entryBuff;
+            }
+
+            statusBar->showMessage("Selected entries extracted successfully", 3000);
+        }
+        catch (string error)
+        {
+            QMessageBox::critical(this, "Error", "An error occurred while extracting.\n\n" + QString::fromStdString(error));
+        }
+    }
+    else if (selectedItem->text() == "Replace Entry")
+    {
+        QString entryPath = QFileDialog::getOpenFileName(this, "Open the entry to replace the current with", QtHelpers::DesktopLocation() + "\\" + ui->treeWidget->currentItem()->text(0));
+
+        if (entryPath == "")
+            return;
+
+        try
+        {
+            Entry e = indexToEntry(ui->treeWidget->currentIndex().row());
             XDBFEntry xentry;
 
             // get the xdbf entry
@@ -111,70 +163,32 @@ void XdbfDialog::showContextMenu(QPoint p)
             else if (e.type == AvatarAward)
                 xentry = gpd->xdbf->avatarAwards.entries.at(e.index);
 
-            // extract the entry into memory
-            BYTE *entryBuff = new BYTE[xentry.length];
-            gpd->xdbf->ExtractEntry(xentry, entryBuff);
+            // open the file and get the length
+            FileIO io(entryPath.toStdString());
+            io.setPosition(0, ios_base::end);
+            DWORD fileLen = io.getPosition();
 
-            QString outPath = path;
-            if (items.count() > 1)
-                outPath += items.at(i)->text(0);
+            // allocate enough memory for the buffer
+            BYTE *entryBuff = new BYTE[fileLen];
 
-            // write the data to a file
-            FileIO io(outPath.toStdString(), true);
-            io.write(entryBuff, xentry.length);
-            io.close();
+            // read in the file
+            io.setPosition(0);
+            io.readBytes(entryBuff, fileLen);
 
-            // free the temporary memory
+            gpd->xdbf->RewriteEntry(xentry, entryBuff);
+
+            // cleanup
             delete[] entryBuff;
+            io.close();
+            if (modified != NULL)
+                *modified = true;
+
+            statusBar->showMessage("Entry replaced successfully", 3000);
         }
-
-        statusBar->showMessage("Selected entries extracted successfully", 3000);
-    }
-    else if (selectedItem->text() == "Replace Entry")
-    {
-        QString entryPath = QFileDialog::getOpenFileName(this, "Open the entry to replace the current with", QtHelpers::DesktopLocation() + "\\" + ui->treeWidget->currentItem()->text(0));
-
-        if (entryPath == "")
-            return;
-
-        Entry e = indexToEntry(ui->treeWidget->currentIndex().row());
-        XDBFEntry xentry;
-
-        // get the xdbf entry
-        if (e.type == Achievement)
-            xentry = gpd->xdbf->achievements.entries.at(e.index);
-        else if (e.type == Image)
-            xentry = gpd->xdbf->images.at(e.index);
-        else if (e.type == Setting)
-            xentry = gpd->xdbf->settings.entries.at(e.index);
-        else if (e.type == Title)
-            xentry = gpd->xdbf->titlesPlayed.entries.at(e.index);
-        else if (e.type == String)
-            xentry = gpd->xdbf->strings.at(e.index);
-        else if (e.type == AvatarAward)
-            xentry = gpd->xdbf->avatarAwards.entries.at(e.index);
-
-        // open the file and get the length
-        FileIO io(entryPath.toStdString());
-        io.setPosition(0, ios_base::end);
-        DWORD fileLen = io.getPosition();
-
-        // allocate enough memory for the buffer
-        BYTE *entryBuff = new BYTE[fileLen];
-
-        // read in the file
-        io.setPosition(0);
-        io.readBytes(entryBuff, fileLen);
-
-        gpd->xdbf->RewriteEntry(xentry, entryBuff);
-
-        // cleanup
-        delete[] entryBuff;
-        io.close();
-        if (modified != NULL)
-            *modified = true;
-
-        statusBar->showMessage("Entry replaced successfully", 3000);
+        catch (string error)
+        {
+            QMessageBox::critical(this, "Error", "An error occurred while replacing.\n\n" + QString::fromStdString(error));
+        }
     }
     else if (selectedItem->text() == "Address Converter")
     {
