@@ -7,6 +7,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     setCentralWidget(ui->mdiArea);
     ui->mdiArea->setAcceptDrops(false);
     setAcceptDrops(true);
+
+    IntroductionDialog *intro = new IntroductionDialog(this);
+    ui->mdiArea->addSubWindow(intro);
+    intro->show();
 }
 
 void MainWindow::LoadPlugin(QString filename, bool addToMenu)

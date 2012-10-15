@@ -71,5 +71,8 @@
         <file>Images/find.png</file>
         <file>Images/themebig.png</file>
         <file>Images/themesmall.png</file>
+        <file>Images/start.png</file>
+        <file>Images/wiki.png</file>
+        <file>Images/donate'.png</file>
     </qresource>
 </RCC>

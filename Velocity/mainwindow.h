@@ -24,6 +24,7 @@
 #include "gameadderdialog.h"
 #include "titleidfinderdialog.h"
 #include "gamerpicturepackdialog.h"
+#include "introductiondialog.h"
 
 // other
 #include <qthelpers.h>

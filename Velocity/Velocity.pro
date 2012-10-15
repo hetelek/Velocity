@@ -69,7 +69,8 @@ SOURCES += main.cpp \
     titleidfinder.cpp \
     titleidfinderdialog.cpp \
     gamerpicturepackdialog.cpp \
-    gamerpicturedownloader.cpp
+    gamerpicturedownloader.cpp \
+    introductiondialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -122,7 +123,8 @@ HEADERS  += mainwindow.h \
     titleidfinder.h \
     titleidfinderdialog.h \
     gamerpicturepackdialog.h \
-    gamerpicturedownloader.h
+    gamerpicturedownloader.h \
+    introductiondialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -148,7 +150,8 @@ FORMS    += mainwindow.ui \
     themecreationwizard.ui \
     gameadderdialog.ui \
     titleidfinderdialog.ui \
-    gamerpicturepackdialog.ui
+    gamerpicturepackdialog.ui \
+    introductiondialog.ui
 
 RESOURCES += \
     Resources.qrc
