@@ -124,7 +124,9 @@ HEADERS  += mainwindow.h \
     titleidfinderdialog.h \
     gamerpicturepackdialog.h \
     gamerpicturedownloader.h \
-    introductiondialog.h
+    introductiondialog.h \
+    PluginInterfaces/igamemodder.h \
+    PluginInterfaces/igpdmodder.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
