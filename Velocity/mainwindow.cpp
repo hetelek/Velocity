@@ -20,20 +20,20 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu)
 
     if (possiblePlugin)
     {
-        IGameModder *plugin = qobject_cast<IGameModder*>(possiblePlugin);
-
-        if (plugin)
+        IGameModder *game = qobject_cast<IGameModder*>(possiblePlugin);
+        IGPDModder *gpd = qobject_cast<IGPDModder*>(possiblePlugin);
+        if (game)
         {
             if (addToMenu)
             {
-                QAction *action = new QAction(plugin->ToolName(), this);
+                QAction *action = new QAction(game->ToolName(), this);
                 action->setData(QVariant(filename));
                 connect(action, SIGNAL(triggered()), this, SLOT(on_actionGame_Modder_triggered()));
                 ui->menuGame_Modders->addAction(action);
             }
             else
             {
-                QWidget *widget = plugin->GetDialog();
+                QWidget *widget = game->GetDialog();
 
                 QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Save Game"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
                 if (fileName.isNull())
@@ -59,7 +59,51 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu)
                 }
 
                 widget->show();
-                plugin->LoadPackage(package, this);
+                game->LoadPackage(package, this);
+            }
+        }
+        else if (gpd)
+        {
+            if (addToMenu)
+            {
+                QAction *action = new QAction(gpd->ToolName(), this);
+                action->setData(QVariant(filename));
+                connect(action, SIGNAL(triggered()), this, SLOT(on_actionGame_Modder_triggered()));
+                ui->menuProfile_Modders->addAction(action);
+            }
+            else
+            {
+                QWidget *widget = gpd->GetDialog();
+
+                QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Profile"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
+                if (fileName.isNull())
+                {
+                    delete possiblePlugin;
+                    return;
+                }
+
+                try
+                {
+                    StfsPackage *package = new StfsPackage(fileName.toStdString());
+
+                    QString tempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+                    package->ExtractFile(QString("%1").arg(gpd->TitleID(), 4, 16, QChar('0')).toUpper().toStdString() + ".gpd", tempPath.toStdString());
+
+                    GameGPD *gameGPD = new GameGPD(tempPath.toStdString());
+                    gpd->LoadGPD(gameGPD, this);
+
+                    widget->show();
+                }
+                catch (string error)
+                {
+                    QMessageBox::critical(this, "Opening Error", "Could not extract gpd.\n\n" + QString::fromStdString(error));
+                    return;
+                }
+                catch (...)
+                {
+                    QMessageBox::critical(this, "Opening Error", "Could not extract gpd for an unknown reason.");
+                    return;
+                }
             }
         }
     }

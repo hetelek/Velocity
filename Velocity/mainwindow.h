@@ -27,8 +27,9 @@
 #include "introductiondialog.h"
 
 // other
-#include <qthelpers.h>
 #include "PluginInterfaces/igamemodder.h"
+#include "PluginInterfaces/igpdmodder.h"
+#include <qthelpers.h>
 #include "ui_mainwindow.h"
 #include "Stfs/StfsPackage.h"
 #include "GPD/GPDBase.h"

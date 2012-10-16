@@ -20,7 +20,7 @@
    <string>Velocity - Xbox 360 File Manager</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="Resources.qrc">
+   <iconset>
     <normaloff>:/Images/Leaner24.png</normaloff>:/Images/Leaner24.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -76,7 +76,7 @@
       <string>Open</string>
      </property>
      <property name="icon">
-      <iconset resource="Resources.qrc">
+      <iconset>
        <normaloff>:/Images/open.png</normaloff>:/Images/open.png</iconset>
      </property>
      <addaction name="actionPackage"/>
@@ -95,7 +95,7 @@
       <string>Profile Tools</string>
      </property>
      <property name="icon">
-      <iconset resource="Resources.qrc">
+      <iconset>
        <normaloff>:/Images/profile.png</normaloff>:/Images/profile.png</iconset>
      </property>
      <addaction name="actionProfile_Creator"/>
@@ -122,7 +122,13 @@
       <string>Game Modders</string>
      </property>
     </widget>
+    <widget class="QMenu" name="menuProfile_Modders">
+     <property name="title">
+      <string>Profile Modders</string>
+     </property>
+    </widget>
     <addaction name="menuGame_Modders"/>
+    <addaction name="menuProfile_Modders"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuProfile"/>
@@ -139,7 +145,7 @@
   </widget>
   <action name="actionCreate_Package">
    <property name="icon">
-    <iconset resource="Resources.qrc">
+    <iconset>
      <normaloff>:/Images/new file.png</normaloff>:/Images/new file.png</iconset>
    </property>
    <property name="text">
@@ -148,7 +154,7 @@
   </action>
   <action name="actionTheme_Creator">
    <property name="icon">
-    <iconset resource="Resources.qrc">
+    <iconset>
      <normaloff>:/Images/themesmall.png</normaloff>:/Images/themesmall.png</iconset>
    </property>
    <property name="text">
@@ -157,7 +163,7 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset resource="Resources.qrc">
+    <iconset>
      <normaloff>:/Images/information.png</normaloff>:/Images/information.png</iconset>
    </property>
    <property name="text">
@@ -166,7 +172,7 @@
   </action>
   <action name="actionPackage">
    <property name="icon">
-    <iconset resource="Resources.qrc">
+    <iconset>
      <normaloff>:/Images/package.png</normaloff>:/Images/package.png</iconset>
    </property>
    <property name="text">
@@ -175,7 +181,7 @@
   </action>
   <action name="actionXDBF_File">
    <property name="icon">
-    <iconset resource="Resources.qrc">
+    <iconset>
      <normaloff>:/Images/gpd.png</normaloff>:/Images/gpd.png</iconset>
    </property>
    <property name="text">
@@ -184,7 +190,7 @@
   </action>
   <action name="actionSTRB_File">
    <property name="icon">
-    <iconset resource="Resources.qrc">
+    <iconset>
      <normaloff>:/Images/asset.png</normaloff>:/Images/asset.png</iconset>
    </property>
    <property name="text">
@@ -193,7 +199,7 @@
   </action>
   <action name="actionTitle_ID_Finder">
    <property name="icon">
-    <iconset resource="Resources.qrc">
+    <iconset>
      <normaloff>:/Images/find.png</normaloff>:/Images/find.png</iconset>
    </property>
    <property name="text">
@@ -235,7 +241,7 @@
   </action>
   <action name="actionGamer_Picture_Pack_Creator">
    <property name="icon">
-    <iconset resource="Resources.qrc">
+    <iconset>
      <normaloff>:/Images/gamerpicture.png</normaloff>:/Images/gamerpicture.png</iconset>
    </property>
    <property name="text">
@@ -252,10 +258,13 @@
     <string>Reload</string>
    </property>
   </action>
+  <action name="actionAsdf">
+   <property name="text">
+    <string>asdf</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="Resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
