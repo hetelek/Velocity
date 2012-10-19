@@ -87,7 +87,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu)
                     StfsPackage *package = new StfsPackage(fileName.toStdString());
 
                     QString tempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
-                    package->ExtractFile(QString("%1").arg(gpd->TitleID(), 4, 16, QChar('0')).toUpper().toStdString() + ".gpd", tempPath.toStdString());
+                    package->ExtractFile(QString("%1").arg(gpd->TitleID(), 8, 16, QChar('0')).toUpper().toStdString() + ".gpd", tempPath.toStdString());
 
                     GameGPD *gameGPD = new GameGPD(tempPath.toStdString());
                     gpd->LoadGPD(gameGPD, this);
