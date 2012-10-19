@@ -7,6 +7,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     setCentralWidget(ui->mdiArea);
     ui->mdiArea->setAcceptDrops(false);
     setAcceptDrops(true);
+
+    QString fileNames[] = { "femaleAvatar.bin", "FFFE07D1.gpd", "KV_D.bin", "KV_R.bin" };
+
+    // check for all of the startup files
+    QString missingFiles = "";
+    for (DWORD i = 0; i < 4; i++)
+        if (!QFile::exists(QtHelpers::ExecutingDirectory() + "/" + fileNames[i]))
+            missingFiles += fileNames[i] + ", ";
+
+    if (missingFiles.size() != 0)
+    {
+        // remove the extra ", "
+        missingFiles.chop(2);
+
+        ui->statusBar->showMessage("The following file(s) weren't found: " + missingFiles);
+    }
 }
 
 void MainWindow::LoadPlugin(QString filename, bool addToMenu)
