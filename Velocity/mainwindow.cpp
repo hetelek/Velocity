@@ -7,10 +7,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     setCentralWidget(ui->mdiArea);
     ui->mdiArea->setAcceptDrops(false);
     setAcceptDrops(true);
-
-    IntroductionDialog *intro = new IntroductionDialog(this);
-    ui->mdiArea->addSubWindow(intro);
-    intro->show();
 }
 
 void MainWindow::LoadPlugin(QString filename, bool addToMenu)
@@ -107,6 +103,17 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu)
             }
         }
     }
+}
+
+
+void MainWindow::on_actionDonate_triggered()
+{
+    // donate page here
+}
+
+void MainWindow::on_actionView_Wiki_triggered()
+{
+    QDesktopServices::openUrl(QUrl("https://github.com/hetelek/Velocity/wiki"));
 }
 
 void MainWindow::LoadAllPlugins()

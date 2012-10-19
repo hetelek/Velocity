@@ -1,7 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <iostream>
+#include <vector>
+
 // qt
+#include "ui_mainwindow.h"
 #include <QMainWindow>
 #include <QFileDialog>
 #include <QDebug>
@@ -24,18 +28,14 @@
 #include "gameadderdialog.h"
 #include "titleidfinderdialog.h"
 #include "gamerpicturepackdialog.h"
-#include "introductiondialog.h"
 
 // other
 #include "PluginInterfaces/igamemodder.h"
 #include "PluginInterfaces/igpdmodder.h"
-#include <qthelpers.h>
-#include "ui_mainwindow.h"
+#include "qthelpers.h"
+#include "FileIO.h"
 #include "Stfs/StfsPackage.h"
 #include "GPD/GPDBase.h"
-#include <iostream>
-#include <vector>
-#include "FileIO.h"
 
 using namespace std;
 
@@ -81,6 +81,10 @@ private slots:
     void on_actionGamer_Picture_Pack_Creator_triggered();
 
     void on_actionGame_Modder_triggered();
+
+    void on_actionDonate_triggered();
+
+    void on_actionView_Wiki_triggered();
 
 private:
     Ui::MainWindow *ui;

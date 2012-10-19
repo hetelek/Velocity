@@ -20,7 +20,7 @@
    <string>Velocity - Xbox 360 File Manager</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="Resources.qrc">
     <normaloff>:/Images/Leaner24.png</normaloff>:/Images/Leaner24.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -76,7 +76,7 @@
       <string>Open</string>
      </property>
      <property name="icon">
-      <iconset>
+      <iconset resource="Resources.qrc">
        <normaloff>:/Images/open.png</normaloff>:/Images/open.png</iconset>
      </property>
      <addaction name="actionPackage"/>
@@ -95,7 +95,7 @@
       <string>Profile Tools</string>
      </property>
      <property name="icon">
-      <iconset>
+      <iconset resource="Resources.qrc">
        <normaloff>:/Images/profile.png</normaloff>:/Images/profile.png</iconset>
      </property>
      <addaction name="actionProfile_Creator"/>
@@ -111,6 +111,8 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionView_Wiki"/>
+    <addaction name="actionDonate"/>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuPlugins">
@@ -145,7 +147,7 @@
   </widget>
   <action name="actionCreate_Package">
    <property name="icon">
-    <iconset>
+    <iconset resource="Resources.qrc">
      <normaloff>:/Images/new file.png</normaloff>:/Images/new file.png</iconset>
    </property>
    <property name="text">
@@ -154,7 +156,7 @@
   </action>
   <action name="actionTheme_Creator">
    <property name="icon">
-    <iconset>
+    <iconset resource="Resources.qrc">
      <normaloff>:/Images/themesmall.png</normaloff>:/Images/themesmall.png</iconset>
    </property>
    <property name="text">
@@ -163,7 +165,7 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset>
+    <iconset resource="Resources.qrc">
      <normaloff>:/Images/information.png</normaloff>:/Images/information.png</iconset>
    </property>
    <property name="text">
@@ -172,7 +174,7 @@
   </action>
   <action name="actionPackage">
    <property name="icon">
-    <iconset>
+    <iconset resource="Resources.qrc">
      <normaloff>:/Images/package.png</normaloff>:/Images/package.png</iconset>
    </property>
    <property name="text">
@@ -181,7 +183,7 @@
   </action>
   <action name="actionXDBF_File">
    <property name="icon">
-    <iconset>
+    <iconset resource="Resources.qrc">
      <normaloff>:/Images/gpd.png</normaloff>:/Images/gpd.png</iconset>
    </property>
    <property name="text">
@@ -190,7 +192,7 @@
   </action>
   <action name="actionSTRB_File">
    <property name="icon">
-    <iconset>
+    <iconset resource="Resources.qrc">
      <normaloff>:/Images/asset.png</normaloff>:/Images/asset.png</iconset>
    </property>
    <property name="text">
@@ -199,7 +201,7 @@
   </action>
   <action name="actionTitle_ID_Finder">
    <property name="icon">
-    <iconset>
+    <iconset resource="Resources.qrc">
      <normaloff>:/Images/find.png</normaloff>:/Images/find.png</iconset>
    </property>
    <property name="text">
@@ -241,7 +243,7 @@
   </action>
   <action name="actionGamer_Picture_Pack_Creator">
    <property name="icon">
-    <iconset>
+    <iconset resource="Resources.qrc">
      <normaloff>:/Images/gamerpicture.png</normaloff>:/Images/gamerpicture.png</iconset>
    </property>
    <property name="text">
@@ -263,8 +265,28 @@
     <string>asdf</string>
    </property>
   </action>
+  <action name="actionView_Wiki">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/wiki.png</normaloff>:/Images/wiki.png</iconset>
+   </property>
+   <property name="text">
+    <string>View Wiki</string>
+   </property>
+  </action>
+  <action name="actionDonate">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/donate'.png</normaloff>:/Images/donate'.png</iconset>
+   </property>
+   <property name="text">
+    <string>Donate</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="Resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
