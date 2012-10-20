@@ -186,7 +186,7 @@ void GameGPD::UnlockAllAchievementsOffline()
 
 		// update the sync stuff
 		xdbf->UpdateEntry(&achievements.at(i).entry);
-	}
+    }
 }
 
 void GameGPD::init()
