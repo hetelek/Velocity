@@ -274,8 +274,14 @@ void XdbfDialog::on_treeWidget_doubleClicked(const QModelIndex &index)
     switch (e.type)
     {
         case String:
-            QMessageBox::about(this, "Setting", "<html><center><h3>Unicode String</h3><br />" + QString::fromStdWString(gpd->strings.at(e.index).ws) + "</center></html>");
+        {
+            QString str = QString::fromStdWString(gpd->strings.at(e.index).ws);
+            if (str.trimmed() != "")
+                QMessageBox::about(this, "Setting", "<html><center><h3>Unicode String</h3><br />" + str + "</center></html>");
+            else
+                QMessageBox::about(this, "Setting", "<html><center><h3>Unicode String</h3><br /><i>Empty</i></center></html>");
             break;
+        }
         case Setting:
         {
             SettingEntry setting = gpd->settings.at(e.index);
@@ -295,8 +301,14 @@ void XdbfDialog::on_treeWidget_doubleClicked(const QModelIndex &index)
                     QMessageBox::about(this, "Setting", "<html><center><h3>Double Setting</h3><br />" + QString::number(setting.doubleData) + "</center></html>");
                     break;
                 case UnicodeString:
-                    QMessageBox::about(this, "Setting", "<html><center><h3>String Setting</h3><br />" + QString::fromStdWString(*setting.str) + "</center></html>");
+                {
+                    QString str = QString::fromStdWString(*setting.str);
+                    if (str.trimmed() != "")
+                        QMessageBox::about(this, "Setting", "<html><center><h3>String Setting</h3><br />" + str + "</center></html>");
+                    else
+                        QMessageBox::about(this, "Setting", "<html><center><h3>String Setting</h3><br /><i>Empty</i></center></html>");
                     break;
+                }
                 case TimeStamp:
                     QMessageBox::about(this, "Setting", "<html><center><h3>Timestamp Setting</h3><br />" + QDateTime::fromTime_t(setting.timeStamp).toString() + "</center></html>");
                     break;
