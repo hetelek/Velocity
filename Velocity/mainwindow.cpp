@@ -21,8 +21,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         // remove the extra ", "
         missingFiles.chop(2);
 
-        ui->statusBar->showMessage("The following file(s) weren't found: " + missingFiles);
+        ui->statusBar->showMessage("The following file(s) weren't found: " + missingFiles, 10000);
     }
+    else
+        ui->statusBar->showMessage("Welcome to Velocity!", 10000);
 }
 
 void MainWindow::LoadPlugin(QString filename, bool addToMenu)
