@@ -104,7 +104,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu)
                     package->ExtractFile(QString("%1").arg(gpd->TitleID(), 8, 16, QChar('0')).toUpper().toStdString() + ".gpd", tempPath.toStdString());
 
                     GameGPD *gameGPD = new GameGPD(tempPath.toStdString());
-                    gpd->LoadGPD(gameGPD, this);
+                    gpd->LoadGPD(gameGPD);
 
                     widget->show();
                 }
