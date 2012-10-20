@@ -102,6 +102,12 @@ struct SettingEntry
 		} binaryData;
         time_t timeStamp;
 	};
+
+public:
+    SettingEntry()
+    {
+        type = 0;
+    }
 };
 
 struct StringEntry
