@@ -30,12 +30,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 void MainWindow::LoadPlugin(QString filename, bool addToMenu)
 {
     QPluginLoader loader(filename);
+    loader.setParent(ui->mdiArea);
     QObject *possiblePlugin = loader.instance();
 
     if (possiblePlugin)
     {
         IGameModder *game = qobject_cast<IGameModder*>(possiblePlugin);
         IGPDModder *gpd = qobject_cast<IGPDModder*>(possiblePlugin);
+
         if (game)
         {
             if (addToMenu)
@@ -72,6 +74,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu)
                     return;
                 }
 
+                ui->mdiArea->addSubWindow(widget);
                 widget->show();
                 game->LoadPackage(package, this);
             }
@@ -101,12 +104,20 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu)
                     StfsPackage *package = new StfsPackage(fileName.toStdString());
 
                     QString tempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+
+                    Arguments *args = new Arguments;
+                    args->package = package;
+                    args->tempFilePath = tempPath;
+
                     package->ExtractFile(QString("%1").arg(gpd->TitleID(), 8, 16, QChar('0')).toUpper().toStdString() + ".gpd", tempPath.toStdString());
 
                     GameGPD *gameGPD = new GameGPD(tempPath.toStdString());
-                    gpd->LoadGPD(gameGPD);
+                    gpd->LoadGPD(gameGPD, (void*)args);
 
+                    ui->mdiArea->addSubWindow(widget);
                     widget->show();
+
+                    connect(widget, SIGNAL(InjectGPD()), this, SLOT(InjectGPD()));
                 }
                 catch (string error)
                 {
@@ -132,6 +143,33 @@ void MainWindow::on_actionDonate_triggered()
 void MainWindow::on_actionView_Wiki_triggered()
 {
     QDesktopServices::openUrl(QUrl("https://github.com/hetelek/Velocity/wiki"));
+}
+
+void MainWindow::InjectGPD()
+{
+    IGPDModder *gpd = qobject_cast<IGPDModder*>(sender());
+
+    if (!gpd)
+        throw "Some shit broke.";
+
+    Arguments *args = (Arguments*)gpd->Arguments;
+    try
+    {
+        args->package->ReplaceFile(args->tempFilePath.toStdString(), QString("%1").arg(gpd->TitleID(), 8, 16, QChar('0')).toUpper().toStdString() + ".gpd");
+        args->package->Rehash();
+        args->package->Resign(QtHelpers::GetKVPath(args->package->metaData->certificate.ownerConsoleType, this));
+        args->package->Close();
+        delete args->package;
+    }
+    catch (string error)
+    {
+        QMessageBox::critical(NULL, "Couldn't Repalce GPD", "The GPD could not be replaced.\n\n" + QString::fromStdString(error));
+        try
+        {
+            delete args->package;
+        }
+        catch(...) { }
+    }
 }
 
 void MainWindow::LoadAllPlugins()

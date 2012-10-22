@@ -10,10 +10,12 @@
 class IGPDModder
 {
 public:
+    const void *Arguments;
+
     IGPDModder() { }
     virtual ~IGPDModder() { }
 
-    virtual void LoadGPD(GameGPD *gpd) { }
+    virtual void LoadGPD(GameGPD *gpd, void *arg = NULL) { }
     virtual QWidget* GetDialog() { }
     virtual QString ToolAuthor() const = 0;
     virtual QString ToolName() const = 0;

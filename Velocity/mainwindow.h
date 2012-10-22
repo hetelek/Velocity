@@ -43,6 +43,12 @@ namespace Ui {
 class MainWindow;
 }
 
+struct Arguments
+{
+    StfsPackage *package;
+    QString tempFilePath;
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -85,6 +91,8 @@ private slots:
     void on_actionDonate_triggered();
 
     void on_actionView_Wiki_triggered();
+
+    void InjectGPD();
 
 private:
     Ui::MainWindow *ui;
