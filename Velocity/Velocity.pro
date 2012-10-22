@@ -13,9 +13,13 @@ mac | win32 {
 TARGET = Velocity
 TEMPLATE = app
 
-win32:include(Stfs/Botan.pri)
-win32:INCLUDEPATH += "C:/botan/include"
-win32:LIBS += "C:/botan/libBotan.a"
+win32 {
+    RC_FILE = myapp.rc
+
+    include(Stfs/Botan.pri)
+    INCLUDEPATH += "C:/botan/include"
+    LIBS += "C:/botan/libBotan.a"
+}
 
 unix:INCLUDEPATH += "/usr/local/include/botan-1.10"
 unix:LIBS += "/usr/local/lib/libbotan-1.10.a"
