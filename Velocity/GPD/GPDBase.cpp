@@ -205,7 +205,7 @@ void GPDBase::WriteSettingEntry(SettingEntry setting)
 
     // write the setting entry header
     io->setPosition(entryAddr);
-    io->write((UINT64)setting.entry.id);
+    io->write((DWORD)setting.entry.id);
     io->setPosition(entryAddr + 8);
     io->write((BYTE)setting.type);
 
