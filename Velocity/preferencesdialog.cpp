@@ -41,3 +41,10 @@ void PreferencesDialog::on_pushButton_2_clicked()
 {
     close();
 }
+
+void PreferencesDialog::on_pushButton_3_clicked()
+{
+    ui->comboBox->setCurrentIndex(0);
+    ui->comboBox_2->setCurrentIndex(0);
+    ui->lineEdit->setText(QtHelpers::ExecutingDirectory() + "plugins");
+}
