@@ -3,6 +3,15 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    settings = new QSettings("Exetelek", "Velocity");
+    if (!settings->contains("PackageDropAction"))
+        settings->setValue("PackageDropAction", 0);
+    if (!settings->contains("ProfileDropAction"))
+        settings->setValue("ProfileDropAction", 0);
+    if (!settings->contains("PluginPath"))
+        settings->setValue("PluginPath", QtHelpers::ExecutingDirectory() + "plugins");
+
     LoadAllPlugins();
     setCentralWidget(ui->mdiArea);
     ui->mdiArea->setAcceptDrops(false);
@@ -174,7 +183,7 @@ void MainWindow::InjectGPD()
 
 void MainWindow::LoadAllPlugins()
 {
-    QDir path (QtHelpers::ExecutingDirectory() + "plugins");
+    QDir path(settings->value("PluginPath").toString());
 
     foreach (QString filename, path.entryList(QDir::Files))
         LoadPlugin(path.absolutePath() + "/" + filename, true);
@@ -184,6 +193,7 @@ MainWindow::~MainWindow()
 {
     for (DWORD i = 0; i < openPackages.size(); i++)
         delete openPackages.at(i);
+    delete settings;
     delete ui;
 }
 
@@ -227,11 +237,57 @@ void MainWindow::dropEvent(QDropEvent *event)
                 {
                     StfsPackage *package = new StfsPackage(fileName);
 
-                    PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this);
-                    ui->mdiArea->addSubWindow(viewer);
-                    viewer->show();
+                    if (package->metaData->contentType != Profile)
+                    {
+                        if (settings->value("PackageDropAction").toInt() == OpenInPackageViewer)
+                        {
+                            PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this);
+                            ui->mdiArea->addSubWindow(viewer);
+                            viewer->show();
 
-                    ui->statusBar->showMessage("STFS package loaded successfully.", 3000);
+                            ui->statusBar->showMessage("STFS package loaded successfully.", 3000);
+                        }
+                        else
+                        {
+                            package->Rehash();
+                            package->Resign(QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType, this));
+
+                            delete package;
+
+                            ui->statusBar->showMessage("STFS package rehashed and resigned successfully.", 3000);
+                        }
+                    }
+                    else
+                    {
+                        if (settings->value("ProfileDropAction").toInt() == OpenInPackageViewer)
+                        {
+                            PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this);
+                            ui->mdiArea->addSubWindow(viewer);
+                            viewer->show();
+
+                            ui->statusBar->showMessage("STFS package loaded successfully.", 3000);
+                        }
+                        else if (settings->value("ProfileDropAction").toInt() == RehashAndResign)
+                        {
+                            package->Rehash();
+                            package->Resign(QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType, this));
+
+                            delete package;
+
+                            ui->statusBar->showMessage("STFS package rehashed and resigned successfully.", 3000);
+                        }
+                        else
+                        {
+                            bool ok;
+                            ProfileEditor *editor = new ProfileEditor(ui->statusBar, package, true, &ok, this);
+
+                            if (ok)
+                            {
+                                ui->mdiArea->addSubWindow(editor);
+                                editor->show();
+                            }
+                        }
+                    }
                 }
                 catch (string error)
                 {
@@ -450,4 +506,10 @@ void MainWindow::on_actionGame_Modder_triggered()
         QAction *menuAction = (QAction*)sender();
         LoadPlugin(menuAction->data().toString(), false);
     }
+}
+
+void MainWindow::on_actionPreferences_triggered()
+{
+    PreferencesDialog dialog(this);
+    dialog.exec();
 }

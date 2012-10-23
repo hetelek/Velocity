@@ -74,5 +74,6 @@
         <file>Images/start.png</file>
         <file>Images/wiki.png</file>
         <file>Images/donate'.png</file>
+        <file>Images/preferences.png</file>
     </qresource>
 </RCC>

@@ -28,6 +28,7 @@
 #include "gameadderdialog.h"
 #include "titleidfinderdialog.h"
 #include "gamerpicturepackdialog.h"
+#include "preferencesdialog.h"
 
 // other
 #include "PluginInterfaces/igamemodder.h"
@@ -94,9 +95,12 @@ private slots:
 
     void InjectGPD();
 
+    void on_actionPreferences_triggered();
+
 private:
     Ui::MainWindow *ui;
     vector<StfsPackage*> openPackages;
+    QSettings *settings;
 };
 
 #endif // MAINWINDOW_H

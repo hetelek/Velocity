@@ -17,6 +17,13 @@
     #include <direct.h>
 #endif
 
+enum VelocityDropAction
+{
+    OpenInPackageViewer,
+    RehashAndResign,
+    OpenInProfileEditor
+};
+
 class QtHelpers
 {
 public:

@@ -132,9 +132,16 @@
     <addaction name="menuGame_Modders"/>
     <addaction name="menuProfile_Modders"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionPreferences"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuProfile"/>
    <addaction name="menuPlugins"/>
+   <addaction name="menuSettings"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
@@ -281,6 +288,15 @@
    </property>
    <property name="text">
     <string>Donate</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/preferences.png</normaloff>:/Images/preferences.png</iconset>
+   </property>
+   <property name="text">
+    <string>Preferences</string>
    </property>
   </action>
  </widget>
