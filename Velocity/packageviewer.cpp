@@ -6,6 +6,7 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidge
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+    QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
     disposePackage = true;
     ui->treeWidget->header()->setDefaultSectionSize(75);

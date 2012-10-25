@@ -106,7 +106,7 @@ struct SettingEntry
 public:
     SettingEntry()
     {
-        type = 0;
+        type = (SettingEntryType)0;
     }
 };
 

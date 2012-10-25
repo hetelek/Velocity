@@ -6,6 +6,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+    QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
     settings = new QSettings("Exetelek", "Velocity");
 

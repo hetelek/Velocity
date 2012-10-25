@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QDate>
 #include <Stfs/StfsPackage.h>
+#include "qthelpers.h"
 
 namespace Ui {
 class PropertiesDialog;

@@ -121,3 +121,96 @@ QString QtHelpers::ExecutingDirectory()
 {
     return QCoreApplication::applicationDirPath() + "/";
 }
+
+void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
+{
+    if (rootWidget == NULL)
+            return;
+
+        QObject *child = NULL;
+        QObjectList Containers;
+        QObject *container  = NULL;
+        QStringList DoNotAffect;
+
+        // Make an exception list (Objects not to be affected)
+        DoNotAffect.append("aboutTitleLabel");     // about Dialog
+        DoNotAffect.append("aboutVersionLabel");   // about Dialog
+        DoNotAffect.append("aboutCopyrightLabel"); // about Dialog
+        DoNotAffect.append("aboutUrlLabel");       // about Dialog
+        DoNotAffect.append("aboutLicenseLabel");   // about Dialog
+
+        // Set sizes according to OS:
+    #ifdef __APPLE__
+        int ButtonHeight = 32;
+        int LabelsFontSize = 12;
+        int cmbxHeight = 20;
+        QFont cntrlFont("", 10);
+        QFont txtFont("", 10);
+    #elif _WIN32 // Win XP/7
+        int ButtonHeight = 24;
+        int LabelsFontSize = 8;
+        int cmbxHeight = 20;
+        QFont cntrlFont("MS Shell Dlg 2", 8);
+        QFont txtFont("MS Shell Dlg 2", 8);
+    #else
+        int ButtonHeight = 24;
+        int cmbxHeight = 24;
+        QFont cntrlFont("Ubuntu Condensed", 10);
+        QFont txtFont("Ubuntu", 10);
+    #endif
+
+        // Append root to containers
+        Containers.append(rootWidget);
+        while (!Containers.isEmpty())
+        {
+            container = Containers.takeFirst();
+            if (container != NULL)
+            {
+                for (int ChIdx=0; ChIdx < container->children().size(); ChIdx++)
+                {
+                    child = container->children()[ChIdx];
+                    if (!child->isWidgetType() || DoNotAffect.contains(child->objectName()))
+                        continue;
+                    // Append containers to Stack for recursion
+                    if (child->children().size() > 0)
+                        Containers.append(child);
+                    else
+                    {
+                        // Cast child object to button and label
+                        // (if the object is not of the correct type, it will be NULL)
+                        QPushButton *button = qobject_cast<QPushButton *>(child);
+                        QLabel *label = qobject_cast<QLabel *>(child);
+                        QComboBox *cmbx = qobject_cast<QComboBox *>(child);
+                        QLineEdit *ln = qobject_cast<QLineEdit *>(child);
+                        QTreeWidget *tree = qobject_cast<QTreeWidget *>(child);
+                        QPlainTextEdit *plain = qobject_cast<QPlainTextEdit *>(child);
+                        QCheckBox *check = qobject_cast<QCheckBox *>(child);
+                        if (button != NULL)
+                        {
+                            button->setMinimumHeight(ButtonHeight); // Win
+                            button->setMaximumHeight(ButtonHeight); // Win
+                            button->setSizePolicy(QSizePolicy::Fixed, button->sizePolicy().horizontalPolicy());
+                            button->setFont(cntrlFont);
+                        }
+                        else if (cmbx != NULL)
+                        {
+                            cmbx->setFont(cntrlFont);
+                            cmbx->setMaximumHeight(cmbxHeight);
+                        }
+                        else if (label != NULL)
+                            label->setFont(txtFont);
+                        else if (ln != NULL)
+                            ln->setFont(txtFont);
+                        else if (tree != NULL)
+                        {
+                            tree->header()->setFont(txtFont);
+                        }
+                        else if (plain != NULL)
+                            plain->setFont(txtFont);
+                        else if (check != NULL)
+                            check->setFont(txtFont);
+                    }
+                }
+            }
+        }
+}

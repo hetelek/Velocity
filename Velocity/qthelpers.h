@@ -7,6 +7,15 @@
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QCoreApplication>
+#include <QLabel>
+#include <QPushButton>
+#include <QFont>
+#include <QComboBox>
+#include <QLineEdit>
+#include <QTreeWidget>
+#include <QPlainTextEdit>
+#include <QHeaderView>
+#include <QCheckBox>
 
 // other
 #include "winnames.h"
@@ -46,6 +55,8 @@ public:
     static bool ParseVersionString(QString version, Version *out);
 
     static QString ExecutingDirectory();
+
+    static void GenAdjustWidgetAppearanceToOS(QWidget *rootWidget);
 };
 
 #endif // QTHELPERS_H

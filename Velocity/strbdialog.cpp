@@ -6,6 +6,7 @@ StrbDialog::StrbDialog(AvatarAsset *asset, QWidget *parent) : QDialog(parent), u
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
     ui->treeWidget->header()->resizeSection(0, 180);
+    QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
     // load the metadata
     try

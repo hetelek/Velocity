@@ -2,6 +2,7 @@
 #define ADDRESSCONVERTERDIALOG_H
 
 #include <QDialog>
+#include "qthelpers.h"
 
 #include "GPD/XDBF.h"
 

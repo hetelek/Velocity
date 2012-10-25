@@ -9,6 +9,7 @@ PropertiesDialog::PropertiesDialog(FileEntry *entry, QString location, bool *cha
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+    QtHelpers::GenAdjustWidgetAppearanceToOS(this);
     setWindowTitle(QString::fromStdString(entry->name) + " Properties");
 
     bool folder = (entry->flags & 2);

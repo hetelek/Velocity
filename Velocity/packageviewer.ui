@@ -157,6 +157,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="btnViewAll">
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>View All Metadata</string>
        </property>

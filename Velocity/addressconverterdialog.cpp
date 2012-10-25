@@ -5,6 +5,7 @@ AddressConverterDialog::AddressConverterDialog(XDBF *xdbf, QWidget *parent) : QD
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+    QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
     ui->spnRealAddr->setValue(xdbf->GetRealAddress(0));
     ui->spnRealAddr->setMinimum(ui->spnRealAddr->value());

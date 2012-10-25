@@ -42,8 +42,10 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu)
     loader.setParent(ui->mdiArea);
     QObject *possiblePlugin = loader.instance();
 
+    qDebug() << "yee";
     if (possiblePlugin)
     {
+        qDebug() << "yee";
         IGameModder *game = qobject_cast<IGameModder*>(possiblePlugin);
         IGPDModder *gpd = qobject_cast<IGPDModder*>(possiblePlugin);
 
@@ -216,7 +218,11 @@ void MainWindow::dropEvent(QDropEvent *event)
     // iterate through all of the files dropped
     for (DWORD i = 0; i < filePaths.size(); i++)
     {
+#ifdef __WIN32__
         std::string fileName = QString(filePaths.at(i).encodedPath()).mid(1).replace("%20", " ").toStdString();
+#else
+        std::string fileName = QString(filePaths.at(i).encodedPath()).replace("%20", " ").toStdString();
+#endif
 
         // make sure the file exists
         if (!QFile::exists(QString::fromStdString(fileName)))

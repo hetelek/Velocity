@@ -8,6 +8,15 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
 
     ui->setupUi(this);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    QtHelpers::GenAdjustWidgetAppearanceToOS(this);
+
+#ifdef __linux__
+    QFont f = ui->lblAchName->font();
+    f.setPointSize(20);
+    ui->lblAchName->setFont(f);
+
+    setMinimumHeight(475);
+#endif
 
     ui->achievementsList->header()->resizeSection(0, 350);
     ui->achievementsList->header()->resizeSection(1, 125);

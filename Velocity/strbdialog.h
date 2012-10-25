@@ -3,6 +3,7 @@
 
 // qt
 #include <QDialog>
+#include "qthelpers.h"
 
 // xbox360
 #include "AvatarAsset/AvatarAsset.h"
