@@ -78,8 +78,8 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidge
 
 PackageViewer::~PackageViewer()
 {
-    if (disposePackage)
-        delete package;
+    //if (disposePackage)
+        //delete package;
     delete ui;
 }
 

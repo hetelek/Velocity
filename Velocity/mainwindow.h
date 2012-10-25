@@ -99,7 +99,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    vector<StfsPackage*> openPackages;
     QSettings *settings;
 };
 

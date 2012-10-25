@@ -193,9 +193,6 @@ void MainWindow::LoadAllPlugins()
 
 MainWindow::~MainWindow()
 {
-    for (DWORD i = 0; i < openPackages.size(); i++)
-        delete openPackages.at(i);
-    delete settings;
     delete ui;
 }
 
