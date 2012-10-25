@@ -226,6 +226,8 @@ void XdbfDialog::showContextMenu(QPoint p)
 
 XdbfDialog::~XdbfDialog()
 {
+    gpd->Close();
+    delete gpd;
     delete ui;
 }
 
