@@ -551,14 +551,22 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
     {
         try
         {
+            // get the path of the file in the package
+            QString packagePath;
+            GetPackagePath(item, &packagePath);
+
+            // verify the magic
+            if (package->GetFileMagic(packagePath.toStdString()) != 0x58444246)
+            {
+                statusBar->showMessage("Invalid GPD", 3000);
+                return;
+            }
+
             // get a temporary file name
             QString tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", ""));
             string tempNameStd = tempName.toStdString();
 
             // extract the file to a temporary location
-            QString packagePath;
-            GetPackagePath(item, &packagePath);
-
             package->ExtractFile(packagePath.toStdString(), tempNameStd);
 
             // parse the gpd
@@ -585,33 +593,32 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
     }
     else if (extension == ".bin")
     {
+        // get the path of the file in the package
+        QString packagePath;
+        GetPackagePath(item, &packagePath);
+
+        // verify the magic
+        if (package->GetFileMagic(packagePath.toStdString()) != 0x53545242)
+        {
+            statusBar->showMessage("Invalid STRB file", 3000);
+            return;
+        }
+
         // get a temporary file name
         string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
 
         // extract the file to a temporary location
-        QString packagePath;
-        GetPackagePath(item, &packagePath);
-
         package->ExtractFile(packagePath.toStdString(), tempName);
 
-        // verify that it's an STRB file
-        FileIO io(tempName, false);
-        if (io.readDword() == 0x53545242)
-        {
-            io.close();
+        // show the avatar asset dialog
+        AvatarAsset *asset = new AvatarAsset(tempName);
+        statusBar->showMessage("STRB file parsed successfully", 3000);
 
-            // show the avatar asset dialog
-            AvatarAsset *asset = new AvatarAsset(tempName);
-            statusBar->showMessage("STRB file parsed successfully", 3000);
+        StrbDialog dialog(asset, this);
+        dialog.exec();
 
-            StrbDialog dialog(asset, this);
-            dialog.exec();
-
-            // delete the temp file
-            remove(tempName.c_str());
-        }
-        else
-            io.close();
+        // delete the temp file
+        remove(tempName.c_str());
     }
     else if (extension == ".png" || extension == ".jpg" || extension == ".jpeg")
     {
@@ -657,10 +664,47 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
 
             // delete the temp file
             remove(tempName.c_str());
+
+            delete pec;
         }
         catch(string error)
         {
             QMessageBox::critical(this, "Error", "Failed to open PEC file.\n\n" + QString::fromStdString(error));
+        }
+    }
+    else
+    {
+        QString packagePath;
+        GetPackagePath(item, &packagePath);
+
+        // get the file magic
+        DWORD magic = package->GetFileMagic(packagePath.toStdString());
+
+        // check and see if it's an STFS package
+        if (magic == CON || magic == LIVE || magic == PIRS)
+        {
+            try
+            {
+                // get a temporary file name
+                string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+
+                // extract the file to a temporary location
+                package->ExtractFile(packagePath.toStdString(), tempName);
+
+                StfsPackage pack(tempName);
+                PackageViewer dialog(statusBar, &pack, this);
+                dialog.exec();
+
+                // replace
+                package->ReplaceFile(tempName, packagePath.toStdString());
+
+                // delete the temporary file
+                QFile::remove(QString::fromStdString(tempName));
+            }
+            catch(string error)
+            {
+                QMessageBox::critical(this, "Error", "Failed to open Stfs Package.\n\n" + QString::fromStdString(error));
+            }
         }
     }
 }
