@@ -12,10 +12,14 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
 
 #ifdef __linux__
     QFont f = ui->lblAchName->font();
-    f.setPointSize(20);
+    f.setPointSize(13);
     ui->lblAchName->setFont(f);
+    ui->lblAwName->setFont(f);
 
-    setMinimumHeight(475);
+    setMinimumHeight(485);
+#elif __WIN32__
+    ui->lblAchName->setFont(QFont("Arial", 10));
+    ui->lblAwName->setFont(QFont("Arial", 10));
 #endif
 
     ui->achievementsList->header()->resizeSection(0, 350);
@@ -26,8 +30,6 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     ui->avatarAwardsList->header()->resizeSection(1, 125);
     ui->avatarAwardsList->header()->resizeSection(2, 125);
 
-    ui->lblAchName->setFont(QFont("Arial", 10));
-    ui->lblAwName->setFont(QFont("Arial", 10));
 
     // verify that the package is a profile
     if (profile->metaData->contentType != Profile)

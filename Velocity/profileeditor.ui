@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>922</width>
-    <height>469</height>
+    <height>473</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,8 +23,8 @@
    <iconset resource="Resources.qrc">
     <normaloff>:/Images/Leaner24.png</normaloff>:/Images/Leaner24.png</iconset>
   </property>
-  <layout class="QGridLayout" name="gridLayout_9">
-   <item row="1" column="0">
+  <layout class="QVBoxLayout" name="verticalLayout_22">
+   <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="minimumSize">
       <size>
@@ -1341,23 +1341,6 @@ p, li { white-space: pre-wrap; }
                  <property name="icon">
                   <iconset resource="Resources.qrc">
                    <normaloff>:/Images/unlock.png</normaloff>:/Images/unlock.png</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>20</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="btnCreateAward">
-                 <property name="text">
-                  <string>Create Award</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="Resources.qrc">
-                   <normaloff>:/Images/add.png</normaloff>:/Images/add.png</iconset>
                  </property>
                  <property name="iconSize">
                   <size>

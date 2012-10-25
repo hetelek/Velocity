@@ -189,7 +189,6 @@ void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
                         {
                             button->setMinimumHeight(ButtonHeight); // Win
                             button->setMaximumHeight(ButtonHeight); // Win
-                            button->setSizePolicy(QSizePolicy::Fixed, button->sizePolicy().horizontalPolicy());
                             button->setFont(cntrlFont);
                         }
                         else if (cmbx != NULL)
