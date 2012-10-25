@@ -39,6 +39,9 @@ private slots:
     void thumbnailReplyFinished(QNetworkReply *aReply);
     void on_pushButton_2_clicked();
     void on_pushButton_clicked();
+    void on_btnShowAll_clicked();
+    void on_txtSearch_textChanged(const QString &arg1);
+    void on_btnShowAll_2_clicked(bool checked);
 
 private:
     Ui::GameAdderDialog *ui;
@@ -50,6 +53,8 @@ private:
 
     bool allowInjection, existed;
     int totalDownloadCount, downloadedCount;
+
+    void showAllItems();
 };
 
 #endif // GAMEADDERDIALOG_H

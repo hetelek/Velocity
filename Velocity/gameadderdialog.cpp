@@ -385,3 +385,59 @@ void GameAdderDialog::on_pushButton_2_clicked()
         downloader->BeginDownload();
     }
 }
+
+void GameAdderDialog::showAllItems()
+{
+    for (int i = 0; i < ui->treeWidgetAllGames->topLevelItemCount(); i++)
+        ui->treeWidgetAllGames->topLevelItem(i)->setHidden(false);
+}
+
+void GameAdderDialog::on_btnShowAll_clicked()
+{
+    ui->txtSearch->setText("");
+    ui->btnShowAll_2->setChecked(false);
+    showAllItems();
+}
+
+void GameAdderDialog::on_txtSearch_textChanged(const QString &arg1)
+{
+    QList<QTreeWidgetItem*> itemsMatched = ui->treeWidgetAllGames->findItems(ui->txtSearch->text(), Qt::MatchContains | Qt::MatchRecursive);
+
+    // hide all the items
+    for (DWORD i = 0; i < ui->treeWidgetAllGames->topLevelItemCount(); i++)
+        ui->treeWidgetAllGames->setItemHidden(ui->treeWidgetAllGames->topLevelItem(i), true);
+
+    if (itemsMatched.count() == 0)
+    {
+        ui->txtSearch->setStyleSheet("color: rgb(255, 1, 1);");
+        showAllItems();
+        return;
+    }
+
+    ui->txtSearch->setStyleSheet("");
+    // add all the matched ones to the list
+    for (DWORD i = 0; i < itemsMatched.count(); i++)
+    {
+        // show all the item's parents
+        QTreeWidgetItem *parent = itemsMatched.at(i)->parent();
+        while (parent != NULL)
+        {
+            ui->treeWidgetAllGames->setItemHidden(parent, false);
+            parent->setExpanded(true);
+            parent = parent->parent();
+        }
+
+        // show the item itself
+        ui->treeWidgetAllGames->setItemHidden(itemsMatched.at(i), false);
+    }
+}
+
+void GameAdderDialog::on_btnShowAll_2_clicked(bool checked)
+{
+    for (DWORD i = 0; i < ui->treeWidgetAllGames->topLevelItemCount(); i++)
+    {
+        TitleEntry entry = ui->treeWidgetAllGames->topLevelItem(i)->data(0, Qt::UserRole).value<TitleEntry>();
+        if (entry.avatarAwardCount == 0)
+            ui->treeWidgetAllGames->topLevelItem(i)->setHidden(checked);
+    }
+}
