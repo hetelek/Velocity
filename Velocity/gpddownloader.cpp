@@ -6,7 +6,7 @@ GPDDownloader::GPDDownloader(TitleEntry entry, bool hasAwards, QObject *parent) 
     gpdWritten = false;
 
     http = new QHttp(this);
-    http->setHost("127.0.0.1");
+    http->setHost("http://velocity.expetelek.com");
 
     connect(http, SIGNAL(done(bool)), this, SLOT(onDone(bool)));
     connect(http, SIGNAL(requestFinished(int, bool)), this, SLOT(onRequestFinished(int, bool)));
@@ -14,7 +14,8 @@ GPDDownloader::GPDDownloader(TitleEntry entry, bool hasAwards, QObject *parent) 
 
 void GPDDownloader::BeginDownload()
 {
-    http->get(gpdDirectory + QString::number(entry.titleID, 16).toUpper() + ".gpd");
+    QString url = gpdDirectory + "game/" + QString::number(entry.titleID, 16).toUpper() + ".gpd";
+    http->get(url);
 }
 
 void GPDDownloader::onRequestFinished(int id, bool error)
@@ -62,7 +63,7 @@ void GPDDownloader::onRequestFinished(int id, bool error)
     if (hasAwards)
     {
         hasAwards = false;
-        http->get(gpdDirectory + "awards/" + QString::number(entry.titleID, 16).toUpper() + ".gpd");
+        http->get(gpdDirectory + "avatarawards/" + QString::number(entry.titleID, 16).toUpper() + ".gpd");
     }
 }
 

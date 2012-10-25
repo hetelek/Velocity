@@ -30,11 +30,11 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent) : QDialo
     }
 
     pecTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
-    mainDir = "http://127.0.0.1/";
+    mainDir = "http://velocity.expetelek.com/";
 
     manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gameReplyFinished(QNetworkReply*)));
-    manager->get(QNetworkRequest(QUrl(mainDir + "games.xml")));
+    manager->get(QNetworkRequest(QUrl(mainDir + "gpds/list.json")));
 
     // setup the context menus
     ui->treeWidgetAllGames->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -51,16 +51,23 @@ GameAdderDialog::~GameAdderDialog()
 
 void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
 {
-    QByteArray gameListXML = aReply->readAll();
-    QDomDocument doc;
-    doc.setContent(gameListXML);
+    QString jsonStr(aReply->readAll());
 
     vector<TitleEntry> gamesPlayed = dashGPD->gamesPlayed;
 
-    QDomNodeList elem = doc.firstChild().childNodes();
-    for (int i = 0; i < elem.count(); i++)
+    bool ok;
+    QVariantMap result = QtJson::Json::parse(jsonStr, ok).toMap();
+
+    if (!ok)
     {
-        QString gameName = elem.at(i).firstChildElement("name").text();
+        QMessageBox::warning(this, "Listing Error", "The listing could not be parsed. Try again later, as the servers may be down and make sure Velocity has access to the internet.");
+        return;
+    }
+
+    foreach (QVariant game, result["games"].toList())
+    {
+        QVariantMap gameMap = game.toMap();
+        QString gameName = gameMap["nm"].toString();
 
         bool alreadyExists = false;
         for (int i = 0; i < gamesPlayed.size(); i++)
@@ -74,12 +81,12 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
         if (alreadyExists)
             continue;
 
-        QString titleId = elem.at(i).firstChildElement("titleid").text();
-        QString achievementCount = elem.at(i).firstChildElement("achievementcount").text();
-        QString totalGamerscore = elem.at(i).firstChildElement("totalgamerscore").text();
-        QString totalAwardCount = elem.at(i).firstChildElement("totalavatarawardcount").text();
-        QString maleAwardCount = elem.at(i).firstChildElement("maleavatarawardcount").text();
-        QString femaleAwardCount = elem.at(i).firstChildElement("femaleavatarawardcount").text();
+        QString titleId = gameMap["tid"].toString();
+        QString achievementCount = gameMap["achc"].toString();
+        QString totalGamerscore = gameMap["ttlgs"].toString();
+        QString totalAwardCount = gameMap["ttlac"].toString();
+        QString maleAwardCount = gameMap["ttlmac"].toString();
+        QString femaleAwardCount = gameMap["ttlfac"].toString();
 
         QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidgetAllGames);
         item->setText(0, gameName);

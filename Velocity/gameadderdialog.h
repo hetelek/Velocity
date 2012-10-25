@@ -9,10 +9,10 @@
 #include <QTreeWidgetItem>
 #include <QDateTime>
 #include <QMenu>
-#include <QtXml/QDomDocument>
 #include <QMessageBox>
 
 // other
+#include "json.h"
 #include "qthelpers.h"
 #include "GPD/DashboardGPD.h"
 #include "gpddownloader.h"
@@ -25,11 +25,11 @@ class GameAdderDialog;
 class GameAdderDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit GameAdderDialog(StfsPackage *package, QWidget *parent = 0);
     ~GameAdderDialog();
-    
+
 private slots:
     void on_treeWidgetAllGames_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void gameReplyFinished(QNetworkReply*);
