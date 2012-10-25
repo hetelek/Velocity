@@ -90,6 +90,9 @@ public:
     // Description: get the file entry of a file's path, sets nameLen to '0' if not found
     FileEntry GetFileEntry(string pathInPackage, bool checkFolders = false, FileEntry *newEntry = NULL);
 
+    // Description: get the first 4 bytes of a file
+    DWORD GetFileMagic(string pathInPackage);
+
     // Description: check if the file exists
     bool FileExists(string pathInPackage);
 

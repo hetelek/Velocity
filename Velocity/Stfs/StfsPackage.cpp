@@ -365,6 +365,21 @@ FileListing StfsPackage::GetFileListing(bool forceUpdate)
     return fileListing;
 }
 
+DWORD StfsPackage::GetFileMagic(string pathInPackage)
+{
+    FileEntry entry = GetFileEntry(pathInPackage);
+
+    // make sure the file is at least 4 bytes
+    if (entry.fileSize < 4)
+        return 0;
+
+    // seek to the begining of the file in the package
+    io->setPosition(BlockToAddress(entry.startingBlockNum));
+
+    // read the magic
+    return io->readDword();
+}
+
 void StfsPackage::ExtractFile(string pathInPackage, string outPath, void (*extractProgress)(void*, DWORD, DWORD), void *arg)
 {
     // get the given path's file entry
