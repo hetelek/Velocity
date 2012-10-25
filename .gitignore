@@ -172,6 +172,7 @@ Makefile
 VelocityDebug/
 VelocityRelease/
 Velocity.app/
+*-Win/
 
 # Compiled Object files
 *.slo
