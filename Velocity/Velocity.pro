@@ -74,7 +74,8 @@ SOURCES += main.cpp \
     titleidfinderdialog.cpp \
     gamerpicturepackdialog.cpp \
     gamerpicturedownloader.cpp \
-    preferencesdialog.cpp
+	preferencesdialog.cpp \
+    json.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -130,7 +131,8 @@ HEADERS  += mainwindow.h \
     gamerpicturedownloader.h \
     PluginInterfaces/igamemodder.h \
     PluginInterfaces/igpdmodder.h \
-    preferencesdialog.h
+	preferencesdialog.h \
+    json.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -156,8 +158,8 @@ FORMS    += mainwindow.ui \
     themecreationwizard.ui \
     gameadderdialog.ui \
     titleidfinderdialog.ui \
-    gamerpicturepackdialog.ui \
-    preferencesdialog.ui
+	gamerpicturepackdialog.ui \
+	preferencesdialog.ui
 
 RESOURCES += \
     Resources.qrc
