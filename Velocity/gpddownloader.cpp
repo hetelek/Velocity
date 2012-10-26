@@ -69,6 +69,5 @@ void GPDDownloader::onRequestFinished(int id, bool error)
 
 void GPDDownloader::onDone(bool error)
 {
-    if (!error)
-        emit FinishedDownloading(gameGPD, awardGPD, entry);
+    emit FinishedDownloading(gameGPD, awardGPD, entry, error);
 }

@@ -21,7 +21,7 @@ public:
     void BeginDownload();
 
 signals:
-    void FinishedDownloading(QString gameGPDPath, QString awardGPDPath, TitleEntry entry);
+    void FinishedDownloading(QString gameGPDPath, QString awardGPDPath, TitleEntry entry, bool error);
 
 public slots:
     void onDone(bool);
