@@ -42,10 +42,8 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu)
     loader.setParent(ui->mdiArea);
     QObject *possiblePlugin = loader.instance();
 
-    qDebug() << "yee";
     if (possiblePlugin)
     {
-        qDebug() << "yee";
         IGameModder *game = qobject_cast<IGameModder*>(possiblePlugin);
         IGPDModder *gpd = qobject_cast<IGPDModder*>(possiblePlugin);
 
@@ -185,7 +183,7 @@ void MainWindow::InjectGPD()
 
 void MainWindow::LoadAllPlugins()
 {
-    QDir path(settings->value("PluginPath").toString());
+    QDir path(settings->value("PluginPath").toString().replace("./", QtHelpers::ExecutingDirectory()));
 
     foreach (QString filename, path.entryList(QDir::Files))
         LoadPlugin(path.absolutePath() + "/" + filename, true);
