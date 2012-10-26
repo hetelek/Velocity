@@ -131,7 +131,7 @@ DWORD FileIO::readDword()
 	DWORD returnVal;
 	readBytesWithChecks(&returnVal, 4);
 
-    #ifdef __APPLE__ | __unix
+    #if defined __unix | defined __APPLE__
         return returnVal & 0x00000000FFFFFFFF;
     #else
         return returnVal;
