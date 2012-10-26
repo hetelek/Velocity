@@ -10,6 +10,7 @@
 #include <QDateTime>
 #include <QMenu>
 #include <QMessageBox>
+#include <QStringList>
 
 // other
 #include "json.h"
@@ -35,7 +36,7 @@ private slots:
     void gameReplyFinished(QNetworkReply*);
     void showRemoveContextMenu_QueuedGames(QPoint point);
     void showRemoveContextMenu_AllGames(QPoint point);
-    void finishedDownloadingGPD(QString gamePath, QString awardPath, TitleEntry entry);
+    void finishedDownloadingGPD(QString gamePath, QString awardPath, TitleEntry entry, bool error);
     void thumbnailReplyFinished(QNetworkReply *aReply);
     void on_pushButton_2_clicked();
     void on_pushButton_clicked();
@@ -49,6 +50,7 @@ private:
     QNetworkAccessManager *manager;
     DashboardGPD *dashGPD;
     QString dashGPDTempPath, pecTempPath;
+    QStringList notSuccessful;
     StfsPackage *package, *pecPackage;
 
     bool allowInjection, existed;

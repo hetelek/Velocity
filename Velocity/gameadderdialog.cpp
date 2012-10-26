@@ -15,7 +15,6 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent) : QDialo
     ui->treeWidgetQueue->header()->resizeSection(0, 182);
 
     // make sure the dashboard gpd exists
-
     try
     {
         dashGPDTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
@@ -168,66 +167,81 @@ void GameAdderDialog::showRemoveContextMenu_AllGames(QPoint point)
     }
 }
 
-void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath, TitleEntry entry)
+void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath, TitleEntry entry, bool error)
 {
-    if (!allowInjection)
+    ui->progressBar->setValue(((double)++downloadedCount / (double)totalDownloadCount) * 100);
+    if (!error)
     {
-        QFile::remove(gamePath);
-
-        if (!awardPath.isEmpty())
-            QFile::remove(awardPath);
-
-        return;
-    }
-
-    try
-    {
-        QString gpdName = QString::number(entry.titleID, 16).toUpper() + ".gpd";
-
-        // inject the game gpd
-        package->InjectFile(gamePath.toStdString(), gpdName.toStdString());
-        QFile::remove(gamePath);
-
-        if (!awardPath.isEmpty())
+        if (!allowInjection)
         {
-            if  (pecPackage == NULL)
-            {
-                DWORD flags = StfsPackagePEC;
+            QFile::remove(gamePath);
 
-                if (!package->FileExists("PEC"))
-                {
-                    flags |= StfsPackageCreate;
-                    existed = false;
-                }
-                else
-                {
-                    package->ExtractFile("PEC", pecTempPath.toStdString());
-                    existed = true;
-                }
+            if (!awardPath.isEmpty())
+                QFile::remove(awardPath);
 
-                pecPackage = new StfsPackage(pecTempPath.toStdString(), flags);
-            }
-
-            // inject the gpd and delete it
-            pecPackage->InjectFile(awardPath.toStdString(), gpdName.toStdString());
-            QFile::remove(awardPath);
+            return;
         }
 
-        // update the dash gpd
-        dashGPD->CreateTitleEntry(&entry);
-        dashGPD->gamePlayedCount.int32++;
-    }
-    catch (std::string error)
-    {
-        QMessageBox::critical(this, "Error Occured", "An error occured while injecting the game.\n\n" + QString::fromStdString(error));
-    }
-    catch(...)
-    {
-        QMessageBox::critical(this, "Error Occured", "An unknown error occured while injecting the game(s).");
-    }
+        try
+        {
+            QString gpdName = QString::number(entry.titleID, 16).toUpper() + ".gpd";
 
-    if (downloadedCount++ == totalDownloadCount)
+            // inject the game gpd
+            package->InjectFile(gamePath.toStdString(), gpdName.toStdString());
+            QFile::remove(gamePath);
+
+            if (!awardPath.isEmpty())
+            {
+                if  (pecPackage == NULL)
+                {
+                    DWORD flags = StfsPackagePEC;
+
+                    if (!package->FileExists("PEC"))
+                    {
+                        flags |= StfsPackageCreate;
+                        existed = false;
+                    }
+                    else
+                    {
+                        package->ExtractFile("PEC", pecTempPath.toStdString());
+                        existed = true;
+                    }
+
+                    pecPackage = new StfsPackage(pecTempPath.toStdString(), flags);
+                }
+
+                // inject the gpd and delete it
+                pecPackage->InjectFile(awardPath.toStdString(), gpdName.toStdString());
+                QFile::remove(awardPath);
+            }
+
+            // update the dash gpd
+            dashGPD->CreateTitleEntry(&entry);
+            dashGPD->gamePlayedCount.int32++;
+        }
+        catch (std::string error)
+        {
+            QMessageBox::critical(this, "Error Occured", "An error occured while injecting the game.\n\n" + QString::fromStdString(error));
+        }
+        catch(...)
+        {
+            QMessageBox::critical(this, "Error Occured", "An unknown error occured while injecting the game(s).");
+        }
+    }
+    else
+        notSuccessful.append(QString::fromStdWString(entry.gameName));
+
+    if (downloadedCount == totalDownloadCount)
     {
+        if (notSuccessful.size() > 0)
+        {
+            QString games = "";
+            for (int i = 0; i < notSuccessful.size(); i++)
+                games += notSuccessful.at(i) + "\n";
+
+            QMessageBox::warning(this, "Warning", "Not all games could be added successfully! The following game(s) failed:\n" + games);
+        }
+
         try
         {
             dashGPD->WriteSettingEntry(dashGPD->gamePlayedCount);
@@ -381,7 +395,7 @@ void GameAdderDialog::on_pushButton_2_clicked()
         TitleEntry entry = ui->treeWidgetQueue->topLevelItem(i)->data(0, Qt::UserRole).value<TitleEntry>();
 
         GPDDownloader *downloader = new GPDDownloader(entry, entry.avatarAwardCount != 0, this);
-        connect(downloader, SIGNAL(FinishedDownloading(QString, QString, TitleEntry)), this, SLOT(finishedDownloadingGPD(QString, QString, TitleEntry)));
+        connect(downloader, SIGNAL(FinishedDownloading(QString, QString, TitleEntry, bool)), this, SLOT(finishedDownloadingGPD(QString, QString, TitleEntry, bool)));
         downloader->BeginDownload();
     }
 }
