@@ -68,7 +68,7 @@ private slots:
 
     void on_txtSearch_textChanged(const QString &arg1);
 
-    void onOpenInSelected();
+    void onOpenInSelected(QAction *action);
 
 private:
     Ui::PackageViewer *ui;

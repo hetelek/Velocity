@@ -68,6 +68,8 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidge
             profileEditor = new QAction("Profile Editor", this);
             gameAdder = new QAction("Game Adder", this);
 
+            connect(openInMenu, SIGNAL(triggered(QAction*)), this, SLOT(onOpenInSelected(QAction*)));
+
             ui->btnOpenIn->setEnabled(true);
             openInMenu->addAction(profileEditor);
             openInMenu->addAction(gameAdder);
@@ -299,21 +301,23 @@ void PackageViewer::on_txtSearch_textChanged(const QString &arg1)
     }
 }
 
-void PackageViewer::onOpenInSelected()
+void PackageViewer::onOpenInSelected(QAction *action)
 {
-    QAction *action = qobject_cast<QAction*>(sender());
-
+    // TODO: add open in for plugins
     if (action)
     {
         if (action == gameAdder)
         {
-            qDebug() << "game adder";
-            // game adder
+            GameAdderDialog dialog(package, this);
+            dialog.exec();
         }
         else if (action == profileEditor)
         {
-            qDebug() << "profile editor";
-            // profile editor
+            bool ok;
+            ProfileEditor editor(statusBar, package, false, &ok, this);
+
+            if (ok)
+                editor.exec();
         }
         else
         {
