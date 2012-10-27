@@ -1,17 +1,18 @@
 #include "packageviewer.h"
 #include "ui_packageviewer.h"
 
-PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidget *parent) :
-    QDialog(parent),ui(new Ui::PackageViewer), package(package), parent (parent), statusBar(statusBar)
+PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidget *parent, bool disposePackage) :
+    QDialog(parent),ui(new Ui::PackageViewer), package(package), parent (parent), statusBar(statusBar), disposePackage(disposePackage)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
     QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
-    disposePackage = true;
     ui->treeWidget->header()->setDefaultSectionSize(75);
     ui->treeWidget->header()->resizeSection(0, 200);
     ui->treeWidget->header()->resizeSection(2, 100);
+
+    ui->imgTile->setPixmap(QPixmap());
 
     // load all of the data
     if (package->IsPEC())
@@ -78,8 +79,11 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidge
 
 PackageViewer::~PackageViewer()
 {
-    //if (disposePackage)
-        //delete package;
+    if (disposePackage)
+    {
+        package->Close();
+        delete package;
+    }
     delete ui;
 }
 
@@ -654,17 +658,17 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
 
             package->ExtractFile(packagePath.toStdString(), tempName);
 
-            StfsPackage *pec = new StfsPackage(tempName, StfsPackagePEC);
-            PackageViewer dialog(statusBar, pec, this);
+            StfsPackage pec (tempName, StfsPackagePEC);
+            PackageViewer dialog(statusBar, &pec, this, false);
             dialog.exec();
+
+            pec.Close();
 
             // replace the PEC with the modified one
             package->ReplaceFile(tempName, packagePath.toStdString());
 
             // delete the temp file
             remove(tempName.c_str());
-
-            delete pec;
         }
         catch(string error)
         {
@@ -691,8 +695,10 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
                 package->ExtractFile(packagePath.toStdString(), tempName);
 
                 StfsPackage pack(tempName);
-                PackageViewer dialog(statusBar, &pack, this);
+                PackageViewer dialog(statusBar, &pack, this, false);
                 dialog.exec();
+
+                pack.Close();
 
                 // replace
                 package->ReplaceFile(tempName, packagePath.toStdString());
