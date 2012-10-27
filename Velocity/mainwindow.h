@@ -55,7 +55,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QList<QUrl> arguments, QWidget *parent = 0);
     void LoadPlugin(QString filename, bool addToMenu);
     void LoadAllPlugins();
     ~MainWindow();
@@ -100,6 +100,8 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QSettings *settings;
+
+    void LoadFiles(QList<QUrl> &filePaths);
 };
 
 #endif // MAINWINDOW_H

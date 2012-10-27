@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
@@ -34,6 +34,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     }
     else
         ui->statusBar->showMessage("Welcome to Velocity!", 10000);
+
+    LoadFiles(arguments);
 }
 
 void MainWindow::LoadPlugin(QString filename, bool addToMenu)
@@ -211,6 +213,11 @@ void MainWindow::dropEvent(QDropEvent *event)
     QList<QUrl> filePaths = event->mimeData()->urls();
 
     // iterate through all of the files dropped
+    LoadFiles(filePaths);
+}
+
+void MainWindow::LoadFiles(QList<QUrl> &filePaths)
+{
     for (DWORD i = 0; i < filePaths.size(); i++)
     {
 #ifdef __WIN32__
