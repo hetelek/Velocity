@@ -23,6 +23,8 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QUuid>
+#include <QWidgetAction>
+#include <QDebug>
 
 // xbox libs
 #include "Stfs/StfsPackage.h"
@@ -66,6 +68,8 @@ private slots:
 
     void on_txtSearch_textChanged(const QString &arg1);
 
+    void onOpenInSelected();
+
 private:
     Ui::PackageViewer *ui;
     void PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *parent = NULL);
@@ -76,6 +80,9 @@ private:
     FileListing listing;
     QWidget *parent;
     QStatusBar *statusBar;
+    QMenu *openInMenu;
+
+    QAction *profileEditor, *gameAdder;
 
     void showAllItems();
 

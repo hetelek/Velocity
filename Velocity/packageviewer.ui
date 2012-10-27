@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>514</width>
+    <width>543</width>
     <height>526</height>
    </rect>
   </property>
@@ -131,16 +131,22 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,1,2,2">
      <item>
-      <widget class="QPushButton" name="btnProfileEditor">
+      <widget class="QPushButton" name="btnOpenIn">
        <property name="enabled">
         <bool>false</bool>
        </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777213</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="text">
-        <string>Open in Profile Editor</string>
+        <string>Open In</string>
        </property>
        <property name="icon">
         <iconset resource="Resources.qrc">
-         <normaloff>:/Images/profile.png</normaloff>:/Images/profile.png</iconset>
+         <normaloff>:/Images/FolderFileIcon.png</normaloff>:/Images/FolderFileIcon.png</iconset>
        </property>
       </widget>
      </item>
@@ -163,7 +169,7 @@
         </font>
        </property>
        <property name="text">
-        <string>View All Metadata</string>
+        <string>Metadata</string>
        </property>
        <property name="icon">
         <iconset resource="Resources.qrc">
@@ -174,7 +180,7 @@
      <item>
       <widget class="QPushButton" name="btnFix">
        <property name="text">
-        <string>Rehash and Resign</string>
+        <string>Rehash/Resign</string>
        </property>
        <property name="icon">
         <iconset resource="Resources.qrc">
@@ -256,6 +262,21 @@
        <property name="icon">
         <iconset resource="Resources.qrc">
          <normaloff>:/Images/undo.png</normaloff>:/Images/undo.png</iconset>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <property name="autoDefault">
+        <bool>true</bool>
+       </property>
+       <property name="default">
+        <bool>false</bool>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
        </property>
       </widget>
      </item>

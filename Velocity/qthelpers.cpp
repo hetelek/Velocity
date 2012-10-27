@@ -141,14 +141,12 @@ void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
 
         // Set sizes according to OS:
     #ifdef __APPLE__
-        int ButtonHeight = 32;
-        int LabelsFontSize = 12;
-        int cmbxHeight = 20;
-        QFont cntrlFont("", 10);
-        QFont txtFont("", 10);
+        int ButtonHeight = 35;
+        int cmbxHeight = 30;
+        QFont cntrlFont("Myriad Pro", 14);
+        QFont txtFont("Myriad Pro", 14);
     #elif _WIN32 // Win XP/7
         int ButtonHeight = 24;
-        int LabelsFontSize = 8;
         int cmbxHeight = 20;
         QFont cntrlFont("MS Shell Dlg 2", 8);
         QFont txtFont("MS Shell Dlg 2", 8);

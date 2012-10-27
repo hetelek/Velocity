@@ -62,8 +62,14 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidge
             ui->txtDeviceID->setEnabled(false);
         }
 
+        openInMenu = new QMenu;
         if (package->metaData->contentType == Profile)
-            ui->btnProfileEditor->setEnabled(true);
+        {
+            ui->btnOpenIn->setEnabled(true);
+            openInMenu->addAction(profileEditor);
+            openInMenu->addAction(gameAdder);
+            ui->btnOpenIn->setMenu(openInMenu);
+        }
     }
 
     listing = package->GetFileListing();
@@ -75,6 +81,9 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidge
 
     ui->imgTile->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->imgTile, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showSaveImageContextMenu(QPoint)));
+
+    profileEditor = new QAction("Profile Editor", this, SLOT(onOpenInSelected()));
+    gameAdder = new QAction("Game Adder", this, SLOT(onOpenInSelected()));
 }
 
 PackageViewer::~PackageViewer()
@@ -235,6 +244,11 @@ void PackageViewer::showSaveImageContextMenu(QPoint point)
     QPoint globalPos = ui->imgTile->mapToGlobal(point);
     QMenu contextMenu;
 
+    QWidgetAction *action = new QWidgetAction(this);
+    QPushButton *button2 = new QPushButton("Click me", &contextMenu);
+    action->setDefaultWidget(button2);
+    contextMenu.addAction(action);
+
     contextMenu.addAction(QPixmap(":/Images/save.png"), "Save Image");
     QAction *selectedItem = contextMenu.exec(globalPos);
 
@@ -282,6 +296,30 @@ void PackageViewer::on_txtSearch_textChanged(const QString &arg1)
 
         // show the item itself
         ui->treeWidget->setItemHidden(itemsMatched.at(i), false);
+    }
+}
+
+void PackageViewer::onOpenInSelected()
+{
+    QAction *action = qobject_cast<QAction*>(sender());
+
+    if (action)
+    {
+        if (action == gameAdder)
+        {
+            qDebug() << "game adder";
+            // game adder
+        }
+        else if (action == profileEditor)
+        {
+            qDebug() << "profile editor";
+            // profile editor
+        }
+        else
+        {
+            qDebug() << "other";
+            // game modder
+        }
     }
 }
 
