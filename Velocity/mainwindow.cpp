@@ -223,18 +223,18 @@ void MainWindow::dropEvent(QDropEvent *event)
         if (!QFile::exists(QString::fromStdString(fileName)))
             continue;
 
-        // read in the file magic
-        FileIO io(fileName);
-        DWORD fileMagic = io.readDword();
-        io.close();
-
-        switch (fileMagic)
+        try
         {
-            case CON:
-            case LIVE:
-            case PIRS:
+            // read in the file magic
+            FileIO io(fileName);
+            DWORD fileMagic = io.readDword();
+            io.close();
+
+            switch (fileMagic)
             {
-                try
+                case CON:
+                case LIVE:
+                case PIRS:
                 {
                     StfsPackage *package = new StfsPackage(fileName);
 
@@ -289,16 +289,10 @@ void MainWindow::dropEvent(QDropEvent *event)
                             }
                         }
                     }
+
+                    break;
                 }
-                catch (string error)
-                {
-                    QMessageBox::critical(this, "Package Error", "An error has occurred while opening the package.\n\n" + QString::fromStdString(error));
-                }
-                break;
-            }
-            case 0x58444246:
-            {
-                try
+                case 0x58444246:
                 {
                     GPDBase *gpd = new GPDBase(fileName);
                     ui->statusBar->showMessage("GPD parsed successfully", 3000);
@@ -307,16 +301,9 @@ void MainWindow::dropEvent(QDropEvent *event)
                     ui->mdiArea->addSubWindow(dialog);
                     dialog->show();
 
+                    break;
                 }
-                catch (string error)
-                {
-                    QMessageBox::critical(this, "GPD Error", "An error has occurred while opening the GPD.\n\n" + QString::fromStdString(error));
-                }
-                break;
-            }
-            case 0x53545242:
-            {
-                try
+                case 0x53545242:
                 {
                     AvatarAsset *asset = new AvatarAsset(fileName);
 
@@ -325,16 +312,16 @@ void MainWindow::dropEvent(QDropEvent *event)
                     dialog->show();
 
                     ui->statusBar->showMessage("STRB file parsed successfully", 3000);
+                    break;
                 }
-                catch (string error)
-                {
-                    QMessageBox::critical(this, "STRB Error", "An error occured while opening the STRB package.\n\n" + QString::fromStdString(error));
-                }
-                break;
+                default:
+                    QMessageBox::warning(this, "Unknown File Format", "The following file is an unknown format. Velocity can only read STFS, XDBF, and STRB files.\n\n" + QString::fromStdString(fileName));
+                    break;
             }
-            default:
-                QMessageBox::warning(this, "Unknown File Format", "The following file is an unknown format. Velocity can only read STFS, XDBF, and STRB files.\n\n" + QString::fromStdString(fileName));
-                break;
+        }
+        catch (string error)
+        {
+            QMessageBox::critical(this, "Error", "An error occurred while opening the file.\n\n" + QString::fromStdString(error));
         }
     }
 }
