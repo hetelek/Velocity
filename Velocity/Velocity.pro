@@ -21,7 +21,7 @@ win32 {
     LIBS += "C:/botan/libBotan.a"
 }
 
-mac || unix {
+mac | unix {
     INCLUDEPATH += "/usr/local/include/botan-1.10"
     LIBS += "/usr/local/lib/libbotan-1.10.a"
 }
