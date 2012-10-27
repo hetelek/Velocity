@@ -65,6 +65,9 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidge
         openInMenu = new QMenu;
         if (package->metaData->contentType == Profile)
         {
+            profileEditor = new QAction("Profile Editor", this);
+            gameAdder = new QAction("Game Adder", this);
+
             ui->btnOpenIn->setEnabled(true);
             openInMenu->addAction(profileEditor);
             openInMenu->addAction(gameAdder);
@@ -81,9 +84,6 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidge
 
     ui->imgTile->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->imgTile, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showSaveImageContextMenu(QPoint)));
-
-    profileEditor = new QAction("Profile Editor", this, SLOT(onOpenInSelected()));
-    gameAdder = new QAction("Game Adder", this, SLOT(onOpenInSelected()));
 }
 
 PackageViewer::~PackageViewer()

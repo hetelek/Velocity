@@ -129,7 +129,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,1,2,2">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,1,1">
      <item>
       <widget class="QPushButton" name="btnOpenIn">
        <property name="enabled">
@@ -146,14 +146,14 @@
        </property>
        <property name="icon">
         <iconset resource="Resources.qrc">
-         <normaloff>:/Images/FolderFileIcon.png</normaloff>:/Images/FolderFileIcon.png</iconset>
+         <normaloff>:/Images/open.png</normaloff>:/Images/open.png</iconset>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btnStfsTools">
        <property name="text">
-        <string>STFS Tools</string>
+        <string>STFS Tool</string>
        </property>
        <property name="icon">
         <iconset resource="Resources.qrc">
@@ -165,7 +165,7 @@
       <widget class="QPushButton" name="btnViewAll">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>8</pointsize>
         </font>
        </property>
        <property name="text">
