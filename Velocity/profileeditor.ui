@@ -39,632 +39,636 @@
       <attribute name="title">
        <string>General Settings</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0,10,1">
+      <layout class="QVBoxLayout" name="verticalLayout_23">
        <item>
-        <widget class="QGroupBox" name="groupBox_3">
-         <property name="title">
-          <string>Account Information</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_3">
-          <item row="0" column="0" colspan="3">
-           <layout class="QGridLayout" name="gridLayout">
-            <item row="0" column="0" rowspan="2">
-             <widget class="QLabel" name="imgGamerpicture">
-              <property name="minimumSize">
-               <size>
-                <width>64</width>
-                <height>64</height>
-               </size>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::NoFrame</enum>
-              </property>
-             </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0,0,0">
+         <item>
+          <widget class="QGroupBox" name="groupBox_3">
+           <property name="title">
+            <string>Account Information</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="0" colspan="3">
+             <layout class="QGridLayout" name="gridLayout">
+              <item row="0" column="0" rowspan="2">
+               <widget class="QLabel" name="imgGamerpicture">
+                <property name="minimumSize">
+                 <size>
+                  <width>64</width>
+                  <height>64</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="txtGamertag">
+                <property name="maxLength">
+                 <number>15</number>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLabel" name="lblGamerscore">
+                <property name="text">
+                 <string>gamerscore</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
             </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="txtGamertag">
-              <property name="maxLength">
-               <number>15</number>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLabel" name="lblGamerscore">
+            <item row="1" column="0">
+             <widget class="QLabel" name="lblLanguage1">
               <property name="text">
-               <string>gamerscore</string>
+               <string>Language:</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="2">
-             <spacer name="horizontalSpacer">
+            <item row="1" column="2">
+             <widget class="QLabel" name="lblLanguage">
+              <property name="text">
+               <string>-</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0" colspan="2">
+             <widget class="QLabel" name="lblLanguage_2">
+              <property name="text">
+               <string>Subscription Teir:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QLabel" name="lblSubscriptionTeir">
+              <property name="text">
+               <string>-</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="2">
+             <widget class="QLabel" name="lblParentalControls">
+              <property name="text">
+               <string>Parental Controls Enabled:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2">
+             <widget class="QLabel" name="lblParentalControlled">
+              <property name="text">
+               <string>-</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0" colspan="2">
+             <widget class="QLabel" name="lblParentalControls_2">
+              <property name="text">
+               <string>Payment Type Credit Card:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="2">
+             <widget class="QLabel" name="lblCreditCard">
+              <property name="text">
+               <string>-</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_23">
+              <property name="text">
+               <string>XUID:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="2">
+             <widget class="QLabel" name="lblXUID">
+              <property name="text">
+               <string>-</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QLabel" name="label_21">
+              <property name="text">
+               <string>Type:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1" rowspan="2">
+             <spacer name="horizontalSpacer_10">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>40</width>
-                <height>20</height>
+                <width>121</width>
+                <height>28</height>
                </size>
               </property>
              </spacer>
             </item>
-           </layout>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="lblLanguage1">
-            <property name="text">
-             <string>Language:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLabel" name="lblLanguage">
-            <property name="text">
-             <string>-</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0" colspan="2">
-           <widget class="QLabel" name="lblLanguage_2">
-            <property name="text">
-             <string>Subscription Teir:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QLabel" name="lblSubscriptionTeir">
-            <property name="text">
-             <string>-</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0" colspan="2">
-           <widget class="QLabel" name="lblParentalControls">
-            <property name="text">
-             <string>Parental Controls Enabled:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QLabel" name="lblParentalControlled">
-            <property name="text">
-             <string>-</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0" colspan="2">
-           <widget class="QLabel" name="lblParentalControls_2">
-            <property name="text">
-             <string>Payment Type Credit Card:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="2">
-           <widget class="QLabel" name="lblCreditCard">
-            <property name="text">
-             <string>-</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label_23">
-            <property name="text">
-             <string>XUID:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="2">
-           <widget class="QLabel" name="lblXUID">
-            <property name="text">
-             <string>-</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0">
-           <widget class="QLabel" name="label_21">
-            <property name="text">
-             <string>Type:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="1" rowspan="2">
-           <spacer name="horizontalSpacer_10">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>121</width>
-              <height>28</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="6" column="2" rowspan="2">
-           <layout class="QVBoxLayout" name="verticalLayout_4">
-            <item>
-             <widget class="QComboBox" name="cmbxConsoleType">
+            <item row="6" column="2" rowspan="2">
+             <layout class="QVBoxLayout" name="verticalLayout_4">
               <item>
-               <property name="text">
-                <string>Developer</string>
-               </property>
+               <widget class="QComboBox" name="cmbxConsoleType">
+                <item>
+                 <property name="text">
+                  <string>Developer</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Retail</string>
+                 </property>
+                </item>
+               </widget>
               </item>
               <item>
-               <property name="text">
-                <string>Retail</string>
-               </property>
+               <widget class="QComboBox" name="cmbxNetwork">
+                <item>
+                 <property name="text">
+                  <string>XboxLIVE (PROD)</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>PartnerNet (PART)</string>
+                 </property>
+                </item>
+               </widget>
               </item>
-             </widget>
+             </layout>
             </item>
-            <item>
-             <widget class="QComboBox" name="cmbxNetwork">
-              <item>
-               <property name="text">
-                <string>XboxLIVE (PROD)</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>PartnerNet (PART)</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="7" column="0">
-           <widget class="QLabel" name="label_22">
-            <property name="text">
-             <string>Network:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="0">
-           <widget class="QLabel" name="label_25">
-            <property name="text">
-             <string>Passcode:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="1" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <widget class="QComboBox" name="cmbxPass1">
-              <item>
-               <property name="text">
-                <string>Null</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Up</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Down</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Left</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Right</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>X</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Y</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>LT</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>RT</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>LB</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>RB</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="cmbxPass2">
-              <item>
-               <property name="text">
-                <string>Null</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Up</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Down</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Left</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Right</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>X</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Y</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>LT</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>RT</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>LB</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>RB</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="cmbxPass3">
-              <item>
-               <property name="text">
-                <string>Null</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Up</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Down</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Left</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Right</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>X</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Y</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>LT</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>RT</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>LB</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>RB</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="cmbxPass4">
-              <item>
-               <property name="text">
-                <string>Null</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Up</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Down</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Left</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Right</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>X</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Y</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>LT</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>RT</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>LB</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>RB</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="9" column="0">
-           <widget class="QLabel" name="label_24">
-            <property name="text">
-             <string>Attributes:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="9" column="1" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
-            <item>
-             <widget class="QCheckBox" name="chxLIVE">
+            <item row="7" column="0">
+             <widget class="QLabel" name="label_22">
               <property name="text">
-               <string>LIVE Enabled</string>
+               <string>Network:</string>
               </property>
              </widget>
             </item>
-            <item>
-             <widget class="QCheckBox" name="chxRecovering">
+            <item row="8" column="0">
+             <widget class="QLabel" name="label_25">
               <property name="text">
-               <string>Recovering</string>
+               <string>Passcode:</string>
               </property>
              </widget>
             </item>
-            <item>
-             <widget class="QCheckBox" name="chxPasscode">
+            <item row="8" column="1" colspan="2">
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QComboBox" name="cmbxPass1">
+                <item>
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Up</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Down</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Left</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Right</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>X</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Y</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>LT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>RT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>LB</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>RB</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="cmbxPass2">
+                <item>
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Up</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Down</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Left</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Right</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>X</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Y</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>LT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>RT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>LB</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>RB</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="cmbxPass3">
+                <item>
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Up</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Down</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Left</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Right</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>X</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Y</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>LT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>RT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>LB</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>RB</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="cmbxPass4">
+                <item>
+                 <property name="text">
+                  <string>Null</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Up</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Down</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Left</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Right</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>X</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Y</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>LT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>RT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>LB</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>RB</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="9" column="0">
+             <widget class="QLabel" name="label_24">
               <property name="text">
-               <string>Passcode</string>
+               <string>Attributes:</string>
               </property>
              </widget>
             </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_2">
-         <property name="title">
-          <string>Profile Settings</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_4">
-          <item row="0" column="0">
-           <layout class="QVBoxLayout" name="verticalLayout_3">
-            <item>
-             <layout class="QGridLayout" name="gridLayout_2">
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_12">
+            <item row="9" column="1" colspan="2">
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <widget class="QCheckBox" name="chxLIVE">
                 <property name="text">
-                 <string>Name</string>
+                 <string>LIVE Enabled</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="1" colspan="3">
-               <widget class="QLineEdit" name="txtName">
-                <property name="maxLength">
-                 <number>129</number>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_13">
+              <item>
+               <widget class="QCheckBox" name="chxRecovering">
                 <property name="text">
-                 <string>Motto:</string>
+                 <string>Recovering</string>
                 </property>
                </widget>
               </item>
-              <item row="1" column="1" colspan="3">
-               <widget class="QLineEdit" name="txtMotto">
-                <property name="maxLength">
-                 <number>21</number>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_14">
+              <item>
+               <widget class="QCheckBox" name="chxPasscode">
                 <property name="text">
-                 <string>Location:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1" colspan="3">
-               <widget class="QLineEdit" name="txtLocation">
-                <property name="maxLength">
-                 <number>40</number>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0" colspan="2">
-               <widget class="QLabel" name="label_15">
-                <property name="text">
-                 <string>Gamerzone:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="2" colspan="2">
-               <widget class="QComboBox" name="cmbxGamerzone">
-                <item>
-                 <property name="text">
-                  <string>None</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Recreational</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Pro</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Family</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Underground</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="4" column="0" colspan="2">
-               <widget class="QLabel" name="label_17">
-                <property name="text">
-                 <string>Region:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="2" colspan="2">
-               <widget class="QComboBox" name="cmbxRegion"/>
-              </item>
-              <item row="5" column="0" colspan="2">
-               <widget class="QLabel" name="label_18">
-                <property name="text">
-                 <string>Years on Live:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="2" colspan="2">
-               <widget class="QComboBox" name="cmbxTenure"/>
-              </item>
-              <item row="6" column="0" colspan="3">
-               <widget class="QLabel" name="label_16">
-                <property name="text">
-                 <string>Reputation:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="3">
-               <widget class="QDoubleSpinBox" name="spnRep">
-                <property name="maximum">
-                 <double>100.000000000000000</double>
+                 <string>Passcode</string>
                 </property>
                </widget>
               </item>
              </layout>
             </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_2">
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_2">
+           <property name="title">
+            <string>Profile Settings</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="0" column="0">
+             <layout class="QVBoxLayout" name="verticalLayout_3">
               <item>
-               <widget class="QLabel" name="label_19">
-                <property name="text">
-                 <string>Bio:</string>
-                </property>
-               </widget>
+               <layout class="QGridLayout" name="gridLayout_2">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_12">
+                  <property name="text">
+                   <string>Name</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1" colspan="3">
+                 <widget class="QLineEdit" name="txtName">
+                  <property name="maxLength">
+                   <number>129</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_13">
+                  <property name="text">
+                   <string>Motto:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1" colspan="3">
+                 <widget class="QLineEdit" name="txtMotto">
+                  <property name="maxLength">
+                   <number>21</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_14">
+                  <property name="text">
+                   <string>Location:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1" colspan="3">
+                 <widget class="QLineEdit" name="txtLocation">
+                  <property name="maxLength">
+                   <number>40</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0" colspan="2">
+                 <widget class="QLabel" name="label_15">
+                  <property name="text">
+                   <string>Gamerzone:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="2" colspan="2">
+                 <widget class="QComboBox" name="cmbxGamerzone">
+                  <item>
+                   <property name="text">
+                    <string>None</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Recreational</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Pro</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Family</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Underground</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item row="4" column="0" colspan="2">
+                 <widget class="QLabel" name="label_17">
+                  <property name="text">
+                   <string>Region:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="2" colspan="2">
+                 <widget class="QComboBox" name="cmbxRegion"/>
+                </item>
+                <item row="5" column="0" colspan="2">
+                 <widget class="QLabel" name="label_18">
+                  <property name="text">
+                   <string>Years on Live:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="5" column="2" colspan="2">
+                 <widget class="QComboBox" name="cmbxTenure"/>
+                </item>
+                <item row="6" column="0" colspan="3">
+                 <widget class="QLabel" name="label_16">
+                  <property name="text">
+                   <string>Reputation:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="6" column="3">
+                 <widget class="QDoubleSpinBox" name="spnRep">
+                  <property name="maximum">
+                   <double>100.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
               <item>
-               <widget class="QPlainTextEdit" name="txtBio"/>
+               <layout class="QVBoxLayout" name="verticalLayout_2">
+                <item>
+                 <widget class="QLabel" name="label_19">
+                  <property name="text">
+                   <string>Bio:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPlainTextEdit" name="txtBio"/>
+                </item>
+               </layout>
               </item>
              </layout>
             </item>
            </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="imgAvatar">
-         <property name="minimumSize">
-          <size>
-           <width>150</width>
-           <height>300</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>150</width>
-           <height>300</height>
-          </size>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="imgAvatar">
+           <property name="minimumSize">
+            <size>
+             <width>150</width>
+             <height>300</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>150</width>
+             <height>300</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>

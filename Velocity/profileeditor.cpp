@@ -17,6 +17,9 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     ui->lblAwName->setFont(f);
 
     setMinimumHeight(485);
+#elif __APPLE__
+    setMinimumSize(1000, 500);
+    ui->groupBox_3->setMaximumWidth(405);
 #elif __WIN32__
     ui->lblAchName->setFont(QFont("Arial", 10));
     ui->lblAwName->setFont(QFont("Arial", 10));
@@ -504,6 +507,12 @@ void ProfileEditor::addToDashGPD(SettingEntry *entry, SettingEntryType type, UIN
 
 ProfileEditor::~ProfileEditor()
 {
+    if (*ok)
+    {
+        saveAll();
+        statusBar->showMessage("Saved all changes", 3000);
+    }
+
     // free all the game gpd memory
     for (DWORD i = 0; i < games.size(); i++)
         delete games.at(i).gpd;
@@ -512,14 +521,8 @@ ProfileEditor::~ProfileEditor()
     for (DWORD i = 0; i < aaGames.size(); i++)
     {
         if (aaGames.at(i).titleEntry->achievementCount == 0)
-            delete aaGames.at(i).gameGPD;
+           delete aaGames.at(i).gameGPD;
         delete aaGames.at(i).gpd;
-    }
-
-    if (*ok)
-    {
-        saveAll();
-        statusBar->showMessage("Saved all changes", 3000);
     }
 
     if (dashGPD != NULL)
@@ -537,6 +540,7 @@ ProfileEditor::~ProfileEditor()
     // delete all of the temp files
     for (DWORD i = 0; i < tempFiles.size(); i++)
         QFile::remove(QString::fromStdString(tempFiles.at(i)));
+
     delete ui;
 }
 
