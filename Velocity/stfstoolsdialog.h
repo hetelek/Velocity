@@ -2,6 +2,7 @@
 #define STFSTOOLSDIALOG_H
 
 #include <QDialog>
+#include "qthelpers.h"
 
 #include "Stfs/StfsPackage.h"
 

@@ -5,6 +5,7 @@ StfsToolsDialog::StfsToolsDialog(StfsPackage *package, QWidget *parent) : QDialo
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+    QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
     if (package->metaData->volumeDescriptor.allocatedBlockCount == 0)
         ui->spnBlock->setMaximum(0);
