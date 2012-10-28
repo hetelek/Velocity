@@ -270,7 +270,7 @@ void GamerPicturePackDialog::showContextMenu(QPoint p, QListWidget *current, QLi
     else if (selectedItem->text() == "Save Image")
     {
         QString savePath = QFileDialog::getSaveFileName(this, "Choose a place to save the gamerpicture",
-                                                        QtHelpers::DesktopLocation() + "\\" + getImageName(currentStrs->at(current->currentIndex().row()), true) + ".png", "*.png");
+                                                        QtHelpers::DesktopLocation() + "/" + getImageName(currentStrs->at(current->currentIndex().row()), true) + ".png", "*.png");
 
         if (savePath == "")
             return;

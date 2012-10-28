@@ -400,7 +400,7 @@ void ProfileEditor::showAvatarContextMenu(QPoint point)
         // get a path for the new asset
         QString assetFileName = guid;
         assetFileName = assetFileName.replace("-", "").toUpper();
-        assetSavePath = QFileDialog::getSaveFileName(this, "Choose a place to save the asset", QtHelpers::DesktopLocation() + "\\" + assetFileName, "*");
+        assetSavePath = QFileDialog::getSaveFileName(this, "Choose a place to save the asset", QtHelpers::DesktopLocation() + "/" + assetFileName, "*");
 
         if (assetSavePath == "")
             return;
