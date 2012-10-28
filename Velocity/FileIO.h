@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
+#include <errno.h>
 #include "winnames.h"
 
 using std::string;
