@@ -58,8 +58,6 @@ private slots:
 
     void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
 
-    void on_btnProfileEditor_clicked();
-
     void on_btnStfsTools_clicked();
 
     void on_btnShowAll_clicked();
