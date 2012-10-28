@@ -14,13 +14,16 @@ TARGET = Velocity
 TEMPLATE = app
 
 win32 {
-    RC_FILE = myapp.rc
+    RC_FILE = velocity.rc
 
     include(Stfs/Botan.pri)
     INCLUDEPATH += "C:/botan/include"
     LIBS += "C:/botan/libBotan.a"
 }
 
+mac {
+    ICON = velocity.icns
+}
 mac | unix {
     INCLUDEPATH += "/usr/local/include/botan-1.10"
     LIBS += "/usr/local/lib/libbotan-1.10.a"
