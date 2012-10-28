@@ -246,11 +246,6 @@ void PackageViewer::showSaveImageContextMenu(QPoint point)
     QPoint globalPos = ui->imgTile->mapToGlobal(point);
     QMenu contextMenu;
 
-    QWidgetAction *action = new QWidgetAction(this);
-    QPushButton *button2 = new QPushButton("Click me", &contextMenu);
-    action->setDefaultWidget(button2);
-    contextMenu.addAction(action);
-
     contextMenu.addAction(QPixmap(":/Images/save.png"), "Save Image");
     QAction *selectedItem = contextMenu.exec(globalPos);
 
