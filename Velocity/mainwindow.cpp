@@ -185,10 +185,13 @@ void MainWindow::InjectGPD()
 
 void MainWindow::LoadAllPlugins()
 {
-    QDir path(settings->value("PluginPath").toString().replace("./", QtHelpers::ExecutingDirectory()));
+    QDir path(settings->value("PluginPath").toString());
 
     foreach (QString filename, path.entryList(QDir::Files))
-        LoadPlugin(path.absolutePath() + "/" + filename, true);
+    {
+        qDebug() << filename;
+        LoadPlugin(path.absoluteFilePath(filename), true);
+    }
 }
 
 MainWindow::~MainWindow()
