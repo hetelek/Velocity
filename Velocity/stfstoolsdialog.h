@@ -19,7 +19,8 @@ public:
     ~StfsToolsDialog();
     
 private slots:
-    void on_pushButton_clicked();
+
+    void on_spnBlock_valueChanged(int arg1);
 
 private:
     Ui::StfsToolsDialog *ui;

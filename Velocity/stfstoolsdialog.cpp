@@ -21,8 +21,8 @@ StfsToolsDialog::~StfsToolsDialog()
     delete ui;
 }
 
-void StfsToolsDialog::on_pushButton_clicked()
+void StfsToolsDialog::on_spnBlock_valueChanged(int arg1)
 {
-    ui->lblAddr->setText("0x" + QString::number(package->BlockToAddress(ui->spnBlock->value()), 16).toUpper());
-    ui->lblHashAddr->setText("0x" + QString::number(package->GetHashAddressOfBlock(ui->spnBlock->value()), 16).toUpper());
+    ui->lblAddr->setText("0x" + QString::number(package->BlockToAddress(arg1), 16).toUpper());
+    ui->lblHashAddr->setText("0x" + QString::number(package->GetHashAddressOfBlock(arg1), 16).toUpper());
 }
