@@ -88,7 +88,7 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
         QString femaleAwardCount = gameMap["ttlfac"].toString();
 
         QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidgetAllGames);
-        item->setText(0, gameName);
+        item->setText(0, gameName.trimmed());
         item->setText(1, totalGamerscore);
         item->setText(2, totalAwardCount);
 
