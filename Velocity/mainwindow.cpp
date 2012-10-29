@@ -38,7 +38,7 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
     LoadFiles(arguments);
 }
 
-void MainWindow::LoadPlugin(QString filename, bool addToMenu)
+void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *package)
 {
     QPluginLoader loader(filename);
     loader.setParent(ui->mdiArea);
@@ -54,8 +54,12 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu)
             if (addToMenu)
             {
                 QAction *action = new QAction(game->ToolName(), this);
-                action->setData(QVariant(filename));
+                action->setProperty("path", QVariant(filename));
+                action->setProperty("titleid", QVariant((uint)game->TitleID()));
                 connect(action, SIGNAL(triggered()), this, SLOT(on_actionGame_Modder_triggered()));
+
+                gameActions.push_back(action);
+
                 ui->menuGame_Modders->addAction(action);
             }
             else
@@ -95,28 +99,48 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu)
             if (addToMenu)
             {
                 QAction *action = new QAction(gpd->ToolName(), this);
-                action->setData(QVariant(filename));
+                action->setProperty("path", QVariant(filename));
+                action->setProperty("titleid", QVariant((uint)gpd->TitleID()));
                 connect(action, SIGNAL(triggered()), this, SLOT(on_actionGame_Modder_triggered()));
+
+                gpdActions.push_back(action);
+
                 ui->menuProfile_Modders->addAction(action);
             }
             else
             {
                 QWidget *widget = gpd->GetDialog();
 
-                QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Profile"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
-                if (fileName.isNull())
+                Arguments *args = new Arguments;
+
+                if (package == NULL)
                 {
-                    delete possiblePlugin;
-                    return;
+                    args->cleanupPackage = true;
+
+                    QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Profile"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
+                    if (fileName.isNull())
+                    {
+                        delete possiblePlugin;
+                        return;
+                    }
+
+                    try
+                    {
+                        package = new StfsPackage(fileName.toStdString());
+                    }
+                    catch(string error)
+                    {
+                        QMessageBox::critical(this, "Opening Error", "Could not open package.\n\n" + QString::fromStdString(error));
+                        return;
+                    }
                 }
+                else
+                    args->cleanupPackage = false;
 
                 try
                 {
-                    StfsPackage *package = new StfsPackage(fileName.toStdString());
-
                     QString tempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
 
-                    Arguments *args = new Arguments;
                     args->package = package;
                     args->tempFilePath = tempPath;
 
@@ -169,15 +193,20 @@ void MainWindow::InjectGPD()
         args->package->ReplaceFile(args->tempFilePath.toStdString(), QString("%1").arg(gpd->TitleID(), 8, 16, QChar('0')).toUpper().toStdString() + ".gpd");
         args->package->Rehash();
         args->package->Resign(QtHelpers::GetKVPath(args->package->metaData->certificate.ownerConsoleType, this));
-        args->package->Close();
-        delete args->package;
+
+        if (args->cleanupPackage)
+        {
+            args->package->Close();
+            delete args->package;
+        }
     }
     catch (string error)
     {
         QMessageBox::critical(NULL, "Couldn't Repalce GPD", "The GPD could not be replaced.\n\n" + QString::fromStdString(error));
         try
         {
-            delete args->package;
+            if (args->cleanupPackage)
+                delete args->package;
         }
         catch(...) { }
     }
@@ -252,7 +281,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                     {
                         if (settings->value("PackageDropAction").toInt() == OpenInPackageViewer)
                         {
-                            PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this);
+                            PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gameActions, gpdActions, this);
                             ui->mdiArea->addSubWindow(viewer);
                             viewer->show();
 
@@ -272,7 +301,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                     {
                         if (settings->value("ProfileDropAction").toInt() == OpenInPackageViewer)
                         {
-                            PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this);
+                            PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gameActions, gpdActions, this);
                             ui->mdiArea->addSubWindow(viewer);
                             viewer->show();
 
@@ -379,7 +408,7 @@ void MainWindow::on_actionPackage_triggered()
     {
         StfsPackage *package = new StfsPackage(fileName.toStdString());
 
-        PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this);
+        PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gameActions, gpdActions, this);
         ui->mdiArea->addSubWindow(viewer);
         viewer->show();
 
@@ -446,7 +475,7 @@ void MainWindow::on_actionCreate_Package_triggered()
     {
         StfsPackage *package = new StfsPackage(packagePath.toStdString());
 
-        PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this);
+        PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gameActions, gpdActions, this);
         ui->mdiArea->addSubWindow(viewer);
         viewer->show();
 
@@ -502,7 +531,12 @@ void MainWindow::on_actionGame_Modder_triggered()
     if (sender())
     {
         QAction *menuAction = (QAction*)sender();
-        LoadPlugin(menuAction->data().toString(), false);
+
+        StfsPackage *package = NULL;
+        if (menuAction->property("package").isValid())
+            package = menuAction->property("package").value<StfsPackage*>();
+
+        LoadPlugin(menuAction->property("path").toString(), false, package);
     }
 }
 

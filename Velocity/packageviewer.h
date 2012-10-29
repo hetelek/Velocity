@@ -25,6 +25,7 @@
 #include <QUuid>
 #include <QWidgetAction>
 #include <QDebug>
+#include <QVariant>
 
 // xbox libs
 #include "Stfs/StfsPackage.h"
@@ -46,7 +47,7 @@ class PackageViewer : public QDialog
     Q_OBJECT
     
 public:
-    explicit PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidget *parent = 0, bool disposePackage = true);
+    explicit PackageViewer(QStatusBar *statusBar, StfsPackage *package, vector<QAction*> gameActions, vector<QAction*> gpdActions, QWidget *parent = 0, bool disposePackage = true);
     ~PackageViewer();
     
 private slots:
@@ -69,6 +70,8 @@ private slots:
     void onOpenInSelected(QAction *action);
 
 private:
+    vector<QAction*> gpdActions, gameActions;
+    vector<DWORD> availableTitleIDs;
     Ui::PackageViewer *ui;
     void PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *parent = NULL);
     void GetPackagePath(QTreeWidgetItem *item, QString *out, bool folderOnly = false);
@@ -79,7 +82,6 @@ private:
     QWidget *parent;
     QStatusBar *statusBar;
     QMenu *openInMenu;
-
     QAction *profileEditor, *gameAdder;
 
     void showAllItems();

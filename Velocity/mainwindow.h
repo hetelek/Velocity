@@ -48,7 +48,10 @@ struct Arguments
 {
     StfsPackage *package;
     QString tempFilePath;
+    bool cleanupPackage;
 };
+
+Q_DECLARE_METATYPE( StfsPackage* )
 
 class MainWindow : public QMainWindow
 {
@@ -56,7 +59,7 @@ class MainWindow : public QMainWindow
     
 public:
     explicit MainWindow(QList<QUrl> arguments, QWidget *parent = 0);
-    void LoadPlugin(QString filename, bool addToMenu);
+    void LoadPlugin(QString filename, bool addToMenu, StfsPackage *package = NULL);
     void LoadAllPlugins();
     ~MainWindow();
 
@@ -98,6 +101,8 @@ private slots:
     void on_actionPreferences_triggered();
 
 private:
+    vector<QAction*> gpdActions;
+    vector<QAction*> gameActions;
     Ui::MainWindow *ui;
     QSettings *settings;
 
