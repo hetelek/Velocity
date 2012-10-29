@@ -6,6 +6,7 @@ ProfileCreatorWizard::ProfileCreatorWizard(QStatusBar *statusBar, QWidget *paren
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+    QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
     connect(this, SIGNAL(currentIdChanged(int)), this, SLOT(onCurrentIdChanged(int)));
     connect(this, SIGNAL(finished(int)), this, SLOT(onFinished(int)));
