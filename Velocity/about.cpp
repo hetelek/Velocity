@@ -8,6 +8,7 @@ About::About(QWidget *parent) :
     ui->setupUi(this);
     setFixedSize(sizeHint());
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
 #ifndef __linux
     if (!QFile::exists(QtHelpers::ExecutingDirectory() + "Developers.mp3"))

@@ -6,6 +6,7 @@
 #include <QUrl>
 #include <QFile>
 #include <QMessageBox>
+#include "qthelpers.h"
 
 #ifndef __linux
     #include <phonon/MediaObject>
