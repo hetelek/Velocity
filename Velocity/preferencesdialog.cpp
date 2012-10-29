@@ -32,13 +32,13 @@ void PreferencesDialog::on_pushButton_clicked()
 
 void PreferencesDialog::on_pushButton_4_clicked()
 {
-    QString directory = QFileDialog::getExistingDirectory(this, "Choose the plugin path", ui->lineEdit->text()).replace("\\", "/");
+    QString directory = QFileDialog::getExistingDirectory(this, "Choose the plugin path", QtHelpers::ExecutingDirectory());
 
     if (!directory.isNull())
-    {
-        QString dir = QtHelpers::ExecutingDirectory();
-        ui->lineEdit->setText(directory.replace(dir, "./"));
-    }
+        return;
+
+    QDir dir(QtHelpers::ExecutingDirectory());
+    ui->lineEdit->setText(dir.relativeFilePath(directory));
 }
 
 void PreferencesDialog::on_pushButton_2_clicked()

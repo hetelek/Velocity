@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QSettings>
 #include <QFileDialog>
+#include <QDir>
 #include "qthelpers.h"
 
 namespace Ui {
