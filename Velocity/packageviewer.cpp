@@ -303,7 +303,7 @@ void PackageViewer::onOpenInSelected(QAction *action)
     {
         if (action == gameAdder)
         {
-            GameAdderDialog dialog(package, this);
+            GameAdderDialog dialog(package, this, false);
             dialog.exec();
         }
         else if (action == profileEditor)

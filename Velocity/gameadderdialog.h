@@ -28,7 +28,7 @@ class GameAdderDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit GameAdderDialog(StfsPackage *package, QWidget *parent = 0);
+    explicit GameAdderDialog(StfsPackage *package, QWidget *parent = 0, bool dispose = true);
     ~GameAdderDialog();
 
 private slots:
@@ -53,7 +53,7 @@ private:
     QStringList notSuccessful;
     StfsPackage *package, *pecPackage;
 
-    bool allowInjection, existed;
+    bool allowInjection, existed, dispose;
     int totalDownloadCount, downloadedCount;
 
     void showAllItems();

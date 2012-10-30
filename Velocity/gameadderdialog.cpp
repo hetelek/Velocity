@@ -3,7 +3,7 @@
 
 Q_DECLARE_METATYPE(TitleEntry)
 
-GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent) : QDialog(parent), ui(new Ui::GameAdderDialog), package(package)
+GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dispose) : QDialog(parent), ui(new Ui::GameAdderDialog), package(package), dispose(dispose)
 {
     ui->setupUi(this);
 
@@ -292,6 +292,12 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
         {
             package->Rehash();
             package->Resign(kvPath);
+
+            if (dispose)
+            {
+                package->Close();
+                delete package;
+            }
         }
         catch (std::string error)
         {
@@ -380,7 +386,7 @@ void GameAdderDialog::on_pushButton_2_clicked()
     }
 
     totalDownloadCount = totalCount;
-    downloadedCount = 1;
+    downloadedCount = 0;
 
     // create the setting entry if it doesn't exist
     if (dashGPD->gamePlayedCount.entry.type == 0)

@@ -24,7 +24,7 @@ ProfileCreatorWizard::ProfileCreatorWizard(QStatusBar *statusBar, QWidget *paren
 #ifdef __WIN32
     int fontSize = 15;
 #elif __APPLE__
-    int fontsize = 14;
+    int fontSize = 14;
 #endif
 
     QFont f("Arial", fontSize);
