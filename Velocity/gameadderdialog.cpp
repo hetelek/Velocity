@@ -378,6 +378,8 @@ void GameAdderDialog::on_treeWidgetAllGames_currentItemChanged(QTreeWidgetItem *
 
     ui->lblGameName->setText("Game Name: " + QString::fromStdWString(entry.gameName));
     ui->lblTitleID->setText("Title ID: " + QString::number(entry.titleID, 16).toUpper());
+    ui->lblGamerscore->setText("Gamerscore: " + QString::number(entry.totalGamerscore));
+    ui->lblAvatarAwards->setText("Avatar Awards: " + QString::number(entry.avatarAwardCount));
 }
 
 void GameAdderDialog::on_pushButton_clicked()
