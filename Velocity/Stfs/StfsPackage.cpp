@@ -1372,6 +1372,9 @@ void StfsPackage::SetNextBlock(DWORD blockNum, INT24 nextBlockNum)
     io->setPosition(hashLoc);
     io->write((INT24)nextBlockNum);
 
+    if (topLevel == Zero)
+        topTable.entries[blockNum].nextBlock = nextBlockNum;
+
     io->flush();
 }
 
@@ -1461,6 +1464,13 @@ INT24 StfsPackage::AllocateBlock()
     // write the block status
     io->setPosition(GetHashAddressOfBlock(metaData->volumeDescriptor.allocatedBlockCount - 1) + 0x14);
     io->write((BYTE)Allocated);
+
+    if (topLevel == Zero)
+    {
+        topTable.entryCount++;
+        topTable.entries[metaData->volumeDescriptor.allocatedBlockCount - 1].status = (BYTE)Allocated;
+        topTable.entries[metaData->volumeDescriptor.allocatedBlockCount - 1].nextBlock = INT24_MAX;
+    }
 
     // terminate the chain
     io->write((INT24)0xFFFFFF);
@@ -1964,6 +1974,8 @@ void StfsPackage::ReplaceFile(string path, FileEntry *entry, string pathInPackag
             topTable.entries[i].nextBlock = io->readInt24();
         }
     }
+
+    DWORD test = 0;
 }
 
 void StfsPackage::ReplaceFile(string path, string pathInPackage, void (*replaceProgress)(void *, DWORD, DWORD), void *arg)
