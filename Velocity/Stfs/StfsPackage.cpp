@@ -1974,8 +1974,6 @@ void StfsPackage::ReplaceFile(string path, FileEntry *entry, string pathInPackag
             topTable.entries[i].nextBlock = io->readInt24();
         }
     }
-
-    DWORD test = 0;
 }
 
 void StfsPackage::ReplaceFile(string path, string pathInPackage, void (*replaceProgress)(void *, DWORD, DWORD), void *arg)
