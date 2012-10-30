@@ -914,8 +914,8 @@ void ProfileEditor::on_btnUnlockAllAwards_clicked()
     for (DWORD i = 0; i < ui->avatarAwardsList->topLevelItemCount(); i++)
     {
         QTreeWidgetItem *item = ui->avatarAwardsList->topLevelItem(i);
-        if (item->text(3) != "Unlocked Online")
-            item->setText(3, "Unlocked Offline");
+        if (item->text(2) != "Unlocked Online")
+            item->setText(2, "Unlocked Offline");
     }
 
     // update the title entry
