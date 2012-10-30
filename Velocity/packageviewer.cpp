@@ -1,8 +1,8 @@
 #include "packageviewer.h"
 #include "ui_packageviewer.h"
 
-PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, vector<QAction*> gameActions, vector<QAction*> gpdActions, QWidget *parent = 0, bool disposePackage = true) :
-    QDialog(parent),ui(new Ui::PackageViewer), package(package), parent (parent), statusBar(statusBar), disposePackage(disposePackage), gpdActions(gpdActions), gameActions(gameActions)
+PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidget *parent, bool disposePackage) :
+    QDialog(parent),ui(new Ui::PackageViewer), package(package), parent (parent), statusBar(statusBar), disposePackage(disposePackage)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -62,9 +62,6 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, vector
             ui->txtDeviceID->setEnabled(false);
         }
 
-        listing = package->GetFileListing();
-        PopulateTreeWidget(&listing);
-
         openInMenu = new QMenu;
         if (package->metaData->contentType == Profile)
         {
@@ -76,25 +73,12 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, vector
             ui->btnOpenIn->setEnabled(true);
             openInMenu->addAction(profileEditor);
             openInMenu->addAction(gameAdder);
-
-            for (int i = 0; i < gpdActions.size(); i++)
-            {
-                for (int x = 0; x < availableTitleIDs.size(); x++)
-                {
-                    DWORD titleID = (DWORD)gpdActions.at(i)->property("titleid").toUInt();
-                    DWORD avail = availableTitleIDs.at(x);
-                    if (titleID == avail)
-                    {
-                        QAction *action = gpdActions.at(i);
-                        action->setProperty("package", QVariant::fromValue<StfsPackage*>(package));
-                        openInMenu->addAction(action);
-                    }
-                }
-            }
-
             ui->btnOpenIn->setMenu(openInMenu);
         }
     }
+
+    listing = package->GetFileListing();
+    PopulateTreeWidget(&listing);
 
     // setup the context menus
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -146,21 +130,10 @@ void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *pare
 
         SetIcon(entry->fileEntries.at(i).name, fileEntry);
 
-        QString name = QString::fromStdString(entry->fileEntries.at(i).name);
-        fileEntry->setText(0, name);
+        fileEntry->setText(0, QString::fromStdString(entry->fileEntries.at(i).name));
         fileEntry->setText(1, QString::fromStdString(ByteSizeToString(entry->fileEntries.at(i).fileSize)));
         fileEntry->setText(2, "0x" + QString::number(package->BlockToAddress(entry->fileEntries.at(i).startingBlockNum), 16).toUpper());
         fileEntry->setText(3, "0x" + QString::number(entry->fileEntries.at(i).startingBlockNum, 16).toUpper());
-
-        if (name.mid(8, 4).toLower() == ".gpd")
-        {
-            name = name.mid(0, 8);
-            bool *ok;
-            DWORD titleID = (DWORD)name.toUInt(ok, 16);
-
-            if (ok)
-                availableTitleIDs.push_back(titleID);
-        }
     }
 }
 
@@ -280,7 +253,7 @@ void PackageViewer::showSaveImageContextMenu(QPoint point)
         return;
     else if (selectedItem->text() == "Save Image")
     {
-        QString imageSavePath = QFileDialog::getSaveFileName(this, "Choose a location to save the thumbnail", QtHelpers::DesktopLocation() + "/thumbnail.png", "*.png");
+        QString imageSavePath = QFileDialog::getSaveFileName(this, "Choose a location to save the thumbnail", QtHelpers::DesktopLocation() + "\\thumbnail.png", "*.png");
         if (imageSavePath == "")
             return;
 
@@ -723,7 +696,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
             package->ExtractFile(packagePath.toStdString(), tempName);
 
             StfsPackage pec (tempName, StfsPackagePEC);
-            PackageViewer dialog(statusBar, &pec, gameActions, gpdActions, this, false);
+            PackageViewer dialog(statusBar, &pec, this, false);
             dialog.exec();
 
             pec.Close();
@@ -759,7 +732,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
                 package->ExtractFile(packagePath.toStdString(), tempName);
 
                 StfsPackage pack(tempName);
-                PackageViewer dialog(statusBar, &pack, gameActions, gpdActions, this, false);
+                PackageViewer dialog(statusBar, &pack, this, false);
                 dialog.exec();
 
                 pack.Close();
