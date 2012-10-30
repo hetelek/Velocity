@@ -20,6 +20,18 @@ ProfileCreatorWizard::ProfileCreatorWizard(QStatusBar *statusBar, QWidget *paren
 
     ui->listWidget->item(0)->setSelected(true);
     ui->listWidget->setCurrentItem(ui->listWidget->item(0));
+
+#ifdef __WIN32
+    int fontSize = 15;
+#elif __APPLE__
+    int fontsize = 14;
+#endif
+
+    QFont f("Arial", fontSize);
+
+    ui->label_3->setFont(f);
+    ui->label_5->setFont(f);
+    ui->label_7->setFont(f);
 }
 
 ProfileCreatorWizard::~ProfileCreatorWizard()
