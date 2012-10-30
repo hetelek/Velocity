@@ -66,142 +66,157 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     // LOAD FRONT PAGE
     ///////////////////////////////////
 
-    // extract the account file
-    accountTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
-    profile->ExtractFile("Account", accountTempPath);
-    tempFiles.push_back(accountTempPath);
-
-    // parse the account file
-    account = new Account(accountTempPath, true, profile->metaData->certificate.ownerConsoleType);
-
-    // load all of the account information
-    ui->txtGamertag->setText(QString::fromStdWString(account->GetGamertag()));
-    ui->lblLanguage->setText(QString::fromStdString(AccountHelpers::ConsoleLanguageToString(account->GetLanguage())));
-    ui->lblSubscriptionTeir->setText(QString::fromStdString(AccountHelpers::SubscriptionTeirToString(account->GetSubscriptionTeir())));
-    ui->lblParentalControlled->setText(((account->IsParentalControlled()) ? "Yes" : "No"));
-    ui->lblCreditCard->setText(((account->IsPaymentInstrumentCreditCard()) ? "Yes" : "No"));
-    ui->lblXUID->setText(QString::number(account->GetXUID(), 16).toUpper());
-    ui->chxLIVE->setCheckState((Qt::CheckState)(account->IsLiveEnabled() << 1));
-    ui->chxRecovering->setCheckState((Qt::CheckState)(account->IsRecovering() << 1));
-    ui->chxPasscode->setCheckState((Qt::CheckState)(account->IsPasscodeEnabled() << 1));
-    ui->cmbxConsoleType->setCurrentIndex((profile->metaData->certificate.ownerConsoleType == DevKit) ? 0 : 1);
-
-    // load passcode
-    BYTE passCode[4];
-    account->GetPasscode(passCode);
-    ui->cmbxPass1->setCurrentIndex(passCode[0]);
-    ui->cmbxPass2->setCurrentIndex(passCode[1]);
-    ui->cmbxPass3->setCurrentIndex(passCode[2]);
-    ui->cmbxPass4->setCurrentIndex(passCode[3]);
-
-    switch (account->GetServiceProvider())
+    try
     {
-        case ProductionNet:
-            ui->cmbxNetwork->setCurrentIndex(0);
-            break;
-        case PartnerNet:
-            ui->cmbxNetwork->setCurrentIndex(1);
-            break;
-        case LiveDisabled:
-            ui->cmbxNetwork->setEnabled(false);
-            break;
-        default:
-            ui->cmbxNetwork->addItem(QString::fromStdString(AccountHelpers::XboxLiveServiceProviderToString(account->GetServiceProvider())));
-            break;
-    }
+        // extract the account file
+        accountTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+        profile->ExtractFile("Account", accountTempPath);
+        tempFiles.push_back(accountTempPath);
 
-    // disable the controls that won't be used
-    ui->cmbxPass1->setEnabled(account->IsPasscodeEnabled());
-    ui->cmbxPass2->setEnabled(account->IsPasscodeEnabled());
-    ui->cmbxPass3->setEnabled(account->IsPasscodeEnabled());
-    ui->cmbxPass4->setEnabled(account->IsPasscodeEnabled());
-    ui->cmbxNetwork->setEnabled(account->IsLiveEnabled());
+        // parse the account file
+        account = new Account(accountTempPath, true, profile->metaData->certificate.ownerConsoleType);
 
-    // populate the years on live combo box
-    for (DWORD i = 0; i <= 20; i++)
-        ui->cmbxTenure->addItem(QString::number(i));
+        // load all of the account information
+        ui->txtGamertag->setText(QString::fromStdWString(account->GetGamertag()));
+        ui->lblLanguage->setText(QString::fromStdString(AccountHelpers::ConsoleLanguageToString(account->GetLanguage())));
+        ui->lblSubscriptionTeir->setText(QString::fromStdString(AccountHelpers::SubscriptionTeirToString(account->GetSubscriptionTeir())));
+        ui->lblParentalControlled->setText(((account->IsParentalControlled()) ? "Yes" : "No"));
+        ui->lblCreditCard->setText(((account->IsPaymentInstrumentCreditCard()) ? "Yes" : "No"));
+        ui->lblXUID->setText(QString::number(account->GetXUID(), 16).toUpper());
+        ui->chxLIVE->setCheckState((Qt::CheckState)(account->IsLiveEnabled() << 1));
+        ui->chxRecovering->setCheckState((Qt::CheckState)(account->IsRecovering() << 1));
+        ui->chxPasscode->setCheckState((Qt::CheckState)(account->IsPasscodeEnabled() << 1));
+        ui->cmbxConsoleType->setCurrentIndex((profile->metaData->certificate.ownerConsoleType == DevKit) ? 0 : 1);
 
-    // populate the regions combo box
-    for (DWORD i = 0; i < 109; i++)
-        ui->cmbxRegion->addItem(regions[i].name);
+        // load passcode
+        BYTE passCode[4];
+        account->GetPasscode(passCode);
+        ui->cmbxPass1->setCurrentIndex(passCode[0]);
+        ui->cmbxPass2->setCurrentIndex(passCode[1]);
+        ui->cmbxPass3->setCurrentIndex(passCode[2]);
+        ui->cmbxPass4->setCurrentIndex(passCode[3]);
 
-    // load the gamerpicture
-    QByteArray imageBuff((char*)profile->metaData->thumbnailImage, (size_t)profile->metaData->thumbnailImageSize);
-    ui->imgGamerpicture->setPixmap(QPixmap::fromImage(QImage::fromData(imageBuff)));
+        switch (account->GetServiceProvider())
+        {
+            case ProductionNet:
+                ui->cmbxNetwork->setCurrentIndex(0);
+                break;
+            case PartnerNet:
+                ui->cmbxNetwork->setCurrentIndex(1);
+                break;
+            case LiveDisabled:
+                ui->cmbxNetwork->setEnabled(false);
+                break;
+            default:
+                ui->cmbxNetwork->addItem(QString::fromStdString(AccountHelpers::XboxLiveServiceProviderToString(account->GetServiceProvider())));
+                break;
+        }
 
-    // extract the dashboard gpd
-    dashGPDTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
-    tempFiles.push_back(dashGPDTempPath);
-    profile->ExtractFile("FFFE07D1.gpd", dashGPDTempPath);
+        // disable the controls that won't be used
+        ui->cmbxPass1->setEnabled(account->IsPasscodeEnabled());
+        ui->cmbxPass2->setEnabled(account->IsPasscodeEnabled());
+        ui->cmbxPass3->setEnabled(account->IsPasscodeEnabled());
+        ui->cmbxPass4->setEnabled(account->IsPasscodeEnabled());
+        ui->cmbxNetwork->setEnabled(account->IsLiveEnabled());
 
-    // parse the dashboard gpd
-    dashGPD = new DashboardGPD(dashGPDTempPath);
+        // populate the years on live combo box
+        for (DWORD i = 0; i <= 20; i++)
+            ui->cmbxTenure->addItem(QString::number(i));
 
-    // load all the goodies
-    if (dashGPD->gamerName.entry.type == 0)
-        addToDashGPD(&dashGPD->gamerName, UnicodeString, GamercardUserName);
-    else
-        ui->txtName->setText(QString::fromStdWString(*dashGPD->gamerName.str));
-
-    if (dashGPD->gamerscoreUnlocked.entry.type == 0)
-    {
-        addToDashGPD(&dashGPD->gamerscoreUnlocked, Int32, GamercardCred);
-        ui->lblGamerscore->setText("0G");
-    }
-    else
-        ui->lblGamerscore->setText(QString::number(dashGPD->gamerscoreUnlocked.int32) + "G");
-
-    if (dashGPD->achievementsUnlocked.entry.type == 0)
-        addToDashGPD(&dashGPD->achievementsUnlocked, Int32, GamercardAchievementsEarned);
-
-    if (dashGPD->motto.entry.type == 0)
-        addToDashGPD(&dashGPD->motto, UnicodeString, GamercardMotto);
-    else
-        ui->txtMotto->setText(QString::fromStdWString(*dashGPD->motto.str));
-
-    if (dashGPD->gamerLocation.entry.type == 0)
-        addToDashGPD(&dashGPD->gamerLocation, UnicodeString, GamercardUserLocation);
-    else
-        ui->txtLocation->setText(QString::fromStdWString(*dashGPD->gamerLocation.str));
-
-    if (dashGPD->gamerzone.entry.type == 0)
-        addToDashGPD(&dashGPD->gamerzone, Int32, GamercardZone);
-    else
-        ui->cmbxGamerzone->setCurrentIndex(dashGPD->gamerzone.int32);
-
-    if (dashGPD->gamercardRegion.entry.type == 0)
-        addToDashGPD(&dashGPD->gamercardRegion, Int32, GamercardRegion);
-    else
-    {
-        // find the index of the gamer's region
+        // populate the regions combo box
         for (DWORD i = 0; i < 109; i++)
-           if (regions[i].value == dashGPD->gamercardRegion.int32)
-               ui->cmbxRegion->setCurrentIndex(i);
+            ui->cmbxRegion->addItem(regions[i].name);
+
+        // load the gamerpicture
+        QByteArray imageBuff((char*)profile->metaData->thumbnailImage, (size_t)profile->metaData->thumbnailImageSize);
+        ui->imgGamerpicture->setPixmap(QPixmap::fromImage(QImage::fromData(imageBuff)));
+
+        // extract the dashboard gpd
+        dashGPDTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+        tempFiles.push_back(dashGPDTempPath);
+        profile->ExtractFile("FFFE07D1.gpd", dashGPDTempPath);
+
+        // parse the dashboard gpd
+        dashGPD = new DashboardGPD(dashGPDTempPath);
+
+        // load all the goodies
+        if (dashGPD->gamerName.entry.type == 0)
+            addToDashGPD(&dashGPD->gamerName, UnicodeString, GamercardUserName);
+        else
+            ui->txtName->setText(QString::fromStdWString(*dashGPD->gamerName.str));
+
+        if (dashGPD->gamerscoreUnlocked.entry.type == 0)
+        {
+            addToDashGPD(&dashGPD->gamerscoreUnlocked, Int32, GamercardCred);
+            ui->lblGamerscore->setText("0G");
+        }
+        else
+            ui->lblGamerscore->setText(QString::number(dashGPD->gamerscoreUnlocked.int32) + "G");
+
+        if (dashGPD->achievementsUnlocked.entry.type == 0)
+            addToDashGPD(&dashGPD->achievementsUnlocked, Int32, GamercardAchievementsEarned);
+
+        if (dashGPD->motto.entry.type == 0)
+            addToDashGPD(&dashGPD->motto, UnicodeString, GamercardMotto);
+        else
+            ui->txtMotto->setText(QString::fromStdWString(*dashGPD->motto.str));
+
+        if (dashGPD->gamerLocation.entry.type == 0)
+            addToDashGPD(&dashGPD->gamerLocation, UnicodeString, GamercardUserLocation);
+        else
+            ui->txtLocation->setText(QString::fromStdWString(*dashGPD->gamerLocation.str));
+
+        if (dashGPD->gamerzone.entry.type == 0)
+            addToDashGPD(&dashGPD->gamerzone, Int32, GamercardZone);
+        else
+            ui->cmbxGamerzone->setCurrentIndex(dashGPD->gamerzone.int32);
+
+        if (dashGPD->gamercardRegion.entry.type == 0)
+            addToDashGPD(&dashGPD->gamercardRegion, Int32, GamercardRegion);
+        else
+        {
+            // find the index of the gamer's region
+            for (DWORD i = 0; i < 109; i++)
+               if (regions[i].value == dashGPD->gamercardRegion.int32)
+                   ui->cmbxRegion->setCurrentIndex(i);
+        }
+
+        if (dashGPD->yearsOnLive.entry.type == 0)
+            addToDashGPD(&dashGPD->yearsOnLive, Int32, YearsOnLive);
+        else
+            ui->cmbxTenure->setCurrentIndex(dashGPD->yearsOnLive.int32);
+
+        if (dashGPD->reputation.entry.type == 0)
+            addToDashGPD(&dashGPD->reputation, Float, GamercardRep);
+        else
+            ui->spnRep->setValue(dashGPD->reputation.floatData);
+
+        if (dashGPD->gamerBio.entry.type == 0)
+            addToDashGPD(&dashGPD->gamerBio, UnicodeString, GamercardUserBio);
+        else
+            ui->txtBio->setPlainText(QString::fromStdWString(*dashGPD->gamerBio.str));
+
+        // load the avatar image
+        if (dashGPD->avatarImage.entry.type != 0)
+        {
+            QByteArray imageBuff((char*)dashGPD->avatarImage.image, (size_t)dashGPD->avatarImage.length);
+            ui->imgAvatar->setPixmap(QPixmap::fromImage(QImage::fromData(imageBuff)));
+        }
+        else
+            ui->imgAvatar->setPixmap(QPixmap::fromImage(QImage(":/Images/avatar-body.png")));
     }
-
-    if (dashGPD->yearsOnLive.entry.type == 0)
-        addToDashGPD(&dashGPD->yearsOnLive, Int32, YearsOnLive);
-    else
-        ui->cmbxTenure->setCurrentIndex(dashGPD->yearsOnLive.int32);
-
-    if (dashGPD->reputation.entry.type == 0)
-        addToDashGPD(&dashGPD->reputation, Float, GamercardRep);
-    else
-        ui->spnRep->setValue(dashGPD->reputation.floatData);
-
-    if (dashGPD->gamerBio.entry.type == 0)
-        addToDashGPD(&dashGPD->gamerBio, UnicodeString, GamercardUserBio);
-    else
-        ui->txtBio->setPlainText(QString::fromStdWString(*dashGPD->gamerBio.str));
-
-    // load the avatar image
-    if (dashGPD->avatarImage.entry.type != 0)
+    catch (string error)
     {
-        QByteArray imageBuff((char*)dashGPD->avatarImage.image, (size_t)dashGPD->avatarImage.length);
-        ui->imgAvatar->setPixmap(QPixmap::fromImage(QImage::fromData(imageBuff)));
+        QMessageBox::critical(this, "Error", "An error has occurred while loading the profile.\n\n" + QString::fromStdString(error));
+        *ok = false;
+        return;
     }
-    else
-        ui->imgAvatar->setPixmap(QPixmap::fromImage(QImage(":/Images/avatar-body.png")));
+    catch (...)
+    {
+        QMessageBox::critical(this, "Error", "An unknown error has occurred while loading the profile.");
+        *ok = false;
+        return;
+    }
 
 
     ////////////////////////////
