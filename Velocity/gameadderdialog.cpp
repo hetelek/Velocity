@@ -170,6 +170,7 @@ void GameAdderDialog::showRemoveContextMenu_AllGames(QPoint point)
 void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath, TitleEntry entry, bool error)
 {
     ui->progressBar->setValue(((double)++downloadedCount / (double)totalDownloadCount) * 100);
+    QMutex m;
     if (!error)
     {
         if (!allowInjection)
@@ -187,7 +188,9 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
             QString gpdName = QString::number(entry.titleID, 16).toUpper() + ".gpd";
 
             // inject the game gpd
+            m.lock();
             package->InjectFile(gamePath.toStdString(), gpdName.toStdString());
+            m.unlock();
             QFile::remove(gamePath);
 
             if (!awardPath.isEmpty())
@@ -203,7 +206,9 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
                     }
                     else
                     {
+                        m.lock();
                         package->ExtractFile("PEC", pecTempPath.toStdString());
+                        m.unlock();
                         existed = true;
                     }
 
@@ -211,13 +216,17 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
                 }
 
                 // inject the gpd and delete it
+                m.lock();
                 pecPackage->InjectFile(awardPath.toStdString(), gpdName.toStdString());
+                m.unlock();
                 QFile::remove(awardPath);
             }
 
             // update the dash gpd
+            m.lock();
             dashGPD->CreateTitleEntry(&entry);
             dashGPD->gamePlayedCount.int32++;
+            m.unlock();
         }
         catch (std::string error)
         {
@@ -244,7 +253,9 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
 
         try
         {
+            m.lock();
             dashGPD->WriteSettingEntry(dashGPD->gamePlayedCount);
+            m.unlock();
         }
         catch (std::string error)
         {
@@ -255,7 +266,9 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
 
         try
         {
+            m.lock();
             package->ReplaceFile(dashGPDTempPath.toStdString(), "FFFE07D1.gpd");
+            m.unlock();
             QFile::remove(dashGPDTempPath);
         }
         catch (std::string error)
@@ -269,6 +282,7 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
         {
             if (pecPackage != NULL)
             {
+                m.lock();
                 pecPackage->Rehash();
                 pecPackage->Resign(kvPath);
 
@@ -280,6 +294,7 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
                     package->ReplaceFile(pecTempPath.toStdString(), "PEC");
 
                 QFile::remove(pecTempPath);
+                m.unlock();
             }
         }
         catch (std::string error)
@@ -290,8 +305,10 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
 
         try
         {
+            m.lock();
             package->Rehash();
             package->Resign(kvPath);
+            m.unlock();
 
             if (dispose)
             {

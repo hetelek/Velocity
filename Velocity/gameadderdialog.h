@@ -11,6 +11,7 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QStringList>
+#include <QMutex>
 
 // other
 #include "json.h"
