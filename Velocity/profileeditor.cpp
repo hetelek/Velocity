@@ -323,10 +323,19 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         return;
     }
 
-    // extract the PEC file
-    pecTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
-    profile->ExtractFile("PEC", pecTempPath);
-    tempFiles.push_back(pecTempPath);
+    try
+    {
+        // extract the PEC file
+        pecTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+        profile->ExtractFile("PEC", pecTempPath);
+        tempFiles.push_back(pecTempPath);
+    }
+    catch (string error)
+    {
+        QMessageBox::critical(this, "Error", "An error has occurred while extracting the PEC.\n\n" + QString::fromStdString(error));
+        *ok = false;
+        return;
+    }
 
     // parse the PEC STFS package
     try
