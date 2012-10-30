@@ -241,6 +241,9 @@ DWORD StfsPackage::ComputeLevel2BackingHashBlockNumber(DWORD blockNum)
 
 DWORD StfsPackage::GetHashAddressOfBlock(DWORD blockNum)
 {
+    if (blockNum >= metaData->volumeDescriptor.allocatedBlockCount)
+         throw string("STFS: Reference to illegal block number.\n");
+
     DWORD hashAddr = (ComputeLevel0BackingHashBlockNumber(blockNum) << 0xC) + firstHashTableAddress;
     hashAddr += (blockNum % 0xAA) * 0x18;
 
@@ -260,6 +263,9 @@ DWORD StfsPackage::GetHashAddressOfBlock(DWORD blockNum)
 
 HashEntry StfsPackage::GetBlockHashEntry(DWORD blockNum)
 {
+    if (blockNum >= metaData->volumeDescriptor.allocatedBlockCount)
+        throw string("STFS: Reference to illegal block number.\n");
+
     // go to the position of the hash address
     io->setPosition(GetHashAddressOfBlock(blockNum));
 
@@ -274,6 +280,9 @@ HashEntry StfsPackage::GetBlockHashEntry(DWORD blockNum)
 
 void StfsPackage::ExtractBlock(DWORD blockNum, BYTE *data, DWORD length)
 {
+    if (blockNum >= metaData->volumeDescriptor.allocatedBlockCount)
+         throw string("STFS: Reference to illegal block number.\n");
+
     // check for an invalid block length
     if (length > 0x1000)
         throw string("STFS: length cannot be greater 0x1000.\n");
@@ -1148,6 +1157,9 @@ void StfsPackage::Resign(string kvPath)
 
 void StfsPackage::SetBlockStatus(DWORD blockNum, BlockStatusLevelZero status)
 {
+    if (blockNum >= metaData->volumeDescriptor.allocatedBlockCount)
+         throw string("STFS: Reference to illegal block number.\n");
+
     DWORD statusAddress = GetHashAddressOfBlock(blockNum) + 0x14;
     io->setPosition(statusAddress);
     io->write((BYTE)status);
