@@ -109,6 +109,16 @@ void StfsMetaData::readMetadata()
             if (skeletonVersion < 1 || skeletonVersion > 3)
                 throw string("STFS: Invalid skeleton version.");
         }
+        else if (contentType == Video) // there may be other content types with this metadata
+        {
+            io->setPosition(0x3D9);
+
+            io->readBytes(seriesID, 0x10);
+            io->readBytes(seasonID, 0x10);
+
+            seasonNumber = io->readWord();
+            episodeNumber = io->readWord();
+        }
 
         // skip padding
         io->setPosition(0x3FD);
@@ -281,6 +291,16 @@ void StfsMetaData::WriteMetaData()
 
             io->write(guid, 0x10);
             io->write((BYTE)skeletonVersion);
+        }
+        else if (contentType == Video)
+        {
+            io->setPosition(0x3D9);
+
+            io->write(seriesID, 0x10);
+            io->readBytes(seasonID, 0x10);
+
+            io->write(seasonNumber);
+            io->write(episodeNumber);
         }
 
         // skip padding
