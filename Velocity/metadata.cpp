@@ -205,6 +205,26 @@ Metadata::Metadata(QStatusBar *statusBar, StfsPackage *package, QWidget *parent)
 
             offset = 4;
         }
+        else if (package->metaData->contentType == Video)
+        {
+            ui->tableWidget->insertRow(19);
+            ui->tableWidget->setVerticalHeaderItem(19, new QTableWidgetItem("Series ID"));
+            ui->tableWidget->setItem(19, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(package->metaData->seriesID, 0x10, false)));
+
+            ui->tableWidget->insertRow(20);
+            ui->tableWidget->setVerticalHeaderItem(20, new QTableWidgetItem("Season ID"));
+            ui->tableWidget->setItem(20, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(package->metaData->seasonID, 0x10, false)));
+
+            ui->tableWidget->insertRow(21);
+            ui->tableWidget->setVerticalHeaderItem(21, new QTableWidgetItem("Season Number"));
+            ui->tableWidget->setItem(21, 0, new QTableWidgetItem(QString::number(package->metaData->seasonNumber)));
+
+            ui->tableWidget->insertRow(22);
+            ui->tableWidget->setVerticalHeaderItem(22, new QTableWidgetItem("Episode Number"));
+            ui->tableWidget->setItem(22, 0, new QTableWidgetItem(QString::number(package->metaData->episodeNumber)));
+
+            offset = 4;
+        }
 
         // set the device id
         ui->tableWidget->setItem(19 + offset, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(package->metaData->deviceID, 0x14, false)));
@@ -436,6 +456,26 @@ void Metadata::on_pushButton_clicked()
             QMessageBox::warning(this, "Invalid Value", "The Data File Combined Size must be all digits.\n");
             return;
         }
+        if (package->metaData->contentType == Video && !QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(19, 0)->text()))
+        {
+            QMessageBox::warning(this, "Invalid Value", "The SeriesID value must be all digits.\n");
+            return;
+        }
+        if (package->metaData->contentType == Video && !QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(20, 0)->text()))
+        {
+            QMessageBox::warning(this, "Invalid Value", "The SeasonID value must be all digits.\n");
+            return;
+        }
+        if (package->metaData->contentType == Video && !QtHelpers::VerifyDecimalString(ui->tableWidget->item(21, 0)->text()))
+        {
+            QMessageBox::warning(this, "Invalid Value", "The Season Number value must be all digits.\n");
+            return;
+        }
+        if (package->metaData->contentType == Video && !QtHelpers::VerifyDecimalString(ui->tableWidget->item(22, 0)->text()))
+        {
+            QMessageBox::warning(this, "Invalid Value", "The Episode Number value must be all digits.\n");
+            return;
+        }
         if (package->metaData->contentType == AvatarItem && !QtHelpers::VerifyDecimalString(ui->tableWidget->item(20, 0)->text()))
         {
             QMessageBox::warning(this, "Invalid Value", "The Colorizable value must be all digits.\n");
@@ -542,6 +582,13 @@ void Metadata::on_pushButton_clicked()
             package->metaData->colorizable = ui->tableWidget->item(20, 0)->text().toULong();
             QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(21, 0)->text(), package->metaData->guid, 0x10);
             package->metaData->skeletonVersion = (SkeletonVersion)(cmbxSkeletonVersion->currentIndex() + 1);
+        }
+        else if (package->metaData->contentType == Video)
+        {
+            QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(19, 0)->text(), package->metaData->seriesID, 0x10);
+            QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(20, 0)->text(), package->metaData->seasonID, 0x10);
+            package->metaData->seasonNumber = ui->tableWidget->item(21, 0)->text().toUShort();
+            package->metaData->episodeNumber = ui->tableWidget->item(22, 0)->text().toUShort();
         }
 
         QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(19 + offset, 0)->text(), package->metaData->deviceID, 0x14);
