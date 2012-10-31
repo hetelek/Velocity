@@ -13,6 +13,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     ui->comboBox->setCurrentIndex(settings->value("PackageDropAction").toInt());
     ui->comboBox_2->setCurrentIndex(settings->value("ProfileDropAction").toInt());
     ui->lineEdit->setText(settings->value("PluginPath").toString());
+
+    setFixedSize(sizeHint());
 }
 
 PreferencesDialog::~PreferencesDialog()
