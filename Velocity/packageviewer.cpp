@@ -582,6 +582,10 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
 void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
+    // make sure that the item clicked isn't a folder
+    if (item->text(2) == "N/A")
+        return;
+
     // make sure the file double clicked on is a gpd
     int index = item->text(0).lastIndexOf(".");
     QString extension;
@@ -639,10 +643,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
 
         // verify the magic
         if (package->GetFileMagic(packagePath.toStdString()) != 0x53545242)
-        {
-            statusBar->showMessage("Invalid STRB file", 3000);
             return;
-        }
 
         // get a temporary file name
         string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
