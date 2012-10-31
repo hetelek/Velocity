@@ -7,7 +7,13 @@ ImageDialog::ImageDialog(QImage image, QWidget *parent) : QDialog(parent), ui(ne
     ui->setupUi(this);
     ui->label->setPixmap(QPixmap::fromImage(image));
 
-    this->setFixedSize(this->sizeHint());
+    QSize s = sizeHint();
+    if (s.width() < 80)
+        s.setWidth(80);
+    if (s.height() < 80)
+        s.setHeight(80);
+
+    setFixedSize(s);
 }
 
 ImageDialog::~ImageDialog()
