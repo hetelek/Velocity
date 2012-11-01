@@ -5,14 +5,15 @@ GitHubCommitsDialog::GitHubCommitsDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GitHubCommitsDialog)
 {
-    ui->setupUi(this);
-
     // set the fixed size based on the OS
 #ifdef __WIN32__
     QSize appSize(274, 315);
 #endif
 
-    setFixedSize(appSize);
+    //setWindowFlags(windowFlags() | Qt::MSWindowsFixedSizeDialogHint);
+    setMinimumSize(appSize);
+
+    ui->setupUi(this);
 
     // create the objects needed
     manager = new QNetworkAccessManager(this);
