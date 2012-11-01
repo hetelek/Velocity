@@ -80,7 +80,8 @@ SOURCES += main.cpp \
     gamerpicturepackdialog.cpp \
     gamerpicturedownloader.cpp \
 	preferencesdialog.cpp \
-    json.cpp
+    json.cpp \
+    githubcommitsdialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -137,7 +138,8 @@ HEADERS  += mainwindow.h \
     PluginInterfaces/igamemodder.h \
     PluginInterfaces/igpdmodder.h \
 	preferencesdialog.h \
-    json.h
+    json.h \
+    githubcommitsdialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -164,7 +166,8 @@ FORMS    += mainwindow.ui \
     gameadderdialog.ui \
     titleidfinderdialog.ui \
 	gamerpicturepackdialog.ui \
-	preferencesdialog.ui
+	preferencesdialog.ui \
+    githubcommitsdialog.ui
 
 RESOURCES += \
     Resources.qrc

@@ -29,6 +29,7 @@
 #include "titleidfinderdialog.h"
 #include "gamerpicturepackdialog.h"
 #include "preferencesdialog.h"
+#include "githubcommitsdialog.h"
 
 // other
 #include "PluginInterfaces/igamemodder.h"
