@@ -20,7 +20,6 @@
 
 // other
 #include "titleidfinder.h"
-#include "gamerpicturedownloader.h"
 
 namespace Ui {
 class GamerPicturePackDialog;
@@ -42,7 +41,7 @@ private slots:
     void on_pushButton_clicked();
     void onTitleIDSearchReturn(QList<struct Title>);
     void on_listGameNames_itemClicked(QListWidgetItem *item);
-    void gamerPictureDownloaded(QImage, QString);
+    void gamerPictureDownloaded(QNetworkReply *reply);
     void on_listSearch_itemDoubleClicked(QListWidgetItem *item);
     void on_listPack_itemDoubleClicked(QListWidgetItem *item);
     void showContextMenuSearch(QPoint p);
@@ -50,6 +49,8 @@ private slots:
     void on_txtPackName_textChanged(const QString &arg1);
     void on_btnCreatePack_clicked();
     void on_txtSearch_textChanged(const QString &arg1);
+
+    void on_btnStopSearch_clicked();
 
 private:
     Ui::GamerPicturePackDialog *ui;
@@ -62,7 +63,7 @@ private:
     QList<DWORD> *searchedTitleIDs;
     QStatusBar *statusBar;
     QNetworkAccessManager *manager;
-    GamerPictureDownloader *downloader;
+    QNetworkAccessManager *gpManager;
     bool requestImage;
 
     void findGamerPictures(QString titleID);
