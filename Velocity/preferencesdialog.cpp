@@ -8,13 +8,16 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     ui->setupUi(this);
     QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
+#ifdef __WIN32__
+    QSize size(477, 142);
+#endif
+    setFixedSize(size);
+
     settings = new QSettings("Exetelek", "Velocity");
 
     ui->comboBox->setCurrentIndex(settings->value("PackageDropAction").toInt());
     ui->comboBox_2->setCurrentIndex(settings->value("ProfileDropAction").toInt());
     ui->lineEdit->setText(settings->value("PluginPath").toString());
-
-    setFixedSize(sizeHint());
 }
 
 PreferencesDialog::~PreferencesDialog()

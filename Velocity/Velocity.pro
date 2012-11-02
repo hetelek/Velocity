@@ -78,7 +78,6 @@ SOURCES += main.cpp \
     titleidfinder.cpp \
     titleidfinderdialog.cpp \
     gamerpicturepackdialog.cpp \
-    gamerpicturedownloader.cpp \
 	preferencesdialog.cpp \
     json.cpp \
 	githubcommitsdialog.cpp \
@@ -135,7 +134,6 @@ HEADERS  += mainwindow.h \
     titleidfinder.h \
     titleidfinderdialog.h \
     gamerpicturepackdialog.h \
-    gamerpicturedownloader.h \
     PluginInterfaces/igamemodder.h \
     PluginInterfaces/igpdmodder.h \
 	preferencesdialog.h \
