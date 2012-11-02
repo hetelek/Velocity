@@ -81,7 +81,8 @@ SOURCES += main.cpp \
     gamerpicturedownloader.cpp \
 	preferencesdialog.cpp \
     json.cpp \
-    githubcommitsdialog.cpp
+	githubcommitsdialog.cpp \
+	gpduploader.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -139,7 +140,8 @@ HEADERS  += mainwindow.h \
     PluginInterfaces/igpdmodder.h \
 	preferencesdialog.h \
     json.h \
-    githubcommitsdialog.h
+	githubcommitsdialog.h \
+	gpduploader.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
