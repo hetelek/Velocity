@@ -497,8 +497,9 @@ void MainWindow::on_actionGame_Adder_triggered()
 
 void MainWindow::on_actionGamer_Picture_Pack_Creator_triggered()
 {
-    GamerPicturePackDialog dialog(ui->statusBar);
-    dialog.exec();
+    GamerPicturePackDialog *dialog = new GamerPicturePackDialog(ui->statusBar, this);
+    ui->mdiArea->addSubWindow(dialog);
+    dialog->show();
 }
 
 void MainWindow::on_actionGame_Modder_triggered()
