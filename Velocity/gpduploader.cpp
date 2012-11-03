@@ -94,13 +94,15 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
             gpd->WriteAchievementEntry(&chiev);
         }
 
+
+        qDebug() << "game name: " << QString::fromStdWString(gpd->gameName.ws);
+
         gpd->CleanGPD();
-
-        qDebug() << QString::fromStdWString(gpd->gameName.ws);
-        sendRequest(gamePath, (QFile::exists(awardPath)) ? awardPath : "",
-                    QString::fromStdWString(gpd->gameName.ws), titleID, gpd->achievements.size(), totalGamerscore, awards, mAwards, fAwards);
-
         gpd->Close();
+
+        sendRequest(gamePath, (QFile::exists(awardPath)) ? awardPath : "",
+                   QString::fromStdWString(gpd->gameName.ws), titleID, gpd->achievements.size(), totalGamerscore, awards, mAwards, fAwards);
+
         delete gpd;
     }
     catch (string s)
