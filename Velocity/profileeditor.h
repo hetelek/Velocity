@@ -14,6 +14,7 @@
 #include <QLabel>
 #include <QMenu>
 #include <QStatusBar>
+#include <QMap>
 #include "qthelpers.h"
 
 // xbox360
@@ -29,6 +30,7 @@
 #include <iostream>
 #include <vector>
 #include <stdio.h>
+#include "gpduploader.h"
 #include "achievementcreationwizard.h"
 #include "AvatarAssetDownloader.h"
 
@@ -247,49 +249,42 @@ private slots:
 private:
     Ui::ProfileEditor *ui;
     StfsPackage *profile;
+    StfsPackage *PEC;
+
+    GPDUploader *uploader;
     DashboardGPD *dashGPD;
     Account *account;
     AvatarAssetDownloader *downloader;
-    QString assetSavePath;
+
     vector<string> tempFiles;
     vector<GameEntry> games;
     vector<AvatarAwardGameEntry> aaGames;
-    StfsPackage *PEC;
+
     string pecTempPath;
     string dashGPDTempPath;
     string accountTempPath;
-    bool dispose;
-    QStatusBar *statusBar;
-    bool *ok;
 
+    bool dispose;
+    bool *ok;
     bool v1Downloaded;
     bool v2Downloaded;
 
-    QString v1TempPath;
-    QString v2TempPath;
+    QStatusBar *statusBar;
+
+    QString v1TempPath, v2TempPath;
+    QString assetSavePath;
 
     void addToDashGPD(SettingEntry *entry, SettingEntryType type, UINT64 id);
-
     void updateAvatarAward(TitleEntry *entry, AvatarAwardGPD *gpd, struct AvatarAward *award, State toSet);
-
     void updateAchievement(TitleEntry *entry, AchievementEntry *chiev, State toSet, GameGPD *gpd);
-
     State getStateFromFlags(DWORD flags);
-
     void saveAll();
-
     void loadGameInfo(int index);
-
     void loadAchievementInfo(int gameIndex, int chievIndex);
-
     void loadAwardGameInfo(int index);
-
     void loadAvatarAwardInfo(int gameIndex, int awardIndex);
-
     void showAllGames();
-
     void showAllAwardGames();
-
     void saveImage(QPoint p, QLabel *imgLabel);
 };
 

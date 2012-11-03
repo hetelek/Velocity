@@ -1,20 +1,31 @@
 #include "gpduploader.h"
 
-GPDUploader::GPDUploader(QString path, QString avatarPath, QObject *parent) : QObject(parent), path(path), avatarPath(avatarPath)
+GPDUploader::GPDUploader(QStringList gamePaths, QStringList avatarPaths, QStringList titleIDs, bool deleteGPDs, QObject *parent = 0) : QObject(parent), deleteGPDs(deleteGPDs), gamePaths(gamePaths), titleIDs(titleIDs), avatarPaths(avatarPaths)
 {
-    count = 0;
-    networkAccessManager = new QNetworkAccessManager(this);
-    connect(networkAccessManager, SIGNAL(finished(QNetworkReply*)),this, SLOT(reply(QNetworkReply*)));
+    settings = new QSettings("Exetelek", "Velocity");
+
+    if (settings->value("AnonData").toBool())
+    {
+        success = 0;
+        failures = 0;
+        currentIndex = 0;
+
+        networkAccessManager = new QNetworkAccessManager(this);
+        connect(networkAccessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(reply(QNetworkReply*)));
+
+        if (gamePaths.count() > 0)
+            uploadGPD(gamePaths.at(currentIndex), avatarPaths.at(currentIndex), titleIDs.at(currentIndex));
+    }
 }
 
-void GPDUploader::UploadGPD()
+void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID)
 {
     try
     {
         GameGPD *gpd;
         try
         {
-            gpd = new GameGPD(path.toStdString());
+            gpd = new GameGPD(gamePath.toStdString());
         }
         catch (string error)
         {
@@ -30,17 +41,14 @@ void GPDUploader::UploadGPD()
             return;
         }
 
-        QString temp = path;
-        temp.chop(4);
-
         int totalGamerscore = 0;
         for (DWORD x = 0; x < gpd->achievements.size(); x++)
             totalGamerscore += gpd->achievements.at(x).gamerscore;
 
         DWORD awards = 0, mAwards = 0, fAwards = 0;
-        if (QFile::exists(avatarPath))
+        if (QFile::exists(awardPath))
         {
-            AvatarAwardGPD agpd(avatarPath.toStdString());
+            AvatarAwardGPD agpd(awardPath.toStdString());
             awards = agpd.avatarAwards.size();
 
             for (DWORD x = 0; x < agpd.avatarAwards.size(); x++)
@@ -87,17 +95,17 @@ void GPDUploader::UploadGPD()
         }
 
         gpd->CleanGPD();
-        gpd->Close();
 
         qDebug() << QString::fromStdWString(gpd->gameName.ws);
-        sendRequest(path, (QFile::exists(avatarPath)) ? avatarPath : "",
-                    QString::fromStdWString(gpd->gameName.ws), temp.toUpper(), gpd->achievements.size(), totalGamerscore, awards, mAwards, fAwards);
+        sendRequest(gamePath, (QFile::exists(awardPath)) ? awardPath : "",
+                    QString::fromStdWString(gpd->gameName.ws), titleID, gpd->achievements.size(), totalGamerscore, awards, mAwards, fAwards);
 
+        gpd->Close();
         delete gpd;
     }
     catch (string s)
     {
-        qDebug() << QString::fromStdString(s) + "\r\n" + path;
+        qDebug() << QString::fromStdString(s) + "\r\n" + gamePath;
         return;
     }
     catch(...)
@@ -108,10 +116,19 @@ void GPDUploader::UploadGPD()
 
 void GPDUploader::reply(QNetworkReply *reply)
 {
-    if (reply->error())
-        qDebug() << reply->errorString();
+    if (reply->error() || reply->bytesAvailable() < 1)
+    {
+        failures++;
+        qDebug() << "error occured: " << reply->errorString();
+    }
     else
+    {
+        success++;
         qDebug() << "response recieved: " + reply->readAll();
+    }
+
+    if (gamePaths.count() > ++currentIndex)
+        uploadGPD(gamePaths.at(currentIndex), avatarPaths.at(currentIndex), titleIDs.at(currentIndex));
 }
 
 void GPDUploader::sendRequest(QString filePath, QString awardFilePath, QString gameName, QString titleID, DWORD achievementCount, DWORD gamerscoreTotal, DWORD awards, DWORD mAwards, DWORD fAwards)
@@ -136,7 +153,11 @@ void GPDUploader::sendRequest(QString filePath, QString awardFilePath, QString g
         dataToSend.append("Content-Disposition: form-data; name=\"game\"; filename=\"" + titleID.toUpper() + ".gpd\"\r\n");
         dataToSend.append("Content-Type: application/octet-stream\r\n\r\n");
         dataToSend.append(gpdFile.readAll());
-        gpdFile.remove();
+
+        if (deleteGPDs)
+            gpdFile.remove();
+        else
+            gpdFile.close();
 
         dataToSend.append("\r\n--" + boundary + "\r\n");
 
@@ -145,7 +166,11 @@ void GPDUploader::sendRequest(QString filePath, QString awardFilePath, QString g
             dataToSend.append("Content-Disposition: form-data; name=\"award\"; filename=\"" + titleID.toUpper() + ".gpd\"\r\n");
             dataToSend.append("Content-Type: application/octet-stream\r\n\r\n");
             dataToSend.append(awardFile.readAll());
-            awardFile.remove();
+
+            if (deleteGPDs)
+                awardFile.remove();
+            else
+                awardFile.close();
         }
 
         dataToSend.append("\r\n--" + boundary + "--\r\n");
