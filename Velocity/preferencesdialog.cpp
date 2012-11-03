@@ -9,7 +9,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
 #ifdef __WIN32__
-    QSize size(477, 142);
+    QSize size(477, 160);
 #endif
     setFixedSize(size);
 
@@ -18,6 +18,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     ui->comboBox->setCurrentIndex(settings->value("PackageDropAction").toInt());
     ui->comboBox_2->setCurrentIndex(settings->value("ProfileDropAction").toInt());
     ui->lineEdit->setText(settings->value("PluginPath").toString());
+    ui->checkBox->setChecked(settings->value("AnonData").toBool());
 }
 
 PreferencesDialog::~PreferencesDialog()
@@ -31,6 +32,7 @@ void PreferencesDialog::on_pushButton_clicked()
     settings->setValue("PackageDropAction", ui->comboBox->currentIndex());
     settings->setValue("ProfileDropAction", ui->comboBox_2->currentIndex());
     settings->setValue("PluginPath", ui->lineEdit->text());
+    settings->setValue("AnonData", ui->checkBox->checkState());
 
     close();
 }

@@ -11,6 +11,8 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
         settings->setValue("ProfileDropAction", 0);
     if (!settings->contains("PluginPath"))
         settings->setValue("PluginPath", QtHelpers::ExecutingDirectory() + "plugins");
+    if (!settings->contains("AnonData"))
+        settings->setValue("AnonData", true);
 
     LoadAllPlugins();
     setCentralWidget(ui->mdiArea);
