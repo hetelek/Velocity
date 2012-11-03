@@ -10,6 +10,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 
 #ifdef __WIN32__
     QSize size(477, 142);
+#elif __unix__
+    QSize size(477, 162);
 #endif
     setFixedSize(size);
 
