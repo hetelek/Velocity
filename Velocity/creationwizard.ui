@@ -136,15 +136,18 @@ p, li { white-space: pre-wrap; }
        <widget class="QLabel" name="label_13">
         <property name="minimumSize">
          <size>
-          <width>175</width>
-          <height>175</height>
+          <width>128</width>
+          <height>128</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>175</width>
-          <height>175</height>
+          <width>128</width>
+          <height>128</height>
          </size>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
         </property>
         <property name="text">
          <string/>
@@ -153,7 +156,7 @@ p, li { white-space: pre-wrap; }
          <pixmap resource="Resources.qrc">:/Images/package512.png</pixmap>
         </property>
         <property name="scaledContents">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -369,19 +372,41 @@ p, li { white-space: pre-wrap; }
    <property name="subTitle">
     <string>The type of content stored inside the package.</string>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_5">
+   <layout class="QVBoxLayout" name="verticalLayout_12">
     <item>
-     <widget class="QLabel" name="label_9">
-      <property name="text">
-       <string/>
-      </property>
-      <property name="pixmap">
-       <pixmap resource="Resources.qrc">:/Images/package512.png</pixmap>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QListWidget" name="lwContentTypes"/>
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <item>
+       <widget class="QLabel" name="label_9">
+        <property name="minimumSize">
+         <size>
+          <width>128</width>
+          <height>128</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>128</width>
+          <height>128</height>
+         </size>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap resource="Resources.qrc">:/Images/package512.png</pixmap>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QListWidget" name="lwContentTypes"/>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
