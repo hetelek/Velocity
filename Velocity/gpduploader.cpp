@@ -2,15 +2,20 @@
 
 GPDUploader::GPDUploader(QStringList gamePaths, QStringList avatarPaths, QStringList titleIDs, bool deleteGPDs, QObject *parent = 0) : QObject(parent), deleteGPDs(deleteGPDs), gamePaths(gamePaths), titleIDs(titleIDs), avatarPaths(avatarPaths)
 {
-    success = 0;
-    failures = 0;
-    currentIndex = 0;
+    settings = new QSettings("Exetelek", "Velocity");
 
-    networkAccessManager = new QNetworkAccessManager(this);
-    connect(networkAccessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(reply(QNetworkReply*)));
+    if (settings->value("AnonData").toBool())
+    {
+        success = 0;
+        failures = 0;
+        currentIndex = 0;
 
-    if (gamePaths.count() > 0)
-        uploadGPD(gamePaths.at(currentIndex), avatarPaths.at(currentIndex), titleIDs.at(currentIndex));
+        networkAccessManager = new QNetworkAccessManager(this);
+        connect(networkAccessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(reply(QNetworkReply*)));
+
+        if (gamePaths.count() > 0)
+            uploadGPD(gamePaths.at(currentIndex), avatarPaths.at(currentIndex), titleIDs.at(currentIndex));
+    }
 }
 
 void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID)

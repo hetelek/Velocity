@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QDir>
 #include <QDebug>
+#include <QSettings>
 
 // network includes
     #include <QByteArray>
@@ -36,6 +37,8 @@ private slots:
     void reply(QNetworkReply *reply);
 
 private:
+    QSettings *settings;
+
     QStringList gamePaths, avatarPaths, titleIDs;
     int success, failures, currentIndex;
     bool deleteGPDs;
