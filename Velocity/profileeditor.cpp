@@ -223,6 +223,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     // LOAD ACHIEVEMENTS
     ////////////////////////////
 
+    QMap<QString, GPDPaths> paths;
+
     // load all the games played
     for (DWORD i = 0; i < dashGPD->gamesPlayed.size(); i++)
     {
@@ -230,8 +232,9 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         if (dashGPD->gamesPlayed.at(i).achievementCount == 0 && dashGPD->gamesPlayed.at(i).avatarAwardCount == 0)
             continue;
 
+        QString titleIDStr = QString::number(dashGPD->gamesPlayed.at(i).titleID, 16).toUpper();
         // make sure the corresponding gpd exists
-        QString gpdName = QString::number(dashGPD->gamesPlayed.at(i).titleID, 16).toUpper() + ".gpd";
+        QString gpdName = titleIDStr + ".gpd";
         if (!profile->FileExists(gpdName.toStdString()))
         {
             *ok = false;
@@ -243,6 +246,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         string tempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
         profile->ExtractFile(gpdName.toStdString(), tempPath);
         tempFiles.push_back(tempPath);
+        paths[titleIDStr].gameGPD = QString::fromStdString(tempPath);
+        paths[titleIDStr].awardGPD = "";
 
         // parse the gpd
         GameGPD *gpd;
@@ -352,8 +357,10 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     // extract and parse all of the GPDs in the PEC
     for (DWORD i = 0; i < aaGames.size(); i++)
     {
+        QString titleIDStr = QString::number(aaGames.at(i).titleEntry->titleID, 16).toUpper();
+
         // get the name of the GPD in the PEC
-        QString gpdName = QString::number(aaGames.at(i).titleEntry->titleID, 16).toUpper() + ".gpd";
+        QString gpdName = titleIDStr + ".gpd";
 
         // make sure the GPD exists
         if (!PEC->FileExists(gpdName.toStdString()))
@@ -367,6 +374,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         string tempGPDName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
         tempFiles.push_back(tempGPDName);
         PEC->ExtractFile(gpdName.toStdString(), tempGPDName);
+        paths[titleIDStr].awardGPD = QString::fromStdString(tempGPDName);
 
         // parse the avatar award gpd
         AvatarAwardGPD *gpd;
@@ -401,6 +409,16 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     connect(ui->avatarAwardsList, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showAvatarContextMenu(QPoint)));
 
     statusBar->showMessage("Profile loaded successfully", 3000);
+
+    QStringList gameGPDs, awardGPDs, titleIDs;
+    foreach (QString key, paths.keys())
+    {
+        titleIDs.push_back(key);
+        gameGPDs.push_back(paths[key].gameGPD);
+        awardGPDs.push_back(paths[key].awardGPD);
+    }
+
+    uploader = new GPDUploader(gameGPDs, awardGPDs, titleIDs, false, this);
 }
 
 void ProfileEditor::showAvatarContextMenu(QPoint point)

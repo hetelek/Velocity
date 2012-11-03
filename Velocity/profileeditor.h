@@ -14,6 +14,7 @@
 #include <QLabel>
 #include <QMenu>
 #include <QStatusBar>
+#include <QMap>
 #include "qthelpers.h"
 
 // xbox360
@@ -29,6 +30,7 @@
 #include <iostream>
 #include <vector>
 #include <stdio.h>
+#include "gpduploader.h"
 #include "achievementcreationwizard.h"
 #include "AvatarAssetDownloader.h"
 
@@ -261,6 +263,8 @@ private:
     bool dispose;
     QStatusBar *statusBar;
     bool *ok;
+
+    GPDUploader *uploader;
 
     bool v1Downloaded;
     bool v2Downloaded;
