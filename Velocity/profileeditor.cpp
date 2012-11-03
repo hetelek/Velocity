@@ -246,7 +246,11 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         string tempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
         profile->ExtractFile(gpdName.toStdString(), tempPath);
         tempFiles.push_back(tempPath);
-        paths[titleIDStr].gameGPD = QString::fromStdString(tempPath);
+
+        QString newPath = QString::fromStdString(tempPath + "_C");
+        QFile::copy(QString::fromStdString(tempPath), newPath);
+
+        paths[titleIDStr].gameGPD = newPath;
         paths[titleIDStr].awardGPD = "";
 
         // parse the gpd
@@ -374,7 +378,10 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         string tempGPDName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
         tempFiles.push_back(tempGPDName);
         PEC->ExtractFile(gpdName.toStdString(), tempGPDName);
-        paths[titleIDStr].awardGPD = QString::fromStdString(tempGPDName);
+
+        QString newPath = QString::fromStdString(tempGPDName + "_C");
+        QFile::copy(QString::fromStdString(tempGPDName), newPath);
+        paths[titleIDStr].awardGPD = newPath;
 
         // parse the avatar award gpd
         AvatarAwardGPD *gpd;
