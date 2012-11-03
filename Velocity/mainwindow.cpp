@@ -70,10 +70,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu)
 
                 QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Save Game"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
                 if (fileName.isNull())
-                {
-                    delete possiblePlugin;
                     return;
-                }
 
                 StfsPackage *package;
                 try
@@ -111,10 +108,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu)
 
                 QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Profile"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
                 if (fileName.isNull())
-                {
-                    delete possiblePlugin;
                     return;
-                }
 
                 try
                 {
@@ -154,7 +148,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu)
 
 void MainWindow::on_actionDonate_triggered()
 {
-    // donate page here
+    QDesktopServices::openUrl(QUrl("http://goo.gl/0nBpD"));
 }
 
 void MainWindow::on_actionView_Wiki_triggered()
@@ -192,6 +186,7 @@ void MainWindow::InjectGPD()
 void MainWindow::LoadAllPlugins()
 {
     QDir path(settings->value("PluginPath").toString());
+    qDebug() << "plugin directory: " << path.absolutePath();
 
     foreach (QString filename, path.entryList(QDir::Files))
     {
