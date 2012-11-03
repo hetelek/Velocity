@@ -305,6 +305,10 @@ void PackageViewer::onOpenInSelected(QAction *action)
         {
             GameAdderDialog dialog(package, this, false);
             dialog.exec();
+
+            ui->treeWidget->clear();
+            listing = package->GetFileListing();
+            PopulateTreeWidget(&listing);
         }
         else if (action == profileEditor)
         {
