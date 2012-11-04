@@ -208,9 +208,7 @@ void StfsMetaData::readMetadata()
         // *skip missing int*
         io->setPosition(0x26C);
         io->readBytes(profileID, 8);
-
-        // *skip missing byte*
-        io->setPosition(0x275);
+        enabled = (bool)io->readByte();
         io->readBytes(consoleID, 5);
 
         // anything between 1 and 0x1000 works, inclusive
@@ -387,9 +385,7 @@ void StfsMetaData::WriteMetaData()
         // *skip missing int*
         io->setPosition(0x26C);
         io->write(profileID, 8);
-
-        // *skip missing byte*
-        io->setPosition(0x275);
+        io->write((BYTE)enabled);
         io->write(consoleID, 5);
     }
 }

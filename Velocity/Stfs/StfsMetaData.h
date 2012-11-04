@@ -71,6 +71,9 @@ public:
 
 	VolumeDescriptor volumeDescriptor;
 
+    // only in PEC, and im not sure exactly what this byte is but it needs to always be set to 1
+    bool enabled;
+
 	// metadata v1
 	DWORD dataFileCount;
 	UINT64 dataFileCombinedSize;
