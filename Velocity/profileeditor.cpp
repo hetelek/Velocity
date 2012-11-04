@@ -878,10 +878,14 @@ void ProfileEditor::on_btnUnlockAllAchvs_clicked()
     games.at(index).gpd->UnlockAllAchievementsOffline();
     games.at(index).updated = true;
 
+    DWORD gamerscoreToAdd = 0;
+
     // update the ui
     for (DWORD i = 0; i < ui->achievementsList->topLevelItemCount(); i++)
     {
         QTreeWidgetItem *item = ui->achievementsList->topLevelItem(i);
+        if (!item->text(1).toLower().contains("unlocked"))
+            gamerscoreToAdd += games.at(index).gpd->achievements.at(i).gamerscore;
         if (item->text(1) != "Unlocked Online")
             item->setText(1, "Unlocked Offline");
     }
@@ -892,8 +896,12 @@ void ProfileEditor::on_btnUnlockAllAchvs_clicked()
 
     dashGPD->WriteTitleEntry(games.at(index).titleEntry);
 
-    ui->lblGameAchvs->setText("Achievements: " + QString::number(games.at(index).titleEntry->achievementsUnlocked) + " out of " + QString::number(games.at(index).titleEntry->achievementCount) + " unlocked");
-    ui->lblGameGamerscore->setText("Gamerscore: " + QString::number(games.at(index).titleEntry->gamerscoreUnlocked) + " out of " + QString::number(games.at(index).titleEntry->totalGamerscore) + " unlocked");
+    dashGPD->gamerscoreUnlocked.int32 += gamerscoreToAdd;
+    dashGPD->WriteSettingEntry(dashGPD->gamerscoreUnlocked);
+
+    ui->lblGameAchvs->setText("<span style=\"color:#4f4f4f;\">" + QString::number(games.at(index).titleEntry->achievementsUnlocked) + " out of " + QString::number(games.at(index).titleEntry->achievementCount) + " unlocked</span>");
+    ui->lblGameGamerscore->setText("<span style=\"color:#4f4f4f;\">" + QString::number(games.at(index).titleEntry->gamerscoreUnlocked) + " out of " + QString::number(games.at(index).titleEntry->totalGamerscore) + " unlocked</span>");
+    ui->lblGamerscore->setText(QString::number(dashGPD->gamerscoreUnlocked.int32) + "G");
 }
 
 void ProfileEditor::on_btnExtractGPD_clicked()
