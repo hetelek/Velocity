@@ -4,8 +4,10 @@ GPDUploader::GPDUploader(QStringList gamePaths, QStringList avatarPaths, QString
 {
     settings = new QSettings("Exetelek", "Velocity");
 
+    // only if they selected to share data with Velocity
     if (settings->value("AnonData").toBool())
     {
+        // initalize variables
         success = 0;
         failures = 0;
         currentIndex = 0;
@@ -13,8 +15,18 @@ GPDUploader::GPDUploader(QStringList gamePaths, QStringList avatarPaths, QString
         networkAccessManager = new QNetworkAccessManager(this);
         connect(networkAccessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(reply(QNetworkReply*)));
 
+        // begin the first upload
         if (gamePaths.count() > 0)
             uploadGPD(gamePaths.at(currentIndex), avatarPaths.at(currentIndex), titleIDs.at(currentIndex));
+    }
+    else
+    {
+        // remove temporary files
+        foreach (QString gamePath, gamePaths)
+            QFile::remove(gamePath);
+
+        foreach (QString avatarPath, avatarPaths)
+            QFile::remove(avatarPath);
     }
 }
 
@@ -22,6 +34,7 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
 {
     try
     {
+        // open the GPD
         GameGPD *gpd;
         try
         {
@@ -33,7 +46,7 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
             return;
         }
 
-
+        // there is no point if there are no acheivements
         if (gpd->achievements.size() == 0)
         {
             gpd->Close();
@@ -41,13 +54,16 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
             return;
         }
 
+        // calculate total gamerscore
         int totalGamerscore = 0;
         for (DWORD x = 0; x < gpd->achievements.size(); x++)
             totalGamerscore += gpd->achievements.at(x).gamerscore;
 
+        // check for award GPD
         DWORD awards = 0, mAwards = 0, fAwards = 0;
         if (QFile::exists(awardPath))
         {
+            // open the award gpd, get the amount of awards
             AvatarAwardGPD agpd(awardPath.toStdString());
             awards = agpd.avatarAwards.size();
 
@@ -55,9 +71,12 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
             {
                 struct AvatarAward award = agpd.avatarAwards.at(x);
                 AssetGender g = AvatarAwardGPD::GetAssetGender(&award);
+
+                // lock all awards
                 award.flags &= 0xF;
                 agpd.WriteAvatarAward(&award);
 
+                // caluclate male/female award counts
                 if (g == Male)
                     mAwards++;
                 else if (g == Female)
@@ -69,14 +88,17 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
                 }
             }
 
+            // close award file
             agpd.Close();
         }
 
 
+        // remove all setting entries
         int iterateCount = gpd->settings.size();
         for (DWORD x = 0; x < iterateCount; x++)
             gpd->DeleteSettingEntry(gpd->settings.at(0));
 
+        // remove all images
         iterateCount = gpd->images.size();
         char hitTitleImage = 0;
         for (DWORD x = 0; x < iterateCount; x++)
@@ -87,6 +109,7 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
                 hitTitleImage++;
         }
 
+        // lock all achievements
         for (DWORD x = 0; x < gpd->achievements.size(); x++)
         {
             AchievementEntry chiev = gpd->achievements.at(x);
@@ -97,9 +120,11 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
 
         qDebug() << "game name: " << QString::fromStdWString(gpd->gameName.ws);
 
+        // clean the gpd
         gpd->CleanGPD();
         gpd->Close();
 
+        // send the GPD(s) to the server
         sendRequest(gamePath, (QFile::exists(awardPath)) ? awardPath : "",
                    QString::fromStdWString(gpd->gameName.ws), titleID, gpd->achievements.size(), totalGamerscore, awards, mAwards, fAwards);
 
@@ -118,6 +143,7 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
 
 void GPDUploader::reply(QNetworkReply *reply)
 {
+    // print out the reply/error message
     if (reply->error() || reply->bytesAvailable() < 1)
     {
         failures++;
@@ -129,6 +155,7 @@ void GPDUploader::reply(QNetworkReply *reply)
         qDebug() << "response recieved: " + reply->readAll();
     }
 
+    // begin the next request, if there is one
     if (gamePaths.count() > ++currentIndex)
         uploadGPD(gamePaths.at(currentIndex), avatarPaths.at(currentIndex), titleIDs.at(currentIndex));
 }
@@ -137,46 +164,59 @@ void GPDUploader::sendRequest(QString filePath, QString awardFilePath, QString g
 {
     try
     {
+        // setup the GET parameters
         QString getData = "?nm=" + gameName + "&tid=" + titleID.toUpper() + "&achc=" + QString::number(achievementCount) + "&ttlgs=" +
                     QString::number(gamerscoreTotal) + "&ttlac=" + QString::number(awards) + "&ttlmac=" + QString::number(mAwards) + "&ttlfac=" + QString::number(fAwards);
 
+        // open the GPD file
         QFile gpdFile(filePath);
         if (!gpdFile.open(QIODevice::ReadWrite))
             return;
 
+        // open the award file (if there is one)
         QFile awardFile(awardFilePath);
         if (awardFilePath != "")
             awardFile.open(QIODevice::ReadWrite);
 
+        // initialize boundrary
         QString boundary = "-----------------------------7d935033608e2";
 
-        QByteArray dataToSend; // byte array to be sent in POST
+        // byte array to be sent in POST
+        QByteArray dataToSend;
+
+        // add data to the variable to be sent
         dataToSend.append("\r\n--" + boundary + "\r\n");
         dataToSend.append("Content-Disposition: form-data; name=\"game\"; filename=\"" + titleID.toUpper() + ".gpd\"\r\n");
         dataToSend.append("Content-Type: application/octet-stream\r\n\r\n");
         dataToSend.append(gpdFile.readAll());
 
+        // remove/close the gpd
         if (deleteGPDs)
             gpdFile.remove();
         else
             gpdFile.close();
 
+        // setup next boundary
         dataToSend.append("\r\n--" + boundary + "\r\n");
 
+        // add the award gpd to the data to be sent, if there is an award gpd
         if (awardFilePath != "")
         {
             dataToSend.append("Content-Disposition: form-data; name=\"award\"; filename=\"" + titleID.toUpper() + ".gpd\"\r\n");
             dataToSend.append("Content-Type: application/octet-stream\r\n\r\n");
             dataToSend.append(awardFile.readAll());
 
+            // remove/close the award gpd
             if (deleteGPDs)
                 awardFile.remove();
             else
                 awardFile.close();
         }
 
+        // end the data to be sent
         dataToSend.append("\r\n--" + boundary + "--\r\n");
 
+        // set the network request
         QNetworkRequest request(QUrl("http://velocity.expetelek.com/gpds/index.php" + getData));
         request.setRawHeader("Content-Type","multipart/form-data; boundary=-----------------------------7d935033608e2");
         request.setHeader(QNetworkRequest::ContentLengthHeader, dataToSend.size());
