@@ -823,7 +823,7 @@ void ProfileEditor::loadAvatarAwardInfo(int gameIndex, int awardIndex)
     }
     catch (...)
     {
-        ui->lblAwType->setText("Unlocked: <span style=\"color:#4f4f4f;\"><i>Unknown</i></span>");
+        ui->lblAwType->setText("Type: <span style=\"color:#4f4f4f;\"><i>Unknown</i></span>");
     }
 
     ui->lblAwGender->setText("Gender: <span style=\"color:#4f4f4f;\">" + QString::fromStdString(XDBFHelpers::AssetGenderToString(aaGames.at(gameIndex).gpd->GetAssetGender(award))) + "</span>");
