@@ -5,6 +5,7 @@ Q_DECLARE_METATYPE(TitleEntry)
 
 GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dispose) : QDialog(parent), ui(new Ui::GameAdderDialog), package(package), dispose(dispose)
 {
+    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
     allowInjection = false;
@@ -198,11 +199,17 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
                 if  (pecPackage == NULL)
                 {
                     DWORD flags = StfsPackagePEC;
+                    FileEntry pecEntry = package->GetFileEntry("PEC");
 
                     if (!package->FileExists("PEC"))
                     {
                         flags |= StfsPackageCreate;
                         existed = false;
+                    }
+                    else if (pecEntry.blocksForFile == 1)
+                    {
+                        flags |= StfsPackageCreate;
+                        existed = true;
                     }
                     else
                     {
@@ -213,6 +220,7 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
                     }
 
                     pecPackage = new StfsPackage(pecTempPath.toStdString(), flags);
+
                 }
 
                 // inject the gpd and delete it
@@ -281,7 +289,14 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
         try
         {
             if (pecPackage != NULL)
-            {
+            {   
+                // make sure the profile IDs match
+                memcpy(pecPackage->metaData->profileID, package->metaData->profileID, 8);
+
+                // make sure this bool is true
+                pecPackage->metaData->enabled = true;
+                pecPackage->metaData->WriteMetaData();
+
                 m.lock();
                 pecPackage->Rehash();
                 pecPackage->Resign(kvPath);
