@@ -890,6 +890,37 @@ void ProfileEditor::on_btnUnlockAllAchvs_clicked()
             item->setText(1, "Unlocked Offline");
     }
 
+    // make sure that the settings exist
+    SettingEntry settingGamerscore, settingAchievements;
+    settingGamerscore.int32 = settingAchievements.int32 = 0xFFFFFFFF;
+    for (DWORD i = 0; i < games.at(index).gpd->settings.size(); i++)
+        if (games.at(index).gpd->settings.at(i).entry.id == GamercardTitleAchievementsEarned)
+            settingAchievements = games.at(index).gpd->settings.at(i);
+        else if (games.at(index).gpd->settings.at(i).entry.id == GamercardTitleCredEarned)
+            settingGamerscore = games.at(index).gpd->settings.at(i);
+
+    // if the settings don't exist, then create them
+    if (settingGamerscore.int32 == 0xFFFFFFFF)
+    {
+        settingGamerscore.type = Int32;
+        settingGamerscore.int32 = 0;
+        games.at(index).gpd->CreateSettingEntry(&settingGamerscore, GamercardTitleCredEarned);
+    }
+    if (settingAchievements.int32 == 0xFFFFFFFF)
+    {
+        settingAchievements.type = Int32;
+        settingAchievements.int32 = 0;
+        games.at(index).gpd->CreateSettingEntry(&settingAchievements, GamercardTitleAchievementsEarned);
+    }
+
+    // set the settings to the max amounts
+    settingGamerscore.int32 = games.at(index).titleEntry->totalGamerscore;
+    settingAchievements.int32 = games.at(index).titleEntry->achievementCount;
+
+    // write the settings
+    games.at(index).gpd->WriteSettingEntry(settingGamerscore);
+    games.at(index).gpd->WriteSettingEntry(settingAchievements);
+
     games.at(index).titleEntry->achievementsUnlocked = games.at(index).titleEntry->achievementCount;
     games.at(index).titleEntry->gamerscoreUnlocked = games.at(index).titleEntry->totalGamerscore;
     games.at(index).titleEntry->flags |= (SyncAchievement | DownloadAchievementImage);
