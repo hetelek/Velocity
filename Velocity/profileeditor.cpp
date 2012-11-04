@@ -1009,9 +1009,16 @@ void ProfileEditor::updateAvatarAward(TitleEntry *entry, AvatarAwardGPD *gpd, st
     {
         award->flags &= 0xFFFCFFFF;
         award->flags |= (Unlocked | 0x100000);
+
+        if (award->subcategory == 0)
+            award->subcategory = 0xFFFFFFFF;
     }
     else if (toSet == StateUnlockedOnline)
+    {
         award->flags |= (Unlocked | UnlockedOnline | 0x100000);
+        if (award->subcategory == 0)
+            award->subcategory = 0xFFFFFFFF;
+    }
 
     // write the entry back to the gpd
     gpd->WriteAvatarAward(award);
