@@ -8,7 +8,7 @@ GitHubCommitsDialog::GitHubCommitsDialog(QWidget *parent) :
     // set the fixed size based on the OS
 #ifdef __WIN32__
     QSize appSize(274, 315);
-#elif __unix
+#elif __unix | __APPLE__
     QSize appSize(345, 380);
 #endif
 
