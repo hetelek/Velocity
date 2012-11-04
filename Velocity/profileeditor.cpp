@@ -974,7 +974,7 @@ void ProfileEditor::on_btnUnlockAllAwards_clicked()
     aaGames.at(index).titleEntry->flags |= (DownloadAvatarAward | SyncAvatarAward);
 
     dashGPD->WriteTitleEntry(aaGames.at(index).titleEntry);
-    ui->lblAwGameAwards->setText("Awards: " + QString::number(aaGames.at(index).titleEntry->avatarAwardsEarned) + " out of " + QString::number(aaGames.at(index).titleEntry->avatarAwardCount) + " unlocked");
+    ui->lblAwGameAwards->setText("<span style=\"color:#4f4f4f;\">" + QString::number(aaGames.at(index).titleEntry->avatarAwardsEarned) + " out of " + QString::number(aaGames.at(index).titleEntry->avatarAwardCount) + " unlocked</span>");
     statusBar->showMessage("All awards unlocked for " + QString::fromStdWString(aaGames.at(index).titleEntry->gameName), 3000);
 }
 
