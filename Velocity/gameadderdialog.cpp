@@ -199,28 +199,30 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
                 if  (pecPackage == NULL)
                 {
                     DWORD flags = StfsPackagePEC;
-                    FileEntry pecEntry = package->GetFileEntry("PEC");
 
                     if (!package->FileExists("PEC"))
                     {
                         flags |= StfsPackageCreate;
                         existed = false;
                     }
-                    else if (pecEntry.blocksForFile == 1)
-                    {
-                        flags |= StfsPackageCreate;
-                        existed = true;
-                    }
                     else
                     {
-                        m.lock();
-                        package->ExtractFile("PEC", pecTempPath.toStdString());
-                        m.unlock();
-                        existed = true;
+                        FileEntry pecEntry = package->GetFileEntry("PEC");
+                        if (pecEntry.blocksForFile == 1)
+                        {
+                            flags |= StfsPackageCreate;
+                            existed = true;
+                        }
+                        else
+                        {
+                            m.lock();
+                            package->ExtractFile("PEC", pecTempPath.toStdString());
+                            m.unlock();
+                            existed = true;
+                        }
                     }
 
                     pecPackage = new StfsPackage(pecTempPath.toStdString(), flags);
-
                 }
 
                 // inject the gpd and delete it
