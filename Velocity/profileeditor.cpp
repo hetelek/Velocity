@@ -1012,12 +1012,14 @@ void ProfileEditor::updateAvatarAward(TitleEntry *entry, AvatarAwardGPD *gpd, st
 
         if (award->subcategory == 0)
             award->subcategory = 0xFFFFFFFF;
+        award->colorizable = 0;
     }
     else if (toSet == StateUnlockedOnline)
     {
         award->flags |= (Unlocked | UnlockedOnline | 0x100000);
         if (award->subcategory == 0)
             award->subcategory = 0xFFFFFFFF;
+        award->colorizable = 0;
     }
 
     // write the entry back to the gpd
