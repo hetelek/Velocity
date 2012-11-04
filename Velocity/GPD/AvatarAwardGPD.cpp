@@ -73,7 +73,7 @@ void AvatarAwardGPD::UnlockAllAwards()
     for (DWORD i = 0; i < avatarAwards.size(); i++)
     {
         // set it to unlocked
-        avatarAwards.at(i).flags |= Unlocked;
+        avatarAwards.at(i).flags |= (Unlocked | 0x100000);
 
         // write the flags back to the file
         io->setPosition(xdbf->GetRealAddress(avatarAwards.at(i).entry.addressSpecifier) + 0x18);
