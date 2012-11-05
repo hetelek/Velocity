@@ -60,7 +60,6 @@
         <file>Images/avatar female.png</file>
         <file>Images/defaultTitleImage.png</file>
         <file>Images/download.png</file>
-        <file>Images/gamerscore.png</file>
         <file>Images/watermark.png</file>
         <file>Images/go.png</file>
         <file>Images/id.png</file>
@@ -75,5 +74,8 @@
         <file>Images/wiki.png</file>
         <file>Images/donate'.png</file>
         <file>Images/preferences.png</file>
+        <file>Images/achievement.png</file>
+        <file>Images/gamerscore.png</file>
+        <file>Images/avatar.png</file>
     </qresource>
 </RCC>
