@@ -8,6 +8,12 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
+    QFont f = ui->lblGameName->font();
+#ifdef __WIN32
+    f.setPointSize(10);
+#endif
+    ui->lblGameName->setFont(f);
+
     allowInjection = false;
 
     pecPackage = NULL;
@@ -381,8 +387,8 @@ void GameAdderDialog::on_treeWidgetAllGames_currentItemChanged(QTreeWidgetItem *
 {
     if (current == NULL)
     {
-        ui->lblGameName->setText("Game Name: <i>N/A</i>");
-        ui->lblTitleID->setText("Title ID: <i>N/A</i>");
+        ui->lblGameName->setText("<i>N/A</i>");
+        ui->lblTitleID->setText("<span style=\"color:#4f4f4f;\"><i>N/A</i></span>");
         ui->imgThumbnail->setPixmap(QPixmap());
         return;
     }
@@ -393,10 +399,11 @@ void GameAdderDialog::on_treeWidgetAllGames_currentItemChanged(QTreeWidgetItem *
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(thumbnailReplyFinished(QNetworkReply*)));
     manager->get(QNetworkRequest(QUrl("http://image.xboxlive.com/global/t." + QString::number(entry.titleID, 16) + "/icon/0/8000")));
 
-    ui->lblGameName->setText("Game Name: " + QString::fromStdWString(entry.gameName));
-    ui->lblTitleID->setText("Title ID: " + QString::number(entry.titleID, 16).toUpper());
-    ui->lblGamerscore->setText("Gamerscore: " + QString::number(entry.totalGamerscore));
-    ui->lblAvatarAwards->setText("Avatar Awards: " + QString::number(entry.avatarAwardCount));
+    ui->lblGameName->setText("" + QString::fromStdWString(entry.gameName));
+    ui->lblTitleID->setText("<span style=\"color:#4f4f4f;\">" + QString::number(entry.titleID, 16).toUpper() + "</span>");
+    ui->lblGamerscore->setText("" + QString::number(entry.totalGamerscore));
+    ui->lblAvatarAwards->setText("" + QString::number(entry.avatarAwardCount));
+    ui->lblAchievements->setText(QString::number(entry.achievementCount));
 }
 
 void GameAdderDialog::on_pushButton_clicked()
