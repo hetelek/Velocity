@@ -66,6 +66,7 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
 
     if (!ok)
     {
+        ui->tabWidget->setEnabled(false);
         QMessageBox::warning(this, "Listing Error", "The listing could not be parsed. Try again later, as the servers may be down and make sure Velocity has access to the internet.");
         return;
     }
