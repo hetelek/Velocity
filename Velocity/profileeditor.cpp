@@ -23,6 +23,12 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
 #elif __WIN32__
     ui->lblAchName->setFont(QFont("Arial", 10));
     ui->lblAwName->setFont(QFont("Arial", 10));
+    ui->btnExtractGPD->setMinimumHeight(32);
+    ui->btnExtractGPD_2->setMinimumHeight(32);
+    ui->btnCreateAch->setMinimumHeight(32);
+    ui->btnUnlockAllAchvs->setMinimumHeight(32);
+    ui->btnAwardShowAll->setMaximumHeight(32);
+    ui->btnUnlockAllAwards->setMaximumHeight(32);
 #endif
 
     ui->achievementsList->header()->resizeSection(0, 350);
