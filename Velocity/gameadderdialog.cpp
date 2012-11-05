@@ -127,6 +127,9 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
         ui->treeWidgetAllGames->setCurrentItem(ui->treeWidgetAllGames->topLevelItem(0));
         ui->treeWidgetAllGames->topLevelItem(0)->setSelected(true);
     }
+
+    // sort the items alphabetically
+    ui->treeWidgetAllGames->sortByColumn(0, Qt::AscendingOrder);
 }
 
 void GameAdderDialog::thumbnailReplyFinished(QNetworkReply *aReply)
