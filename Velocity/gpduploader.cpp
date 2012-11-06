@@ -42,15 +42,7 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
         }
         catch (string error)
         {
-            qDebug() << QString::fromStdString(error);
-            return;
-        }
-
-        // there is no point if there are no acheivements
-        if (gpd->achievements.size() == 0)
-        {
-            gpd->Close();
-            delete gpd;
+            qDebug() << titleID << " Error: " << QString::fromStdString(error);
             return;
         }
 
