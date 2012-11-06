@@ -33,7 +33,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabGeneralSettings">
       <attribute name="title">
@@ -767,7 +767,7 @@
             <enum>QTabWidget::South</enum>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="tab_5">
             <attribute name="title">
@@ -1067,7 +1067,7 @@ p, li { white-space: pre-wrap; }
               </layout>
              </item>
              <item>
-              <layout class="QVBoxLayout" name="verticalLayout_15" stretch="1,1,2">
+              <layout class="QVBoxLayout" name="verticalLayout_15" stretch="2,1">
                <item>
                 <widget class="QLabel" name="lblAchType">
                  <property name="text">
@@ -1076,20 +1076,6 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Type&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="wordWrap">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="lblAchSecret">
-                 <property name="text">
-                  <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Secret&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="wordWrap">
                   <bool>true</bool>

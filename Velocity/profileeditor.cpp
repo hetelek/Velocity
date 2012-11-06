@@ -709,7 +709,6 @@ void ProfileEditor::loadAchievementInfo(int gameIndex, int chievIndex)
     ui->lblAchUnlDesc->setText("Unlocked: <span style=\"color:#4f4f4f;\">" + QString::fromStdWString(entry.unlockedDescription) + "</span>");
     ui->lblAchType->setText("Type: <span style=\"color:#4f4f4f;\">" + QString::fromStdString(GameGPD::GetAchievementType(&entry)) + "</span>");
     ui->lblAchGamescore->setText(QString::number(entry.gamerscore));
-    ui->lblAchSecret->setText(QString("Secret: <span style=\"color:#4f4f4f;\">") + ((entry.flags & Secret) ? "Yes" : "No") + "</span>");
 
     if (entry.flags & UnlockedOnline)
     {
