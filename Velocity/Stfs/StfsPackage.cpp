@@ -795,7 +795,7 @@ void StfsPackage::Rehash()
             break;
 
         case One:
-            // loop through all of the level0 hash blocks
+            // loop through all of the level1 hash blocks
             for (DWORD i = 0; i < topTable.entryCount; i++)
             {
                 // get the current level0 hash table
@@ -827,7 +827,7 @@ void StfsPackage::Rehash()
             break;
 
         case Two:
-            // iterate through all of the level1 tables
+            // iterate through all of the level2 tables
             for (DWORD i = 0; i < topTable.entryCount; i++)
             {
                 // get the current level1 hash table
@@ -1357,7 +1357,9 @@ void StfsPackage::WriteFileListing(bool usePassed, vector<FileEntry> *outFis, ve
     io->write(nullBytes, remainer);
 
     // update the file table block count and write it to file
-    metaData->volumeDescriptor.fileTableBlockCount = ((outFiles.size() + outFileSize) * 0x40 / 0x1000) + 1;
+    metaData->volumeDescriptor.fileTableBlockCount = (outFoldersAndFilesSize / 0x40) + 1;
+    if (outFoldersAndFilesSize % 0x40 == 0 && outFoldersAndFilesSize != 0)
+        metaData->volumeDescriptor.fileTableBlockCount--;
     metaData->WriteVolumeDescriptor();
 
     ReadFileListing();
@@ -1408,6 +1410,12 @@ void StfsPackage::RemoveFile(string pathInPackage)
 
 INT24 StfsPackage::AllocateBlock()
 {
+    // reset the cached table
+    cached.addressInFile = 0;
+    cached.entryCount = 0;
+    cached.level = -1;
+    cached.trueBlockNumber = 0xFFFFFFFF;
+
     DWORD lengthToWrite = 0xFFF;
 
     // update the allocated block count
@@ -1427,8 +1435,17 @@ INT24 StfsPackage::AllocateBlock()
             lengthToWrite += (packageSex + 1) * 0x1000;
             tablesPerLevel[i] = recalcTablesPerLevel[i];
 
+            // update top level hash table if needed
             if ((i + 1) == topLevel)
+            {
                 topTable.entryCount++;
+                topTable.entries[topTable.entryCount - 1].status = 0;
+                topTable.entries[topTable.entryCount - 1].nextBlock = INT24_MAX;
+
+                // write it to the file
+                io->setPosition(topTable.addressInFile + ((tablesPerLevel[i] - 1) * 0x18) + 0x15);
+                io->write((INT24)INT24_MAX);
+            }
         }
     }
 
