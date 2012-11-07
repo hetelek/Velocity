@@ -1413,7 +1413,7 @@ INT24 StfsPackage::AllocateBlock()
     // reset the cached table
     cached.addressInFile = 0;
     cached.entryCount = 0;
-    cached.level = -1;
+    cached.level = (Level)-1;
     cached.trueBlockNumber = 0xFFFFFFFF;
 
     DWORD lengthToWrite = 0xFFF;

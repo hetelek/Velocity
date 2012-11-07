@@ -17,19 +17,24 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     ui->lblAwName->setFont(f);
 
     setMinimumHeight(485);
+
+    int btnSize = 37;
 #elif __APPLE__
+    int btnSize = 30;
     setMinimumSize(1000, 500);
     ui->groupBox_3->setMaximumWidth(405);
 #elif __WIN32__
+    int btnSize = 32;
     ui->lblAchName->setFont(QFont("Arial", 10));
     ui->lblAwName->setFont(QFont("Arial", 10));
-    ui->btnExtractGPD->setMinimumHeight(32);
-    ui->btnExtractGPD_2->setMinimumHeight(32);
-    ui->btnCreateAch->setMinimumHeight(32);
-    ui->btnUnlockAllAchvs->setMinimumHeight(32);
-    ui->btnAwardShowAll->setMaximumHeight(32);
-    ui->btnUnlockAllAwards->setMaximumHeight(32);
 #endif
+
+    ui->btnExtractGPD->setMinimumHeight(btnSize);
+    ui->btnExtractGPD_2->setMinimumHeight(btnSize);
+    ui->btnCreateAch->setMinimumHeight(btnSize);
+    ui->btnUnlockAllAchvs->setMinimumHeight(btnSize);
+    ui->btnAwardShowAll->setMaximumHeight(btnSize);
+    ui->btnUnlockAllAwards->setMaximumHeight(btnSize);
 
     ui->achievementsList->header()->resizeSection(0, 350);
     ui->achievementsList->header()->resizeSection(1, 125);
@@ -644,7 +649,7 @@ void ProfileEditor::loadGameInfo(int index)
     if (title->lastPlayed == 0x67D6Ca80)
         ui->lblGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">N/A</span>");
     else
-        ui->lblGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">" + QDateTime::fromTime_t(title->lastPlayed).toString(Qt::DefaultLocaleLongDate) + "</span>");
+        ui->lblGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">" + QDateTime::fromTime_t(title->lastPlayed).toString(Qt::SystemLocaleShortDate) + "</span>");
     ui->lblGameAchvs->setText("<span style=\"color:#4f4f4f;\">" + QString::number(title->achievementsUnlocked) + " out of " + QString::number(title->achievementCount) + " unlocked" + "</span>");
     ui->lblGameGamerscore->setText("<span style=\"color:#4f4f4f;\">" + QString::number(title->gamerscoreUnlocked) + " out of " + QString::number(title->totalGamerscore) + " unlocked" + "</span>");
 
@@ -780,7 +785,7 @@ void ProfileEditor::loadAwardGameInfo(int index)
     if (title->lastPlayed == 0x67D6Ca80)
         ui->lblAwGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">N/A</span>");
     else
-        ui->lblAwGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">" + QDateTime::fromTime_t(title->lastPlayed).toString(Qt::DefaultLocaleLongDate) + "</span>");
+        ui->lblAwGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">" + QDateTime::fromTime_t(title->lastPlayed).toString(Qt::SystemLocaleShortDate) + "</span>");
     ui->lblAwGameAwards->setText("<span style=\"color:#4f4f4f;\">" + QString::number(title->avatarAwardsEarned) + " out of " + QString::number(title->avatarAwardCount) + " unlocked" + "</span>");
 
     // download the box art image
@@ -1055,14 +1060,14 @@ void ProfileEditor::updateAvatarAward(TitleEntry *entry, AvatarAwardGPD *gpd, st
         award->flags |= (Unlocked | 0x100000);
 
         if (award->subcategory == 0)
-            award->subcategory = 0xFFFFFFFF;
+            award->subcategory = (AssetSubcategory)0xFFFFFFFF;
         award->colorizable = 0;
     }
     else if (toSet == StateUnlockedOnline)
     {
         award->flags |= (Unlocked | UnlockedOnline | 0x100000);
         if (award->subcategory == 0)
-            award->subcategory = 0xFFFFFFFF;
+            award->subcategory = (AssetSubcategory)0xFFFFFFFF;
         award->colorizable = 0;
     }
 

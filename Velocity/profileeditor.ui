@@ -33,7 +33,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabGeneralSettings">
       <attribute name="title">
@@ -767,7 +767,7 @@
             <enum>QTabWidget::South</enum>
            </property>
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="tab_5">
             <attribute name="title">
@@ -1230,132 +1230,136 @@ p, li { white-space: pre-wrap; }
             <attribute name="title">
              <string>Game</string>
             </attribute>
-            <layout class="QHBoxLayout" name="horizontalLayout_14">
+            <layout class="QHBoxLayout" name="horizontalLayout_15">
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="1,2">
+              <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="2,0,1">
                <item>
-                <layout class="QVBoxLayout" name="verticalLayout_21">
+                <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="1,3">
                  <item>
-                  <widget class="QLabel" name="lblAwGameName1">
-                   <property name="text">
-                    <string>Name:</string>
-                   </property>
-                  </widget>
+                  <layout class="QVBoxLayout" name="verticalLayout_21">
+                   <item>
+                    <widget class="QLabel" name="lblAwGameName1">
+                     <property name="text">
+                      <string>Name:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="lblAwGameTitleID1">
+                     <property name="text">
+                      <string>TitleID:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="lblAwGameLastPlayed1">
+                     <property name="text">
+                      <string>Last Played:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="lblAwGameAwards1">
+                     <property name="text">
+                      <string>Awards:</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
                  </item>
                  <item>
-                  <widget class="QLabel" name="lblAwGameTitleID1">
-                   <property name="text">
-                    <string>TitleID:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="lblAwGameLastPlayed1">
-                   <property name="text">
-                    <string>Last Played:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="lblAwGameAwards1">
-                   <property name="text">
-                    <string>Awards:</string>
-                   </property>
-                  </widget>
+                  <layout class="QVBoxLayout" name="verticalLayout_20">
+                   <item>
+                    <widget class="QLabel" name="lblAwGameName">
+                     <property name="text">
+                      <string>-</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="lblAwGameTitleID">
+                     <property name="text">
+                      <string>-</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="lblAwGameLastPlayed">
+                     <property name="text">
+                      <string>-</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="lblAwGameAwards">
+                     <property name="text">
+                      <string>-</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
                  </item>
                 </layout>
                </item>
                <item>
-                <layout class="QVBoxLayout" name="verticalLayout_20">
+                <widget class="QLabel" name="imgAwBoxArt">
+                 <property name="minimumSize">
+                  <size>
+                   <width>85</width>
+                   <height>120</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>85</width>
+                   <height>120</height>
+                  </size>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::NoFrame</enum>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_13">
                  <item>
-                  <widget class="QLabel" name="lblAwGameName">
+                  <widget class="QPushButton" name="btnUnlockAllAwards">
                    <property name="text">
-                    <string>-</string>
+                    <string>Unlock All Awards</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="Resources.qrc">
+                     <normaloff>:/Images/unlock.png</normaloff>:/Images/unlock.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>20</width>
+                     <height>20</height>
+                    </size>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLabel" name="lblAwGameTitleID">
+                  <widget class="QPushButton" name="btnExtractGPD_2">
                    <property name="text">
-                    <string>-</string>
+                    <string>Extract GPD</string>
                    </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="lblAwGameLastPlayed">
-                   <property name="text">
-                    <string>-</string>
+                   <property name="icon">
+                    <iconset resource="Resources.qrc">
+                     <normaloff>:/Images/extract.png</normaloff>:/Images/extract.png</iconset>
                    </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="lblAwGameAwards">
-                   <property name="text">
-                    <string>-</string>
+                   <property name="iconSize">
+                    <size>
+                     <width>20</width>
+                     <height>20</height>
+                    </size>
                    </property>
                   </widget>
                  </item>
                 </layout>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <widget class="QLabel" name="imgAwBoxArt">
-               <property name="minimumSize">
-                <size>
-                 <width>85</width>
-                 <height>120</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>85</width>
-                 <height>120</height>
-                </size>
-               </property>
-               <property name="frameShape">
-                <enum>QFrame::NoFrame</enum>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <layout class="QVBoxLayout" name="verticalLayout_13">
-               <item>
-                <widget class="QPushButton" name="btnUnlockAllAwards">
-                 <property name="text">
-                  <string>Unlock All Awards</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="Resources.qrc">
-                   <normaloff>:/Images/unlock.png</normaloff>:/Images/unlock.png</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>20</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="btnExtractGPD_2">
-                 <property name="text">
-                  <string>Extract GPD</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="Resources.qrc">
-                   <normaloff>:/Images/extract.png</normaloff>:/Images/extract.png</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>20</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </widget>
                </item>
               </layout>
              </item>
