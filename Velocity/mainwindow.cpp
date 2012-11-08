@@ -10,7 +10,7 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
     if (!settings->contains("ProfileDropAction"))
         settings->setValue("ProfileDropAction", 0);
     if (!settings->contains("PluginPath"))
-        settings->setValue("PluginPath", QtHelpers::ExecutingDirectory() + "plugins");
+        settings->setValue("PluginPath", "./plugins");
     if (!settings->contains("AnonData"))
         settings->setValue("AnonData", true);
 
