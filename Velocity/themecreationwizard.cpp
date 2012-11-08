@@ -140,7 +140,7 @@ void ThemeCreationWizard::onCurrentIdChanged(int index)
             button(QWizard::NextButton)->setEnabled(imagesLoaded & 8);
             break;
         case 8:
-            ui->lblSavePath->setText(QtHelpers::DesktopLocation() + "/" + ui->txtName->text());
+            ui->lblSavePath->setText( QtHelpers::DesktopLocation().replace("\\", "/") + "/" + ui->txtName->text());
             break;
     }
 }
@@ -208,7 +208,7 @@ void ThemeCreationWizard::on_txtName_textChanged(const QString &arg1)
 
 void ThemeCreationWizard::on_pushButton_6_clicked()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, "Choose a place to save your theme", QtHelpers::DesktopLocation() + "/" + ui->txtName->text());
+    QString filePath = QFileDialog::getOpenFileName(this, "Choose a place to save your theme", QtHelpers::DesktopLocation().replace("\\", "/") + "/" + ui->txtName->text());
 
     if (filePath == "")
         return;

@@ -16,7 +16,7 @@ ProfileCreatorWizard::ProfileCreatorWizard(QStatusBar *statusBar, QWidget *paren
     srand(time(NULL));
     profileID |= ((UINT64)rand() + ((UINT64)rand() << 16) + ((UINT64)rand() << 32));
 
-    ui->lblSavePath->setText(QtHelpers::DesktopLocation() + "/" + QString::number(profileID, 16).toUpper());
+    ui->lblSavePath->setText(QtHelpers::DesktopLocation().replace("\\", "/") + "/" + QString::number(profileID, 16).toUpper());
 
     ui->listWidget->item(0)->setSelected(true);
     ui->listWidget->setCurrentItem(ui->listWidget->item(0));
@@ -214,7 +214,7 @@ void ProfileCreatorWizard::on_txtGamertag_textChanged(const QString &arg1)
 
 void ProfileCreatorWizard::on_pushButton_clicked()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, "Choose a place to create the profile", QtHelpers::DesktopLocation() + "/" + QString::number(profileID, 16).toUpper());
+    QString fileName = QFileDialog::getSaveFileName(this, "Choose a place to create the profile", QtHelpers::DesktopLocation().replace("\\", "/") + "/" + QString::number(profileID, 16).toUpper());
 
     if (fileName != "")
         ui->lblSavePath->setText(fileName);

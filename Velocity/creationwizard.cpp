@@ -75,7 +75,7 @@ void CreationWizard::onCurrentIdChanged(int id)
         button(QWizard::NextButton)->setEnabled(false);
         break;
     case 6:
-        ui->lblSavePath->setText(QtHelpers::DesktopLocation() + "/" + ui->txtDisplayName->text());
+        ui->lblSavePath->setText(QtHelpers::DesktopLocation().replace("\\", "/") + "/" + ui->txtDisplayName->text());
         break;
     }
 }
