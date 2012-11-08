@@ -175,8 +175,10 @@ void GamerPicturePackDialog::onTitleIDSearchReturn(QList<struct Title> titlesFou
 
 void GamerPicturePackDialog::on_listGameNames_itemClicked(QListWidgetItem *item)
 {
+    // make sure that we haven't already searched for the title
     if (searchedTitleIDs->contains(currentTitles->at(ui->listGameNames->currentIndex().row()).titleID))
         return;
+    searchedTitleIDs->push_back(currentTitles->at(ui->listGameNames->currentIndex().row()).titleID);
 
     findGamerPictures(QString::number(currentTitles->at(ui->listGameNames->currentIndex().row()).titleID, 16));
 }
@@ -264,7 +266,7 @@ void GamerPicturePackDialog::switchImage(QListWidgetItem *currentItem, QListWidg
     // delete the old item
     delete currentItem;
 
-    ui->btnCreatePack->setEnabled(ui->listPack->count() != 0);
+    ui->btnCreatePack->setEnabled(ui->listPack->count() != 0 && ui->txtPackName->text() != "");
 }
 
 void GamerPicturePackDialog::showContextMenuSearch(QPoint p)
@@ -320,13 +322,13 @@ void GamerPicturePackDialog::showContextMenu(QPoint p, QListWidget *current, QLi
         for (DWORD i = 0; i < itemCount; i++)
             switchImage(current->item(0), current, toAddTo, currentStrs, toAddToStrs);
 
-        ui->btnCreatePack->setEnabled(ui->listPack->count() != 0);
+        ui->btnCreatePack->setEnabled(ui->listPack->count() != 0 && ui->txtPackName->text() != "");
     }
     else if (selectedItem->text() == "Clear All")
     {
         current->clear();
         currentStrs->clear();
-        ui->btnCreatePack->setEnabled(ui->listPack->count() != 0);
+        ui->btnCreatePack->setEnabled(ui->listPack->count() != 0 && ui->txtPackName->text() != "");
     }
 }
 
