@@ -1171,6 +1171,8 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
 
         dashGPD->WriteTitleEntry(entry);
 
+        ui->lblGamerscore->setText(QString::number(dashGPD->gamerscoreUnlocked.int32) + "G");
+
         statusBar->showMessage("Updated " + QString::fromStdWString(chiev->name), 3000);
     }
     catch (string error)
@@ -1375,8 +1377,8 @@ void ProfileEditor::on_cmbxAchState_currentIndexChanged(int index)
         // update the title entry
         updateAchievement(games.at(gameIndex).titleEntry, &gpd->achievements.at(chievIndex), StateUnlockedOffline, gpd);
 
-        ui->lblGameAchvs->setText("Achievements: " + QString::number(games.at(gameIndex).titleEntry->achievementsUnlocked) + " out of " + QString::number(games.at(gameIndex).titleEntry->achievementCount) + " unlocked");
-        ui->lblGameGamerscore->setText("Gamerscore: " + QString::number(games.at(gameIndex).titleEntry->gamerscoreUnlocked) + " out of " + QString::number(games.at(gameIndex).titleEntry->totalGamerscore) + " unlocked");
+        ui->lblGameAchvs->setText("<span style=\"color:#4f4f4f;\">" + QString::number(games.at(gameIndex).titleEntry->achievementsUnlocked) + " out of " + QString::number(games.at(gameIndex).titleEntry->achievementCount) + " unlocked</span>");
+        ui->lblGameGamerscore->setText("<span style=\"color:#4f4f4f;\">Gamerscore: " + QString::number(games.at(gameIndex).titleEntry->gamerscoreUnlocked) + " out of " + QString::number(games.at(gameIndex).titleEntry->totalGamerscore) + " unlocked</span>");
 
         ui->dteAchTimestamp->setEnabled(false);
     }
@@ -1388,8 +1390,8 @@ void ProfileEditor::on_cmbxAchState_currentIndexChanged(int index)
         // update the title entry
         updateAchievement(games.at(gameIndex).titleEntry, &gpd->achievements.at(chievIndex), StateUnlockedOnline, gpd);
 
-        ui->lblGameAchvs->setText("Achievements: " + QString::number(games.at(gameIndex).titleEntry->achievementsUnlocked) + " out of " + QString::number(games.at(gameIndex).titleEntry->achievementCount) + " unlocked");
-        ui->lblGameGamerscore->setText("Gamerscore: " + QString::number(games.at(gameIndex).titleEntry->gamerscoreUnlocked) + " out of " + QString::number(games.at(gameIndex).titleEntry->totalGamerscore) + " unlocked");
+        ui->lblGameAchvs->setText("<span style=\"color:#4f4f4f;\">Achievements: " + QString::number(games.at(gameIndex).titleEntry->achievementsUnlocked) + " out of " + QString::number(games.at(gameIndex).titleEntry->achievementCount) + " unlocked</span>");
+        ui->lblGameGamerscore->setText("<span style=\"color:#4f4f4f;\">Gamerscore: " + QString::number(games.at(gameIndex).titleEntry->gamerscoreUnlocked) + " out of " + QString::number(games.at(gameIndex).titleEntry->totalGamerscore) + " unlocked</span>");
 
         ui->dteAchTimestamp->setEnabled(true);
         ui->dteAchTimestamp->setDateTime(QDateTime::currentDateTime());
@@ -1433,7 +1435,7 @@ void ProfileEditor::on_cmbxAwState_currentIndexChanged(int index)
         updateAvatarAward(aaGames.at(gameIndex).titleEntry, gpd, &gpd->avatarAwards.at(awardIndex), StateUnlockedOffline);
         ui->dteAchTimestamp->setEnabled(false);
 
-                ui->lblAwGameAwards->setText("Awards: " + QString::number(aaGames.at(gameIndex).titleEntry->avatarAwardsEarned) + " out of " + QString::number(aaGames.at(gameIndex).titleEntry->avatarAwardCount) + " unlocked");
+                ui->lblAwGameAwards->setText("<span style=\"color:#4f4f4f;\">Awards: " + QString::number(aaGames.at(gameIndex).titleEntry->avatarAwardsEarned) + " out of " + QString::number(aaGames.at(gameIndex).titleEntry->avatarAwardCount) + " unlocked</span>");
     }
     else
     {
@@ -1443,7 +1445,7 @@ void ProfileEditor::on_cmbxAwState_currentIndexChanged(int index)
         // update the title entry
         updateAvatarAward(aaGames.at(gameIndex).titleEntry, gpd, &gpd->avatarAwards.at(awardIndex), StateUnlockedOnline);
 
-        ui->lblAwGameAwards->setText("Awards: " + QString::number(aaGames.at(gameIndex).titleEntry->avatarAwardsEarned) + " out of " + QString::number(aaGames.at(gameIndex).titleEntry->avatarAwardCount) + " unlocked");
+        ui->lblAwGameAwards->setText("<span style=\"color:#4f4f4f;\">Awards: " + QString::number(aaGames.at(gameIndex).titleEntry->avatarAwardsEarned) + " out of " + QString::number(aaGames.at(gameIndex).titleEntry->avatarAwardCount) + " unlocked</span>");
 
         ui->dteAwTimestamp->setEnabled(true);
         ui->dteAwTimestamp->setDateTime(QDateTime::currentDateTime());
