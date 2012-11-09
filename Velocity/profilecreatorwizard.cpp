@@ -14,7 +14,7 @@ ProfileCreatorWizard::ProfileCreatorWizard(QStatusBar *statusBar, QWidget *paren
     // generate profile ID
     profileID = 0xE000000000000000;
     srand(time(NULL));
-    profileID |= ((UINT64)rand() + ((UINT64)rand() << 16) + ((UINT64)rand() << 32));
+    profileID |= ((UINT64)rand() & 0xFFFF) + (((UINT64)rand() & 0xFFFF) + (((UINT64)rand() & 0xFFFF) << 32));
 
     ui->lblSavePath->setText(QtHelpers::DesktopLocation().replace("\\", "/") + "/" + QString::number(profileID, 16).toUpper());
 

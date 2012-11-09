@@ -13,6 +13,7 @@
 #include <QMenu>
 #include <QFileDialog>
 #include <QBuffer>
+#include <QDebug>
 #include "qthelpers.h"
 
 // xbox360

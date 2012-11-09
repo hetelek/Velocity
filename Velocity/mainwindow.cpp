@@ -253,7 +253,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                     {
                         if (settings->value("PackageDropAction").toInt() == OpenInPackageViewer)
                         {
-                            PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this);
+                            PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this, true);
                             ui->mdiArea->addSubWindow(viewer);
                             viewer->show();
 
@@ -273,7 +273,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                     {
                         if (settings->value("ProfileDropAction").toInt() == OpenInPackageViewer)
                         {
-                            PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this);
+                            PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this, true);
                             ui->mdiArea->addSubWindow(viewer);
                             viewer->show();
 
@@ -380,7 +380,7 @@ void MainWindow::on_actionPackage_triggered()
     {
         StfsPackage *package = new StfsPackage(fileName.toStdString());
 
-        PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this);
+        PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this, true);
         ui->mdiArea->addSubWindow(viewer);
         viewer->show();
 
@@ -447,7 +447,7 @@ void MainWindow::on_actionCreate_Package_triggered()
     {
         StfsPackage *package = new StfsPackage(packagePath.toStdString());
 
-        PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this);
+        PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this, true);
         ui->mdiArea->addSubWindow(viewer);
         viewer->show();
 

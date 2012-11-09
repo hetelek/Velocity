@@ -741,7 +741,7 @@ HashTable StfsPackage::GetLevelNHashTable(DWORD index, Level lvl)
     toReturn.addressInFile = baseHashAddress;
     io->setPosition(toReturn.addressInFile);
 
-    for  (DWORD i = 0; i < toReturn.entryCount; i++)
+    for (DWORD i = 0; i < toReturn.entryCount; i++)
     {
         io->readBytes(toReturn.entries[i].blockHash, 0x14);
         toReturn.entries[i].status = io->readByte();
@@ -929,6 +929,7 @@ void StfsPackage::Rehash()
     sha1->final(metaData->headerHash);
 
     delete[] buffer;
+    sha1->clear();
 
     metaData->WriteMetaData();
 }

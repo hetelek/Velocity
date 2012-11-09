@@ -35,6 +35,7 @@ GamerPicturePackDialog::~GamerPicturePackDialog()
     delete searchedTitleIDs;
     delete titleIDFinder;
     delete gpManager;
+    QApplication::processEvents();
 
     statusBar->showMessage("");
 
@@ -307,7 +308,7 @@ void GamerPicturePackDialog::showContextMenu(QPoint p, QListWidget *current, QLi
     else if (selectedItem->text() == "Save Image")
     {
         QString savePath = QFileDialog::getSaveFileName(this, "Choose a place to save the gamerpicture",
-                                                        QtHelpers::DesktopLocation() + "/" + getImageName(currentStrs->at(current->currentIndex().row()), true) + ".png", "*.png");
+                                                        QtHelpers::DesktopLocation() + getImageName(currentStrs->at(current->currentIndex().row()), true) + ".png", "*.png");
 
         if (savePath == "")
             return;
@@ -344,7 +345,7 @@ void GamerPicturePackDialog::on_txtPackName_textChanged(const QString &arg1)
 
 void GamerPicturePackDialog::on_btnCreatePack_clicked()
 {
-    QString savePath = QFileDialog::getSaveFileName(this, "Choose a place to save your picture pack", QtHelpers::DesktopLocation() + "\\" + ui->txtPackName->text());
+    QString savePath = QFileDialog::getSaveFileName(this, "Choose a place to save your picture pack", QtHelpers::DesktopLocation() + "/" + ui->txtPackName->text());
     if (savePath == "")
         return;
 
@@ -460,6 +461,7 @@ void GamerPicturePackDialog::on_btnStopSearch_clicked()
     delete gpManager;
     gpManager = new QNetworkAccessManager();
     connect(gpManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamerPictureDownloaded(QNetworkReply*)));
+    QApplication::processEvents();
 
     statusBar->showMessage("Search stopped", 3000);
     ui->btnStopSearch->setEnabled(false);

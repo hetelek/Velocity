@@ -40,7 +40,7 @@ void QtHelpers::ParseHexStringBuffer(QString bytes, BYTE *outBuffer, DWORD len)
 
 QString QtHelpers::DesktopLocation()
 {
-    return QDesktopServices::storageLocation(QDesktopServices::DesktopLocation);
+    return QDesktopServices::storageLocation(QDesktopServices::DesktopLocation).replace("\\", "/");
 }
 
 bool QtHelpers::VerifyHexStringBuffer(QString bytes)
