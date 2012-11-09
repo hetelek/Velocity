@@ -243,15 +243,15 @@ void GamerPicturePackDialog::on_listPack_itemDoubleClicked(QListWidgetItem *item
 
 void GamerPicturePackDialog::switchImage(QListWidgetItem *currentItem, QListWidget *current, QListWidget *toAddTo, QList<QString> *currentStrs, QList<QString> *toAddToStrs)
 {
-    if (toAddToStrs->contains(currentStrs->at(current->currentIndex().row())) && current == ui->listSearch)
+    if (toAddToStrs->contains(currentStrs->at(current->row(currentItem))) && current == ui->listSearch)
     {
         statusBar->showMessage("Image already exists in pack", 3000);
         return;
     }
-    else if (toAddToStrs->contains(currentStrs->at(current->currentIndex().row())))
+    else if (toAddToStrs->contains(currentStrs->at(current->row(currentItem))))
     {
         // delete only
-        currentStrs->removeAt(current->currentIndex().row());
+        currentStrs->removeAt(current->row(currentItem));
         delete currentItem;
         return;
     }
@@ -261,8 +261,8 @@ void GamerPicturePackDialog::switchImage(QListWidgetItem *currentItem, QListWidg
     toAddTo->addItem(newItem);
 
     // move the ID to the pack list
-    toAddToStrs->push_back(currentStrs->at(current->currentIndex().row()));
-    currentStrs->removeAt(current->currentIndex().row());
+    toAddToStrs->push_back(currentStrs->at(current->row(currentItem)));
+    currentStrs->removeAt(current->row(currentItem));
 
     // delete the old item
     delete currentItem;
