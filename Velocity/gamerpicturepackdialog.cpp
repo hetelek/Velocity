@@ -374,6 +374,15 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
         picturePack.metaData->titleThumbnailImage = (BYTE*)ba2.data();
         picturePack.metaData->titleThumbnailImageSize = ba2.length();
 
+        statusBar->showMessage("Creating picture pack, %0 complete");
+        ui->tabWidget->setEnabled(false);
+        ui->btnCreatePack->setEnabled(false);
+        ui->txtPackName->setEnabled(false);
+        ui->txtSearch->setEnabled(false);
+        ui->btnStopSearch->setEnabled(false);
+        ui->pushButton->setEnabled(false);
+        ui->listGameNames->setEnabled(false);
+
         // add all the gamerpictures to the pacakge
         for (DWORD i = 0; i < ui->listPack->count(); i++)
         {
@@ -390,6 +399,9 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
             buffSm.open(QIODevice::WriteOnly);
             ui->listPack->item(i)->icon().pixmap(32, 32).save(&buffSm, "PNG");
             picturePack.InjectData((BYTE*)small.data(), small.length(), getImageName(addedIDs->at(i), false).toStdString() + ".png");
+
+            statusBar->showMessage("Creating picture pack, " + QString::number(((float)i / (float)ui->listPack->count()) * 100, 'f', 0) + "% complete");
+            QApplication::processEvents();
         }
 
         // fix the package
@@ -397,6 +409,13 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
         picturePack.Resign(QtHelpers::GetKVPath(Retail, this));
 
         statusBar->showMessage("Successfully created your picture pack", 3000);
+        ui->tabWidget->setEnabled(true);
+        ui->btnCreatePack->setEnabled(true);
+        ui->txtPackName->setEnabled(true);
+        ui->txtSearch->setEnabled(true);
+        ui->btnStopSearch->setEnabled(true);
+        ui->listGameNames->setEnabled(true);
+        ui->pushButton->setEnabled(true);
         QMessageBox::information(this, "Success", "Successfully created your picture pack.");
     }
     catch (string error)
