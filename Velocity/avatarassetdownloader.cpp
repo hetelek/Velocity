@@ -1,5 +1,4 @@
 #include "AvatarAssetDownloader.h"
-#include <QMessageBox>
 
 AvatarAssetDownloader::AvatarAssetDownloader(QString titleID, QString guid, QObject *parent) :
     QObject(parent), titleID(titleID), guid(guid), v1Done(false), v2Done(false)
@@ -38,7 +37,7 @@ QString AvatarAssetDownloader::GetTitleID()
 
 void AvatarAssetDownloader::onRequestFinished(int id, bool error)
 {
-    if (error)
+    if (error || id == 1)
         return;
 
     // verify that the file was downloaded
@@ -49,6 +48,7 @@ void AvatarAssetDownloader::onRequestFinished(int id, bool error)
     {
         if (!v2Done)
         {
+            v1Done = true;
             v2Done = true;
 			v1TempPath = "";
             http->get("http://download.xboxlive.com/content/" + titleID + "/avataritems/v2/" + guid + ".bin");
@@ -86,10 +86,12 @@ void AvatarAssetDownloader::onRequestFinished(int id, bool error)
         v2Done = true;
         http->get("http://download.xboxlive.com/content/" + titleID + "/avataritems/v2/" + guid + ".bin");
     }
+    else
+        emit FinishedDownloading();
 }
 
 void AvatarAssetDownloader::onDone(bool error)
 {
-    if (!error)
-        emit FinishedDownloading();
+    //if (!error)
+        //emit FinishedDownloading();
 }

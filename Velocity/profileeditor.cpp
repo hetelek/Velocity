@@ -498,8 +498,12 @@ void ProfileEditor::onAssetsDoneDownloading()
         newAsset.metaData->skeletonVersion = Nxe; //TODO: figure out where the skeleton version is in the guid
         newAsset.metaData->WriteMetaData();
 
-        newAsset.InjectFile(downloader->GetV1TempPath().toStdString(), "asset.bin");
-        newAsset.InjectFile(downloader->GetV2TempPath().toStdString(), "asset_v2.bin");
+        try { newAsset.InjectFile(downloader->GetV1TempPath().toStdString(), "asset.bin"); }
+        catch (...) { }
+
+        try
+        { newAsset.InjectFile(downloader->GetV2TempPath().toStdString(), "asset_v2.bin"); }
+        catch (...) { }
 
         // get the thumbnail
         QByteArray baThumb;
@@ -526,7 +530,7 @@ void ProfileEditor::onAssetsDoneDownloading()
 
         newAsset.Resign(QtHelpers::GetKVPath(newAsset.metaData->certificate.ownerConsoleType, this));
 
-         statusBar->showMessage("Asset downloaded successfully", 3000);
+        statusBar->showMessage("Asset downloaded successfully", 3000);
         QMessageBox::information(this, "Asset Downloaded", "Successfully downloaded the avatar asset.");
     }
     catch (string error)
