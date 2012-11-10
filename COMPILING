@@ -1,0 +1,33 @@
+The Qt Creator IDE is used to create/debug Velocity.
+
+==========
+
+- WINDOWS
+	While debugging, Velocity is compiled with 'Qt 4.8.1 for Desktop - MingGW (Qt SDK) Debug'.
+	While compiling for release mode, Velocity is compiled with 'Qt 4.8.1 for Desktop - MingGW (Qt SDK) Release'.
+	
+	Tool Chain: 'Mingw as a GCC for Windows targets'
+	
+	WARNING: Botan must be found in the working directory of Velocity.exe for Velocity to successfully run. To obtain the Botan libraries, you have 2 options:
+	
+	1. Download the Botan sources from http://botan.randombit.net/download.html.
+	2. Download 'Botan.dll' from http://www.mediafire.com/download.php?v5zpod1y170154w, if available.
+	
+- MAC
+	n/a
+
+- LINUX
+	n/a
+	
+==========
+	
+When Velocity is done compiling for the first time, it will most likely fail. A bug with Qt seems to happen on line 79 of 'moc_gamerpicturedialog.cpp'.
+To fix this, simply added 'struct ' before 'Title':
+
+        case 3: _t->onTitleIDSearchReturn((*reinterpret_cast< QList<Title>(*)>(_a[1]))); break;
+		
+		to
+		
+		case 3: _t->onTitleIDSearchReturn((*reinterpret_cast< QList<struct Title>(*)>(_a[1]))); break;
+
+Attempting to compile after this should be a successful compile.
