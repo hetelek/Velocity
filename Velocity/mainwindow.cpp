@@ -43,11 +43,11 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
     else
         ui->statusBar->showMessage("Welcome to Velocity!", 10000);
 
-    LoadFiles(arguments);
-
     GitHubCommitsDialog *dialog = new GitHubCommitsDialog(this);
     ui->mdiArea->addSubWindow(dialog);
     dialog->show();
+
+    LoadFiles(arguments);
 }
 
 void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *package)
