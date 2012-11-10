@@ -38,6 +38,8 @@ private:
     QString v1TempPath;
     QString v2TempPath;
 
+    int idToSkip;
+
     bool v1Done;
     bool v2Done;
 };

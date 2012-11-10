@@ -13,6 +13,7 @@ AvatarAssetDownloader::AvatarAssetDownloader(QString titleID, QString guid, QObj
 void AvatarAssetDownloader::BeginDownload()
 {
     http->get("http://download.xboxlive.com/content/" + titleID + "/avataritems/" + guid + ".bin");
+    idToSkip = http->currentId();
 }
 
 QString AvatarAssetDownloader::GetV1TempPath()
@@ -37,7 +38,7 @@ QString AvatarAssetDownloader::GetTitleID()
 
 void AvatarAssetDownloader::onRequestFinished(int id, bool error)
 {
-    if (error || id == 1)
+    if (error || id == idToSkip)
         return;
 
     // verify that the file was downloaded
