@@ -1,8 +1,8 @@
 #include "packageviewer.h"
 #include "ui_packageviewer.h"
 
-PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidget *parent, bool disposePackage) :
-    QDialog(parent),ui(new Ui::PackageViewer), package(package), parent (parent), statusBar(statusBar), disposePackage(disposePackage)
+PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<QAction *> gpdActions, QWidget *parent, bool disposePackage) :
+    QDialog(parent),ui(new Ui::PackageViewer), package(package), parent (parent), statusBar(statusBar), disposePackage(disposePackage), gpdActions(gpdActions)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -66,7 +66,7 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidge
         if (package->metaData->contentType == Profile)
         {
             profileEditor = new QAction("Profile Editor", this);
-            gameAdder = new QAction("Game Adder", this);
+            gameAdder = new QAction("Game Adder", this); 
 
             connect(openInMenu, SIGNAL(triggered(QAction*)), this, SLOT(onOpenInSelected(QAction*)));
 
@@ -74,6 +74,12 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidge
             openInMenu->addAction(profileEditor);
             openInMenu->addAction(gameAdder);
             ui->btnOpenIn->setMenu(openInMenu);
+
+            for (int i = 0; i < gpdActions.size(); i++)
+            {
+                gpdActions.at(i)->setProperty("package", QVariant::fromValue(package));
+                openInMenu->addAction(gpdActions.at(i));
+            }
         }
     }
 
@@ -90,6 +96,9 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidge
 
 PackageViewer::~PackageViewer()
 {
+    for (int i = 0; i < gpdActions.size(); i++)
+        gpdActions.at(i)->setProperty("package", NULL);
+
     if (disposePackage)
     {
         package->Close();
@@ -320,8 +329,7 @@ void PackageViewer::onOpenInSelected(QAction *action)
         }
         else
         {
-            qDebug() << "other";
-            // game modder
+            qDebug() << "loading modder...";
         }
     }
 }
@@ -701,7 +709,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
             package->ExtractFile(packagePath.toStdString(), tempName);
 
             StfsPackage pec (tempName, StfsPackagePEC);
-            PackageViewer dialog(statusBar, &pec, this, false);
+            PackageViewer dialog(statusBar, &pec, gpdActions, this, false);
             dialog.exec();
 
             pec.Close();
@@ -737,7 +745,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
                 package->ExtractFile(packagePath.toStdString(), tempName);
 
                 StfsPackage pack(tempName);
-                PackageViewer dialog(statusBar, &pack, this, false);
+                PackageViewer dialog(statusBar, &pack, gpdActions, this, false);
                 dialog.exec();
 
                 pack.Close();

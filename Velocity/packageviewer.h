@@ -46,7 +46,7 @@ class PackageViewer : public QDialog
     Q_OBJECT
     
 public:
-    explicit PackageViewer(QStatusBar *statusBar, StfsPackage *package, QWidget *parent = 0, bool disposePackage = true);
+    explicit PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<QAction*> gpdActions, QWidget *parent = 0, bool disposePackage = true);
     ~PackageViewer();
     
 private slots:
@@ -79,6 +79,7 @@ private:
     QWidget *parent;
     QStatusBar *statusBar;
     QMenu *openInMenu;
+    QList <QAction*> gpdActions;
 
     QAction *profileEditor, *gameAdder;
 
