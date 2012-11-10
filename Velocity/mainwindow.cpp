@@ -19,11 +19,17 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
     ui->mdiArea->setAcceptDrops(false);
     setAcceptDrops(true);
 
-    QString fileNames[] = { "femaleAvatar.bin", "FFFE07D1.gpd", "KV_D.bin", "KV_R.bin", "male default.png", "female default.png" };
+    QStringList fileNames;
+    fileNames.append("femaleAvatar.bin");
+    fileNames.append("FFFE07D1.gpd");
+    fileNames.append("KV_D.bin");
+    fileNames.append("KV_R.bin");
+    fileNames.append("male default.png");
+    fileNames.append("female default.png");
 
     // check for all of the startup files
     QString missingFiles = "";
-    for (DWORD i = 0; i < 6; i++)
+    for (DWORD i = 0; i < fileNames.size(); i++)
         if (!QFile::exists(QtHelpers::ExecutingDirectory() + "/" + fileNames[i]))
             missingFiles += fileNames[i] + ", ";
 
