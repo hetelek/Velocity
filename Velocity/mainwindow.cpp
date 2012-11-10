@@ -277,11 +277,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                     {
                         if (settings->value("PackageDropAction").toInt() == OpenInPackageViewer)
                         {
-<<<<<<< HEAD
-                            PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this, true);
-=======
                             PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gpdActions, this);
->>>>>>> Added code to work with Package Viewer's, 'Open In'
                             ui->mdiArea->addSubWindow(viewer);
                             viewer->show();
 
@@ -301,11 +297,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                     {
                         if (settings->value("ProfileDropAction").toInt() == OpenInPackageViewer)
                         {
-<<<<<<< HEAD
-                            PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this, true);
-=======
                             PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gpdActions, this);
->>>>>>> Added code to work with Package Viewer's, 'Open In'
                             ui->mdiArea->addSubWindow(viewer);
                             viewer->show();
 
@@ -411,12 +403,7 @@ void MainWindow::on_actionPackage_triggered()
     try
     {
         StfsPackage *package = new StfsPackage(fileName.toStdString());
-
-<<<<<<< HEAD
-        PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this, true);
-=======
         PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gpdActions, this);
->>>>>>> Added code to work with Package Viewer's, 'Open In'
         ui->mdiArea->addSubWindow(viewer);
         viewer->show();
 
@@ -483,11 +470,7 @@ void MainWindow::on_actionCreate_Package_triggered()
     {
         StfsPackage *package = new StfsPackage(packagePath.toStdString());
 
-<<<<<<< HEAD
-        PackageViewer *viewer = new PackageViewer(ui->statusBar, package, this, true);
-=======
         PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gpdActions, this);
->>>>>>> Added code to work with Package Viewer's, 'Open In'
         ui->mdiArea->addSubWindow(viewer);
         viewer->show();
 
