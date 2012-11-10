@@ -16,7 +16,7 @@ public:
     virtual ~IGPDModder() { }
 
     virtual void LoadGPD(GameGPD *gpd, void *arg = NULL) { }
-    virtual QWidget* GetDialog() { }
+    virtual QDialog* GetDialog() { }
     virtual QString ToolAuthor() const = 0;
     virtual QString ToolName() const = 0;
     virtual DWORD TitleID() const = 0;
