@@ -41,6 +41,8 @@
 
 using namespace std;
 
+Q_DECLARE_METATYPE( StfsPackage* )
+
 namespace Ui {
 class MainWindow;
 }
@@ -49,6 +51,7 @@ struct Arguments
 {
     StfsPackage *package;
     QString tempFilePath;
+    bool fromPackageViewer;
 };
 
 class MainWindow : public QMainWindow
@@ -57,7 +60,7 @@ class MainWindow : public QMainWindow
     
 public:
     explicit MainWindow(QList<QUrl> arguments, QWidget *parent = 0);
-    void LoadPlugin(QString filename, bool addToMenu);
+    void LoadPlugin(QString filename, bool addToMenu, StfsPackage *package = NULL);
     void LoadAllPlugins();
     ~MainWindow();
 
@@ -101,6 +104,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QSettings *settings;
+    QList<QAction*> gpdActions;
 
     void LoadFiles(QList<QUrl> &filePaths);
 };
