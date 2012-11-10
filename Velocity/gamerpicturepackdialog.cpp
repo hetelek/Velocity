@@ -382,6 +382,7 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
         ui->btnStopSearch->setEnabled(false);
         ui->pushButton->setEnabled(false);
         ui->listGameNames->setEnabled(false);
+        ui->comboBox->setEnabled(false);
 
         // add all the gamerpictures to the pacakge
         for (DWORD i = 0; i < ui->listPack->count(); i++)
@@ -415,6 +416,7 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
         ui->txtSearch->setEnabled(true);
         ui->btnStopSearch->setEnabled(true);
         ui->listGameNames->setEnabled(true);
+        ui->comboBox->setEnabled(true);
         ui->pushButton->setEnabled(true);
         QMessageBox::information(this, "Success", "Successfully created your picture pack.");
     }
