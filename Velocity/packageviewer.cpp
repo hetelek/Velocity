@@ -27,7 +27,7 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<
     }
     else
     {
-        ui->lblMagic->setText(QString::fromStdString("Magic: " + MagicToString(package->metaData->magic)));
+        ui->lblMagic->setText("Magic: 0x" + QString::number(package->metaData->magic, 16).toUpper() + " (" + QString::fromStdString(MagicToString(package->metaData->magic)) + ")");
         ui->lblDisplayName->setText("Display Name: " + QString::fromStdWString(package->metaData->displayName));
 
         if (package->metaData->magic == LIVE || package->metaData->magic == PIRS)
