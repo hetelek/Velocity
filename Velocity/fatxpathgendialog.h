@@ -4,6 +4,7 @@
 // qt
 #include <QDialog>
 #include <QMessageBox>
+#include <QMdiSubWindow>
 #include "qthelpers.h"
 
 // xbox360

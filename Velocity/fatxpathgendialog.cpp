@@ -22,5 +22,9 @@ FATXPathGenDialog::~FATXPathGenDialog()
 
 void FATXPathGenDialog::on_pushButton_clicked()
 {
+    QMdiSubWindow *subWin = qobject_cast<QMdiSubWindow*>(this->parent());
+    if (subWin)
+        subWin->hide();
+
     close();
 }
