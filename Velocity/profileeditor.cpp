@@ -436,7 +436,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         awardGPDs.push_back(paths[key].awardGPD);
     }
 
-    uploader = new GPDUploader(gameGPDs, awardGPDs, titleIDs, false, this);
+    uploader = new GPDUploader(gameGPDs, awardGPDs, titleIDs, true, this);
 }
 
 void ProfileEditor::showAvatarContextMenu(QPoint point)
@@ -601,7 +601,10 @@ ProfileEditor::~ProfileEditor()
 
     // delete all of the temp files
     for (DWORD i = 0; i < tempFiles.size(); i++)
+    {
         QFile::remove(QString::fromStdString(tempFiles.at(i)));
+        QFile::remove(QString::fromStdString(tempFiles.at(i)) + "_C");
+    }
 
     delete ui;
 }

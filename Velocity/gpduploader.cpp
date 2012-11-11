@@ -116,11 +116,13 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
         gpd->CleanGPD();
         gpd->Close();
 
-        // send the GPD(s) to the server
-        sendRequest(gamePath, (QFile::exists(awardPath)) ? awardPath : "",
-                   QString::fromStdWString(gpd->gameName.ws), titleID, gpd->achievements.size(), totalGamerscore, awards, mAwards, fAwards);
-
+        // get the arguments before deleting the gpd
+        QString titleName = QString::fromStdWString(gpd->gameName.ws);
+        DWORD achievementCount = gpd->achievements.size();
         delete gpd;
+
+        // send the GPD(s) to the server
+        sendRequest(gamePath, (QFile::exists(awardPath)) ? awardPath : "", titleName, titleID, achievementCount, totalGamerscore, awards, mAwards, fAwards);
     }
     catch (string s)
     {
@@ -183,10 +185,10 @@ void GPDUploader::sendRequest(QString filePath, QString awardFilePath, QString g
         dataToSend.append(gpdFile.readAll());
 
         // remove/close the gpd
+        gpdFile.close();
         if (deleteGPDs)
-            gpdFile.remove();
-        else
-            gpdFile.close();
+            if (!QFile::remove(filePath))
+                qDebug() << "failed to remove gpd file";
 
         // setup next boundary
         dataToSend.append("\r\n--" + boundary + "\r\n");
@@ -200,7 +202,8 @@ void GPDUploader::sendRequest(QString filePath, QString awardFilePath, QString g
 
             // remove/close the award gpd
             if (deleteGPDs)
-                awardFile.remove();
+                if (!awardFile.remove())
+                    qDebug() << "failed to remove award file";
             else
                 awardFile.close();
         }
