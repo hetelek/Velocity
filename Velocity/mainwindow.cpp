@@ -68,6 +68,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
             if (addToMenu)
             {
                 QAction *action = new QAction(game->ToolName(), this);
+                action->setIcon(game->GetDialog()->windowIcon());
                 action->setData(QVariant(filename));
                 connect(action, SIGNAL(triggered()), this, SLOT(on_actionGame_Modder_triggered()));
                 ui->menuGame_Modders->addAction(action);
@@ -108,6 +109,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
             if (addToMenu)
             {
                 QAction *action = new QAction(gpd->ToolName(), this);
+                action->setIcon(gpd->GetDialog()->windowIcon());
                 action->setData(QVariant(filename));
                 connect(action, SIGNAL(triggered()), this, SLOT(on_actionGame_Modder_triggered()));
                 gpdActions.push_back(action);
