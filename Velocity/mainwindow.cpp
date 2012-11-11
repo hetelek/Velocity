@@ -186,19 +186,22 @@ void MainWindow::InjectGPD()
     Arguments *args = (Arguments*)gpd->Arguments;
     try
     {
-        if (args->package != NULL)
-        {
-            args->package->ReplaceFile(args->tempFilePath.toStdString(), QString("%1").arg(gpd->TitleID(), 8, 16, QChar('0')).toUpper().toStdString() + ".gpd");
-            args->package->Rehash();
-            args->package->Resign(QtHelpers::GetKVPath(args->package->metaData->certificate.ownerConsoleType, this));
+        args->package->ReplaceFile(args->tempFilePath.toStdString(), QString("%1").arg(gpd->TitleID(), 8, 16, QChar('0')).toUpper().toStdString() + ".gpd");
+        args->package->Rehash();
+        args->package->Resign(QtHelpers::GetKVPath(args->package->metaData->certificate.ownerConsoleType, this));
 
-            if (!args->fromPackageViewer)
-            {
-                qDebug() << gpd->ToolName() << ": closing and deleting package";
-                args->package->Close();
-                delete args->package;
-                qDebug() << gpd->ToolName() << ": finished closing and deleting package";
-            }
+        if (!args->fromPackageViewer)
+        {
+            qDebug() << gpd->ToolName() << ": closing and deleting package";
+            args->package->Close();
+            delete args->package;
+            qDebug() << gpd->ToolName() << ": finished closing and deleting package";
+        }
+
+        QMdiSubWindow *subWin = qobject_cast<QMdiSubWindow*>(gpd->GetDialog()->parent());
+        if (subWin)
+        {
+            subWin->hide();
         }
     }
     catch (string error)
