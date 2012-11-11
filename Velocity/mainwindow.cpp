@@ -147,7 +147,9 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                         widget->show();
                     }
                     else
+                    {
                         widget->exec();
+                    }
                 }
                 catch (string error)
                 {
@@ -178,7 +180,7 @@ void MainWindow::on_actionView_Wiki_triggered()
 void MainWindow::InjectGPD()
 {
     IGPDModder *gpd = qobject_cast<IGPDModder*>(sender());
-    qDebug() << gpd->ToolName() << ": done editing GPD, replacing";
+    qDebug() << "Tool: " << gpd->ToolName() << " finished editing";
 
     if (!gpd)
         throw "Some shit broke.";
@@ -192,17 +194,14 @@ void MainWindow::InjectGPD()
 
         if (!args->fromPackageViewer)
         {
-            qDebug() << gpd->ToolName() << ": closing and deleting package";
             args->package->Close();
             delete args->package;
-            qDebug() << gpd->ToolName() << ": finished closing and deleting package";
+            qDebug() << "    Disposed 'StfsPackage'";
         }
 
         QMdiSubWindow *subWin = qobject_cast<QMdiSubWindow*>(gpd->GetDialog()->parent());
         if (subWin)
-        {
             subWin->hide();
-        }
     }
     catch (string error)
     {
@@ -219,7 +218,7 @@ void MainWindow::InjectGPD()
 void MainWindow::LoadAllPlugins()
 {
     QDir path(settings->value("PluginPath").toString());
-    qDebug() << "plugin directory: " << path.absolutePath();
+    qDebug() << "Plugin Directory: " << path.absolutePath();
 
     foreach (QString filename, path.entryList(QDir::Files))
     {

@@ -318,7 +318,6 @@ void PackageViewer::on_txtSearch_textChanged(const QString &arg1)
 
 void PackageViewer::onOpenInSelected(QAction *action)
 {
-    // TODO: add open in for plugins
     if (action)
     {
         if (action == gameAdder)
@@ -337,10 +336,6 @@ void PackageViewer::onOpenInSelected(QAction *action)
 
             if (ok)
                 editor.exec();
-        }
-        else
-        {
-            qDebug() << "loading modder...";
         }
     }
 }
