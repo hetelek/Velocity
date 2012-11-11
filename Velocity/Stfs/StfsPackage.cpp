@@ -5,7 +5,7 @@
 
 StfsPackage::StfsPackage(string packagePath, DWORD flags) : flags(flags)
 {
-    init = new Botan::LibraryInitializer;
+    Botan::LibraryInitializer init;
     sha1 = new Botan::SHA_160;
 
     io = new FileIO(packagePath, (bool)(flags & StfsPackageCreate));
@@ -2036,8 +2036,5 @@ void StfsPackage::GenerateRawFileListing(FileListing *in, vector<FileEntry> *out
 StfsPackage::~StfsPackage(void)
 {
     io->close();
-    delete sha1;
-    init->deinitialize();
-    delete init;
     delete metaData;
 }
