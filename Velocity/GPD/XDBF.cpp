@@ -34,7 +34,7 @@ void XDBF::Clean()
     tempFile.write(header.entryTableLength);
     tempFile.write(header.entryCount);
     tempFile.write(header.freeMemTableLength);
-    tempFile.write((DWORD)1);
+    tempFile.write((DWORD)0);
 
     // write the free mem table value
     tempFile.setPosition((header.entryTableLength * 0x12) + 0x1C);
@@ -68,12 +68,14 @@ void XDBF::Clean()
     io->close();
 
     // delete the original file
-    int i = remove(io->getFilePath().c_str());
+    remove(io->getFilePath().c_str());
 
     // move the temp file to the old file's location
     rename(tempFileName, io->getFilePath().c_str());
 
-    io = new FileIO(io->getFilePath());
+    string path = io->getFilePath();
+    delete io;
+    io = new FileIO(path);
 
     // write the updated entry table
     writeEntryListing();
