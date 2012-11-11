@@ -143,6 +143,7 @@ private:
     FileIO *io;
     stringstream except;
     Botan::SHA_160 *sha1;
+    Botan::LibraryInitializer *init;
 
     Sex packageSex;
     DWORD blockStep[2];

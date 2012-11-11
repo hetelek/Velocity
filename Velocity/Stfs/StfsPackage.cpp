@@ -5,7 +5,7 @@
 
 StfsPackage::StfsPackage(string packagePath, DWORD flags) : flags(flags)
 {
-    Botan::LibraryInitializer init;
+    init = new Botan::LibraryInitializer;
     sha1 = new Botan::SHA_160;
 
     io = new FileIO(packagePath, (bool)(flags & StfsPackageCreate));
@@ -1038,7 +1038,7 @@ DWORD StfsPackage::GetTableHashAddress(DWORD index, Level lvl)
 
 void StfsPackage::Resign(string kvPath)
 {
-    FileIO kvIo(kvPath);
+    /*FileIO kvIo(kvPath);
     kvIo.setPosition(0, ios_base::end);
 
     DWORD adder = 0;
@@ -1136,12 +1136,12 @@ void StfsPackage::Resign(string kvPath)
     io->readBytes(dataToSign, size);
 
 #if defined __unix | defined __APPLE__
-    Botan::PK_Signer signer(pkey, "EMSA3(SHA-160)");
+    Botan::PK_Signer *signer = new Botan::PK_Signer(pkey, "EMSA3(SHA-160)");
 #elif _WIN32
     Botan::PK_Signer signer(pkey, Botan::get_emsa("EMSA3(SHA-160)"));
 #endif
 
-    Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToSign, size, rng);
+    Botan::SecureVector<Botan::byte> signature = signer->sign_message((unsigned char*)dataToSign, size, rng);
 
     // 8 byte swap the new signature
     XeCryptBnQw_SwapDwQwLeBe(signature, 0x80);
@@ -1153,6 +1153,8 @@ void StfsPackage::Resign(string kvPath)
     // write the certficate
     memcpy(metaData->certificate.signature, signature, 0x80);
     metaData->WriteCertificate();
+
+    delete signer; */
 }
 
 
@@ -2034,5 +2036,8 @@ void StfsPackage::GenerateRawFileListing(FileListing *in, vector<FileEntry> *out
 StfsPackage::~StfsPackage(void)
 {
     io->close();
+    delete sha1;
+    init->deinitialize();
+    delete init;
     delete metaData;
 }
