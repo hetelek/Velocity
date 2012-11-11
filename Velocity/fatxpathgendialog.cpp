@@ -11,8 +11,6 @@ FATXPathGenDialog::FATXPathGenDialog(StfsPackage *package, QWidget *parent) :
                          QtHelpers::ByteArrayToString(package->metaData->profileID, 8, false) + "\\" +
                          QString().sprintf("%8X", package->metaData->titleID).replace(" ", "0") + "\\" +
                          QString().sprintf("%8X", package->metaData->contentType).replace(" ", "0") + "\\");
-
-    setFixedSize(size());
 }
 
 FATXPathGenDialog::~FATXPathGenDialog()
