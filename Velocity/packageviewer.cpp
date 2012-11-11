@@ -30,6 +30,9 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<
         ui->lblMagic->setText(QString::fromStdString("Magic: " + MagicToString(package->metaData->magic)));
         ui->lblDisplayName->setText("Display Name: " + QString::fromStdWString(package->metaData->displayName));
 
+        if (package->metaData->magic == LIVE || package->metaData->magic == PIRS)
+            ui->btnFix->setText("Rehash");
+
         try
         {
             ui->lblType->setText(QString::fromStdString("Package Type: " + ContentTypeToString(package->metaData->contentType)));
@@ -217,20 +220,23 @@ void PackageViewer::on_btnFix_clicked()
         QMessageBox::critical(this, "Error", "Failed to rehash the package.\n\n" + QString::fromStdString(error));
     }
 
-    try
+    if (package->metaData->magic == CON)
     {
-        string path = QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType, this);
-
-        if (path != "")
+        try
         {
-            package->Resign(path);
-            resigned = true;
+            string path = QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType, this);
+
+            if (path != "")
+            {
+                package->Resign(path);
+                resigned = true;
+            }
         }
+        catch (string error)
+        {
+            success = false;
+            QMessageBox::critical(this, "Error", "Failed to resign the package.\n\n" + QString::fromStdString(error));
     }
-    catch (string error)
-    {
-        success = false;
-        QMessageBox::critical(this, "Error", "Failed to resign the package.\n\n" + QString::fromStdString(error));
     }
 
     if (success)
@@ -245,6 +251,11 @@ void PackageViewer::on_btnViewAll_clicked()
 {
     Metadata meta(statusBar, package);
     meta.exec();
+
+    if (package->metaData->magic == LIVE || package->metaData->magic == PIRS)
+        ui->btnFix->setText("Rehash");
+    else
+        ui->btnFix->setText("Rehash/Resign");
 }
 
 void PackageViewer::showSaveImageContextMenu(QPoint point)
