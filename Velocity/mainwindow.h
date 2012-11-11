@@ -30,6 +30,7 @@
 #include "gamerpicturepackdialog.h"
 #include "preferencesdialog.h"
 #include "githubcommitsdialog.h"
+#include "fatxpathgendialog.h"
 
 // other
 #include "PluginInterfaces/igamemodder.h"
@@ -100,6 +101,8 @@ private slots:
     void InjectGPD();
 
     void on_actionPreferences_triggered();
+
+    void on_actionFATX_File_Path_triggered();
 
 private:
     Ui::MainWindow *ui;

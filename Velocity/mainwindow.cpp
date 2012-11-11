@@ -548,3 +548,23 @@ void MainWindow::on_actionPreferences_triggered()
     PreferencesDialog dialog(this);
     dialog.exec();
 }
+
+void MainWindow::on_actionFATX_File_Path_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
+
+    if (fileName.isEmpty())
+        return;
+
+    try
+    {
+        StfsPackage *package = new StfsPackage(fileName.toStdString());
+        FATXPathGenDialog *dialog = new FATXPathGenDialog(package, this);
+        ui->mdiArea->addSubWindow(dialog);
+        dialog->show();
+    }
+    catch (string error)
+    {
+        QMessageBox::critical(this, "Package Error", "An error has occurred while opening the package.\n\n" + QString::fromStdString(error));
+    }
+}

@@ -81,7 +81,8 @@ SOURCES += main.cpp \
 	preferencesdialog.cpp \
     json.cpp \
 	githubcommitsdialog.cpp \
-	gpduploader.cpp
+	gpduploader.cpp \
+    fatxpathgendialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -139,7 +140,8 @@ HEADERS  += mainwindow.h \
 	preferencesdialog.h \
     json.h \
 	githubcommitsdialog.h \
-	gpduploader.h
+	gpduploader.h \
+    fatxpathgendialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -167,7 +169,8 @@ FORMS    += mainwindow.ui \
     titleidfinderdialog.ui \
 	gamerpicturepackdialog.ui \
 	preferencesdialog.ui \
-    githubcommitsdialog.ui
+    githubcommitsdialog.ui \
+    fatxpathgendialog.ui
 
 RESOURCES += \
     Resources.qrc

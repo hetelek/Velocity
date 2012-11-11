@@ -106,6 +106,7 @@
     <addaction name="actionTheme_Creator"/>
     <addaction name="actionTitle_ID_Finder"/>
     <addaction name="actionGamer_Picture_Pack_Creator"/>
+    <addaction name="actionFATX_File_Path"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -297,6 +298,15 @@
    </property>
    <property name="text">
     <string>Preferences</string>
+   </property>
+  </action>
+  <action name="actionFATX_File_Path">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/hdd.png</normaloff>:/Images/hdd.png</iconset>
+   </property>
+   <property name="text">
+    <string>FATX File Path Tool</string>
    </property>
   </action>
  </widget>

@@ -77,5 +77,6 @@
         <file>Images/achievement.png</file>
         <file>Images/gamerscore.png</file>
         <file>Images/avatar.png</file>
+        <file>Images/hdd.png</file>
     </qresource>
 </RCC>
