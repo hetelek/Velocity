@@ -5,9 +5,6 @@
 
 StfsPackage::StfsPackage(string packagePath, DWORD flags) : flags(flags)
 {
-    Botan::LibraryInitializer init;
-    sha1 = new Botan::SHA_160;
-
     io = new FileIO(packagePath, (bool)(flags & StfsPackageCreate));
 
     // if we need to create a file, then do it yo
@@ -924,12 +921,12 @@ void StfsPackage::Rehash()
     io->readBytes(buffer, headerSize);
 
     // hash the header
-    sha1->clear();
-    sha1->update(buffer, headerSize);
-    sha1->final(metaData->headerHash);
+    Botan::SHA_160 sha1;
+    sha1.update(buffer, headerSize);
+    sha1.final(metaData->headerHash);
 
     delete[] buffer;
-    sha1->clear();
+    sha1.clear();
 
     metaData->WriteMetaData();
 }
@@ -1038,7 +1035,7 @@ DWORD StfsPackage::GetTableHashAddress(DWORD index, Level lvl)
 
 void StfsPackage::Resign(string kvPath)
 {
-    /*FileIO kvIo(kvPath);
+    FileIO kvIo(kvPath);
     kvIo.setPosition(0, ios_base::end);
 
     DWORD adder = 0;
@@ -1121,9 +1118,10 @@ void StfsPackage::Resign(string kvPath)
     io->readBytes(buffer, headerSize);
 
     // hash the header
-    sha1->clear();
-    sha1->update(buffer, headerSize);
-    sha1->final(metaData->headerHash);
+    Botan::SHA_160 sha1;
+    sha1.clear();
+    sha1.update(buffer, headerSize);
+    sha1.final(metaData->headerHash);
 
     delete[] buffer;
 
@@ -1136,12 +1134,12 @@ void StfsPackage::Resign(string kvPath)
     io->readBytes(dataToSign, size);
 
 #if defined __unix | defined __APPLE__
-    Botan::PK_Signer *signer = new Botan::PK_Signer(pkey, "EMSA3(SHA-160)");
+    Botan::PK_Signer signer(pkey, "EMSA3(SHA-160)");
 #elif _WIN32
     Botan::PK_Signer signer(pkey, Botan::get_emsa("EMSA3(SHA-160)"));
 #endif
 
-    Botan::SecureVector<Botan::byte> signature = signer->sign_message((unsigned char*)dataToSign, size, rng);
+    Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToSign, size, rng);
 
     // 8 byte swap the new signature
     XeCryptBnQw_SwapDwQwLeBe(signature, 0x80);
@@ -1153,8 +1151,6 @@ void StfsPackage::Resign(string kvPath)
     // write the certficate
     memcpy(metaData->certificate.signature, signature, 0x80);
     metaData->WriteCertificate();
-
-    delete signer; */
 }
 
 
@@ -1171,9 +1167,10 @@ void StfsPackage::SetBlockStatus(DWORD blockNum, BlockStatusLevelZero status)
 void StfsPackage::HashBlock(BYTE *block, BYTE *outBuffer)
 {
     // hash the block
-    sha1->clear();
-    sha1->update(block, 0x1000);
-    sha1->final(outBuffer);
+    Botan::SHA_160 sha1;
+    sha1.clear();
+    sha1.update(block, 0x1000);
+    sha1.final(outBuffer);
 }
 
 void StfsPackage::BuildTableInMemory(HashTable *table, BYTE *outBuffer)
