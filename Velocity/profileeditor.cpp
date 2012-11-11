@@ -528,8 +528,6 @@ void ProfileEditor::onAssetsDoneDownloading()
 
         delete downloader;
 
-        newAsset.Resign(QtHelpers::GetKVPath(newAsset.metaData->certificate.ownerConsoleType, this));
-
         statusBar->showMessage("Asset downloaded successfully", 3000);
         QMessageBox::information(this, "Asset Downloaded", "Successfully downloaded the avatar asset.");
     }
