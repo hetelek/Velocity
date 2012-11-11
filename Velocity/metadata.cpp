@@ -560,6 +560,8 @@ void Metadata::on_pushButton_clicked()
         }
 
         // update all the values
+        DWORD magics[3] = { CON, LIVE, PIRS };
+        package->metaData->magic = magics[cmbxMagic->currentIndex()];
         QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(3, 0)->text(), package->metaData->headerHash, 0x14);
         package->metaData->headerSize = QtHelpers::ParseHexString(ui->tableWidget->item(4, 0)->text());
         package->metaData->mediaID = QtHelpers::ParseHexString(ui->tableWidget->item(5, 0)->text());
