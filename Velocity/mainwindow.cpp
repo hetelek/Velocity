@@ -55,8 +55,8 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
     bool fromPackageViewer = (package != NULL);
 
     QPluginLoader loader(filename);
-    loader.setParent(ui->mdiArea);
     QObject *possiblePlugin = loader.instance();
+    possiblePlugin->setParent(this);
 
     if (possiblePlugin)
     {
@@ -111,6 +111,8 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                 QAction *action = new QAction(gpd->ToolName(), this);
                 action->setIcon(gpd->GetDialog()->windowIcon());
                 action->setData(QVariant(filename));
+                action->setProperty("titleid", QVariant((unsigned int)gpd->TitleID()));
+
                 connect(action, SIGNAL(triggered()), this, SLOT(on_actionGame_Modder_triggered()));
                 gpdActions.push_back(action);
                 ui->menuProfile_Modders->addAction(action);
