@@ -179,7 +179,8 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                     if (!fromPackageViewer)
                     {
                         ui->mdiArea->addSubWindow(widget);
-                        widget->show();
+                        widget->exec();
+                        qDebug() << loader.unload();
                     }
                     else
                     {
