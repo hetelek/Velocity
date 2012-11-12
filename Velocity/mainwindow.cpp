@@ -56,7 +56,6 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
 
     QPluginLoader loader(filename);
     QObject *possiblePlugin = loader.instance();
-    possiblePlugin->setParent(this);
 
     if (possiblePlugin)
     {
