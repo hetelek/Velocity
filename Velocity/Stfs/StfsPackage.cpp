@@ -410,6 +410,18 @@ void StfsPackage::ExtractFile(FileEntry *entry, string outPath, void (*extractPr
     // get the file size that we are extracting
     DWORD fileSize = entry->fileSize;
 
+    // make a special case for files of size 0
+    if (fileSize == 0)
+    {
+        outFile.close();
+
+        // update progress if needed
+        if (extractProgress != NULL)
+            extractProgress(arg, 1, 1);
+
+        return;
+    }
+
     // check if all the blocks are consecutive
     if (entry->flags & 1)
     {

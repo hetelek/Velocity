@@ -23,7 +23,10 @@ void ProgressDialog::startExtracting()
     for (DWORD i = 0; i < filesToExtract.size(); i++)
     {
         FileEntry temp = package->GetFileEntry(filesToExtract.at(i).toStdString());
-        totalBlocksToExtract += temp.blocksForFile;
+        if (temp.blocksForFile == 0)
+            totalBlocksToExtract++;
+        else
+            totalBlocksToExtract += temp.blocksForFile;
         fileEntries.append(temp);
     }
 
