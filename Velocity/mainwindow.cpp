@@ -55,6 +55,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
     bool fromPackageViewer = (package != NULL);
 
     QPluginLoader loader(filename);
+    loader.setParent(ui->mdiArea);
     QObject *possiblePlugin = loader.instance();
 
     if (possiblePlugin)
@@ -204,7 +205,7 @@ void MainWindow::InjectGPD()
 
         QMdiSubWindow *subWin = qobject_cast<QMdiSubWindow*>(gpd->GetDialog()->parent());
         if (subWin)
-            subWin->hide();
+            subWin->close();
     }
     catch (string error)
     {
