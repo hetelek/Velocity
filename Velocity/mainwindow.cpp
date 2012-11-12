@@ -153,6 +153,8 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                     else
                     {
                         widget->exec();
+                        widget->close();
+                        widget->deleteLater();
                     }
                 }
                 catch (string error)
