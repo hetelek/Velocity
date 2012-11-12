@@ -175,21 +175,10 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                     GameGPD *gameGPD = new GameGPD(tempPath.toStdString());
                     gpd->LoadGPD(gameGPD, (void*)args);
 
-                    // add it to the mdi area if it's not from the package viewer
-                    if (!fromPackageViewer)
-                    {
-                        ui->mdiArea->addSubWindow(widget);
-                        widget->exec();
-                        qDebug() << loader.unload();
-                    }
-                    else
-                    {
-                        // else, show it as a dialog
-                        widget->exec();
-                        widget->close();
-                        qDebug() << loader.unload();
+                    widget->exec();
+                    widget->close();
+                    qDebug() << loader.unload();
 
-                    }
                 }
                 catch (string error)
                 {
