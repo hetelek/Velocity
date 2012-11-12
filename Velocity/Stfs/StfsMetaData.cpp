@@ -124,9 +124,10 @@ void StfsMetaData::readMetadata()
         io->setPosition(0x3FD);
 
         io->readBytes(deviceID, 0x14);
-        displayName = io->readWString(0x900);
-
-        displayDescription = io->readWString(0x900);
+        displayName = io->readWString();
+        io->setPosition(0xD11);
+        displayDescription = io->readWString();
+        io->setPosition(0x1611);
         publisherName = io->readWString(0x80);
         io->setPosition(0x1691);
         titleName = io->readWString(0x80);
