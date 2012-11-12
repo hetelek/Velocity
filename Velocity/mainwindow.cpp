@@ -52,30 +52,45 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
 
 void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *package)
 {
-    bool fromPackageViewer = (package != NULL);
+    // check if it's from the package viewer
+    bool fromPackageViewer = package != NULL;
 
+    // create a plugin loader/instance of plugin
     QPluginLoader loader(filename);
-    loader.setParent(ui->mdiArea);
     QObject *possiblePlugin = loader.instance();
 
+    // check if it's a possible plugin
     if (possiblePlugin)
     {
+        // cast it as our available interfaces, to see if it meets criteria
         IGameModder *game = qobject_cast<IGameModder*>(possiblePlugin);
         IGPDModder *gpd = qobject_cast<IGPDModder*>(possiblePlugin);
 
+        // if it's a game modder
         if (game)
         {
+            // check if we are running it or adding it
             if (addToMenu)
             {
+                // create the action
                 QAction *action = new QAction(game->ToolName(), this);
+
+                // set data
                 action->setIcon(game->GetDialog()->windowIcon());
                 action->setData(QVariant(filename));
+
+                // connect it
                 connect(action, SIGNAL(triggered()), this, SLOT(on_actionModder_triggered()));
+
+                // add the action
+                gameActions.push_back(action);
                 ui->menuGame_Modders->addAction(action);
             }
             else
             {
+                // get the dialog, and connect signals/slots
                 QWidget *widget = game->GetDialog();
+                connect(widget, SIGNAL(PluginFinished()), this, SLOT(PluginFinished()));
 
                 if (package == NULL)
                 {
@@ -112,10 +127,8 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                 // create the action
                 QAction *action = new QAction(gpd->ToolName(), this);
 
-                // set the icon
+                // set data
                 action->setIcon(gpd->GetDialog()->windowIcon());
-
-                // set properties/data for later use
                 action->setData(QVariant(filename));
                 action->setProperty("titleid", QVariant((unsigned int)gpd->TitleID()));
 
@@ -130,7 +143,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
             {
                 // get the dialog, and connect signals/slots
                 QDialog *widget = gpd->GetDialog();
-                connect(widget, SIGNAL(InjectGPD()), this, SLOT(InjectGPD()));
+                connect(widget, SIGNAL(PluginFinished()), this, SLOT(PluginFinished()));
 
                 try
                 {
@@ -200,41 +213,61 @@ void MainWindow::on_actionView_Wiki_triggered()
     QDesktopServices::openUrl(QUrl("https://github.com/hetelek/Velocity/wiki"));
 }
 
-void MainWindow::InjectGPD()
+void MainWindow::PluginFinished()
 {
     IGPDModder *gpd = qobject_cast<IGPDModder*>(sender());
-    qDebug() << "Tool: " << gpd->ToolName() << " finished editing";
+    IGameModder *game = qobject_cast<IGameModder*>(sender());
 
-    if (!gpd)
-        throw "Some shit broke.";
+    Arguments *args;
+    QMdiSubWindow *subWin;
 
-    Arguments *args = (Arguments*)gpd->Arguments;
-    try
+    // check if a gpd modder finished
+    if (gpd)
     {
-        args->package->ReplaceFile(args->tempFilePath.toStdString(), QString("%1").arg(gpd->TitleID(), 8, 16, QChar('0')).toUpper().toStdString() + ".gpd");
-        args->package->Rehash();
-        args->package->Resign(QtHelpers::GetKVPath(args->package->metaData->certificate.ownerConsoleType, this));
-
-        if (!args->fromPackageViewer)
-        {
-            args->package->Close();
-            delete args->package;
-            qDebug() << "    Disposed 'StfsPackage'";
-        }
-
-        QMdiSubWindow *subWin = qobject_cast<QMdiSubWindow*>(gpd->GetDialog()->parent());
-        if (subWin)
-            subWin->close();
-    }
-    catch (string error)
-    {
-        QMessageBox::critical(NULL, "Couldn't Repalce GPD", "The GPD could not be replaced.\n\n" + QString::fromStdString(error));
         try
         {
-            if (!args->fromPackageViewer)
-                delete args->package;
+            // get the args
+            args = (Arguments*)gpd->Arguments;
+
+            // replace the unmodified with the modified
+            args->package->ReplaceFile(args->tempFilePath.toStdString(), QString("%1").arg(gpd->TitleID(), 8, 16, QChar('0')).toUpper().toStdString() + ".gpd");
+
+            // cast the parent as a mdi sub window
+            subWin = qobject_cast<QMdiSubWindow*>(gpd->GetDialog()->parent());
         }
-        catch(...) { }
+        catch (string error)
+        {
+            QMessageBox::critical(NULL, "Couldn't Repalce GPD", "The GPD could not be replaced.\n\n" + QString::fromStdString(error));
+            try
+            {
+                if (!args->fromPackageViewer)
+                    delete args->package;
+            }
+            catch(...) { }
+            return;
+        }
+    }
+    else if (game)
+    {
+        // get the args
+        args = (Arguments*)game->Arguments;
+    }
+    else
+        throw "Invalid plugin finished";
+
+    // properly close the sub window if it is one
+    if (subWin)
+        subWin->close();
+
+    // rehash/resign
+    args->package->Rehash();
+    args->package->Resign(QtHelpers::GetKVPath(args->package->metaData->certificate.ownerConsoleType, this));
+
+    // dispose everything if it's not from the package viewer
+    if (!args->fromPackageViewer)
+    {
+        args->package->Close();
+        delete args->package;
     }
 }
 
