@@ -92,7 +92,7 @@ private slots:
 
     void on_actionGamer_Picture_Pack_Creator_triggered();
 
-    void on_actionGame_Modder_triggered();
+    void on_actionModder_triggered();
 
     void on_actionDonate_triggered();
 

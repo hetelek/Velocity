@@ -70,7 +70,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                 QAction *action = new QAction(game->ToolName(), this);
                 action->setIcon(game->GetDialog()->windowIcon());
                 action->setData(QVariant(filename));
-                connect(action, SIGNAL(triggered()), this, SLOT(on_actionGame_Modder_triggered()));
+                connect(action, SIGNAL(triggered()), this, SLOT(on_actionModder_triggered()));
                 ui->menuGame_Modders->addAction(action);
             }
             else
@@ -106,24 +106,35 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
         }
         else if (gpd)
         {
+            // check if we are running it or adding it
             if (addToMenu)
             {
+                // create the action
                 QAction *action = new QAction(gpd->ToolName(), this);
+
+                // set the icon
                 action->setIcon(gpd->GetDialog()->windowIcon());
+
+                // set properties/data for later use
                 action->setData(QVariant(filename));
                 action->setProperty("titleid", QVariant((unsigned int)gpd->TitleID()));
 
-                connect(action, SIGNAL(triggered()), this, SLOT(on_actionGame_Modder_triggered()));
+                // connect it
+                connect(action, SIGNAL(triggered()), this, SLOT(on_actionModder_triggered()));
+
+                // add the action
                 gpdActions.push_back(action);
                 ui->menuProfile_Modders->addAction(action);
             }
             else
             {
+                // get the dialog, and connect signals/slots
                 QDialog *widget = gpd->GetDialog();
                 connect(widget, SIGNAL(InjectGPD()), this, SLOT(InjectGPD()));
 
                 try
                 {
+                    // if it's not from the package viewer, ask for a file
                     if (!fromPackageViewer)
                     {
                         QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Profile"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
@@ -133,18 +144,23 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                         package = new StfsPackage(fileName.toStdString());
                     }
 
+                    // generate temporary path
                     QString tempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
 
+                    // set arguments
                     Arguments *args = new Arguments;
                     args->package = package;
                     args->tempFilePath = tempPath;
                     args->fromPackageViewer = fromPackageViewer;
 
+                    // extract the gpd
                     package->ExtractFile(QString("%1").arg(gpd->TitleID(), 8, 16, QChar('0')).toUpper().toStdString() + ".gpd", tempPath.toStdString());
 
+                    // load the gpd in the modder
                     GameGPD *gameGPD = new GameGPD(tempPath.toStdString());
                     gpd->LoadGPD(gameGPD, (void*)args);
 
+                    // add it to the mdi area if it's not from the package viewer
                     if (!fromPackageViewer)
                     {
                         ui->mdiArea->addSubWindow(widget);
@@ -152,6 +168,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                     }
                     else
                     {
+                        // else, show it as a dialog
                         widget->exec();
                         widget->close();
                         widget->deleteLater();
@@ -536,7 +553,7 @@ void MainWindow::on_actionGamer_Picture_Pack_Creator_triggered()
     dialog->show();
 }
 
-void MainWindow::on_actionGame_Modder_triggered()
+void MainWindow::on_actionModder_triggered()
 {
     if (sender())
     {
