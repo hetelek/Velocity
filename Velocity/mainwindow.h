@@ -98,7 +98,7 @@ private slots:
 
     void on_actionView_Wiki_triggered();
 
-    void InjectGPD();
+    void PluginFinished();
 
     void on_actionPreferences_triggered();
 
@@ -107,7 +107,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QSettings *settings;
-    QList<QAction*> gpdActions;
+    QList<QAction*> gpdActions, gameActions;
 
     void LoadFiles(QList<QUrl> &filePaths);
 };
