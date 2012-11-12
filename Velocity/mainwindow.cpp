@@ -138,6 +138,8 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                 // add the action
                 gpdActions.push_back(action);
                 ui->menuProfile_Modders->addAction(action);
+
+                qDebug() << loader.unload();
             }
             else
             {
@@ -184,18 +186,17 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                         // else, show it as a dialog
                         widget->exec();
                         widget->close();
-                        widget->deleteLater();
+                        qDebug() << loader.unload();
+
                     }
                 }
                 catch (string error)
                 {
                     QMessageBox::critical(this, "Opening Error", "Could not extract gpd.\n\n" + QString::fromStdString(error));
-                    return;
                 }
                 catch (...)
                 {
                     QMessageBox::critical(this, "Opening Error", "Could not extract gpd for an unknown reason.");
-                    return;
                 }
             }
         }
