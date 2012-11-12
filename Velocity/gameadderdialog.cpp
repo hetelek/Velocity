@@ -36,11 +36,11 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
     }
 
     pecTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
-    mainDir = "http://velocity.expetelek.com/";
+    mainDir = "http://velocity.expetelek.com/gameadder/";
 
     manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gameReplyFinished(QNetworkReply*)));
-    manager->get(QNetworkRequest(QUrl(mainDir + "gpds/list.json")));
+    manager->get(QNetworkRequest(QUrl(mainDir + "listing.php")));
 
     // setup the context menus
     ui->treeWidgetAllGames->setContextMenuPolicy(Qt::CustomContextMenu);

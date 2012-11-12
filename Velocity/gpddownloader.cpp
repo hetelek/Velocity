@@ -63,7 +63,7 @@ void GPDDownloader::onRequestFinished(int id, bool error)
     if (hasAwards)
     {
         hasAwards = false;
-        http->get(gpdDirectory + "avataraward/" + QString::number(entry.titleID, 16).toUpper() + ".gpd");
+        http->get(gpdDirectory + "award/" + QString::number(entry.titleID, 16).toUpper() + ".gpd");
     }
 }
 
