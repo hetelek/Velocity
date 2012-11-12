@@ -4,16 +4,19 @@
 #include <QString>
 #include <QWidget>
 
+// xbox360
 #include "Stfs/StfsPackage.h"
 
 class IGameModder
 {
 public:
+    const void *Arguments;
+
     IGameModder() { }
     virtual ~IGameModder() { }
 
-    virtual void LoadPackage(StfsPackage *package, QWidget *parent = NULL) const = 0;
-    virtual QWidget* GetDialog() const = 0;
+    virtual void LoadPackage(StfsPackage *package, void *args = NULL) { }
+    virtual QDialog* GetDialog() { }
     virtual QString ToolAuthor() const = 0;
     virtual QString ToolName() const = 0;
     virtual DWORD TitleID() const = 0;
