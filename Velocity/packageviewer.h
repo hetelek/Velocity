@@ -81,7 +81,6 @@ private:
     QMenu *openInMenu;
     QList <QAction*> gpdActions;
     QAction *profileEditor, *gameAdder;
-    QStringList listingNames;
 
     void showAllItems();
 
