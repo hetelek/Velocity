@@ -2,7 +2,7 @@
 
 GPDDownloader::GPDDownloader(TitleEntry entry, bool hasAwards, QObject *parent) : entry(entry), hasAwards(hasAwards)
 {
-    gpdDirectory = "/gpds/";
+    gpdDirectory = "/gameadder/";
     gpdWritten = false;
 
     http = new QHttp(this);
