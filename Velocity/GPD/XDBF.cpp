@@ -34,7 +34,7 @@ void XDBF::Clean()
     tempFile.write(header.entryTableLength);
     tempFile.write(header.entryCount);
     tempFile.write(header.freeMemTableLength);
-    tempFile.write((DWORD)0);
+    tempFile.write((DWORD)1);
 
     // write the free mem table value
     tempFile.setPosition((header.entryTableLength * 0x12) + 0x1C);
