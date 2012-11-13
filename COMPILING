@@ -20,14 +20,3 @@ The Qt Creator IDE is used to create/debug Velocity.
 	n/a
 	
 ==========
-	
-When Velocity is done compiling for the first time, it will most likely fail. A bug with Qt seems to happen on line 79 of 'moc_gamerpicturedialog.cpp'.
-To fix this, simply added 'struct ' before 'Title':
-
-        case 3: _t->onTitleIDSearchReturn((*reinterpret_cast< QList<Title>(*)>(_a[1]))); break;
-		
-		to
-		
-		case 3: _t->onTitleIDSearchReturn((*reinterpret_cast< QList<struct Title>(*)>(_a[1]))); break;
-
-Attempting to compile after this should be a successful compile.
