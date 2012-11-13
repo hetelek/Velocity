@@ -83,6 +83,7 @@ private:
     QAction *profileEditor, *gameAdder;
 
     void showAllItems();
+    void hideAllItems(QTreeWidgetItem *topLevelItem );
 
     void collapseAllChildren(QTreeWidgetItem *item);
 };

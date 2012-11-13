@@ -94,7 +94,7 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<
 PackageViewer::~PackageViewer()
 {
     for (int i = 0; i < gpdActions.size(); i++)
-        gpdActions.at(i)->setProperty("package", NULL);
+        gpdActions.at(i)->setProperty("package", QVariant());
 
     if (disposePackage)
     {
@@ -290,13 +290,24 @@ void PackageViewer::showSaveImageContextMenu(QPoint point)
     }
 }
 
+void PackageViewer::hideAllItems( QTreeWidgetItem* topLevelItem )
+{
+    ui->treeWidget->setItemHidden(topLevelItem, true);
+    for (DWORD i = 0; i < topLevelItem->childCount(); i++)
+    {
+        QTreeWidgetItem* child = topLevelItem->child(i);
+        ui->treeWidget->setItemHidden(child, true);
+        hideAllItems(child);
+    }
+}
+
 void PackageViewer::on_txtSearch_textChanged(const QString &arg1)
 {
     QList<QTreeWidgetItem*> itemsMatched = ui->treeWidget->findItems(ui->txtSearch->text(), Qt::MatchContains | Qt::MatchRecursive);
 
     // hide all the items
     for (DWORD i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
-        ui->treeWidget->setItemHidden(ui->treeWidget->topLevelItem(i), true);
+        hideAllItems(ui->treeWidget->topLevelItem(i));
 
     if (itemsMatched.count() == 0)
     {
