@@ -52,9 +52,9 @@ public:
 
     // Description: re-write an entry
     void RewriteEntry(XDBFEntry entry, BYTE *entryBuffer);
+    FileIO *io;
 
 private:
-    FileIO *io;
     bool ioPassedIn;
     XDBFHeader header;
     vector<XDBFFreeMemEntry> freeMemory;
