@@ -80,7 +80,7 @@ void CreationWizard::onCurrentIdChanged(int id)
     }
 }
 
-void CreationWizard::on_txtDisplayName_textChanged(const QString &arg1)
+void CreationWizard::on_txtDisplayName_textChanged(const QString & /* arg1 */)
 {
     button(QWizard::NextButton)->setEnabled(ui->txtDisplayName->text() != "" && ui->txtTitleID->text().length() == 8 && QtHelpers::VerifyHexString(ui->txtTitleID->text()));
 }
@@ -132,7 +132,7 @@ void CreationWizard::on_btnOpenTitleThumbnail_clicked()
     openImage(ui->imgTitleThumbnail);
 }
 
-void CreationWizard::on_txtTitleID_textChanged(const QString &arg1)
+void CreationWizard::on_txtTitleID_textChanged(const QString & /* arg1 */)
 {
     if (ui->txtTitleID->text().length() != 8 || !QtHelpers::VerifyHexString(ui->txtTitleID->text()))
         ui->txtTitleID->setStyleSheet("color: rgb(255, 1, 1);");

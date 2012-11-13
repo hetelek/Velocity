@@ -2,7 +2,7 @@
 #include "ui_themecreationwizard.h"
 
 ThemeCreationWizard::ThemeCreationWizard(QStatusBar *statusBar, QWidget *parent) :
-    QWizard(parent), ui(new Ui::ThemeCreationWizard), imagesLoaded(0), statusBar(statusBar)
+    QWizard(parent), ui(new Ui::ThemeCreationWizard), statusBar(statusBar), imagesLoaded(0)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -201,7 +201,7 @@ void ThemeCreationWizard::on_pushButton_5_clicked()
     openWallpaper(ui->imgWallpaper4, &wallpaper4);
 }
 
-void ThemeCreationWizard::on_txtName_textChanged(const QString &arg1)
+void ThemeCreationWizard::on_txtName_textChanged(const QString & /* arg1 */)
 {
     button(QWizard::NextButton)->setEnabled(ui->txtName->text() != "");
 }

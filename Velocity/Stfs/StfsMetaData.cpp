@@ -4,7 +4,7 @@
 
 using namespace std;
 
-StfsMetaData::StfsMetaData(FileIO *io, DWORD flags) : flags(flags), installerType((InstallerType)0)
+StfsMetaData::StfsMetaData(FileIO *io, DWORD flags) : installerType((InstallerType)0), flags(flags)
 {
 	// set the io
 	this->io = io;

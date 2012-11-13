@@ -2,7 +2,7 @@
 #include "ui_packageviewer.h"
 
 PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<QAction *> gpdActions, QWidget *parent, bool disposePackage) :
-    QDialog(parent),ui(new Ui::PackageViewer), package(package), parent (parent), statusBar(statusBar), disposePackage(disposePackage), gpdActions(gpdActions)
+    QDialog(parent),ui(new Ui::PackageViewer), package(package), disposePackage(disposePackage), parent (parent), statusBar(statusBar),  gpdActions(gpdActions)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -94,7 +94,7 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<
 PackageViewer::~PackageViewer()
 {
     for (int i = 0; i < gpdActions.size(); i++)
-        gpdActions.at(i)->setProperty("package", (int)NULL);
+        gpdActions.at(i)->setProperty("package", QVariant::Invalid);
 
     if (disposePackage)
     {
@@ -108,7 +108,7 @@ void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *pare
 {
     bool isRootEntry = entry->folder.entryIndex == 0xFFFF;
 
-    for (int i = 0; i < entry->folderEntries.size(); i++)
+    for (unsigned int i = 0; i < entry->folderEntries.size(); i++)
     {
         QTreeWidgetItem *folder;
         if (entry->folderEntries.at(i).folder.pathIndicator != 0xFFFF)
@@ -294,7 +294,7 @@ void PackageViewer::on_txtSearch_textChanged(const QString &arg1)
 {
     QList<QTreeWidgetItem*> itemsMatched = ui->treeWidget->findItems(ui->txtSearch->text(), Qt::MatchContains | Qt::MatchRecursive);
 
-    for (DWORD i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
+    for (int i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
         hideAllItems(ui->treeWidget->topLevelItem(i));
 
     if (itemsMatched.count() == 0 || arg1 == "")
@@ -310,7 +310,7 @@ void PackageViewer::on_txtSearch_textChanged(const QString &arg1)
 
     ui->txtSearch->setStyleSheet("");
     // add all the matched ones to the list
-    for (DWORD i = 0; i < itemsMatched.count(); i++)
+    for (int i = 0; i < itemsMatched.count(); i++)
     {
         // show all the item's parents
         QTreeWidgetItem *parent = itemsMatched.at(i)->parent();
@@ -618,14 +618,14 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
     }
 }
 
-void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
+void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /*column*/)
 {
     // make sure that the item clicked isn't a folder
     if (item->text(2) == "N/A")
         return;
 
     // make sure the file double clicked on is a gpd
-    int index = item->text(0).lastIndexOf(".");
+    unsigned int index = item->text(0).lastIndexOf(".");
     QString extension;
     if (index != string::npos)
         extension = item->text(0).mid(index).toLower();
@@ -805,7 +805,7 @@ void PackageViewer::on_btnShowAll_clicked()
 
 void PackageViewer::showAllItems(QTreeWidgetItem *parent)
 {
-    for (DWORD i = 0; i < parent->childCount(); i++)
+    for (int i = 0; i < parent->childCount(); i++)
     {
         if (parent->child(i)->childCount() != 0)
             hideAllItems(parent->child(i));
@@ -818,6 +818,6 @@ void PackageViewer::collapseAllChildren(QTreeWidgetItem *item)
     item->setExpanded(false);
 
     // collapse all children
-    for (DWORD i = 0; i < item->childCount(); i++)
+    for (int i = 0; i < item->childCount(); i++)
         collapseAllChildren(item->child(i));
 }

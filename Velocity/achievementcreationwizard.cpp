@@ -105,7 +105,7 @@ void AchievementCreationWizard::onFinished(int result)
     }
 }
 
-void AchievementCreationWizard::on_txtName_textChanged(const QString &arg1)
+void AchievementCreationWizard::on_txtName_textChanged(const QString & /* arg1 */)
 {
     button(QWizard::NextButton)->setEnabled(ui->txtName->text() != "" && ui->txtLockDesc->toPlainText() != "" && ui->txtUnlockDesc->toPlainText() != "");
 }

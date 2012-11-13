@@ -231,7 +231,7 @@ DWORD StfsPackage::ComputeLevel1BackingHashBlockNumber(DWORD blockNum)
     return (1 << (BYTE)packageSex) + (blockNum / 0x70E4) * blockStep[1];
 }
 
-DWORD StfsPackage::ComputeLevel2BackingHashBlockNumber(DWORD blockNum)
+DWORD StfsPackage::ComputeLevel2BackingHashBlockNumber(DWORD /*blockNum*/)
 {
     return blockStep[1];
 }
@@ -247,15 +247,19 @@ DWORD StfsPackage::GetHashAddressOfBlock(DWORD blockNum)
     switch (topLevel)
     {
         case 0:
-            return hashAddr + ((metaData->volumeDescriptor.blockSeperation & 2) << 0xB);
+            hashAddr += ((metaData->volumeDescriptor.blockSeperation & 2) << 0xB);
+            break;
         case 1:
-            return hashAddr + ((topTable.entries[blockNum / 0xAA].status & 0x40) << 6);
+            hashAddr += ((topTable.entries[blockNum / 0xAA].status & 0x40) << 6);
+            break;
         case 2:
             DWORD level1Off = ((topTable.entries[blockNum / 0x70E4].status & 0x40) << 6);
             DWORD pos = ((ComputeLevel1BackingHashBlockNumber(blockNum) << 0xC) + firstHashTableAddress + level1Off) +( (blockNum % 0xAA) * 0x18);
             io->setPosition(pos + 0x14);
-            return hashAddr + ((io->readByte() & 0x40) << 6);
+            hashAddr += ((io->readByte() & 0x40) << 6);
+            break;
     }
+    return hashAddr;
 }
 
 HashEntry StfsPackage::GetBlockHashEntry(DWORD blockNum)
@@ -1206,7 +1210,7 @@ void StfsPackage::XeCryptBnQw_SwapDwQwLeBe(BYTE *data, DWORD length)
     if (length % 8 != 0)
         throw string("STFS: length is not divisible by 8.\n");
 
-    for (int i = 0; i < length / 2; i += 8)
+    for (DWORD i = 0; i < length / 2; i += 8)
     {
         BYTE temp[8];
         memcpy(temp, &data[i], 8);
@@ -1280,11 +1284,11 @@ void StfsPackage::WriteFileListing(bool usePassed, vector<FileEntry> *outFis, ve
     DWORD outFileSize = outFolders.size();
 
     // add all folders to the folders map
-    for (int i = 0; i < outFileSize; i++)
+    for (DWORD i = 0; i < outFileSize; i++)
         folders[outFolders.at(i).entryIndex] = i;
 
     // write the folders to the listing
-    for (int i = 0; i < outFolders.size(); i++)
+    for (DWORD i = 0; i < outFolders.size(); i++)
     {
         // check to see if we need to go to the next block
         if (firstCheck)
@@ -1545,7 +1549,7 @@ INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
     blockCount -= blocksUntilTable;
 
     // allocate all of the full sets
-    while ((*(int*)&blockCount) >= 0xAA)
+    while (blockCount >= 0xAA)
     {
         // allocate the memory in the file
         io->setPosition(0xAA000 + GetHashTableSkipSize(metaData->volumeDescriptor.allocatedBlockCount + 0xAA) - 1, ios_base::end);
@@ -1560,7 +1564,7 @@ INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
         blockCount -= 0xAA;
     }
 
-    if ((*(int*)&blockCount) > 0)
+    if (blockCount > 0)
     {
         // allocate the extra
         io->setPosition(GetHashTableSkipSize(metaData->volumeDescriptor.allocatedBlockCount + 0xAA) + (blockCount << 0xC) - 1, ios_base::end);
@@ -1606,7 +1610,7 @@ void StfsPackage::FindDirectoryListing(vector<string> locationOfDirectory, FileL
         *out = start;
 
     bool finalLoop = (locationOfDirectory.size() == 1);
-    for (int i = 0; i < start->folderEntries.size(); i++)
+    for (DWORD i = 0; i < start->folderEntries.size(); i++)
     {
         if (start->folderEntries.at(i).folder.name == locationOfDirectory.at(0))
         {
@@ -1614,7 +1618,7 @@ void StfsPackage::FindDirectoryListing(vector<string> locationOfDirectory, FileL
             if (finalLoop)
                 *out = &start->folderEntries.at(i);
             else
-                for (int i = 0; i < start->folderEntries.size(); i++)
+                for (DWORD i = 0; i < start->folderEntries.size(); i++)
                     if(*out == NULL)
                         FindDirectoryListing(locationOfDirectory, &start->folderEntries.at(i), out);
                     else
@@ -1678,12 +1682,13 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injec
     entry.fileSize = fileSize;
     entry.flags = ConsecutiveBlocks;
     entry.pathIndicator = folder->folder.entryIndex;
-    entry.startingBlockNum = -1;
+    entry.startingBlockNum = INT24_MAX;
     entry.blocksForFile = ((fileSize + 0xFFF) & 0xFFFFFFF000) >> 0xC;
     entry.createdTimeStamp = MSTimeToDWORD(TimetToMSTime(time(NULL)));
     entry.accessTimeStamp = entry.createdTimeStamp;
 
-    INT24 block, prevBlock = -1;
+    INT24 block = 0;
+    INT24 prevBlock = INT24_MAX;
     DWORD counter = 0;
     BYTE data[0x1000];
     while(fileSize >= 0x1000)
@@ -1691,10 +1696,10 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injec
         block = AllocateBlock();
 
 
-        if (entry.startingBlockNum == -1)
+        if (entry.startingBlockNum == INT24_MAX)
             entry.startingBlockNum = block;
 
-        if (prevBlock != -1)
+        if (prevBlock != INT24_MAX)
             SetNextBlock(prevBlock, block);
 
         prevBlock = block;
@@ -1716,10 +1721,10 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injec
     {
         block = AllocateBlock();
 
-        if (entry.startingBlockNum == -1)
+        if (entry.startingBlockNum == INT24_MAX)
             entry.startingBlockNum = block;       
 
-        if (prevBlock != -1)
+        if (prevBlock != INT24_MAX)
             SetNextBlock(prevBlock, block);
 
         BYTE *data = new BYTE[fileSize];
@@ -1795,19 +1800,20 @@ FileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPackage
     entry.fileSize = fileSize;
     entry.flags = 0;
     entry.pathIndicator = folder->folder.entryIndex;
-    entry.startingBlockNum = -1;
+    entry.startingBlockNum = INT24_MAX;
     entry.blocksForFile = ((fileSize + 0xFFF) & 0xFFFFFFF000) >> 0xC;
 
-    INT24 block, prevBlock = -1;
+    INT24 block = 0;
+    INT24 prevBlock = INT24_MAX;
     DWORD counter = 0;
     while(fileSize >= 0x1000)
     {
         block = AllocateBlock();
 
-        if (entry.startingBlockNum == -1)
+        if (entry.startingBlockNum == INT24_MAX)
             entry.startingBlockNum = block;
 
-        if (prevBlock != -1)
+        if (prevBlock != INT24_MAX)
             SetNextBlock(prevBlock, block);
 
         prevBlock = block;
@@ -1829,10 +1835,10 @@ FileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPackage
     {
         block = AllocateBlock();
 
-        if (entry.startingBlockNum == -1)
+        if (entry.startingBlockNum == INT24_MAX)
             entry.startingBlockNum = block;
 
-        if (prevBlock != -1)
+        if (prevBlock != INT24_MAX)
             SetNextBlock(prevBlock, block);
 
         BYTE *blockData = data + (length - fileSize);
@@ -1890,7 +1896,7 @@ void StfsPackage::ReplaceFile(string path, FileEntry *entry, string pathInPackag
     bool first = true, alwaysAllocate = false;
 
     // write the folders to the listing
-    for (int i = 0; i < fullReads; i++)
+    for (DWORD i = 0; i < fullReads; i++)
     {
         if (!first)
         {

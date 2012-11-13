@@ -90,11 +90,11 @@ struct SettingEntry
 	XDBFEntry entry;
 	union
 	{
-		int int32;
-		INT64 int64;
-		double doubleData;
+        unsigned int int32;
+        INT64 int64;
+        double doubleData;
 		wstring *str;
-		float floatData;
+        float floatData;
 		struct
 		{
 			BYTE *data;
@@ -158,7 +158,7 @@ struct AchievementEntry
 	DWORD imageID;
 	DWORD gamerscore;
 	DWORD flags;
-    time_t unlockTime;
+    unsigned int unlockTime;
 	wstring name;
 	wstring lockedDescription;
 	wstring unlockedDescription;
@@ -423,7 +423,7 @@ struct AvatarAward
 	DWORD titleID;
 	DWORD imageID;
 	DWORD flags;
-    time_t unlockTime;
+    unsigned int unlockTime;
 	AssetSubcategory subcategory;
     DWORD colorizable;
 	wstring name;

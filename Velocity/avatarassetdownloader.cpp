@@ -91,7 +91,7 @@ void AvatarAssetDownloader::onRequestFinished(int id, bool error)
         emit FinishedDownloading();
 }
 
-void AvatarAssetDownloader::onDone(bool error)
+void AvatarAssetDownloader::onDone(bool /* error */)
 {
     //if (!error)
         //emit FinishedDownloading();

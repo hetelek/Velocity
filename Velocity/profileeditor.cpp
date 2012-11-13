@@ -2,7 +2,7 @@
 #include "ui_profileeditor.h"
 
 ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool dispose, bool *ok, QWidget *parent) :
-    QDialog(parent), ui(new Ui::ProfileEditor), profile(profile), dispose(dispose), PEC(NULL), downloader(NULL), statusBar(statusBar), ok(ok), dashGPD(NULL), account(NULL)
+    QDialog(parent), ui(new Ui::ProfileEditor), profile(profile), PEC(NULL), dashGPD(NULL), account(NULL), downloader(NULL), dispose(dispose), ok(ok), statusBar(statusBar)
 {
     *ok = true;
 
@@ -187,7 +187,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         else
         {
             // find the index of the gamer's region
-            for (DWORD i = 0; i < 109; i++)
+            for (int i = 0; i < 109; i++)
                if (regions[i].value == dashGPD->gamercardRegion.int32)
                    ui->cmbxRegion->setCurrentIndex(i);
         }
@@ -703,12 +703,12 @@ void ProfileEditor::on_achievementsList_itemSelectionChanged()
     loadAchievementInfo(ui->gamesList->currentIndex().row(), ui->achievementsList->currentIndex().row());
 }
 
-void ProfileEditor::loadAchievementInfo(int gameIndex, int chievIndex)
+void ProfileEditor::loadAchievementInfo(int gameIndex, unsigned int chievIndex)
 {
     if (gameIndex < 0)
         return;
-    if (chievIndex < 0)
-        return;
+/*    if (chievIndex < 0)
+        return;*/
 
     if (chievIndex >= games.at(gameIndex).gpd->achievements.size())
         return;
@@ -814,12 +814,13 @@ void ProfileEditor::on_avatarAwardsList_itemSelectionChanged()
     loadAvatarAwardInfo(ui->aaGamelist->currentIndex().row(), ui->avatarAwardsList->currentIndex().row());
 }
 
-void ProfileEditor::loadAvatarAwardInfo(int gameIndex, int awardIndex)
+void ProfileEditor::loadAvatarAwardInfo(int gameIndex, unsigned int awardIndex)
 {
     if (gameIndex < 0)
         return;
-    if (awardIndex < 0)
+/*    if (awardIndex < 0)
         return;
+*/
 
     if (awardIndex >= aaGames.at(gameIndex).gpd->avatarAwards.size())
         return;
@@ -896,7 +897,7 @@ void ProfileEditor::on_btnUnlockAllAchvs_clicked()
     DWORD gamerscoreToAdd = 0;
 
     // update the ui
-    for (DWORD i = 0; i < ui->achievementsList->topLevelItemCount(); i++)
+    for (int i = 0; i < ui->achievementsList->topLevelItemCount(); i++)
     {
         QTreeWidgetItem *item = ui->achievementsList->topLevelItem(i);
         if (!item->text(1).toLower().contains("unlocked"))
@@ -952,7 +953,7 @@ void ProfileEditor::on_btnUnlockAllAchvs_clicked()
 
 void ProfileEditor::on_btnExtractGPD_clicked()
 {
-    DWORD index = ui->gamesList->currentIndex().row();
+    int index = ui->gamesList->currentIndex().row();
     if (index < 0)
         return;
 
@@ -976,7 +977,7 @@ void ProfileEditor::on_btnExtractGPD_clicked()
 
 void ProfileEditor::on_btnExtractGPD_2_clicked()
 {
-    DWORD index = ui->aaGamelist->currentIndex().row();
+    int index = ui->aaGamelist->currentIndex().row();
     if (index < 0)
         return;
 
@@ -1014,7 +1015,7 @@ void ProfileEditor::on_btnUnlockAllAwards_clicked()
     aaGames.at(index).updated = true;
 
     // update the ui
-    for (DWORD i = 0; i < ui->avatarAwardsList->topLevelItemCount(); i++)
+    for (int i = 0; i < ui->avatarAwardsList->topLevelItemCount(); i++)
     {
         QTreeWidgetItem *item = ui->avatarAwardsList->topLevelItem(i);
         if (item->text(2) != "Unlocked Online")
@@ -1468,14 +1469,14 @@ void ProfileEditor::on_btnShowAll_clicked()
 void ProfileEditor::showAllGames()
 {
     // show all the items
-    for (DWORD i = 0; i < ui->gamesList->topLevelItemCount(); i++)
+    for (int i = 0; i < ui->gamesList->topLevelItemCount(); i++)
         ui->gamesList->setItemHidden(ui->gamesList->topLevelItem(i), false);
 }
 
 void ProfileEditor::showAllAwardGames()
 {
     // show all the items
-    for (DWORD i = 0; i < ui->aaGamelist->topLevelItemCount(); i++)
+    for (int i = 0; i < ui->aaGamelist->topLevelItemCount(); i++)
         ui->aaGamelist->setItemHidden(ui->aaGamelist->topLevelItem(i), false);
 }
 
@@ -1549,12 +1550,12 @@ void ProfileEditor::on_dteAwTimestamp_dateTimeChanged(const QDateTime &date)
    statusBar->showMessage("Updated " + QString::fromStdWString(entry->name), 3000);
 }
 
-void ProfileEditor::on_txtGameSearch_textChanged(const QString &arg1)
+void ProfileEditor::on_txtGameSearch_textChanged(const QString & /*arg1*/)
 {
     QList<QTreeWidgetItem*> itemsMatched = ui->gamesList->findItems(ui->txtGameSearch->text(), Qt::MatchContains);
 
     // hide all the items
-    for (DWORD i = 0; i < ui->gamesList->topLevelItemCount(); i++)
+    for (int i = 0; i < ui->gamesList->topLevelItemCount(); i++)
         ui->gamesList->setItemHidden(ui->gamesList->topLevelItem(i), true);
 
     if (itemsMatched.count() == 0)
@@ -1565,16 +1566,16 @@ void ProfileEditor::on_txtGameSearch_textChanged(const QString &arg1)
 
     ui->txtGameSearch->setStyleSheet("");
     // add all the matched ones to the list
-    for (DWORD i = 0; i < itemsMatched.count(); i++)
+    for (int i = 0; i < itemsMatched.count(); i++)
         ui->gamesList->setItemHidden(itemsMatched.at(i), false);
 }
 
-void ProfileEditor::on_txtAwardGameSearch_textChanged(const QString &arg1)
+void ProfileEditor::on_txtAwardGameSearch_textChanged(const QString & /* arg1 */)
 {
     QList<QTreeWidgetItem*> itemsMatched = ui->aaGamelist->findItems(ui->txtAwardGameSearch->text(), Qt::MatchContains);
 
     // hide all the items
-    for (DWORD i = 0; i < ui->aaGamelist->topLevelItemCount(); i++)
+    for (int i = 0; i < ui->aaGamelist->topLevelItemCount(); i++)
         ui->aaGamelist->setItemHidden(ui->aaGamelist->topLevelItem(i), true);
 
     if (itemsMatched.count() == 0)
@@ -1585,6 +1586,6 @@ void ProfileEditor::on_txtAwardGameSearch_textChanged(const QString &arg1)
 
     ui->txtAwardGameSearch->setStyleSheet("");
     // add all the matched ones to the list
-    for (DWORD i = 0; i < itemsMatched.count(); i++)
+    for (int i = 0; i < itemsMatched.count(); i++)
         ui->aaGamelist->setItemHidden(itemsMatched.at(i), false);
 }

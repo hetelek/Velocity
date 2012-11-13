@@ -20,7 +20,7 @@ ProgressDialog::~ProgressDialog()
 void ProgressDialog::startExtracting()
 {
     // get all the stfs file entries
-    for (DWORD i = 0; i < filesToExtract.size(); i++)
+    for (int i = 0; i < filesToExtract.size(); i++)
     {
         FileEntry temp = package->GetFileEntry(filesToExtract.at(i).toStdString());
         if (temp.blocksForFile == 0)

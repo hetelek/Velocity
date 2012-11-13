@@ -33,7 +33,7 @@ void TitleIdFinderDialog::onRequestFinished(QList<TitleData> matches)
     ui->treeWidget->clear();
     statusBar->showMessage("Search returned " + QString::number(matches.length()) + " result(s)", 3000);
 
-    for (DWORD i = 0; i < matches.length(); i++)
+    for (int i = 0; i < matches.length(); i++)
     {
         QTreeWidgetItem *item = new QTreeWidgetItem();
 

@@ -80,7 +80,7 @@ OnlineResumeStateStruct resumeStates[] =
 };
 
 Metadata::Metadata(QStatusBar *statusBar, StfsPackage *package, QWidget *parent) :
-    QDialog(parent), ui(new Ui::Metadata), package(package), cmbxSubcategory(NULL), cmbxSkeletonVersion(NULL), offset(0), cmbxResumeState(NULL), lastModified(NULL), statusBar(statusBar)
+    QDialog(parent), ui(new Ui::Metadata), package(package), statusBar(statusBar), cmbxSubcategory(NULL), cmbxSkeletonVersion(NULL), cmbxResumeState(NULL), lastModified(NULL), offset(0)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -329,7 +329,10 @@ Metadata::Metadata(QStatusBar *statusBar, StfsPackage *package, QWidget *parent)
                 ui->tableWidget->insertRow(31 + offset);
                 ui->tableWidget->setVerticalHeaderItem(31 + offset, new QTableWidgetItem("Last Modified"));
                 ui->tableWidget->setCellWidget(31 + offset, 0, lastModified);
+                break;
             }
+            default:
+                break;
         }
     }
 

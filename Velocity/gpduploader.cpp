@@ -1,6 +1,6 @@
 #include "gpduploader.h"
 
-GPDUploader::GPDUploader(QStringList gamePaths, QStringList avatarPaths, QStringList titleIDs, bool deleteGPDs, QObject *parent = 0) : QObject(parent), deleteGPDs(deleteGPDs), gamePaths(gamePaths), titleIDs(titleIDs), avatarPaths(avatarPaths)
+GPDUploader::GPDUploader(QStringList gamePaths, QStringList avatarPaths, QStringList titleIDs, bool deleteGPDs, QObject *parent = 0) : QObject(parent), gamePaths(gamePaths), avatarPaths(avatarPaths), titleIDs(titleIDs), deleteGPDs(deleteGPDs)
 {
     settings = new QSettings("Exetelek", "Velocity");
 
@@ -87,13 +87,13 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
 
         // remove all setting entries
         int iterateCount = gpd->settings.size();
-        for (DWORD x = 0; x < iterateCount; x++)
+        for (int x = 0; x < iterateCount; x++)
             gpd->DeleteSettingEntry(gpd->settings.at(0));
 
         // remove all images
         iterateCount = gpd->images.size();
         char hitTitleImage = 0;
-        for (DWORD x = 0; x < iterateCount; x++)
+        for (int x = 0; x < iterateCount; x++)
         {
             if (gpd->images.at(hitTitleImage).entry.id != TitleInformation)
                 gpd->DeleteImageEntry(gpd->images.at(hitTitleImage));

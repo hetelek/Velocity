@@ -30,9 +30,7 @@ void FileIO::flush()
 
 void FileIO::swapEndian(void *arr, int elemSize, int len)
 {
-	void *temp = new char[elemSize];
-	if (temp == NULL)
-		throw 1;
+    char temp[elemSize];
 
 	for (int i = 0; i < (len / 2); i++)
 	{
@@ -40,8 +38,6 @@ void FileIO::swapEndian(void *arr, int elemSize, int len)
 		memcpy(((char*)arr) + (i * elemSize), ((char*)arr) + (((len - 1) * elemSize) - (i * elemSize)), elemSize);
 		memcpy(((char*)arr) + (((len - 1) * elemSize) - (i * elemSize)), temp, elemSize);
 	}
-
-	delete temp;
 }
 
 void FileIO::swapEndian()
