@@ -40,7 +40,7 @@ public slots:
 private slots:
     void on_comboBox_currentIndexChanged(const QString &arg1);
     void on_pushButton_clicked();
-    void onTitleIDSearchReturn(QList<struct Title>);
+    void onTitleIDSearchReturn(QList<TitleData>);
     void on_listGameNames_itemClicked(QListWidgetItem *item);
     void gamerPictureDownloaded(QNetworkReply *reply);
     void on_listSearch_itemDoubleClicked(QListWidgetItem *item);
@@ -57,7 +57,7 @@ private:
     Ui::GamerPicturePackDialog *ui;
     TitleIdFinder *titleIDFinder;
 
-    QList<struct Title> *currentTitles;
+    QList<TitleData> *currentTitles;
     QList<QString> *searchedIDs;
     QList<QString> *addedIDs;
     QList<QString> searchedGamertags;

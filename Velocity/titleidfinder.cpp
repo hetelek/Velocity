@@ -18,12 +18,12 @@ void TitleIdFinder::replyFinished(QNetworkReply *reply)
     QString pageSource(reply->readAll());
     QRegExp exp("66acd000-77fe-1000-9115-d802(.{8})\\?cid=search\"\\>([^<]*)");
 
-    QList<Title> matches;
+    QList<TitleData> matches;
 
     int pos = 0;
     while ((pos = exp.indexIn(pageSource, pos)) != -1)
     {
-        Title t;
+        TitleData t;
         t.titleID = exp.cap(1).toULong(0, 16);
         t.titleName = exp.cap(2);
         pos += exp.matchedLength();

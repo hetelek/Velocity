@@ -154,14 +154,14 @@ void GamerPicturePackDialog::on_pushButton_clicked()
     }
 }
 
-void GamerPicturePackDialog::onTitleIDSearchReturn(QList<struct Title> titlesFound)
+void GamerPicturePackDialog::onTitleIDSearchReturn(QList<TitleData> titlesFound)
 {
     if (titlesFound.size() == 0)
         return;
 
     statusBar->showMessage("Search returned " + QString::number(titlesFound.size()) + " result(s)", 3000);
 
-    currentTitles = new QList<struct Title>(titlesFound);
+    currentTitles = new QList<TitleData>(titlesFound);
 
     // clear the current names
     ui->listGameNames->clear();

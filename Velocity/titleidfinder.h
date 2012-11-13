@@ -12,7 +12,7 @@
 // other
 #include "winnames.h"
 
-struct Title
+struct TitleData
 {
     QString titleName;
     DWORD titleID;
@@ -28,7 +28,7 @@ public:
     void SetGameName(QString gameName);
     
 signals:
-    void SearchFinished(QList<struct Title> matches);
+    void SearchFinished(QList<TitleData> matches);
 
 public slots:
     void replyFinished(QNetworkReply *reply);

@@ -28,7 +28,7 @@ void TitleIdFinderDialog::on_pushButton_clicked()
     statusBar->showMessage("Searching...", 0x7FFFFFFF);
 }
 
-void TitleIdFinderDialog::onRequestFinished(QList<Title> matches)
+void TitleIdFinderDialog::onRequestFinished(QList<TitleData> matches)
 {
     ui->treeWidget->clear();
     statusBar->showMessage("Search returned " + QString::number(matches.length()) + " result(s)", 3000);

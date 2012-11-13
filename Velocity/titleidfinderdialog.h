@@ -26,7 +26,7 @@ public:
     
 private slots:
     void on_pushButton_clicked();
-    void onRequestFinished(QList<struct Title>);
+    void onRequestFinished(QList<TitleData>);
     void showContextMenu(QPoint p);
 
 private:
