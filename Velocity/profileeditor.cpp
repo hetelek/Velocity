@@ -20,9 +20,9 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
 
     int btnSize = 37;
 #elif __APPLE__
-    int btnSize = 30;
-    setMinimumSize(1000, 500);
-    ui->groupBox_3->setMaximumWidth(405);
+    int btnSize = 37;
+    setMinimumSize(1000, 520);
+    ui->groupBox_3->setMaximumWidth(395);
 #elif __WIN32__
     int btnSize = 32;
     ui->lblAchName->setFont(QFont("Arial", 10));

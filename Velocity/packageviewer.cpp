@@ -305,14 +305,17 @@ void PackageViewer::on_txtSearch_textChanged(const QString &arg1)
 {
     QList<QTreeWidgetItem*> itemsMatched = ui->treeWidget->findItems(ui->txtSearch->text(), Qt::MatchContains | Qt::MatchRecursive);
 
-    // hide all the items
     for (DWORD i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
         hideAllItems(ui->treeWidget->topLevelItem(i));
 
-    if (itemsMatched.count() == 0)
+    if (itemsMatched.count() == 0 || arg1 == "")
     {
         ui->txtSearch->setStyleSheet("color: rgb(255, 1, 1);");
-        showAllItems();
+        for (DWORD i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
+        {
+            showAllItems(ui->treeWidget->topLevelItem(i));
+            collapseAllChildren(ui->treeWidget->topLevelItem(i));
+        }
         return;
     }
 
@@ -331,6 +334,16 @@ void PackageViewer::on_txtSearch_textChanged(const QString &arg1)
 
         // show the item itself
         ui->treeWidget->setItemHidden(itemsMatched.at(i), false);
+    }
+}
+
+void PackageViewer::hideAllItems(QTreeWidgetItem *parent)
+{
+    for (DWORD i = 0; i < parent->childCount(); i++)
+    {
+        if (parent->child(i)->childCount() != 0)
+            hideAllItems(parent->child(i));
+        parent->child(i)->setHidden(true);
     }
 }
 
@@ -797,16 +810,17 @@ void PackageViewer::on_btnStfsTools_clicked()
 void PackageViewer::on_btnShowAll_clicked()
 {
     ui->txtSearch->setText("");
-    showAllItems();
+    for (DWORD i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
+        showAllItems(ui->treeWidget->topLevelItem(i));
 }
 
-void PackageViewer::showAllItems()
+void PackageViewer::showAllItems(QTreeWidgetItem *parent)
 {
-    // show all the items and collapse them all
-    for (DWORD i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
+    for (DWORD i = 0; i < parent->childCount(); i++)
     {
-        collapseAllChildren(ui->treeWidget->topLevelItem(i));
-        ui->treeWidget->setItemHidden(ui->treeWidget->topLevelItem(i), false);
+        if (parent->child(i)->childCount() != 0)
+            hideAllItems(parent->child(i));
+        parent->child(i)->setHidden(false);
     }
 }
 
