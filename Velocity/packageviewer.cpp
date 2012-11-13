@@ -300,7 +300,7 @@ void PackageViewer::on_txtSearch_textChanged(const QString &arg1)
     if (itemsMatched.count() == 0 || arg1 == "")
     {
         ui->txtSearch->setStyleSheet("color: rgb(255, 1, 1);");
-        for (DWORD i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
+        for (int i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
         {
             showAllItems(ui->treeWidget->topLevelItem(i));
             collapseAllChildren(ui->treeWidget->topLevelItem(i));
@@ -328,7 +328,7 @@ void PackageViewer::on_txtSearch_textChanged(const QString &arg1)
 
 void PackageViewer::hideAllItems(QTreeWidgetItem *parent)
 {
-    for (DWORD i = 0; i < parent->childCount(); i++)
+    for (int i = 0; i < parent->childCount(); i++)
     {
         if (parent->child(i)->childCount() != 0)
             hideAllItems(parent->child(i));
@@ -799,7 +799,7 @@ void PackageViewer::on_btnStfsTools_clicked()
 void PackageViewer::on_btnShowAll_clicked()
 {
     ui->txtSearch->setText("");
-    for (DWORD i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
+    for (int i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
         showAllItems(ui->treeWidget->topLevelItem(i));
 }
 

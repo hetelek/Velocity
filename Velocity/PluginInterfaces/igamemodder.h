@@ -15,8 +15,8 @@ public:
     IGameModder() { }
     virtual ~IGameModder() { }
 
-    virtual void LoadPackage(StfsPackage *package, void *args = NULL) { }
-    virtual QDialog* GetDialog() { }
+    virtual void LoadPackage(StfsPackage * /*package*/, void * /*args*/ = NULL) { }
+    virtual QDialog* GetDialog() { return NULL; }
     virtual QString ToolAuthor() const = 0;
     virtual QString ToolName() const = 0;
     virtual DWORD TitleID() const = 0;

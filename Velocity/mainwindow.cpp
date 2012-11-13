@@ -210,7 +210,7 @@ void MainWindow::PluginFinished()
     IGameModder *game = qobject_cast<IGameModder*>(sender());
 
     Arguments *args;
-    QMdiSubWindow *subWin;
+    QMdiSubWindow *subWin = 0;
 
     // check if a gpd modder finished
     if (gpd)

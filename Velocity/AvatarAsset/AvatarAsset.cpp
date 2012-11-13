@@ -38,11 +38,7 @@ void AvatarAsset::readHeader()
 	header.littleEndian = (bool)io->readByte();
 	io->setEndian((EndianType)header.littleEndian);
 
-	// read the guid
-	*(int*)&header.guid[0] = io->readInt32();
-	*(short*)&header.guid[4] = io->readInt16();
-	*(short*)&header.guid[6] = io->readInt16();
-	io->readBytes(&header.guid[8], 8);
+    io->readBytes(header.guid, 16);
 
 	// read the rest of the header
 	header.blockIDSize = io->readByte();
@@ -167,14 +163,23 @@ void AvatarAsset::parseColorTable(DWORD pos)
 	// read the entries
 	for (DWORD i = 0; i < customColors.count; i++)
 	{
-		*(DWORD*)&customColors.entries[i].color1.color.blue = io->readDword();
+        customColors.entries[i].color1.color.blue = io->readByte();
+        customColors.entries[i].color1.color.green = io->readByte();
+        customColors.entries[i].color1.color.red = io->readByte();
+        customColors.entries[i].color1.color.alpha = io->readByte();
 		customColors.entries[i].color1.unknown = io->readDword();
 
-		*(DWORD*)&customColors.entries[i].color2.color.blue = io->readDword();
-		customColors.entries[i].color2.unknown = io->readDword();
+        customColors.entries[i].color2.color.blue = io->readByte();
+        customColors.entries[i].color2.color.green = io->readByte();
+        customColors.entries[i].color2.color.red = io->readByte();
+        customColors.entries[i].color2.color.alpha = io->readByte();
+        customColors.entries[i].color2.unknown = io->readDword();
 
-		*(DWORD*)&customColors.entries[i].color3.color.blue = io->readDword();
-		customColors.entries[i].color3.unknown = io->readDword();
+        customColors.entries[i].color3.color.blue = io->readByte();
+        customColors.entries[i].color3.color.green = io->readByte();
+        customColors.entries[i].color3.color.red = io->readByte();
+        customColors.entries[i].color3.color.alpha = io->readByte();
+        customColors.entries[i].color3.unknown = io->readDword();
 	}
 
 	// set the endian back
@@ -206,8 +211,7 @@ void AvatarAsset::readAnimationInfo(DWORD pos)
     animation.frameCount = io->readDword();
 
 	// read the fps
-    DWORD temp = io->readDword();
-	animation.framesPerSecond = *(float*)&temp;
+    animation.framesPerSecond =  io->readFloat();
 
     // round dat, yo
     animation.framesPerSecond = (float)(((int)((animation.framesPerSecond + .05f) * 100)) / 100);

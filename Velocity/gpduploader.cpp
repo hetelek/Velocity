@@ -201,10 +201,10 @@ void GPDUploader::sendRequest(QString filePath, QString awardFilePath, QString g
             dataToSend.append(awardFile.readAll());
 
             // remove/close the award gpd
-            if (deleteGPDs)
+            if (deleteGPDs) {
                 if (!awardFile.remove())
                     qDebug() << "failed to remove award file";
-            else
+            } else
                 awardFile.close();
         }
 

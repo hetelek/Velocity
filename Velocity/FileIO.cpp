@@ -151,6 +151,23 @@ INT64 FileIO::readInt64()
 	return (INT64)readUInt64();
 }
 
+
+float FileIO::readFloat()
+{
+    float returnVal;
+    readBytesWithChecks(&returnVal, 4);
+
+    return returnVal;
+}
+
+double FileIO::readDouble()
+{
+    double returnVal;
+    readBytesWithChecks(&returnVal, 8);
+
+    return returnVal;
+}
+
 BYTE FileIO::readByte()
 {
 	BYTE returnVal;
