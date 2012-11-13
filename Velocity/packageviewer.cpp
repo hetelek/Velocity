@@ -94,7 +94,7 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<
 PackageViewer::~PackageViewer()
 {
     for (int i = 0; i < gpdActions.size(); i++)
-        gpdActions.at(i)->setProperty("package", NULL);
+        gpdActions.at(i)->setProperty("package", (int)NULL);
 
     if (disposePackage)
     {
