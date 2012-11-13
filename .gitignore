@@ -166,6 +166,7 @@ pip-log.txt
 ############
 *.pro.user
 moc_*.h
+moc_*.cpp
 ui_*.h
 *.autosave
 Makefile
