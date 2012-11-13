@@ -14,6 +14,7 @@ GameGPD::GameGPD(FileIO *io) : GPDBase(io)
 void GameGPD::CleanGPD()
 {
 	xdbf->Clean();
+    io = xdbf->io;
 }
 
 AchievementEntry GameGPD::readAchievementEntry(XDBFEntry entry)
