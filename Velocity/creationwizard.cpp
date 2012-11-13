@@ -261,4 +261,5 @@ DWORD CreationWizard::getContentType()
         return 0x1000;
     else if (contentType == "XNA")
         return 0xE0000;
+    return 0;
 }
