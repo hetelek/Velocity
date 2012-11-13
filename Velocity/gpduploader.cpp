@@ -212,7 +212,7 @@ void GPDUploader::sendRequest(QString filePath, QString awardFilePath, QString g
         dataToSend.append("\r\n--" + boundary + "--\r\n");
 
         // set the network request
-        QNetworkRequest request(QUrl("http://velocity.expetelek.com/gameadder/index.php" + getData));
+        QNetworkRequest request(QUrl("http://velocity.expetelek.com/gameadder/add.php" + getData));
         request.setRawHeader("Content-Type","multipart/form-data; boundary=-----------------------------7d935033608e2");
         request.setHeader(QNetworkRequest::ContentLengthHeader, dataToSend.size());
 
