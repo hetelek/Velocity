@@ -82,8 +82,8 @@ private:
     QList <QAction*> gpdActions;
     QAction *profileEditor, *gameAdder;
 
-    void showAllItems(QTreeWidgetItem *parent);
-    void hideAllItems(QTreeWidgetItem *parent);
+    void showAllItems();
+    void hideAllItems(QTreeWidgetItem *topLevelItem );
 
     void collapseAllChildren(QTreeWidgetItem *item);
 };

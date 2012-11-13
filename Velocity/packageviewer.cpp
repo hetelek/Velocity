@@ -94,7 +94,7 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<
 PackageViewer::~PackageViewer()
 {
     for (int i = 0; i < gpdActions.size(); i++)
-        gpdActions.at(i)->setProperty("package", (int)NULL);
+        gpdActions.at(i)->setProperty("package", QVariant());
 
     if (disposePackage)
     {
@@ -287,6 +287,17 @@ void PackageViewer::showSaveImageContextMenu(QPoint point)
         ui->imgTile->pixmap()->save(imageSavePath, "PNG");
 
         statusBar->showMessage("Thumbnail image saved successfully", 3000);
+    }
+}
+
+void PackageViewer::hideAllItems( QTreeWidgetItem* topLevelItem )
+{
+    ui->treeWidget->setItemHidden(topLevelItem, true);
+    for (DWORD i = 0; i < topLevelItem->childCount(); i++)
+    {
+        QTreeWidgetItem* child = topLevelItem->child(i);
+        ui->treeWidget->setItemHidden(child, true);
+        hideAllItems(child);
     }
 }
 

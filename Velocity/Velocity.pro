@@ -5,6 +5,9 @@
 #-------------------------------------------------
 
 QT       += core gui network xml
+QMAKE_CXX = clang++
+QMAKE_CC = clang
+QMAKE_CXXFLAGS += -std=c++11
 
 mac | win32 {
     QT += phonon
