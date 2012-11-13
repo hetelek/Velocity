@@ -38,7 +38,10 @@ public:
 	UINT64 readUInt64();
 	UINT64 readMultiByte(size_t size);
 
-	// reading strings
+    float readFloat();
+    double readDouble();
+
+    // reading strings
 	string readString(size_t len = 0);
 	wstring readWString(size_t len = 0);
 

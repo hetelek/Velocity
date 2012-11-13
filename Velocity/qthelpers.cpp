@@ -5,14 +5,14 @@ QString QtHelpers::ByteArrayToString(BYTE *buffer, DWORD len, bool spacesBetween
     if (spacesBetween)
     {
         QString builder = "";
-        for (int i = 0; i < len; i++)
+        for (DWORD i = 0; i < len; i++)
             builder += QString("%1").arg((BYTE)buffer[i], 2, 16, QChar('0')).toUpper() + " ";
         return builder;
     }
     else
     {
         QString builder = "";
-        for (int i = 0; i < len; i++)
+        for (DWORD i = 0; i < len; i++)
             builder += QString("%1").arg((BYTE)buffer[i], 2, 16, QChar('0')).toUpper();
         return builder;
     }
@@ -51,7 +51,7 @@ bool QtHelpers::VerifyHexStringBuffer(QString bytes)
 bool QtHelpers::VerifyHexString(QString str)
 {
     str = str.replace("0x", "");
-    for (DWORD i = 0; i < str.length(); i++)
+    for (int i = 0; i < str.length(); i++)
         if (!isxdigit(str.at(i).toAscii()))
             return false;
     return true;
@@ -75,7 +75,7 @@ std::string QtHelpers::GetKVPath(ConsoleType type, QWidget *parent)
 
 bool QtHelpers::VerifyDecimalString(QString str)
 {
-    for (DWORD i = 0; i< str.length(); i++)
+    for (int i = 0; i< str.length(); i++)
         if (!str.at(i).isDigit())
             return false;
     return true;
@@ -109,8 +109,10 @@ bool QtHelpers::ParseVersionString(QString version, Version *out)
         return false;
     if (out->minor > 15)
         return false;
+/*
     if (out->build > 0xFFFF)
         return false;
+*/
     if (out->revision > 0xFF)
         return false;
 

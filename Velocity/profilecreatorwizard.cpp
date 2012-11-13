@@ -187,7 +187,7 @@ bool ProfileCreatorWizard::verifyGamertag(QString gamertag)
         return false;
 
     QChar prevChar = 0;
-    for (DWORD i = 1; i < gamertag.length(); i++)
+    for (int i = 1; i < gamertag.length(); i++)
     {
         if (gamertag.at(i) == ' ' && prevChar == ' ')
             return false;
@@ -198,7 +198,7 @@ bool ProfileCreatorWizard::verifyGamertag(QString gamertag)
     return true;
 }
 
-void ProfileCreatorWizard::on_txtGamertag_textChanged(const QString &arg1)
+void ProfileCreatorWizard::on_txtGamertag_textChanged(const QString & /* arg1 */)
 {
     if (!verifyGamertag(ui->txtGamertag->text()))
     {

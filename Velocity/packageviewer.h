@@ -64,7 +64,7 @@ private slots:
 
     void showSaveImageContextMenu(QPoint point);
 
-    void on_txtSearch_textChanged(const QString &arg1);
+    void on_txtSearch_textChanged(const QString &);
 
     void onOpenInSelected(QAction *action);
 

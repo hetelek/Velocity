@@ -2,7 +2,7 @@
 #include "ui_singleprogressdialog.h"
 
 SingleProgressDialog::SingleProgressDialog(StfsPackage *package, QString externalFile, QString packageFilePath, StfsJob job, FileEntry *entry, QWidget *parent) :
-    QDialog(parent), ui(new Ui::SingleProgressDialog), package(package), externalFile(externalFile), packageFilePath(packageFilePath), job(job), entry(entry)
+    QDialog(parent), ui(new Ui::SingleProgressDialog), package(package), job(job), entry(entry), externalFile(externalFile), packageFilePath(packageFilePath)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);

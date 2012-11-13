@@ -1,6 +1,6 @@
 #include "Account.h"
 
-Account::Account(std::string path, bool decrypt, ConsoleType type) : ioPassedIn(false), type(type), decrypt(decrypt), path(path)
+Account::Account(std::string path, bool decrypt, ConsoleType type) : ioPassedIn(false), decrypt(decrypt), path(path), type(type)
 {
     Botan::LibraryInitializer init;
 

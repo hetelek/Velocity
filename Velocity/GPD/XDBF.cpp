@@ -777,6 +777,8 @@ void XDBF::RewriteEntry(XDBFEntry entry, BYTE *entryBuffer)
         case AvatarAward:
             entryList = &avatarAwards.entries;
             break;
+        default:
+            throw string("XDBF: Error rewriting entry, entry type not supported.\n");
     }
 
     // make sure the entry already exists
@@ -808,7 +810,7 @@ void XDBF::DeleteEntry(XDBFEntry entry)
 {
     // make sure that the entry exists
     vector<XDBFEntry> *entries;
-    XDBFEntryGroup *group;
+    XDBFEntryGroup *group = 0;
     switch (entry.type)
     {
         case Achievement:
@@ -859,13 +861,13 @@ void XDBF::DeleteEntry(XDBFEntry entry)
         case AvatarAward:
             // find the sync and delete it
             for (DWORD i = 0; i < group->syncs.synced.size(); i++)
-                if (group->syncs.synced.at(i).entryID = entry.id)
+                if (group->syncs.synced.at(i).entryID == entry.id)
                 {
                     group->syncs.synced.erase(group->syncs.synced.begin() + i);
                     goto writeSyncs;
                 }
             for (DWORD i = 0; i < group->syncs.toSync.size(); i++)
-                if (group->syncs.toSync.at(i).entryID = entry.id)
+                if (group->syncs.toSync.at(i).entryID == entry.id)
                 {
                     group->syncs.toSync.erase(group->syncs.toSync.begin() + i);
                     break;
@@ -873,6 +875,10 @@ void XDBF::DeleteEntry(XDBFEntry entry)
 
             writeSyncs:
                 writeSyncList(&group->syncs);
+                break;
+
+        default:
+            throw string("XDBF: Error deleting entry. Invalid entry type.\n");
     }
 
     // re-write the entry table

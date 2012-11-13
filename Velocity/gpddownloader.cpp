@@ -1,6 +1,6 @@
 #include "gpddownloader.h"
 
-GPDDownloader::GPDDownloader(TitleEntry entry, bool hasAwards, QObject *parent) : entry(entry), hasAwards(hasAwards)
+GPDDownloader::GPDDownloader(TitleEntry entry, bool hasAwards, QObject * /* parent */ ) : entry(entry), hasAwards(hasAwards)
 {
     gpdDirectory = "/gameadder/";
     gpdWritten = false;
@@ -18,7 +18,7 @@ void GPDDownloader::BeginDownload()
     http->get(url);
 }
 
-void GPDDownloader::onRequestFinished(int id, bool error)
+void GPDDownloader::onRequestFinished(int /* id */, bool error)
 {
     if (error)
         return;

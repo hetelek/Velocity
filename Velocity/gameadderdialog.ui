@@ -272,14 +272,7 @@
         </layout>
        </item>
       </layout>
-      <zorder></zorder>
-      <zorder></zorder>
-      <zorder></zorder>
-      <zorder></zorder>
       <zorder>lblGameName</zorder>
-      <zorder></zorder>
-      <zorder></zorder>
-      <zorder></zorder>
       <zorder>lblAvatarAwards</zorder>
       <zorder>lblAvatarAwards_2</zorder>
      </widget>

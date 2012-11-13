@@ -29,7 +29,7 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
 
     // check for all of the startup files
     QString missingFiles = "";
-    for (DWORD i = 0; i < fileNames.size(); i++)
+    for (int i = 0; i < fileNames.size(); i++)
         if (!QFile::exists(QtHelpers::ExecutingDirectory() + "/" + fileNames[i]))
             missingFiles += fileNames[i] + ", ";
 
@@ -210,7 +210,7 @@ void MainWindow::PluginFinished()
     IGameModder *game = qobject_cast<IGameModder*>(sender());
 
     Arguments *args;
-    QMdiSubWindow *subWin;
+    QMdiSubWindow *subWin = 0;
 
     // check if a gpd modder finished
     if (gpd)
@@ -301,7 +301,7 @@ void MainWindow::dropEvent(QDropEvent *event)
 
 void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 {
-    for (DWORD i = 0; i < filePaths.size(); i++)
+    for (int i = 0; i < filePaths.size(); i++)
     {
 #ifdef __WIN32__
         std::string fileName = QString(filePaths.at(i).encodedPath()).mid(1).replace("%20", " ").toStdString();

@@ -25,8 +25,8 @@ mac {
     ICON = velocity.icns
 }
 mac | unix {
-    INCLUDEPATH += "/usr/local/include/botan-1.10"
-    LIBS += "/usr/local/lib/libbotan-1.10.a"
+    INCLUDEPATH += "/usr/include/botan-1.10"
+    LIBS += "/usr/lib/libbotan-1.10.a"
 }
 
 VERSION = 1.0.0
@@ -90,7 +90,7 @@ HEADERS  += mainwindow.h \
     about.h \
     Stfs/StfsMetaData.h \
     Stfs/StfsConstants.h \
-    Stfs/FileIO.h \
+    FileIO.h \
     FileIO.h \
     GPD/XDBFDefininitions.h \
     GPD/XDBF.h \

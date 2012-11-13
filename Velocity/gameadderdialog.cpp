@@ -77,7 +77,7 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
         QString gameName = gameMap["nm"].toString();
 
         bool alreadyExists = false;
-        for (int i = 0; i < gamesPlayed.size(); i++)
+        for (unsigned int i = 0; i < gamesPlayed.size(); i++)
             if (gamesPlayed.at(i).gameName == gameName.toStdWString())
             {
                 gamesPlayed.erase(gamesPlayed.begin() + i);
@@ -387,7 +387,7 @@ void GameAdderDialog::showRemoveContextMenu_QueuedGames(QPoint point)
     }
 }
 
-void GameAdderDialog::on_treeWidgetAllGames_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+void GameAdderDialog::on_treeWidgetAllGames_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem * /* previous */)
 {
     if (current == NULL)
     {
@@ -466,12 +466,12 @@ void GameAdderDialog::on_btnShowAll_clicked()
     showAllItems();
 }
 
-void GameAdderDialog::on_txtSearch_textChanged(const QString &arg1)
+void GameAdderDialog::on_txtSearch_textChanged(const QString & /* arg1 */)
 {
     QList<QTreeWidgetItem*> itemsMatched = ui->treeWidgetAllGames->findItems(ui->txtSearch->text(), Qt::MatchContains | Qt::MatchRecursive);
 
     // hide all the items
-    for (DWORD i = 0; i < ui->treeWidgetAllGames->topLevelItemCount(); i++)
+    for (int i = 0; i < ui->treeWidgetAllGames->topLevelItemCount(); i++)
         ui->treeWidgetAllGames->setItemHidden(ui->treeWidgetAllGames->topLevelItem(i), true);
 
     if (itemsMatched.count() == 0)
@@ -483,7 +483,7 @@ void GameAdderDialog::on_txtSearch_textChanged(const QString &arg1)
 
     ui->txtSearch->setStyleSheet("");
     // add all the matched ones to the list
-    for (DWORD i = 0; i < itemsMatched.count(); i++)
+    for (int i = 0; i < itemsMatched.count(); i++)
     {
         // show all the item's parents
         QTreeWidgetItem *parent = itemsMatched.at(i)->parent();
@@ -501,7 +501,7 @@ void GameAdderDialog::on_txtSearch_textChanged(const QString &arg1)
 
 void GameAdderDialog::on_btnShowAll_2_clicked(bool checked)
 {
-    for (DWORD i = 0; i < ui->treeWidgetAllGames->topLevelItemCount(); i++)
+    for (int i = 0; i < ui->treeWidgetAllGames->topLevelItemCount(); i++)
     {
         TitleEntry entry = ui->treeWidgetAllGames->topLevelItem(i)->data(0, Qt::UserRole).value<TitleEntry>();
         if (entry.avatarAwardCount == 0)

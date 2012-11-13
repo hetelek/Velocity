@@ -280,9 +280,9 @@ private:
     State getStateFromFlags(DWORD flags);
     void saveAll();
     void loadGameInfo(int index);
-    void loadAchievementInfo(int gameIndex, int chievIndex);
+    void loadAchievementInfo(int gameIndex, unsigned int chievIndex);
     void loadAwardGameInfo(int index);
-    void loadAvatarAwardInfo(int gameIndex, int awardIndex);
+    void loadAvatarAwardInfo(int gameIndex, unsigned int awardIndex);
     void showAllGames();
     void showAllAwardGames();
     void saveImage(QPoint p, QLabel *imgLabel);

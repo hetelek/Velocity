@@ -30,9 +30,7 @@ void FileIO::flush()
 
 void FileIO::swapEndian(void *arr, int elemSize, int len)
 {
-	void *temp = new char[elemSize];
-	if (temp == NULL)
-		throw 1;
+    char temp[elemSize];
 
 	for (int i = 0; i < (len / 2); i++)
 	{
@@ -40,8 +38,6 @@ void FileIO::swapEndian(void *arr, int elemSize, int len)
 		memcpy(((char*)arr) + (i * elemSize), ((char*)arr) + (((len - 1) * elemSize) - (i * elemSize)), elemSize);
 		memcpy(((char*)arr) + (((len - 1) * elemSize) - (i * elemSize)), temp, elemSize);
 	}
-
-	delete temp;
 }
 
 void FileIO::swapEndian()
@@ -153,6 +149,23 @@ UINT64 FileIO::readUInt64()
 INT64 FileIO::readInt64()
 {
 	return (INT64)readUInt64();
+}
+
+
+float FileIO::readFloat()
+{
+    float returnVal;
+    readBytesWithChecks(&returnVal, 4);
+
+    return returnVal;
+}
+
+double FileIO::readDouble()
+{
+    double returnVal;
+    readBytesWithChecks(&returnVal, 8);
+
+    return returnVal;
 }
 
 BYTE FileIO::readByte()

@@ -7,7 +7,7 @@ GamerPicturePackDialog::GamerPicturePackDialog(QStatusBar *statusBar, QWidget *p
     ui->setupUi(this);
 
     titleIDFinder = new TitleIdFinder("", this);
-    connect(titleIDFinder, SIGNAL(SearchFinished(QList<Title>)), this, SLOT(onTitleIDSearchReturn(QList<Title>)));
+    connect(titleIDFinder, SIGNAL(SearchFinished(QList<Title>)), this, SLOT(onTitleIDSearchReturn(QListTitle)));
 
     searchedIDs = new QList<QString>;
     addedIDs = new QList<QString>;
@@ -141,10 +141,11 @@ void GamerPicturePackDialog::on_pushButton_clicked()
     // search by title id
     else if (ui->comboBox->currentIndex() == 1)
     {
-        if (searchedTitleIDs->contains(ui->txtSearch->text().toULong(false, 16)))
+        bool ok;
+        if (searchedTitleIDs->contains(ui->txtSearch->text().toULong(&ok, 16)))
             return;
 
-        searchedTitleIDs->push_back(ui->txtSearch->text().toULong(false, 16));
+        searchedTitleIDs->push_back(ui->txtSearch->text().toULong(&ok, 16));
         findGamerPictures(ui->txtSearch->text().toUpper());
     }
     else
@@ -167,14 +168,14 @@ void GamerPicturePackDialog::onTitleIDSearchReturn(QList<TitleData> titlesFound)
     ui->listGameNames->clear();
 
     // display all the titles found in the widget
-    for (DWORD i = 0; i < titlesFound.size(); i++)
+    for (int i = 0; i < titlesFound.size(); i++)
     {
         QString newStr = ((QString*)&titlesFound.at(i).titleName)->replace("&#174;", "®").replace("&#39;", "'").replace("&amp;","&").replace("&gt;",">").replace("&lt;","<").replace("â", "").replace("¢", "");
         ui->listGameNames->addItem(newStr);
     }
 }
 
-void GamerPicturePackDialog::on_listGameNames_itemClicked(QListWidgetItem *item)
+void GamerPicturePackDialog::on_listGameNames_itemClicked(QListWidgetItem * /* item */)
 {
     // make sure that we haven't already searched for the title
     if (searchedTitleIDs->contains(currentTitles->at(ui->listGameNames->currentIndex().row()).titleID))
@@ -385,7 +386,7 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
         ui->comboBox->setEnabled(false);
 
         // add all the gamerpictures to the pacakge
-        for (DWORD i = 0; i < ui->listPack->count(); i++)
+        for (int i = 0; i < ui->listPack->count(); i++)
         {
             // inject the 64x64 image
             QByteArray large;
@@ -465,7 +466,7 @@ bool GamerPicturePackDialog::verifyGamertag(QString gamertag)
         return false;
 
     QChar prevChar = 0;
-    for (DWORD i = 1; i < gamertag.length(); i++)
+    for (int i = 1; i < gamertag.length(); i++)
     {
         if (gamertag.at(i) == ' ' && prevChar == ' ')
             return false;

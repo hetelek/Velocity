@@ -26,6 +26,8 @@ namespace Ui {
 class GamerPicturePackDialog;
 }
 
+typedef QList<struct Title> QListTile;
+
 class GamerPicturePackDialog : public QDialog
 {
     Q_OBJECT

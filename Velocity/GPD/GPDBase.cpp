@@ -100,8 +100,7 @@ SettingEntry GPDBase::readSettingEntry(XDBFEntry entry)
             break;
         case Double:
         {
-            UINT64 temp = io->readUInt64();
-            toReturn.doubleData = *(double*)&temp;
+            toReturn.doubleData = io->readDouble();
             break;
         }
         case UnicodeString:
@@ -113,8 +112,7 @@ SettingEntry GPDBase::readSettingEntry(XDBFEntry entry)
         }
         case Float:
         {
-            DWORD temp = io->readDword();
-            toReturn.floatData = *(float*)&temp;
+            toReturn.floatData = io->readFloat();
             break;
         }
         case Binary:
