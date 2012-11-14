@@ -7,7 +7,7 @@ TitleIdFinderDialog::TitleIdFinderDialog(QStatusBar *statusBar, QWidget *parent)
     ui->setupUi(this);
     finder = new TitleIdFinder("", this);
 
-    connect(finder, SIGNAL(SearchFinished(QList<Title>)), this, SLOT(onRequestFinished(QList<Title>)));
+    connect(finder, SIGNAL(SearchFinished(QList<TitleData>)), this, SLOT(onRequestFinished(QList<TitleData>)));
 
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->treeWidget->header()->resizeSection(0, 300);
