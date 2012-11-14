@@ -335,6 +335,7 @@ void PackageViewer::hideAllItems(QTreeWidgetItem *parent)
             hideAllItems(parent->child(i));
         parent->child(i)->setHidden(true);
     }
+    parent->setHidden(true);
 }
 
 void PackageViewer::onOpenInSelected(QAction *action)
@@ -812,6 +813,7 @@ void PackageViewer::showAllItems(QTreeWidgetItem *parent)
             hideAllItems(parent->child(i));
         parent->child(i)->setHidden(false);
     }
+    parent->setHidden(false);
 }
 
 void PackageViewer::collapseAllChildren(QTreeWidgetItem *item)
