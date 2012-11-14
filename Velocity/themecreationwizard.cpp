@@ -6,6 +6,14 @@ ThemeCreationWizard::ThemeCreationWizard(QStatusBar *statusBar, QWidget *parent)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+    QtHelpers::GenAdjustWidgetAppearanceToOS(this);
+
+#ifdef __APPLE__
+    ui->label_3->setText("<font size=3>" + ui->label_3->text() + "</font>");
+    ui->label_5->setText("<font size=3>" + ui->label_5->text() + "</font>");
+    ui->label_7->setText("<font size=3>" + ui->label_7->text() + "</font>");
+    ui->lblSavePath->setText("<font size=3>" + ui->lblSavePath->text() + "</font>");
+#endif
 
     // populate the sphere color combobox
     for (DWORD i = 0; i < 16; i++)

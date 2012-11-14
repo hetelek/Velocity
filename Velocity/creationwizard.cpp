@@ -10,7 +10,21 @@ CreationWizard::CreationWizard(QString *fileName, QWidget *parent) :
 
     magic = CON;
     ui->setupUi(this);
+#ifdef __WIN32
     ui->label_4->setFont(QFont("Arial", 10));
+#elif __APPLE__
+    QFont f = ui->label_4->font();
+    f.setPointSize(12);
+    ui->label_4->setFont(f);
+
+    ui->label_3->setText("<font size=3>" + ui->label_3->text() + "</font>");
+    ui->label_14->setText("<font size=3>" + ui->label_14->text() + "</font>");
+    ui->label_4->setText("<font size=3>" + ui->label_4->text() + "</font>");
+    ui->label_6->setText("<font size=3>" + ui->label_6->text() + "</font>");
+    ui->label_7->setText("<font size=3>" + ui->label_7->text() + "</font>");
+    ui->label_8->setText("<font size=3>" + ui->label_8->text() + "</font>");
+    ui->lblSavePath->setText("<font size=3>" + ui->lblSavePath->text() + "</font>");
+#endif
 }
 
 CreationWizard::~CreationWizard()
@@ -110,19 +124,24 @@ void CreationWizard::on_btnOpenThumbnail_clicked()
 
 void CreationWizard::on_cmbxMagic_currentIndexChanged(int index)
 {
+    QString before = "", after = "";
+#ifdef __APPLE__
+    before = "<font size=3>";
+    after = "</font>";
+#endif
     if (index == 0)
     {
-        ui->label_4->setText("CON packages are console signed packages which means that they can be edited for use on a retail Xbox 360 console. These types of packages are typically used to store profiles, savegames and other offline content.");
+        ui->label_4->setText(before + "CON packages are console signed packages which means that they can be edited for use on a retail Xbox 360 console. These types of packages are typically used to store profiles, savegames and other offline content." + after);
         magic = CON;
     }
     else if (index == 1)
     {
-        ui->label_4->setText("LIVE packages are strong signed meaning that only Microsoft can resign these packages, therefore they are very secure. These packages are used to store DLC such as game trailers and game add-ons.");
+        ui->label_4->setText(before + "LIVE packages are strong signed meaning that only Microsoft can resign these packages, therefore they are very secure. These packages are used to store DLC such as game trailers and game add-ons." + after);
         magic = LIVE;
     }
     else
     {
-        ui->label_4->setText("PIRS packages are strong signed meaning that only Microsoft can resign these packages, therefore they are very secure. These packages are used for internal files, as well as avatar awards.");
+        ui->label_4->setText(before + "PIRS packages are strong signed meaning that only Microsoft can resign these packages, therefore they are very secure. These packages are used for internal files, as well as avatar awards." + after);
         magic = PIRS;
     }
 }

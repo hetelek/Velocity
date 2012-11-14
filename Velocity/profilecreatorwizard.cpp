@@ -8,6 +8,13 @@ ProfileCreatorWizard::ProfileCreatorWizard(QStatusBar *statusBar, QWidget *paren
     ui->setupUi(this);
     QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
+#ifdef __APPLE__
+    ui->label_3->setText("<font size=3>" + ui->label_3->text() + "</font>");
+    ui->label_5->setText("<font size=3>" + ui->label_5->text() + "</font>");
+    ui->label_7->setText("<font size=3>" + ui->label_7->text() + "</font>");
+    ui->lblSavePath->setText("<font size=3>" + ui->lblSavePath->text() + "</font>");
+#endif
+
     connect(this, SIGNAL(currentIdChanged(int)), this, SLOT(onCurrentIdChanged(int)));
     connect(this, SIGNAL(finished(int)), this, SLOT(onFinished(int)));
 
