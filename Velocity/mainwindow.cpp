@@ -173,11 +173,15 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
 
                     // load the gpd in the modder
                     GameGPD *gameGPD = new GameGPD(tempPath.toStdString());
-                    gpd->LoadGPD(gameGPD, (void*)args);
+                    bool ok;
+                    gpd->LoadGPD(gameGPD, &ok, (void*)args);
 
-                    widget->exec();
-                    widget->close();
-                    qDebug() << loader.unload();
+                    if (ok)
+                    {
+                        widget->exec();
+                        widget->close();
+                        qDebug() << loader.unload();
+                    }
 
                 }
                 catch (string error)
