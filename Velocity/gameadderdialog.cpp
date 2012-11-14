@@ -194,10 +194,9 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
             return;
         }
 
+        QString gpdName = QString::number(entry.titleID, 16).toUpper() + ".gpd";
         try
         {
-            QString gpdName = QString::number(entry.titleID, 16).toUpper() + ".gpd";
-
             // inject the game gpd
             m.lock();
             package->InjectFile(gamePath.toStdString(), gpdName.toStdString());
@@ -250,7 +249,7 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
         }
         catch (std::string error)
         {
-            QMessageBox::critical(this, "Error Occured", "An error occured while injecting the game.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error Occured", "An error occured while injecting " + gpdName + ".\n\n" + QString::fromStdString(error));
         }
         catch(...)
         {
