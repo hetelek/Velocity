@@ -59,8 +59,6 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
 {
     QString jsonStr(aReply->readAll());
 
-    vector<TitleEntry> gamesPlayed = dashGPD->gamesPlayed;
-
     bool ok;
     QVariantMap result = QtJson::Json::parse(jsonStr, ok).toMap();
 
@@ -75,20 +73,11 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
     {
         QVariantMap gameMap = game.toMap();
         QString gameName = gameMap["nm"].toString();
+        QString titleId = gameMap["tid"].toString();
 
-        bool alreadyExists = false;
-        for (unsigned int i = 0; i < gamesPlayed.size(); i++)
-            if (gamesPlayed.at(i).gameName == gameName.toStdWString())
-            {
-                gamesPlayed.erase(gamesPlayed.begin() + i);
-                alreadyExists = true;
-                break;
-            }
-
-        if (alreadyExists)
+        if (package->FileExists((titleId + ".gpd").toStdString()))
             continue;
 
-        QString titleId = gameMap["tid"].toString();
         QString achievementCount = gameMap["achc"].toString();
         QString totalGamerscore = gameMap["ttlgs"].toString();
         QString totalAwardCount = gameMap["ttlac"].toString();
