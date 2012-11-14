@@ -59,6 +59,8 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
 {
     QString jsonStr(aReply->readAll());
 
+    vector<TitleEntry> gamesPlayed = dashGPD->gamesPlayed;
+
     bool ok;
     QVariantMap result = QtJson::Json::parse(jsonStr, ok).toMap();
 
@@ -73,9 +75,18 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
     {
         QVariantMap gameMap = game.toMap();
         QString gameName = gameMap["nm"].toString();
-        QString titleId = gameMap["tid"].toString();
 
-        if (package->FileExists((titleId + ".gpd").toStdString()))
+        DWORD titleId = gameMap["tid"].toString().toULong(0, 16);
+        bool alreadyExists = false;
+        for (unsigned int i = 0; i < gamesPlayed.size(); i++)
+            if (gamesPlayed.at(i).titleID == titleId)
+            {
+                gamesPlayed.erase(gamesPlayed.begin() + i);
+                alreadyExists = true;
+                break;
+            }
+
+        if (alreadyExists)
             continue;
 
         QString achievementCount = gameMap["achc"].toString();
@@ -91,7 +102,7 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
 
         TitleEntry entry;
         entry.gameName = gameName.toStdWString();
-        entry.titleID = titleId.toULong(0, 16);
+        entry.titleID = titleId;
         entry.achievementCount = achievementCount.toULong();
         entry.totalGamerscore = totalGamerscore.toULong();
         entry.avatarAwardCount = (BYTE)totalAwardCount.toInt();
@@ -435,9 +446,25 @@ void GameAdderDialog::on_pushButton_2_clicked()
     {
         TitleEntry entry = ui->treeWidgetQueue->topLevelItem(i)->data(0, Qt::UserRole).value<TitleEntry>();
 
-        GPDDownloader *downloader = new GPDDownloader(entry, entry.avatarAwardCount != 0, this);
-        connect(downloader, SIGNAL(FinishedDownloading(QString, QString, TitleEntry, bool)), this, SLOT(finishedDownloadingGPD(QString, QString, TitleEntry, bool)));
-        downloader->BeginDownload();
+        if (!package->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
+        {
+            GPDDownloader *downloader = new GPDDownloader(entry, entry.avatarAwardCount != 0, this);
+            connect(downloader, SIGNAL(FinishedDownloading(QString, QString, TitleEntry, bool)), this, SLOT(finishedDownloadingGPD(QString, QString, TitleEntry, bool)));
+            downloader->BeginDownload();
+        }
+        else
+            downloadedCount++;
+    }
+
+    if (downloadedCount == totalDownloadCount)
+    {
+        if (dispose)
+        {
+            package->Close();
+            delete package;
+        }
+
+        close();
     }
 }
 
