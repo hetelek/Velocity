@@ -1,26 +1,27 @@
 #pragma once
+
 #include <iostream>
-#include <vector>
-#include "../FileIO.h"
+
 #include "XDBFDefininitions.h"
 #include "XDBFHelpers.h"
-#include <algorithm>
 
-using std::string;
-using std::vector;
+#include <QVector>
+#include <QString>
+
+class FileIO;
 
 class XDBF
 {
 public:
-    XDBF(string gpdPath);
+    XDBF(const QString &gpdPath);
     XDBF(FileIO *io);
     ~XDBF();
 
     XDBFEntryGroup achievements;
-    vector<XDBFEntry> images;
+    QVector<XDBFEntry> images;
     XDBFEntryGroup settings;
     XDBFEntryGroup titlesPlayed;
-    vector<XDBFEntry> strings;
+    QVector<XDBFEntry> strings;
     XDBFEntryGroup avatarAwards;
 
     // Description: extract the bytes of a given entry to the out buffer
@@ -52,12 +53,14 @@ public:
 
     // Description: re-write an entry
     void RewriteEntry(XDBFEntry entry, BYTE *entryBuffer);
+
     FileIO *io;
 
 private:
+
     bool ioPassedIn;
     XDBFHeader header;
-    vector<XDBFFreeMemEntry> freeMemory;
+    QVector<XDBFFreeMemEntry> freeMemory;
 
     // Description: read in the XDBF header
     void readHeader();
@@ -93,13 +96,13 @@ private:
     void readEntryGroup(XDBFEntryGroup *group, EntryType type);
 
     // Description: read an entry group from the table that doesn't have syncs
-    void readEntryGroup(vector<XDBFEntry> *group, EntryType type);
+    void readEntryGroup(QVector<XDBFEntry> *group, EntryType type);
 
     // Description: write an entry group to the table that has syncs
     void writeEntryGroup(XDBFEntryGroup *group);
 
     // Description: write an entry group to the table that doesn't have syncs
-    void writeEntryGroup(vector<XDBFEntry> *group);
+    void writeEntryGroup(QVector<XDBFEntry> *group);
 
     // Description: null out the structs that need it
     void init();
@@ -111,7 +114,7 @@ private:
     void writeNewEntryGroup(XDBFEntryGroup *group, FileIO *newIO);
 
     // Description: write an entry group that doesn't have syncs, used when cleaning
-    void writeNewEntryGroup(vector<XDBFEntry> *group, FileIO *newIO);
+    void writeNewEntryGroup(QVector<XDBFEntry> *group, FileIO *newIO);
 
     // Description: write entry to the new file, used when cleaing
     void writeNewEntry(XDBFEntry *entry, FileIO *newIO);

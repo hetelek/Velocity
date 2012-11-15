@@ -26,7 +26,7 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
     {
         dashGPDTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
         package->ExtractFile("FFFE07D1.gpd", dashGPDTempPath);
-        dashGPD = new DashboardGPD(dashGPDTempPath.toStdString());
+        dashGPD = new DashboardGPD(dashGPDTempPath);
     }
     catch(const QString &error)
     {
@@ -59,7 +59,7 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
 {
     QString jsonStr(aReply->readAll());
 
-    vector<TitleEntry> gamesPlayed = dashGPD->gamesPlayed;
+    QVector<TitleEntry> gamesPlayed = dashGPD->gamesPlayed;
 
     bool ok;
     QVariantMap result = QtJson::Json::parse(jsonStr, ok).toMap();
@@ -78,7 +78,7 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
 
         DWORD titleId = gameMap["tid"].toString().toULong(0, 16);
         bool alreadyExists = false;
-        for (unsigned int i = 0; i < gamesPlayed.size(); i++)
+        for (int i = 0; i < gamesPlayed.size(); i++)
             if (gamesPlayed.at(i).titleID == titleId)
             {
                 gamesPlayed.erase(gamesPlayed.begin() + i);

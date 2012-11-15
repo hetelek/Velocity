@@ -52,7 +52,7 @@ private:
     bool *modified;
     QStatusBar *statusBar;
 
-    void addEntriesToTable(vector<XDBFEntry> entries, QString type);
+    void addEntriesToTable(QVector<XDBFEntry> entries, QString type);
 
     Entry indexToEntry(int index);
 

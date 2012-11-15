@@ -4,20 +4,19 @@
 #include "XDBFDefininitions.h"
 #include "XDBFHelpers.h"
 #include "GPDBase.h"
-#include <iostream>
 
-using std::string;
+#include <QString>
 
 class GameGPD : public GPDBase
 {
 public:
-	GameGPD(string gpdPath);
+    GameGPD(const QString &gpdPath);
 	GameGPD(FileIO *io);
 
 	~GameGPD(void);
 
 	// Description: all of the achievements in this gpd
-	vector<AchievementEntry> achievements;
+    QVector<AchievementEntry> achievements;
 
 	// Description: the name of the game the achievement is for
 	StringEntry gameName;

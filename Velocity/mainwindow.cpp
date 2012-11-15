@@ -172,7 +172,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                     package->ExtractFile(QString("%1").arg(gpd->TitleID(), 8, 16, QChar('0')).toUpper() + ".gpd", tempPath);
 
                     // load the gpd in the modder
-                    GameGPD *gameGPD = new GameGPD(tempPath.toStdString());
+                    GameGPD *gameGPD = new GameGPD(tempPath);
                     bool ok;
                     gpd->LoadGPD(gameGPD, &ok, (void*)args);
 
@@ -388,7 +388,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                 }
                 case 0x58444246:
                 {
-                    GPDBase *gpd = new GPDBase(fileName.toStdString());
+                    GPDBase *gpd = new GPDBase(fileName);
                     ui->statusBar->showMessage("GPD parsed successfully", 3000);
 
                     XdbfDialog *dialog = new XdbfDialog(ui->statusBar, gpd, NULL, this);
@@ -483,7 +483,7 @@ void MainWindow::on_actionXDBF_File_triggered()
 
     try
     {
-        GPDBase *gpd = new GPDBase(fileName.toStdString());
+        GPDBase *gpd = new GPDBase(fileName);
         ui->statusBar->showMessage("GPD parsed successfully", 3000);
 
         XdbfDialog *dialog = new XdbfDialog(ui->statusBar, gpd, NULL, this);

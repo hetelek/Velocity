@@ -11,7 +11,7 @@ XdbfDialog::XdbfDialog(QStatusBar *statusBar, GPDBase *gpd, bool *modified, QWid
     loadEntries();
 
     // display the gpd name
-    for (DWORD i = 0; i < gpd->strings.size(); i++)
+    for (int i = 0; i < gpd->strings.size(); i++)
         if (gpd->strings.at(i).entry.id == TitleInformation)
         {
             if (gpd->strings.at(i).ws != L"")
@@ -23,9 +23,9 @@ XdbfDialog::XdbfDialog(QStatusBar *statusBar, GPDBase *gpd, bool *modified, QWid
     connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
 }
 
-void XdbfDialog::addEntriesToTable(vector<XDBFEntry> entries, QString type)
+void XdbfDialog::addEntriesToTable(QVector<XDBFEntry> entries, QString type)
 {
-    for (DWORD i = 0; i < entries.size(); i++)
+    for (int i = 0; i < entries.size(); i++)
     {
         // create an item
         QTreeWidgetItem *item = new QTreeWidgetItem;

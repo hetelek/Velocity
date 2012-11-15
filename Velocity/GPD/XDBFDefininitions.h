@@ -3,9 +3,9 @@
 #include "winnames.h"
 #include "../AvatarAsset/AvatarAssetDefinintions.h"
 #include <iostream>
-#include <vector>
 
-using std::vector;
+#include <QVector>
+
 using std::wstring;
 
 // Description: different types of entries in an XDBF file
@@ -51,8 +51,8 @@ struct SyncEntry
 
 struct SyncList
 {
-	vector<SyncEntry> synced;
-	vector<SyncEntry> toSync;
+    QVector<SyncEntry> synced;
+    QVector<SyncEntry> toSync;
 	bool lengthChanged;
 
 	XDBFEntry entry;
@@ -68,7 +68,7 @@ struct SyncData
 
 struct XDBFEntryGroup
 {
-	vector<XDBFEntry> entries;
+    QVector<XDBFEntry> entries;
 	SyncData syncData;
 	SyncList syncs;
 };

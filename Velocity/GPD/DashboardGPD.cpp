@@ -3,10 +3,9 @@
 
 #include <QString>
 
-using std::stringstream;
+#include "../FileIO.h"
 
-
-DashboardGPD::DashboardGPD(string gpdPath) : GPDBase(gpdPath)
+DashboardGPD::DashboardGPD(const QString &gpdPath) : GPDBase(gpdPath)
 {
 	init();
 }
@@ -41,11 +40,11 @@ void DashboardGPD::init()
 	gamerBio.entry.type = (EntryType)0;
 
 	// read in all the title entries
-	for (DWORD i = 0; i < xdbf->titlesPlayed.entries.size(); i++)
+    for (int i = 0; i < xdbf->titlesPlayed.entries.size(); i++)
 		gamesPlayed.push_back(readTitleEntry(xdbf->titlesPlayed.entries.at(i)));
 
     // find the avatar image
-    for (DWORD i = 0; i < images.size(); i++)
+    for (int i = 0; i < images.size(); i++)
         if (images.at(i).entry.id == AvatarImage)
         {
             avatarImage = images.at(i);
@@ -53,7 +52,7 @@ void DashboardGPD::init()
         }
 
 	// read in all of the IMPOTANT setting entries
-	for (DWORD i = 0; i < settings.size(); i++)
+    for (int i = 0; i < settings.size(); i++)
 	{
 		switch (settings.at(i).entry.id)
 		{
@@ -139,24 +138,24 @@ TitleEntry DashboardGPD::readTitleEntry(XDBFEntry entry)
 	return toReturn;
 }
 
-string DashboardGPD::GetSmallBoxArtURL(TitleEntry *entry)
+QString DashboardGPD::GetSmallBoxArtURL(TitleEntry *entry)
 {
-	stringstream url;
+    std::stringstream url;
 	url << "http://tiles.xbox.com/consoleAssets/";
     url << std::hex << entry->titleID;
 	url << "/en-us/smallboxart.jpg";
 
-	return url.str();
+    return QString::fromStdString(url.str());
 }
 
-string DashboardGPD::GetLargeBoxArtURL(TitleEntry *entry)
+QString DashboardGPD::GetLargeBoxArtURL(TitleEntry *entry)
 {
-	stringstream url;
+    std::stringstream url;
 	url << "http://tiles.xbox.com/consoleAssets/";
     url << std::hex << entry->titleID;
 	url << "/en-us/largeboxart.jpg";
 
-	return url.str();
+    return QString::fromStdString(url.str());
 }
 
 void DashboardGPD::WriteTitleEntry(TitleEntry *entry)
@@ -206,7 +205,7 @@ void DashboardGPD::WriteTitleEntry(TitleEntry *entry)
 void DashboardGPD::DeleteTitleEntry(TitleEntry *entry)
 {
 	// remove the entry from the list
-	DWORD i;
+    int i;
 	for (i = 0 ; i < gamesPlayed.size(); i++)
 	{
 		if (gamesPlayed.at(i).entry.id == entry->entry.id)

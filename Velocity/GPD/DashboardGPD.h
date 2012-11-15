@@ -4,19 +4,18 @@
 #include "XDBFDefininitions.h"
 #include "XDBFHelpers.h"
 #include "GPDBase.h"
-#include <iostream>
 
-using std::string;
+#include <QVector>
 
 class DashboardGPD : public GPDBase
 {
 public:
-	DashboardGPD(string gpdPath);
+    DashboardGPD(const QString &gpdPath);
 	DashboardGPD(FileIO *io);
 
 	~DashboardGPD(void);
 
-	vector<TitleEntry> gamesPlayed;
+    QVector<TitleEntry> gamesPlayed;
 
 	SettingEntry gamercardRegion;
 	SettingEntry gamerzone;
@@ -34,8 +33,8 @@ public:
 	SettingEntry yearsOnLive;
 
 	// Description: get the box art URL hosted on xbox.com for the title passed in
-    static string GetSmallBoxArtURL(TitleEntry *entry);
-    static string GetLargeBoxArtURL(TitleEntry *entry);
+    static QString GetSmallBoxArtURL(TitleEntry *entry);
+    static QString GetLargeBoxArtURL(TitleEntry *entry);
 
 	// Description: write the title entry back to the file
 	void WriteTitleEntry(TitleEntry *entry);

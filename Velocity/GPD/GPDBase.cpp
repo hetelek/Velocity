@@ -2,9 +2,11 @@
 
 #include <QString>
 
-GPDBase::GPDBase(string path) : ioPassedIn(false)
+#include "../FileIO.h"
+
+GPDBase::GPDBase(const QString &path) : ioPassedIn(false)
 {
-    io = new FileIO(path);
+    io = new FileIO(path.toStdString());
     xdbf = new XDBF(io);
 
     init();
@@ -20,7 +22,7 @@ GPDBase::GPDBase(FileIO *io) : ioPassedIn(true), io(io)
 void GPDBase::init()
 {
     // read all the images
-    for (DWORD i = 0; i < xdbf->images.size(); i++)
+    for (int i = 0; i < xdbf->images.size(); i++)
     {
         // set up the information
         ImageEntry image;
@@ -37,11 +39,11 @@ void GPDBase::init()
     }
 
     // read all the settings
-    for (DWORD i = 0; i < xdbf->settings.entries.size(); i++)
+    for (int i = 0; i < xdbf->settings.entries.size(); i++)
         settings.push_back(readSettingEntry(xdbf->settings.entries.at(i)));
 
     // read all the strings
-    for (DWORD i = 0; i < xdbf->strings.size(); i++)
+    for (int i = 0; i < xdbf->strings.size(); i++)
     {
         // read in the string entry
         StringEntry entry;
@@ -136,7 +138,7 @@ SettingEntry GPDBase::readSettingEntry(XDBFEntry entry)
 void GPDBase::DeleteSettingEntry(SettingEntry setting)
 {
     // remove the entry from the list
-    DWORD i;
+    int i;
     for (i = 0; i < settings.size(); i++)
     {
         if (settings.at(i).entry.id == setting.entry.id)
@@ -155,7 +157,7 @@ void GPDBase::DeleteSettingEntry(SettingEntry setting)
 void GPDBase::DeleteImageEntry(ImageEntry image)
 {
     // remove the entry from the list
-    DWORD i;
+    int i;
     for (i = 0 ; i < images.size(); i++)
     {
         if (images.at(i).entry.id == image.entry.id)
@@ -319,7 +321,7 @@ void GPDBase::Close()
 GPDBase::~GPDBase(void)
 {
     // deallocate all of the image memory
-    for (DWORD i = 0; i < images.size(); i++)
+    for (int i = 0; i < images.size(); i++)
         delete[] images.at(i).image;
 
     delete io;

@@ -654,7 +654,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
             package->ExtractFile(packagePath, tempName);
 
             // parse the gpd
-            GPDBase *gpd = new GPDBase(tempName.toStdString());
+            GPDBase *gpd = new GPDBase(tempName);
             statusBar->showMessage("GPD parsed successfully", 3000);
 
             bool changed;

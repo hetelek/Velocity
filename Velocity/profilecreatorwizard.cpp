@@ -110,7 +110,7 @@ void ProfileCreatorWizard::onFinished(int status)
         QFile::copy(QtHelpers::ExecutingDirectory() + "/FFFE07D1.gpd", dashGPDTempPath);
 
         // parse the GPD
-        DashboardGPD dashGPD(dashGPDTempPath.toStdString());
+        DashboardGPD dashGPD(dashGPDTempPath);
 
         // change the gamerpicture key
         wstring picKey = L"fffe07d10002000" + QString::number(ui->listWidget->currentIndex().row()).toStdWString() + L"0001000" + QString::number(ui->listWidget->currentIndex().row()).toStdWString();
