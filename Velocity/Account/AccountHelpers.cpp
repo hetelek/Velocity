@@ -1,77 +1,79 @@
 #include "AccountHelpers.h"
 
-#include <QString>
+#include "GPD/XDBFHelpers.h"
 
-string AccountHelpers::CountryToString(XboxLiveCountry country)
+#include "FileIO.h"
+
+QString AccountHelpers::CountryToString(XboxLiveCountry country)
 {
-	return XDBFHelpers::RegionIDtoString(country);
+    return QString::fromStdString(XDBFHelpers::RegionIDtoString(country));
 }
 
-string AccountHelpers::SubscriptionTeirToString(SubscriptionTeir teir)
+QString AccountHelpers::SubscriptionTeirToString(SubscriptionTeir teir)
 {
 	switch (teir)
 	{
 		case NoSubcription:
-			return string("No Subcription");
+            return QString("No Subcription");
 		case Silver:
-			return string("Silver");
+            return QString("Silver");
 		case Gold:
-			return string("Gold");
+            return QString("Gold");
 		case FamilyGold:
-			return string("FamilyGold");
+            return QString("FamilyGold");
 		default:
             throw QString("Account: Invalid 'Subscription Teir' value.\n");
 	}
 }
 
-string AccountHelpers::XboxLiveServiceProviderToString(XboxLiveServiceProvider provider)
+QString AccountHelpers::XboxLiveServiceProviderToString(XboxLiveServiceProvider provider)
 {
 	switch (provider)
 	{
         case LiveDisabled:
-			return string("Live Disabled");
+            return QString("Live Disabled");
 		case ProductionNet:
-			return string("ProductionNet");
+            return QString("ProductionNet");
 		case PartnerNet:
-			return string("PartnerNet");
+            return QString("PartnerNet");
 		default:
 			char temp[5] = {0};
 			memcpy(temp, &provider, 4);
 			FileIO::swapEndian(temp, 1, 4);
-			return string(temp);
+            return QString(temp);
 	}
 }
 
-string AccountHelpers::ConsoleLanguageToString(ConsoleLanguage language)
+QString AccountHelpers::ConsoleLanguageToString(ConsoleLanguage language)
 {
 	switch (language)
 	{
 		case NoLanguage:
-			return string("No Language");
+            return QString("No Language");
 		case English:
-			return string("English");
+            return QString("English");
 		case Japanese:
-			return string("Japanese");
+            return QString("Japanese");
 		case German:
-			return string("German");
+            return QString("German");
 		case French:
-			return string("French");
+            return QString("French");
 		case Spanish:
-			return string("Spanish");
+            return QString("Spanish");
 		case Italian:
-			return string("Italian");
+            return QString("Italian");
 		case Korean:
-			return string("Korean");
+            return QString("Korean");
 		case TChinese:
-			return string("TChinese");
+            return QString("TChinese");
 		case Portuguese:
-			return string("Portuguese");
+            return QString("Portuguese");
 		case SChinese:
-			return string("SChinese");
+            return QString("SChinese");
 		case Polish:
-			return string("Polish");
+            return QString("Polish");
 		case Russian:
-			return string("Russian");
+            return QString("Russian");
 		default:
             throw QString("Account: Invalid 'ConsoleLanguage' value.\n");
 	}

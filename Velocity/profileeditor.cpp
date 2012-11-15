@@ -85,12 +85,12 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         tempFiles.push_back(accountTempPath);
 
         // parse the account file
-        account = new Account(accountTempPath.toStdString(), true, profile->metaData->certificate.ownerConsoleType);
+        account = new Account(accountTempPath, true, profile->metaData->certificate.ownerConsoleType);
 
         // load all of the account information
         ui->txtGamertag->setText(QString::fromStdWString(account->GetGamertag()));
-        ui->lblLanguage->setText(QString::fromStdString(AccountHelpers::ConsoleLanguageToString(account->GetLanguage())));
-        ui->lblSubscriptionTeir->setText(QString::fromStdString(AccountHelpers::SubscriptionTeirToString(account->GetSubscriptionTeir())));
+        ui->lblLanguage->setText(AccountHelpers::ConsoleLanguageToString(account->GetLanguage()));
+        ui->lblSubscriptionTeir->setText(AccountHelpers::SubscriptionTeirToString(account->GetSubscriptionTeir()));
         ui->lblParentalControlled->setText(((account->IsParentalControlled()) ? "Yes" : "No"));
         ui->lblCreditCard->setText(((account->IsPaymentInstrumentCreditCard()) ? "Yes" : "No"));
         ui->lblXUID->setText(QString::number(account->GetXUID(), 16).toUpper());
@@ -119,7 +119,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
                 ui->cmbxNetwork->setEnabled(false);
                 break;
             default:
-                ui->cmbxNetwork->addItem(QString::fromStdString(AccountHelpers::XboxLiveServiceProviderToString(account->GetServiceProvider())));
+                ui->cmbxNetwork->addItem(AccountHelpers::XboxLiveServiceProviderToString(account->GetServiceProvider()));
                 break;
         }
 

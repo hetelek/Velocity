@@ -98,7 +98,7 @@ void ProfileCreatorWizard::onFinished(int status)
         accountIo.close();
 
         // write the gamertag, and encrypt the file
-        Account account(accountTempPath.toStdString(), false, newProfile.metaData->certificate.ownerConsoleType);
+        Account account(accountTempPath, false, newProfile.metaData->certificate.ownerConsoleType);
         account.SetGamertag(ui->txtGamertag->text().toStdWString());
         account.Save(newProfile.metaData->certificate.ownerConsoleType);
 
