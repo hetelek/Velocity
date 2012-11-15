@@ -1,27 +1,12 @@
 #pragma once
 
-#include <iostream>
-#include <sstream>
-#include <math.h>
-#include <map>
-#include <time.h>
-#include <stdlib.h>
 #include "../FileIO.h"
 #include "StfsMetaData.h"
 
-#include <botan/botan.h>
-#include <botan/pubkey.h>
-#include <botan/rsa.h>
-#include <botan/emsa.h>
-#include <botan/sha160.h>
-#include <botan/emsa3.h>
-#include <botan/look_pk.h>
+#include <sstream>
 
 #include <QVector>
-
 #include <QString>
-
-using std::stringstream;
 
 struct FileEntry
 {
@@ -144,7 +129,7 @@ private:
     FileListing writtenToFile;
 
     FileIO *io;
-    stringstream except;
+    std::stringstream except;
 
     Sex packageSex;
     DWORD blockStep[2];

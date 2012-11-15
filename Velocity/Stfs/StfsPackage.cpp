@@ -1,10 +1,23 @@
 #include "StfsPackage.h"
-#include "StfsMetaData.h"
 
 #include <stdio.h>
 using std::hex;
 
 #include <QStringList>
+
+#include <botan/botan.h>
+#include <botan/pubkey.h>
+#include <botan/rsa.h>
+#include <botan/emsa.h>
+#include <botan/sha160.h>
+#include <botan/emsa3.h>
+#include <botan/look_pk.h>
+
+#include <iostream>
+#include <math.h>
+#include <map>
+#include <time.h>
+#include <stdlib.h>
 
 StfsPackage::StfsPackage(const QString &packagePath, DWORD flags) : flags(flags)
 {
