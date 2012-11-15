@@ -1,6 +1,8 @@
 #include "AvatarAwardGPD.h"
 #include <sstream>
 
+#include <QString>
+
 using std::stringstream;
 
 AvatarAwardGPD::AvatarAwardGPD(string gpdPath) : GPDBase(gpdPath)
@@ -34,7 +36,7 @@ struct AvatarAward AvatarAwardGPD::readAvatarAwardEntry(XDBFEntry entry)
 {
     // make sure the entry passed in is an avatar award
     if (entry.type != AvatarAward)
-        throw string("GPD: Error reading avatar award, specified entry isn't an award.\n");
+        throw QString("GPD: Error reading avatar award, specified entry isn't an award.\n");
 
     struct AvatarAward award;
     award.entry = entry;
@@ -183,7 +185,7 @@ void AvatarAwardGPD::DeleteAvatarAward(struct AvatarAward *award)
         }
     }
     if (i == avatarAwards.size())
-        throw string("GPD: Error deleting avatar award. Award doesn't exist.\n");
+        throw QString("GPD: Error deleting avatar award. Award doesn't exist.\n");
 
     // delete the entry from the file
     xdbf->DeleteEntry(award->entry);

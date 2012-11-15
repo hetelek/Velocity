@@ -1,5 +1,7 @@
 #include "Account.h"
 
+#include <QString>
+
 Account::Account(std::string path, bool decrypt, ConsoleType type) : ioPassedIn(false), decrypt(decrypt), path(path), type(type)
 {
     Botan::LibraryInitializer init;
@@ -240,7 +242,7 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
     hmacSha1.final(confoundPayloadHash);
 
     if (memcmp(confoundPayloadHash, hmacHash, 0x10) != 0)
-        throw string("Account: Account decryption failed.\n");
+        throw QString("Account: Account decryption failed.\n");
 
 
     // write the payload

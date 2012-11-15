@@ -28,9 +28,9 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
         package->ExtractFile("FFFE07D1.gpd", dashGPDTempPath);
         dashGPD = new DashboardGPD(dashGPDTempPath.toStdString());
     }
-    catch(string error)
+    catch(const QString &error)
     {
-        QMessageBox::critical(this, "File Error", "The dashboard GPD could not be extracted/opened.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "File Error", "The dashboard GPD could not be extracted/opened.\n\n" + error);
         this->close();
         return;
     }
@@ -247,9 +247,9 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
             dashGPD->gamePlayedCount.int32++;
             m.unlock();
         }
-        catch (std::string error)
+        catch (const QString &error)
         {
-            QMessageBox::critical(this, "Error Occured", "An error occured while injecting " + gpdName + ".\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error Occured", "An error occured while injecting " + gpdName + ".\n\n" + error);
         }
         catch(...)
         {
@@ -276,9 +276,9 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
             dashGPD->WriteSettingEntry(dashGPD->gamePlayedCount);
             m.unlock();
         }
-        catch (std::string error)
+        catch (const QString &error)
         {
-            QMessageBox::critical(this, "Error Writing Entry", "The entry was not written successfully.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error Writing Entry", "The entry was not written successfully.\n\n" + error);
             close();
         }
         dashGPD->Close();
@@ -290,9 +290,9 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
             m.unlock();
             QFile::remove(dashGPDTempPath);
         }
-        catch (std::string error)
+        catch (const QString &error)
         {
-            QMessageBox::critical(this, "Error Replacing GPD", "The dashboard GPD could not be replaced.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error Replacing GPD", "The dashboard GPD could not be replaced.\n\n" + error);
             close();
         }
 
@@ -323,9 +323,9 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
                 m.unlock();
             }
         }
-        catch (std::string error)
+        catch (const QString &error)
         {
-            QMessageBox::critical(this, "PEC Error" , "The PEC file could not be replaced/injected.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "PEC Error" , "The PEC file could not be replaced/injected.\n\n" + error);
             close();
         }
 
@@ -342,9 +342,9 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
                 delete package;
             }
         }
-        catch (std::string error)
+        catch (const QString &error)
         {
-            QMessageBox::critical(this, "Fixing Error" , "The package could not be rehashed/resigned.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Fixing Error" , "The package could not be rehashed/resigned.\n\n" + error);
         }
 
         close();

@@ -422,9 +422,9 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
         ui->pushButton->setEnabled(true);
         QMessageBox::information(this, "Success", "Successfully created your picture pack.");
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "Error", "An error occurred while creating your picture pack.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error", "An error occurred while creating your picture pack.\n\n" + error);
     }
 }
 

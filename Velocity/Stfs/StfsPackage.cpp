@@ -1,10 +1,6 @@
 #include "StfsPackage.h"
 
 #include <stdio.h>
-#include <sstream>
-
-using std::hex;
-
 #include <QStringList>
 
 #include <botan/botan.h>
@@ -183,7 +179,7 @@ Level StfsPackage::CalcualateTopLevel()
     else if (metaData->volumeDescriptor.allocatedBlockCount <= 0x4AF768)
         return Two;
     else
-        throw string("STFS: Invalid number of allocated blocks.\n");
+        throw QString("STFS: Invalid number of allocated blocks.\n");
 }
 
 DWORD StfsPackage::ComputeBackingDataBlockNumber(DWORD blockNum) const
@@ -201,7 +197,7 @@ DWORD StfsPackage::BlockToAddress(DWORD blockNum) const
 {
     // check for invalid block number
     if(blockNum >= INT24_MAX)
-        throw string("STFS: Block number must be less than 0xFFFFFF.\n");
+        throw QString("STFS: Block number must be less than 0xFFFFFF.\n");
     return (ComputeBackingDataBlockNumber(blockNum) << 0x0C) + firstHashTableAddress;
 }
 
@@ -224,7 +220,7 @@ DWORD StfsPackage::ComputeLevelNBackingHashBlockNumber(DWORD blockNum, Level lev
             return ComputeLevel2BackingHashBlockNumber(blockNum);
 
         default:
-            throw string("STFS: Invalid level.\n");
+            throw QString("STFS: Invalid level.\n");
     }
 }
 
@@ -257,7 +253,7 @@ DWORD StfsPackage::ComputeLevel2BackingHashBlockNumber(DWORD /*blockNum*/) const
 DWORD StfsPackage::GetHashAddressOfBlock(DWORD blockNum) const
 {
     if (blockNum >= metaData->volumeDescriptor.allocatedBlockCount)
-         throw string("STFS: Reference to illegal block number.\n");
+         throw QString("STFS: Reference to illegal block number.\n");
 
     DWORD hashAddr = (ComputeLevel0BackingHashBlockNumber(blockNum) << 0xC) + firstHashTableAddress;
     hashAddr += (blockNum % 0xAA) * 0x18;
@@ -283,7 +279,7 @@ DWORD StfsPackage::GetHashAddressOfBlock(DWORD blockNum) const
 HashEntry StfsPackage::GetBlockHashEntry(DWORD blockNum) const
 {
     if (blockNum >= metaData->volumeDescriptor.allocatedBlockCount)
-        throw string("STFS: Reference to illegal block number.\n");
+        throw QString("STFS: Reference to illegal block number.\n");
 
     // go to the position of the hash address
     io->setPosition(GetHashAddressOfBlock(blockNum));
@@ -300,11 +296,11 @@ HashEntry StfsPackage::GetBlockHashEntry(DWORD blockNum) const
 void StfsPackage::ExtractBlock(DWORD blockNum, BYTE *data, DWORD length)
 {
     if (blockNum >= metaData->volumeDescriptor.allocatedBlockCount)
-         throw string("STFS: Reference to illegal block number.\n");
+         throw QString("STFS: Reference to illegal block number.\n");
 
     // check for an invalid block length
     if (length > 0x1000)
-        throw string("STFS: length cannot be greater 0x1000.\n");
+        throw QString("STFS: length cannot be greater 0x1000.\n");
 
     // go to the block's position
     io->setPosition(BlockToAddress(blockNum));
@@ -422,11 +418,7 @@ void StfsPackage::ExtractFile(FileEntry *entry, const QString &outPath, void (*e
 {
     if (entry->nameLen == 0)
     {
-        std::stringstream except;
-
-        except.str(std::string());
-        except << "STFS: File '" << entry->name.toStdString() << "' doesn't exist in the package.\n";
-        throw except.str();
+        throw QString("STFS: File '%1' doesn't exist in the package.\n").arg(entry->name);
     }
 
     // create/truncate our out file
@@ -597,11 +589,7 @@ FileEntry StfsPackage::GetFileEntry(const QString &pathInPackage, bool checkFold
 
     if (entry.nameLen == 0)
     {
-        std::stringstream except;
-
-        except.str(std::string());
-        except << "STFS: File entry '" << pathInPackage.toStdString() << "' cannot be found in the package.\n";
-        throw except.str();
+        throw QString("STFS: File entry '%1' cannot be found in the package.\n").arg(pathInPackage);
     }
 
     return entry;
@@ -728,7 +716,7 @@ HashTable StfsPackage::GetLevelNHashTable(DWORD index, Level lvl)
 
     // adjust the hash address
     if (lvl < 0 || lvl > topLevel)
-        throw string("STFS: Invalid level.\n");
+        throw QString("STFS: Invalid level.\n");
     else if (lvl == topLevel)
         return topTable;
     else if (lvl + 1 == topLevel)
@@ -772,7 +760,7 @@ HashTable StfsPackage::GetLevelNHashTable(DWORD index, Level lvl)
 DWORD StfsPackage::GetHashTableEntryCount(DWORD index, Level lvl)
 {
     if (lvl < 0 || lvl > topLevel)
-        throw string("STFS: Invalid level.\n");
+        throw QString("STFS: Invalid level.\n");
 
     if (lvl == topLevel)
         return topTable.entryCount;
@@ -958,7 +946,7 @@ void StfsPackage::SwapTable(DWORD index, Level lvl)
     if (packageSex == StfsFemale)
         return;
     else if (index >= tablesPerLevel[lvl] || lvl > Two)
-        throw string("STFS: Invaid parameters for swapping table.\n");
+        throw QString("STFS: Invaid parameters for swapping table.\n");
 
     // read in all the status's so that when we swap tables, the package isn't messed up
     DWORD entryCount = GetHashTableEntryCount(index, lvl);
@@ -1040,7 +1028,7 @@ DWORD StfsPackage::GetBaseHashTableAddress(DWORD index, Level lvl)
 DWORD StfsPackage::GetTableHashAddress(DWORD index, Level lvl)
 {
     if(lvl >= topTable.level || lvl < Zero)
-        throw string("STFS: Level is invalid. No parent hash address accessible.\n");
+        throw QString("STFS: Level is invalid. No parent hash address accessible.\n");
 
     // compute base address of the hash table
     DWORD baseHashAddress = GetBaseHashTableAddress(index / 0xAA, (Level)(lvl + 1));
@@ -1178,7 +1166,7 @@ void StfsPackage::Resign(const QString &kvPath)
 void StfsPackage::SetBlockStatus(DWORD blockNum, BlockStatusLevelZero status)
 {
     if (blockNum >= metaData->volumeDescriptor.allocatedBlockCount)
-         throw string("STFS: Reference to illegal block number.\n");
+         throw QString("STFS: Reference to illegal block number.\n");
 
     DWORD statusAddress = GetHashAddressOfBlock(blockNum) + 0x14;
     io->setPosition(statusAddress);
@@ -1213,7 +1201,7 @@ void StfsPackage::BuildTableInMemory(HashTable *table, BYTE *outBuffer)
 void StfsPackage::XeCryptBnQw_SwapDwQwLeBe(BYTE *data, DWORD length)
 {
     if (length % 8 != 0)
-        throw string("STFS: length is not divisible by 8.\n");
+        throw QString("STFS: length is not divisible by 8.\n");
 
     for (DWORD i = 0; i < length / 2; i += 8)
     {
@@ -1246,7 +1234,7 @@ void StfsPackage::RemoveFile(FileEntry entry)
 
     // make sure the file was found in the package
     if (!found)
-        throw string("STFS: File could not be deleted because it doesn't exist in the package.\n");
+        throw QString("STFS: File could not be deleted because it doesn't exist in the package.\n");
 
     // set the status of every allocated block to unallocated
     DWORD blockToDeallocate = entry.startingBlockNum;
@@ -1389,7 +1377,7 @@ void StfsPackage::WriteFileListing(bool usePassed, QVector<FileEntry> *outFis, Q
 void StfsPackage::SetNextBlock(DWORD blockNum, INT24 nextBlockNum)
 {
     if (blockNum >= metaData->volumeDescriptor.allocatedBlockCount)
-        throw string("STFS: Reference to illegal block number.\n");
+        throw QString("STFS: Reference to illegal block number.\n");
 
     DWORD hashLoc = GetHashAddressOfBlock(blockNum) + 0x15;
     io->setPosition(hashLoc);
@@ -1407,7 +1395,7 @@ void StfsPackage::WriteFileEntry(FileEntry *entry)
     entry->nameLen = entry->name.length();
 
     if (entry->nameLen > 0x28)
-        throw string("STFS: File entry name length cannot be greater than 40(0x28) characters.\n");
+        throw QString("STFS: File entry name length cannot be greater than 40(0x28) characters.\n");
 
     // put the flags and name length into one byte
     BYTE nameLengthAndFlags = entry->nameLen | (entry->flags << 6);
@@ -1642,7 +1630,7 @@ void StfsPackage::UpdateEntry(const QString &pathInPackage, FileEntry entry)
 FileEntry StfsPackage::InjectFile(const QString &path, const QString &pathInPackage, void(*injectProgress)(void*, DWORD, DWORD), void *arg)
 {
     if(FileExists(pathInPackage))
-        throw string("STFS: File already exists in the package.\n");
+        throw QString("STFS: File already exists in the package.\n");
 
     // split the string and open a io
     QVector<QString> split = SplitString(pathInPackage, "\\");
@@ -1659,7 +1647,7 @@ FileEntry StfsPackage::InjectFile(const QString &path, const QString &pathInPack
         // find the directory we'd like to inject to
         FindDirectoryListing(split, &fileListing, &folder);
         if(folder == NULL)
-            throw string("STFS: The given folder could not be found.\n");
+            throw QString("STFS: The given folder could not be found.\n");
     }
     else
     {
@@ -1678,7 +1666,7 @@ FileEntry StfsPackage::InjectFile(const QString &path, const QString &pathInPack
     entry.name = fileName;
 
     if (fileName.length() > 0x28)
-        throw string("STFS: File entry name length cannot be greater than 40(0x28) characters.\n");
+        throw QString("STFS: File entry name length cannot be greater than 40(0x28) characters.\n");
 
     // update the progress if needed
     if (injectProgress != NULL)
@@ -1772,7 +1760,7 @@ FileEntry StfsPackage::InjectFile(const QString &path, const QString &pathInPack
 FileEntry StfsPackage::InjectData(BYTE *data, DWORD length, const QString &pathInPackage, void (*injectProgress)(void *, DWORD, DWORD), void *arg)
 {
     if(FileExists(pathInPackage))
-        throw string("STFS: File already exists in the package.\n");
+        throw QString("STFS: File already exists in the package.\n");
 
     // split the string and open a io
     QVector<QString> split = SplitString(pathInPackage, "\\");
@@ -1789,7 +1777,7 @@ FileEntry StfsPackage::InjectData(BYTE *data, DWORD length, const QString &pathI
         // find the directory we'd like to inject to
         FindDirectoryListing(split, &fileListing, &folder);
         if(folder == NULL)
-            throw string("STFS: The given folder could not be found.\n");
+            throw QString("STFS: The given folder could not be found.\n");
     }
     else
     {
@@ -1882,7 +1870,7 @@ FileEntry StfsPackage::InjectData(BYTE *data, DWORD length, const QString &pathI
 void StfsPackage::ReplaceFile(const QString &path, FileEntry *entry, const QString &pathInPackage, void (*replaceProgress)(void *, DWORD, DWORD), void *arg)
 {
     if (entry->nameLen == 0)
-       throw string("STFS: File doesn't exists in the package.\n");
+       throw QString("STFS: File doesn't exists in the package.\n");
 
     FileIO fileIn(path.toStdString());
 
@@ -2047,7 +2035,7 @@ void StfsPackage::CreateFolder(const QString &pathInPackage)
     FileListing *folder = NULL;
     FindDirectoryListing(split, &fileListing, &folder);
     if (folder != NULL)
-        throw string("STFS: Directory already exists in the package.\n");
+        throw QString("STFS: Directory already exists in the package.\n");
 
     int size = split.size();
     QString fileName;
@@ -2060,7 +2048,7 @@ void StfsPackage::CreateFolder(const QString &pathInPackage)
         // find the directory we'd like to inject to
         FindDirectoryListing(split, &fileListing, &folder);
         if(folder == NULL)
-            throw string("STFS: The given folder could not be found.\n");
+            throw QString("STFS: The given folder could not be found.\n");
     }
     else
     {
@@ -2073,7 +2061,7 @@ void StfsPackage::CreateFolder(const QString &pathInPackage)
     entry.name = fileName;
 
     if (fileName.length() > 0x28)
-        throw string("STFS: File entry name length cannot be greater than 40(0x28) characters.\n");
+        throw QString("STFS: File entry name length cannot be greater than 40(0x28) characters.\n");
 
     entry.nameLen = fileName.length();
     entry.fileSize = 0;

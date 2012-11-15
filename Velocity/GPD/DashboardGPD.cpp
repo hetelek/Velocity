@@ -1,6 +1,8 @@
 #include "DashboardGPD.h"
 #include <sstream>
 
+#include <QString>
+
 using std::stringstream;
 
 
@@ -102,7 +104,7 @@ TitleEntry DashboardGPD::readTitleEntry(XDBFEntry entry)
 {
 	// ensure that the entry is a title entry
 	if (entry.type != Title)
-		throw string("GPD: Error reading title entry. Specified entry isn't a title.\n");
+        throw QString("GPD: Error reading title entry. Specified entry isn't a title.\n");
 
 	TitleEntry toReturn;
 	toReturn.entry = entry;
@@ -214,7 +216,7 @@ void DashboardGPD::DeleteTitleEntry(TitleEntry *entry)
 		}
 	}
 	if (i == gamesPlayed.size())
-		throw string("GPD: Error deleting title entry. Title doesn't exist.\n");
+        throw QString("GPD: Error deleting title entry. Title doesn't exist.\n");
 
 	// delete the entry from the file
 	xdbf->DeleteEntry(entry->entry);

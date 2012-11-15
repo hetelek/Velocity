@@ -2,12 +2,14 @@
 #include "AvatarAsset/AssetHelpers.h"
 #include <sstream>
 
+#include <QString>
+
 using std::stringstream;
 
 string XDBFHelpers::EntryTypeToString(EntryType type)
 {
 	if (type < 1 || type > 6)
-		throw string("XDBF: Invalid entry type.\n");
+        throw QString("XDBF: Invalid entry type.\n");
 
 	string strings[6] = { "Achievement", "Image", "Setting", "Title", "String", "Avatar Award" };
 	return strings[type - 1];
@@ -16,7 +18,7 @@ string XDBFHelpers::EntryTypeToString(EntryType type)
 string XDBFHelpers::SettingEntryTypeToString(SettingEntryType type)
 {
 	if (type <= 0 || type > 7)
-		throw string("XDBF: Invalid setting entry type.\n");
+        throw QString("XDBF: Invalid setting entry type.\n");
 
 	string strings[7] = { "Int32", "Int64", "Double", "Unicode String", "Float", "Binary", "DataTime" };
 	return strings[type - 1];
@@ -75,7 +77,7 @@ string XDBFHelpers::AchievementTypeToString(AchievementFlags type)
         case Other:
             return string("Other");
         default:
-            throw string("GPD: Invalid achievement type.\n");
+            throw QString("GPD: Invalid achievement type.\n");
 	}
 }
 
@@ -493,6 +495,6 @@ string XDBFHelpers::RegionIDtoString(XboxLiveCountry id)
 		case Zimbabwe:
 			return string("Zimbabwe");
 		default:
-			throw string("GPD: Error converting region ID to string, invalid region.\n");
+            throw QString("GPD: Error converting region ID to string, invalid region.\n");
 	}
 }

@@ -18,7 +18,7 @@ StrbDialog::StrbDialog(AvatarAsset *asset, QWidget *parent) : QDialog(parent), u
         ui->lblSubCat->setText("Sub-Category: " + QString::fromStdString(AssetHelpers::AssetSubcategoryToString(metadata.category)));
         ui->lblSkeletonV->setText("Skeleton Version: " + QString::fromStdString(AssetHelpers::SkeletonVersionToString(metadata.skeletonVersion)));
     }
-    catch(string error)
+    catch(const QString &error)
     {
         ui->groupBox->setTitle("Metadata - Not Found");
         ui->groupBox->setEnabled(false);
@@ -32,7 +32,7 @@ StrbDialog::StrbDialog(AvatarAsset *asset, QWidget *parent) : QDialog(parent), u
         ui->lblFPS->setText("Frames Per Second: " + QString::number(animation.framesPerSecond));
         ui->lblFrameCnt->setText("Frame Count: " + QString::number(animation.frameCount));
     }
-    catch (string error)
+    catch (const QString &error)
     {
         ui->groupBox_2->setTitle("Animation - Not Found");
         ui->groupBox_2->setEnabled(false);

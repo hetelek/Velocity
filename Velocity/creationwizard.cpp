@@ -208,9 +208,9 @@ void CreationWizard::onFinished(int status)
         package.Rehash();
         package.Resign(QtHelpers::GetKVPath(package.metaData->certificate.ownerConsoleType, this));
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "Error", "An error occured while creating the package.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error", "An error occured while creating the package.\n\n" + error);
         return;
     }
 

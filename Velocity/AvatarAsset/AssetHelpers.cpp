@@ -1,5 +1,8 @@
 #include "AssetHelpers.h"
 
+#include <QString>
+
+
 string AssetHelpers::AssetSubcategoryToString(AssetSubcategory category)
 {
 	switch (category)
@@ -137,7 +140,7 @@ string AssetHelpers::AssetSubcategoryToString(AssetSubcategory category)
 		case WristwearWatch:
 			return string("Wristwear, Watch");
 		default:
-			throw string("Asset: Error converting 'AssetSubcategory' to string, invalid value.\n");
+            throw QString("Asset: Error converting 'AssetSubcategory' to string, invalid value.\n");
 	}
 }
 
@@ -152,7 +155,7 @@ string AssetHelpers::AssetGenderToString(AssetGender gender)
 		case Both:
 			return string("Both");
 		default:
-			throw string("Asset: Error converting 'AssetGender' to string, invalid value.");
+            throw QString("Asset: Error converting 'AssetGender' to string, invalid value.");
 	}
 }
 
@@ -165,7 +168,7 @@ string AssetHelpers::SkeletonVersionToString(SkeletonVersion version)
 		case Natal:
 			return string("Natal");
 		default:
-			throw string("Asset: Invalid 'Skeleton Version' value.\n");
+            throw QString("Asset: Invalid 'Skeleton Version' value.\n");
 	}
 }
 
@@ -194,7 +197,7 @@ string AssetHelpers::BlockIDToString(STRRBBlockId id)
 		case STRBTexture:
 			return string("Texture");
 		default:
-			throw string("STRB: Invalid 'STRBBlockId' value.\n");
+            throw QString("STRB: Invalid 'STRBBlockId' value.\n");
 	}
 }
 
@@ -213,6 +216,6 @@ string AssetHelpers::BinaryAssetTypeToString(BinaryAssetType type)
 		case ShapeOverridePost:
 			return string("ShapeOverridePost");
 		default:
-			throw string("Asset: Invalid 'BinaryAssetType' value.\n");
+            throw QString("Asset: Invalid 'BinaryAssetType' value.\n");
 	}
 }

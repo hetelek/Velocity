@@ -1,5 +1,6 @@
 #include "AvatarAsset.h"
 
+#include <QString>
 
 AvatarAsset::AvatarAsset(string assetPath) : ioPassedIn(false)
 {
@@ -31,7 +32,7 @@ void AvatarAsset::readHeader()
 	// read in the magic to verify the file
 	header.magic = io->readDword();
 	if (header.magic != 0x53545242)
-		throw string("STRB: Invalid magic.\n");
+        throw QString("STRB: Invalid magic.\n");
 
 	// read in the rest of the header
 	header.blockAlignmentStored = (bool)io->readByte();
@@ -87,7 +88,7 @@ void AvatarAsset::readBlocks()
 
 		// check the values read in
 		if (block.dataLength < 0 || block.fieldSize == 0 || (block.dataLength % block.fieldSize) != 0)
-			throw string("STRB: Invalid block header value(s).\n");
+            throw QString("STRB: Invalid block header value(s).\n");
 
 		prevAddress = curBlockAddress + header.blockHeaderSize;
 		block.dataAddress = prevAddress;
@@ -225,7 +226,7 @@ void AvatarAsset::readAnimationInfo(DWORD pos)
 DWORD AvatarAsset::roundUpToBlockAlignment(DWORD valueToRound)
 {
     if (((header.blockAlignment & (header.blockAlignment - 1)) != 0) || (header.blockAlignment == 0))
-		throw string("STRB: Error when rounding.\n");
+        throw QString("STRB: Error when rounding.\n");
     int blockAlignment = header.blockAlignment;
     return (((valueToRound + blockAlignment) - 1) & ~(blockAlignment - 1));
 }
@@ -233,7 +234,7 @@ DWORD AvatarAsset::roundUpToBlockAlignment(DWORD valueToRound)
 ColorTable AvatarAsset::GetCustomColorTable()
 {
 	if (customColors.entries == NULL)
-		throw string("Asset: No color table found for asset.\n");
+        throw QString("Asset: No color table found for asset.\n");
 
 	return customColors;
 }
@@ -241,7 +242,7 @@ ColorTable AvatarAsset::GetCustomColorTable()
 struct Animation AvatarAsset::GetAnimation()
 {
 	if (animation.frameCount == 0)
-		throw string("Asset: No animation found for asset.\n");
+        throw QString("Asset: No animation found for asset.\n");
 
 	return animation;
 }
@@ -250,7 +251,7 @@ AssetMetadata AvatarAsset::GetAssetMetadata()
 {
 	// if the metadata doesn't exist then we need to throw an error
 	if (metadata.gender == 0)
-		throw string("Asset: No metadata available for asset.\n");
+        throw QString("Asset: No metadata available for asset.\n");
 
 	return metadata;
 }

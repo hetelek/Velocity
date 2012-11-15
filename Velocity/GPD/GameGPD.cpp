@@ -1,5 +1,6 @@
 #include "GameGPD.h"
 
+#include <QString>
 
 GameGPD::GameGPD(string filePath) : GPDBase(filePath)
 {
@@ -21,7 +22,7 @@ AchievementEntry GameGPD::readAchievementEntry(XDBFEntry entry)
 {
 	// ensure that the entry passed in is an achievement entry
 	if (entry.type != Achievement)
-		throw string("GPD: Error reading achievement entry. Specified entry isn't an achievement.\n");
+        throw QString("GPD: Error reading achievement entry. Specified entry isn't an achievement.\n");
 
 	// seek to the begining of the achievement entry
 	io->setPosition(xdbf->GetRealAddress(entry.addressSpecifier));
@@ -111,7 +112,7 @@ void GameGPD::CreateAchievement(AchievementEntry *entry, BYTE *thumbnail, DWORD 
 
 	// make sure that the image is a PNG
 	if (*(DWORD*)thumbnail != 0x474E5089)
-		throw string("GPD: Error creating image entry. Image must be a PNG.\n");
+        throw QString("GPD: Error creating image entry. Image must be a PNG.\n");
 
 	// create a new image entry for the thumbnail
 	XDBFEntry imageEntry = xdbf->CreateEntry(Image, entry->imageID, thumbnailLen);
@@ -154,7 +155,7 @@ void GameGPD::DeleteAchievement(AchievementEntry *entry)
 		}
 	}
 	if (i == achievements.size())
-		throw string("GPD: Error deleting achievement. Achievement doesn't exist.\n");
+        throw QString("GPD: Error deleting achievement. Achievement doesn't exist.\n");
 
 	// delete the entry from the file
 	xdbf->DeleteEntry(entry->entry);

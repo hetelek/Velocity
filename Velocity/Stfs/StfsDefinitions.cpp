@@ -1,5 +1,6 @@
 #include "StfsDefinitions.h"
 
+#include <QString>
 
 void ReadVolumeDescriptorEx(VolumeDescriptor *descriptor, FileIO *io, DWORD address)
 {
@@ -46,7 +47,7 @@ string LicenseTypeToString(LicenseType type)
         case Unknown4:
             return string("Unknown4");
         default:
-            throw string("STFS: Invalid 'License Type' value.\n");
+            throw QString("STFS: Invalid 'License Type' value.\n");
     }
 }
 
@@ -152,7 +153,7 @@ void ReadCertificateEx(Certificate *cert, FileIO *io, DWORD address)
     cert->ownerConsoleType = (ConsoleType)(temp & 3);
     cert->consoleTypeFlags = (ConsoleTypeFlags)(temp & 0xFFFFFFFC);
     if (cert->ownerConsoleType != DevKit && cert->ownerConsoleType != Retail)
-        throw string("STFS: Invalid console type.\n");
+        throw QString("STFS: Invalid console type.\n");
 
     char tempGenDate[9] = {0};
     io->readBytes((BYTE*)tempGenDate, 8);
@@ -206,7 +207,7 @@ string ConsoleTypeToString(ConsoleType type)
         case Retail:
             return string("Retail");
         default:
-            throw string("STFS: Invalid console type.\n");
+            throw QString("STFS: Invalid console type.\n");
     }
 }
 
@@ -277,6 +278,6 @@ string ContentTypeToString(ContentType type)
         case XNA:
             return string("XNA");
         default:
-            throw string("STFS: Invalid 'ContentType' value.\n");
+            throw QString("STFS: Invalid 'ContentType' value.\n");
     }
 }

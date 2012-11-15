@@ -1,5 +1,7 @@
 #include "AccountHelpers.h"
 
+#include <QString>
+
 string AccountHelpers::CountryToString(XboxLiveCountry country)
 {
 	return XDBFHelpers::RegionIDtoString(country);
@@ -18,7 +20,7 @@ string AccountHelpers::SubscriptionTeirToString(SubscriptionTeir teir)
 		case FamilyGold:
 			return string("FamilyGold");
 		default:
-			throw string("Account: Invalid 'Subscription Teir' value.\n");
+            throw QString("Account: Invalid 'Subscription Teir' value.\n");
 	}
 }
 
@@ -71,6 +73,6 @@ string AccountHelpers::ConsoleLanguageToString(ConsoleLanguage language)
 		case Russian:
 			return string("Russian");
 		default:
-			throw string("Account: Invalid 'ConsoleLanguage' value.\n");
+            throw QString("Account: Invalid 'ConsoleLanguage' value.\n");
 	}
 }

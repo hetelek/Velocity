@@ -102,9 +102,9 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                     {
                         package = new StfsPackage(fileName);
                     }
-                    catch (string error)
+                    catch (const QString &error)
                     {
-                        QMessageBox::critical(this, "Opening Error", "Could not open save game package.\n\n" + QString::fromStdString(error));
+                        QMessageBox::critical(this, "Opening Error", "Could not open save game package.\n\n" + error);
                         return;
                     }
                     catch (...)
@@ -184,9 +184,9 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                     }
 
                 }
-                catch (string error)
+                catch (const QString &error)
                 {
-                    QMessageBox::critical(this, "Opening Error", "Could not extract gpd.\n\n" + QString::fromStdString(error));
+                    QMessageBox::critical(this, "Opening Error", "Could not extract gpd.\n\n" + error);
                 }
                 catch (...)
                 {
@@ -230,9 +230,9 @@ void MainWindow::PluginFinished()
             // cast the parent as a mdi sub window
             subWin = qobject_cast<QMdiSubWindow*>(gpd->GetDialog()->parent());
         }
-        catch (string error)
+        catch (const QString &error)
         {
-            QMessageBox::critical(NULL, "Couldn't Repalce GPD", "The GPD could not be replaced.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(NULL, "Couldn't Repalce GPD", "The GPD could not be replaced.\n\n" + error);
             try
             {
                 if (!args->fromPackageViewer)
@@ -248,7 +248,7 @@ void MainWindow::PluginFinished()
         args = (Arguments*)game->Arguments;
     }
     else
-        throw "Invalid plugin finished";
+        throw QString("Invalid plugin finished");
 
     // properly close the sub window if it is one
     if (subWin)
@@ -413,9 +413,9 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                     break;
             }
         }
-        catch (string error)
+        catch (const QString &error)
         {
-            QMessageBox::critical(this, "Error", "An error occurred while opening the file.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error", "An error occurred while opening the file.\n\n" + error);
         }
     }
 }
@@ -440,9 +440,9 @@ void MainWindow::on_actionProfile_Editor_triggered()
             editor->show();
         }
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "Profile Error", "An error has occurred while opening the profile.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Profile Error", "An error has occurred while opening the profile.\n\n" + error);
     }
 }
 
@@ -468,9 +468,9 @@ void MainWindow::on_actionPackage_triggered()
 
         ui->statusBar->showMessage("Stfs package loaded successfully.", 3000);
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "Package Error", "An error has occurred while opening the package.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Package Error", "An error has occurred while opening the package.\n\n" + error);
     }
 }
 
@@ -490,9 +490,9 @@ void MainWindow::on_actionXDBF_File_triggered()
         ui->mdiArea->addSubWindow(dialog);
         dialog->show();
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "GPD Error", "An error has occurred while opening the GPD.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "GPD Error", "An error has occurred while opening the GPD.\n\n" + error);
     }
 }
 
@@ -510,9 +510,9 @@ void MainWindow::on_actionSTRB_File_triggered()
         ui->mdiArea->addSubWindow(dialog);
         dialog->show();
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "Error", "An error occured while opening the STRB package.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error", "An error occured while opening the STRB package.\n\n" + error);
     }
 }
 
@@ -535,9 +535,9 @@ void MainWindow::on_actionCreate_Package_triggered()
 
         ui->statusBar->showMessage("Stfs package created successfully.", 3000);
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "Package Error", "An error has occurred while opening the package.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Package Error", "An error has occurred while opening the package.\n\n" + error);
     }
 }
 
@@ -616,8 +616,8 @@ void MainWindow::on_actionFATX_File_Path_triggered()
         ui->mdiArea->addSubWindow(dialog);
         dialog->show();
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "Package Error", "An error has occurred while opening the package.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Package Error", "An error has occurred while opening the package.\n\n" + error);
     }
 }

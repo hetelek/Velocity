@@ -132,9 +132,9 @@ void XdbfDialog::showContextMenu(QPoint p)
 
             statusBar->showMessage("Selected entries extracted successfully", 3000);
         }
-        catch (string error)
+        catch (const QString &error)
         {
-            QMessageBox::critical(this, "Error", "An error occurred while extracting.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error", "An error occurred while extracting.\n\n" + error);
         }
     }
     else if (selectedItem->text() == "Replace Entry")
@@ -185,9 +185,9 @@ void XdbfDialog::showContextMenu(QPoint p)
 
             statusBar->showMessage("Entry replaced successfully", 3000);
         }
-        catch (string error)
+        catch (const QString &error)
         {
-            QMessageBox::critical(this, "Error", "An error occurred while replacing.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error", "An error occurred while replacing.\n\n" + error);
         }
     }
     else if (selectedItem->text() == "Address Converter")
@@ -207,9 +207,9 @@ void XdbfDialog::showContextMenu(QPoint p)
         {
             gpd->xdbf->Clean();
         }
-        catch (std::string error)
+        catch (const QString &error)
         {
-            QMessageBox::critical(this, "Clean Error", "An error occured while cleaning the GPD.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Clean Error", "An error occured while cleaning the GPD.\n\n" + error);
             return;
         }
 

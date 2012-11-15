@@ -222,10 +222,10 @@ void PackageViewer::on_btnFix_clicked()
     {
         package->Rehash();
     }
-    catch (string error)
+    catch (const QString &error)
     {
         success = false;
-        QMessageBox::critical(this, "Error", "Failed to rehash the package.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error", "Failed to rehash the package.\n\n" + error);
     }
 
     if (package->metaData->magic == CON)
@@ -240,10 +240,10 @@ void PackageViewer::on_btnFix_clicked()
                 resigned = true;
             }
         }
-        catch (string error)
+        catch (const QString &error)
         {
             success = false;
-            QMessageBox::critical(this, "Error", "Failed to resign the package.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error", "Failed to resign the package.\n\n" + error);
     }
     }
 
@@ -443,9 +443,9 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
             successCount++;
         }
-        catch (string error)
+        catch (const QString &error)
         {
-            QMessageBox::critical(this, "Error", "Failed to extract file.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error", "Failed to extract file.\n\n" + error);
             return;
         }
 
@@ -464,9 +464,9 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
                 delete items.at(i);
                 successCount++;
             }
-            catch (string error)
+            catch (const QString &error)
             {
-                QMessageBox::critical(this, "Error", "Failed to delete file.\n\n" + QString::fromStdString(error));
+                QMessageBox::critical(this, "Error", "Failed to delete file.\n\n" + error);
             }
         }
 
@@ -493,9 +493,9 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             items.at(0)->setText(0, newName);
             statusBar->showMessage("File renamed successfully", 3000);
         }
-        catch (string error)
+        catch (const QString &error)
         {
-            QMessageBox::critical(this, "Error", "Failed to rename file.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error", "Failed to rename file.\n\n" + error);
         }
     }
     else if (selectedItem->text() == "Replace File")
@@ -515,9 +515,9 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             dialog->startJob();
 
         }
-        catch(string error)
+        catch(const QString &error)
         {
-            QMessageBox::critical(this, "Error", "Failed to replace file.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error", "Failed to replace file.\n\n" + error);
         }
 
         statusBar->showMessage("File replaced successfully", 3000);
@@ -566,9 +566,9 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
             statusBar->showMessage("File injected successfully", 3000);
         }
-        catch(string error)
+        catch(const QString &error)
         {
-            QMessageBox::critical(this, "Error", "Failed to replace file.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error", "Failed to replace file.\n\n" + error);
         }
     }
     else if (selectedItem->text() == "View Properties")
@@ -613,9 +613,9 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
                 }
             }
         }
-        catch(string error)
+        catch(const QString &error)
         {
-            QMessageBox::critical(this, "Error", "Failed to open file.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error", "Failed to open file.\n\n" + error);
         }
     }
 }
@@ -669,9 +669,9 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
             // delete the temp file
             QFile::remove(tempName);
         }
-        catch(string error)
+        catch(const QString &error)
         {
-            QMessageBox::critical(this, "Error", "Failed to open the GPD.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error", "Failed to open the GPD.\n\n" + error);
         }
     }
     else if (extension == ".bin")
@@ -747,9 +747,9 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
             // delete the temp file
             QFile::remove(tempName);
         }
-        catch(string error)
+        catch(const QString &error)
         {
-            QMessageBox::critical(this, "Error", "Failed to open PEC file.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error", "Failed to open PEC file.\n\n" + error);
         }
     }
     else
@@ -783,9 +783,9 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
                 // delete the temporary file
                 QFile::remove(tempName);
             }
-            catch(string error)
+            catch(const QString &error)
             {
-                QMessageBox::critical(this, "Error", "Failed to open Stfs Package.\n\n" + QString::fromStdString(error));
+                QMessageBox::critical(this, "Error", "Failed to open Stfs Package.\n\n" + error);
             }
         }
     }

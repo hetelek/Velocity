@@ -216,9 +216,9 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         else
             ui->imgAvatar->setPixmap(QPixmap::fromImage(QImage(":/Images/avatar-body.png")));
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "Error", "An error has occurred while loading the profile.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error", "An error has occurred while loading the profile.\n\n" + error);
         *ok = false;
         return;
     }
@@ -270,10 +270,10 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         {
             gpd = new GameGPD(tempPath.toStdString());
         }
-        catch (string error)
+        catch (const QString &error)
         {
             *ok = false;
-            QMessageBox::critical(this, "File Load Error", "Error loading game GPD, '" + gpdName + "'.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "File Load Error", "Error loading game GPD, '" + gpdName + "'.\n\n" + error);
             return;
         }
 
@@ -350,9 +350,9 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         profile->ExtractFile("PEC", pecTempPath);
         tempFiles.push_back(pecTempPath);
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "Error", "An error has occurred while extracting the PEC.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error", "An error has occurred while extracting the PEC.\n\n" + error);
         *ok = false;
         return;
     }
@@ -362,10 +362,10 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     {
         PEC = new StfsPackage(pecTempPath, StfsPackagePEC);
     }
-    catch (string error)
+    catch (const QString &error)
     {
         *ok = false;
-        QMessageBox::critical(this, "File Load Error", "Error loading PEC file.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "File Load Error", "Error loading PEC file.\n\n" + error);
         return;
     }
 
@@ -400,10 +400,10 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         {
             gpd = new AvatarAwardGPD(tempGPDName.toStdString());
         }
-        catch (string error)
+        catch (const QString &error)
         {
             *ok = false;
-            QMessageBox::critical(this, "File Load Error", "Error loading the Avatar Award GPD '" + gpdName + "'.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "File Load Error", "Error loading the Avatar Award GPD '" + gpdName + "'.\n\n" + error);
             return;
         }
         aaGames.at(i).gpd = gpd;
@@ -531,9 +531,9 @@ void ProfileEditor::onAssetsDoneDownloading()
         statusBar->showMessage("Asset downloaded successfully", 3000);
         QMessageBox::information(this, "Asset Downloaded", "Successfully downloaded the avatar asset.");
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "Error", "An error occurred while creating the asset package.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error", "An error occurred while creating the asset package.\n\n" + error);
     }
     catch (...)
     {
@@ -969,9 +969,9 @@ void ProfileEditor::on_btnExtractGPD_clicked()
         statusBar->showMessage("Extracted GPD successfully", 3000);
         QMessageBox::information(this, "Success", "Successfully extracted " + gpdName + " from your profile.\n");
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "Error", "Failed to extract " + gpdName + ".\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error", "Failed to extract " + gpdName + ".\n\n" + error);
     }
 }
 
@@ -993,9 +993,9 @@ void ProfileEditor::on_btnExtractGPD_2_clicked()
         statusBar->showMessage("Extracted GPD successfully", 3000);
         QMessageBox::information(this, "Success", "Successfully extracted " + gpdName + " from your profile.\n");
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "Error", "Failed to extract " + gpdName + ".\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error", "Failed to extract " + gpdName + ".\n\n" + error);
     }
 }
 
@@ -1181,9 +1181,9 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
 
         statusBar->showMessage("Updated " + QString::fromStdWString(chiev->name), 3000);
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "Error", "An error occurred while updating the achievement.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error", "An error occurred while updating the achievement.\n\n" + error);
     }
 }
 

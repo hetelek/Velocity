@@ -2,7 +2,7 @@
 #include <iostream>
 #include <sstream>
 
-using namespace std;
+#include <QString>
 
 StfsMetaData::StfsMetaData(FileIO *io, DWORD flags) : installerType((InstallerType)0), flags(flags)
 {
@@ -15,8 +15,7 @@ StfsMetaData::StfsMetaData(FileIO *io, DWORD flags) : installerType((InstallerTy
 
 void StfsMetaData::readMetadata()
 {
-    // store errors thrown
-    stringstream except;
+    std::stringstream except;
 
     io->setPosition(0);
 
@@ -30,8 +29,8 @@ void StfsMetaData::readMetadata()
             io->readBytes(packageSignature, 0x100);
         else
         {
-            except << "STFS: Content signature type 0x" << hex << (DWORD)magic << " is invalid.\n";
-            throw except.str();
+            except << "STFS: Content signature type 0x" << std::hex << (DWORD)magic << " is invalid.\n";
+            throw QString::fromStdString(except.str());
         }
 
         io->setPosition(0x22C);
@@ -59,7 +58,7 @@ void StfsMetaData::readMetadata()
                     break;
                 default:
                     except << "STFS: Invalid license type at index " << i << ".\n";
-                    throw except.str();
+                    throw QString::fromStdString(except.str());
             }
         }
 
@@ -107,7 +106,7 @@ void StfsMetaData::readMetadata()
             skeletonVersion = (SkeletonVersion)io->readByte();
 
             if (skeletonVersion < 1 || skeletonVersion > 3)
-                throw string("STFS: Invalid skeleton version.");
+                throw QString("STFS: Invalid skeleton version.");
         }
         else if (contentType == Video) // there may be other content types with this metadata
         {
@@ -191,12 +190,12 @@ void StfsMetaData::readMetadata()
             case None:
                 break;
             default:
-                throw string("STFS: Invalid Installer Type value.");
+                throw QString("STFS: Invalid Installer Type value.");
         }
 
     #ifdef DEBUG
         if(metaDataVersion != 2)
-            throw string("STFS: Metadata version is not 2.\n");
+            throw QString("STFS: Metadata version is not 2.\n");
     #endif
     }
     else
@@ -220,7 +219,7 @@ void StfsMetaData::readMetadata()
 void StfsMetaData::WriteCertificate()
 {
     if (magic != CON && (flags & MetadataIsPEC) == 0)
-        throw string("STFS: Error writing certificate. Package is strong signed and therefore doesn't have a certificate.\n");
+        throw QString("STFS: Error writing certificate. Package is strong signed and therefore doesn't have a certificate.\n");
 
     WriteCertificateEx(&certificate, io, (flags & MetadataIsPEC) ? 0 : 4);
 }
@@ -241,9 +240,9 @@ void StfsMetaData::WriteMetaData()
             io->write(packageSignature, 0x100);
         else
         {
-            stringstream except;
-            except << "STFS: Content signature type 0x" << hex << (DWORD)magic << " is invalid.\n";
-            throw except.str();
+            std::stringstream except;
+            except << "STFS: Content signature type 0x" << std::hex << (DWORD)magic << " is invalid.\n";
+            throw QString::fromStdString(except.str());
         }
 
         // write the licensing data

@@ -1,6 +1,8 @@
 #include "XDBF.h"
 #include <stdio.h>
 
+#include <QString>
+
 XDBF::XDBF(string gpdPath) : ioPassedIn(false)
 {
     io = new FileIO(gpdPath);
@@ -158,7 +160,7 @@ void XDBF::readHeader()
     // ensure the magic is correct
     header.magic = io->readDword();
     if (header.magic != 0x58444246)
-        throw string("XDBF: Invalid magic.\n");
+        throw QString("XDBF: Invalid magic.\n");
 
     // read in the rest of the header
     header.version = io->readDword();
@@ -196,7 +198,7 @@ SyncData XDBF::readSyncData(XDBFEntry entry)
 {
     // make sure the entry passed in is sync data
     if (entry.type == Image || entry.type == String || (entry.id != 0x200000000 && entry.id != 2))
-        throw string("XDBF: Error reading sync list. Specified entry isn't a sync list.\n");
+        throw QString("XDBF: Error reading sync list. Specified entry isn't a sync list.\n");
 
     // preserve io position
     DWORD pos = (DWORD)io->getPosition();
@@ -237,7 +239,7 @@ SyncList XDBF::readSyncList(XDBFEntry entry)
 {
     // make sure the entry passed in is a sync list
     if (entry.type == Image || entry.type == String || (entry.id != 0x100000000 && entry.id != 1))
-        throw string("XDBF: Error reading sync list. Specified entry isn't a sync list.\n");
+        throw QString("XDBF: Error reading sync list. Specified entry isn't a sync list.\n");
 
     // preserve io position
     DWORD pos = (DWORD)io->getPosition();
@@ -323,7 +325,7 @@ DWORD XDBF::GetSpecifier(DWORD address)
 {
     DWORD headerSize = (header.entryTableLength * 0x12) + (header.freeMemTableLength * 8) + 0x18;
     if (address < headerSize)
-        throw string("XDBF: Invalid address for converting.\n");
+        throw QString("XDBF: Invalid address for converting.\n");
     return address - headerSize;
 }
 
@@ -367,11 +369,11 @@ XDBFEntry XDBF::CreateEntry(EntryType type, UINT64 id, DWORD size)
             entries = &avatarAwards.entries;
             break;
         default:
-            throw string("XDBF: Error creating entry. Invalid entry type.\n");
+            throw QString("XDBF: Error creating entry. Invalid entry type.\n");
     }
     for (DWORD i = 0; i < entries->size(); i++)
         if (entries->at(i).id == entry.id)
-            throw string("XDBF: Error creating entry. Entry already exists.\n");
+            throw QString("XDBF: Error creating entry. Entry already exists.\n");
 
     // allocate memory for the entry
     entry.addressSpecifier = GetSpecifier(AllocateMemory(size));
@@ -699,7 +701,7 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
             group = &avatarAwards;
             break;
         default:
-            throw string("XDBF: Error updating entry. Invalid entry type.\n");
+            throw QString("XDBF: Error updating entry. Invalid entry type.\n");
     }
 
     // find the entry in the table and update it
@@ -778,7 +780,7 @@ void XDBF::RewriteEntry(XDBFEntry entry, BYTE *entryBuffer)
             entryList = &avatarAwards.entries;
             break;
         default:
-            throw string("XDBF: Error rewriting entry, entry type not supported.\n");
+            throw QString("XDBF: Error rewriting entry, entry type not supported.\n");
     }
 
     // make sure the entry already exists
@@ -787,7 +789,7 @@ void XDBF::RewriteEntry(XDBFEntry entry, BYTE *entryBuffer)
         if (entryList->at(i).id == entry.id)
             break;
     if (i == entryList->size())
-        throw string("XDBF: Error rewriting entry, entry not found.\n");
+        throw QString("XDBF: Error rewriting entry, entry not found.\n");
 
     // if the size has changed, then we need to reallocate memory
     if (entry.length != entryList->at(i).length)
@@ -836,7 +838,7 @@ void XDBF::DeleteEntry(XDBFEntry entry)
             group = &avatarAwards;
             break;
         default:
-            throw string("XDBF: Error deleting entry. Invalid entry type.\n");
+            throw QString("XDBF: Error deleting entry. Invalid entry type.\n");
     }
     DWORD index;
     for (index = 0; index < entries->size(); index++)
@@ -844,7 +846,7 @@ void XDBF::DeleteEntry(XDBFEntry entry)
             break;
     // if the entry doesn't exist then we have some problems
     if (index == entries->size())
-        throw string("XDBF: Error deleting entry. Specified entry doesn't exist.");
+        throw QString("XDBF: Error deleting entry. Specified entry doesn't exist.");
 
     // deallocate the entry's memory
     DeallocateMemory(GetRealAddress(entry.addressSpecifier), entry.length);
@@ -878,7 +880,7 @@ void XDBF::DeleteEntry(XDBFEntry entry)
                 break;
 
         default:
-            throw string("XDBF: Error deleting entry. Invalid entry type.\n");
+            throw QString("XDBF: Error deleting entry. Invalid entry type.\n");
     }
 
     // re-write the entry table

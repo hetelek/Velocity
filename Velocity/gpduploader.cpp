@@ -40,9 +40,9 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
         {
             gpd = new GameGPD(gamePath.toStdString());
         }
-        catch (string error)
+        catch (const QString &error)
         {
-            qDebug() << titleID << " Error: " << QString::fromStdString(error);
+            qDebug() << titleID << " Error: " << error;
             return;
         }
 
@@ -124,9 +124,9 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
         // send the GPD(s) to the server
         sendRequest(gamePath, (QFile::exists(awardPath)) ? awardPath : "", titleName, titleID, achievementCount, totalGamerscore, awards, mAwards, fAwards);
     }
-    catch (string s)
+    catch (const QString &s)
     {
-        qDebug() << QString::fromStdString(s) + "\r\n" + gamePath;
+        qDebug() << s + "\r\n" + gamePath;
         return;
     }
     catch(...)

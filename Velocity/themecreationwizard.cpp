@@ -112,9 +112,9 @@ void ThemeCreationWizard::onFinished(int status)
 
         statusBar->showMessage("Theme created successfully", 3000);
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "Error", "An error occured while creating the theme.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error", "An error occured while creating the theme.\n\n" + error);
     }
 }
 
