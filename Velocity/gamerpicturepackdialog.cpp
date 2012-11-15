@@ -7,7 +7,7 @@ GamerPicturePackDialog::GamerPicturePackDialog(QStatusBar *statusBar, QWidget *p
     ui->setupUi(this);
 
     titleIDFinder = new TitleIdFinder("", this);
-    connect(titleIDFinder, SIGNAL(SearchFinished(QList<Title>)), this, SLOT(onTitleIDSearchReturn(QListTitle)));
+    connect(titleIDFinder, SIGNAL(SearchFinished(QList<TitleData>)), this, SLOT(onTitleIDSearchReturn(QList<TitleData>)));
 
     searchedIDs = new QList<QString>;
     addedIDs = new QList<QString>;
@@ -358,6 +358,7 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
         picturePack.metaData->displayName = ui->txtPackName->text().toStdWString();
         picturePack.metaData->titleID = 0xFFFE07D1;
         picturePack.metaData->titleName = L"Xbox360 Dashboard";
+        picturePack.metaData->transferFlags = 0x40;
 
         // set thumbnail image
         QByteArray ba1;
