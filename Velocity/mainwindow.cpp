@@ -431,10 +431,10 @@ void MainWindow::on_actionProfile_Editor_triggered()
     {
         StfsPackage *package = new StfsPackage(fileName.toStdString());
 
-        bool ok;
-        ProfileEditor *editor = new ProfileEditor(ui->statusBar, package, true, &ok, this);
+        bool *ok = new bool;
+        ProfileEditor *editor = new ProfileEditor(ui->statusBar, package, true, ok, this);
 
-        if (ok)
+        if (*ok)
         {
             ui->mdiArea->addSubWindow(editor);
             editor->show();
