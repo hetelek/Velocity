@@ -25,7 +25,7 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
     try
     {
         dashGPDTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
-        package->ExtractFile("FFFE07D1.gpd", dashGPDTempPath.toStdString());
+        package->ExtractFile("FFFE07D1.gpd", dashGPDTempPath);
         dashGPD = new DashboardGPD(dashGPDTempPath.toStdString());
     }
     catch(string error)
@@ -75,7 +75,7 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
         QString gameName = gameMap["nm"].toString();
         QString titleId = gameMap["tid"].toString();
 
-        if (package->FileExists((titleId + ".gpd").toStdString()))
+        if (package->FileExists((titleId + ".gpd")))
             continue;
 
         QString achievementCount = gameMap["achc"].toString();
@@ -188,7 +188,7 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
         {
             // inject the game gpd
             m.lock();
-            package->InjectFile(gamePath.toStdString(), gpdName.toStdString());
+            package->InjectFile(gamePath, gpdName);
             m.unlock();
             QFile::remove(gamePath);
 
@@ -214,18 +214,18 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
                         else
                         {
                             m.lock();
-                            package->ExtractFile("PEC", pecTempPath.toStdString());
+                            package->ExtractFile("PEC", pecTempPath);
                             m.unlock();
                             existed = true;
                         }
                     }
 
-                    pecPackage = new StfsPackage(pecTempPath.toStdString(), flags);
+                    pecPackage = new StfsPackage(pecTempPath, flags);
                 }
 
                 // inject the gpd and delete it
                 m.lock();
-                pecPackage->InjectFile(awardPath.toStdString(), gpdName.toStdString());
+                pecPackage->InjectFile(awardPath, gpdName);
                 m.unlock();
                 QFile::remove(awardPath);
             }
@@ -275,7 +275,7 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
         try
         {
             m.lock();
-            package->ReplaceFile(dashGPDTempPath.toStdString(), "FFFE07D1.gpd");
+            package->ReplaceFile(dashGPDTempPath, "FFFE07D1.gpd");
             m.unlock();
             QFile::remove(dashGPDTempPath);
         }
@@ -285,7 +285,7 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
             close();
         }
 
-        std::string kvPath = QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType);
+        QString kvPath = QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType);
         try
         {
             if (pecPackage != NULL)
@@ -304,9 +304,9 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
                 pecPackage->Close();
 
                 if (!existed)
-                    package->InjectFile(pecTempPath.toStdString(), "PEC");
+                    package->InjectFile(pecTempPath, "PEC");
                 else
-                    package->ReplaceFile(pecTempPath.toStdString(), "PEC");
+                    package->ReplaceFile(pecTempPath, "PEC");
 
                 QFile::remove(pecTempPath);
                 m.unlock();

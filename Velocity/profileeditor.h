@@ -256,13 +256,13 @@ private:
     Account *account;
     AvatarAssetDownloader *downloader;
 
-    vector<string> tempFiles;
+    vector<QString> tempFiles;
     vector<GameEntry> games;
     vector<AvatarAwardGameEntry> aaGames;
 
-    string pecTempPath;
-    string dashGPDTempPath;
-    string accountTempPath;
+    QString pecTempPath;
+    QString dashGPDTempPath;
+    QString accountTempPath;
 
     bool dispose;
     bool *ok;

@@ -80,12 +80,12 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     try
     {
         // extract the account file
-        accountTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+        accountTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", ""));
         profile->ExtractFile("Account", accountTempPath);
         tempFiles.push_back(accountTempPath);
 
         // parse the account file
-        account = new Account(accountTempPath, true, profile->metaData->certificate.ownerConsoleType);
+        account = new Account(accountTempPath.toStdString(), true, profile->metaData->certificate.ownerConsoleType);
 
         // load all of the account information
         ui->txtGamertag->setText(QString::fromStdWString(account->GetGamertag()));
@@ -143,12 +143,12 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         ui->imgGamerpicture->setPixmap(QPixmap::fromImage(QImage::fromData(imageBuff)));
 
         // extract the dashboard gpd
-        dashGPDTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+        dashGPDTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", ""));
         tempFiles.push_back(dashGPDTempPath);
         profile->ExtractFile("FFFE07D1.gpd", dashGPDTempPath);
 
         // parse the dashboard gpd
-        dashGPD = new DashboardGPD(dashGPDTempPath);
+        dashGPD = new DashboardGPD(dashGPDTempPath.toStdString());
 
         // load all the goodies
         if (dashGPD->gamerName.entry.type == 0)
@@ -246,7 +246,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         QString titleIDStr = QString::number(dashGPD->gamesPlayed.at(i).titleID, 16).toUpper();
         // make sure the corresponding gpd exists
         QString gpdName = titleIDStr + ".gpd";
-        if (!profile->FileExists(gpdName.toStdString()))
+        if (!profile->FileExists(gpdName))
         {
             *ok = false;
             QMessageBox::critical(this, "File Not Found", "Couldn't find file \"" + gpdName + "\".");
@@ -254,12 +254,12 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         }
 
         // extract the gpd
-        string tempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
-        profile->ExtractFile(gpdName.toStdString(), tempPath);
+        QString tempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", ""));
+        profile->ExtractFile(gpdName, tempPath);
         tempFiles.push_back(tempPath);
 
-        QString newPath = QString::fromStdString(tempPath + "_C");
-        QFile::copy(QString::fromStdString(tempPath), newPath);
+        QString newPath = tempPath + "_C";
+        QFile::copy(tempPath, newPath);
 
         paths[titleIDStr].gameGPD = newPath;
         paths[titleIDStr].awardGPD = "";
@@ -268,7 +268,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         GameGPD *gpd;
         try
         {
-            gpd = new GameGPD(tempPath);
+            gpd = new GameGPD(tempPath.toStdString());
         }
         catch (string error)
         {
@@ -280,7 +280,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         // if there aren't any achievements for it, then don't add it to the game list
         if (dashGPD->gamesPlayed.at(i).achievementCount != 0)
         {
-            GameEntry g = { gpd, &dashGPD->gamesPlayed.at(i), false, tempPath, gpdName.toStdString() };
+            GameEntry g = { gpd, &dashGPD->gamesPlayed.at(i), false, tempPath.toStdString(), gpdName.toStdString() };
             games.push_back(g);
         }
 
@@ -346,7 +346,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     try
     {
         // extract the PEC file
-        pecTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+        pecTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", ""));
         profile->ExtractFile("PEC", pecTempPath);
         tempFiles.push_back(pecTempPath);
     }
@@ -378,7 +378,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         QString gpdName = titleIDStr + ".gpd";
 
         // make sure the GPD exists
-        if (!PEC->FileExists(gpdName.toStdString()))
+        if (!PEC->FileExists(gpdName))
         {
             *ok = false;
             QMessageBox::critical(this, "File Not Error", "Avatar Award GPD '" + gpdName + "' was not found in the PEC.\n");
@@ -386,19 +386,19 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         }
 
         // extract the avatar award GPD
-        string tempGPDName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+        QString tempGPDName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", ""));
         tempFiles.push_back(tempGPDName);
-        PEC->ExtractFile(gpdName.toStdString(), tempGPDName);
+        PEC->ExtractFile(gpdName, tempGPDName);
 
-        QString newPath = QString::fromStdString(tempGPDName + "_C");
-        QFile::copy(QString::fromStdString(tempGPDName), newPath);
+        QString newPath = tempGPDName + "_C";
+        QFile::copy(tempGPDName, newPath);
         paths[titleIDStr].awardGPD = newPath;
 
         // parse the avatar award gpd
         AvatarAwardGPD *gpd;
         try
         {
-            gpd = new AvatarAwardGPD(tempGPDName);
+            gpd = new AvatarAwardGPD(tempGPDName.toStdString());
         }
         catch (string error)
         {
@@ -407,7 +407,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
             return;
         }
         aaGames.at(i).gpd = gpd;
-        aaGames.at(i).tempFileName = tempGPDName;
+        aaGames.at(i).tempFileName = tempGPDName.toStdString();
         aaGames.at(i).gpdName = gpdName.toStdString();
     }
 
@@ -481,7 +481,7 @@ void ProfileEditor::onAssetsDoneDownloading()
     {
         struct AvatarAward *award = &aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row());
 
-        StfsPackage newAsset(assetSavePath.toStdString(), StfsPackageCreate | StfsPackageFemale);
+        StfsPackage newAsset(assetSavePath, StfsPackageCreate | StfsPackageFemale);
         newAsset.metaData->magic = PIRS;
         newAsset.metaData->certificate.ownerConsoleType = profile->metaData->certificate.ownerConsoleType;
 
@@ -498,11 +498,11 @@ void ProfileEditor::onAssetsDoneDownloading()
         newAsset.metaData->skeletonVersion = Nxe; //TODO: figure out where the skeleton version is in the guid
         newAsset.metaData->WriteMetaData();
 
-        try { newAsset.InjectFile(downloader->GetV1TempPath().toStdString(), "asset.bin"); }
+        try { newAsset.InjectFile(downloader->GetV1TempPath(), "asset.bin"); }
         catch (...) { }
 
         try
-        { newAsset.InjectFile(downloader->GetV2TempPath().toStdString(), "asset_v2.bin"); }
+        { newAsset.InjectFile(downloader->GetV2TempPath(), "asset_v2.bin"); }
         catch (...) { }
 
         // get the thumbnail
@@ -602,8 +602,8 @@ ProfileEditor::~ProfileEditor()
     // delete all of the temp files
     for (DWORD i = 0; i < tempFiles.size(); i++)
     {
-        QFile::remove(QString::fromStdString(tempFiles.at(i)));
-        QFile::remove(QString::fromStdString(tempFiles.at(i)) + "_C");
+        QFile::remove(tempFiles.at(i));
+        QFile::remove(tempFiles.at(i) + "_C");
     }
 
     delete ui;
@@ -965,7 +965,7 @@ void ProfileEditor::on_btnExtractGPD_clicked()
 
     try
     {
-        profile->ExtractFile(gpdName.toStdString(), filePath.toStdString());
+        profile->ExtractFile(gpdName, filePath);
         statusBar->showMessage("Extracted GPD successfully", 3000);
         QMessageBox::information(this, "Success", "Successfully extracted " + gpdName + " from your profile.\n");
     }
@@ -989,7 +989,7 @@ void ProfileEditor::on_btnExtractGPD_2_clicked()
 
     try
     {
-        PEC->ExtractFile(gpdName.toStdString(), filePath.toStdString());
+        PEC->ExtractFile(gpdName, filePath);
         statusBar->showMessage("Extracted GPD successfully", 3000);
         QMessageBox::information(this, "Success", "Successfully extracted " + gpdName + " from your profile.\n");
     }
@@ -1196,14 +1196,14 @@ void ProfileEditor::saveAll()
         return;
     }
 
-    string path = QtHelpers::GetKVPath(profile->metaData->certificate.ownerConsoleType, this);
+    QString path = QtHelpers::GetKVPath(profile->metaData->certificate.ownerConsoleType, this);
     // save the avatar awards
     if (PEC != NULL)
     {
         // put all the avatar award gpds back in the PEC
         for (DWORD i = 0; i < aaGames.size(); i++)
             if (aaGames.at(i).updated)
-                PEC->ReplaceFile(aaGames.at(i).tempFileName, aaGames.at(i).gpdName);
+                PEC->ReplaceFile(QString::fromStdString(aaGames.at(i).tempFileName), QString::fromStdString(aaGames.at(i).gpdName));
 
         PEC->Rehash();
 
@@ -1218,7 +1218,7 @@ void ProfileEditor::saveAll()
     // save the achievements
     for (DWORD i = 0; i < games.size(); i++)
         if (games.at(i).updated)
-            profile->ReplaceFile(games.at(i).tempFileName, games.at(i).gpdName);
+            profile->ReplaceFile(QString::fromStdString(games.at(i).tempFileName), QString::fromStdString(games.at(i).gpdName));
 
 
     // save all of the stuff on the front page

@@ -50,7 +50,7 @@ public:
 
     static bool VerifyHexStringBuffer(QString bytes);
 
-    static std::string GetKVPath(ConsoleType type, QWidget *parent = 0);
+    static QString GetKVPath(ConsoleType type, QWidget *parent = 0);
 
     static bool ParseVersionString(QString version, Version *out);
 

@@ -12,13 +12,13 @@ void StfsWorkerThread::run()
     switch (job)
     {
         case Extract:
-            package->ExtractFile(packageFile, externalPath.toStdString(), progessUpdatedExternal, this);
+            package->ExtractFile(packageFile, externalPath, progessUpdatedExternal, this);
             break;
         case Replace:
-            package->ReplaceFile(externalPath.toStdString(), packageFilePath.toStdString(), progessUpdatedExternal, this);
+            package->ReplaceFile(externalPath, packageFilePath, progessUpdatedExternal, this);
             break;
         case Inject:
-            FileEntry temp = package->InjectFile(externalPath.toStdString(), packageFilePath.toStdString(), progessUpdatedExternal, this);
+            FileEntry temp = package->InjectFile(externalPath, packageFilePath, progessUpdatedExternal, this);
             *packageFile = temp;
             break;
     }

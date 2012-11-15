@@ -50,7 +50,7 @@ void ProfileCreatorWizard::onFinished(int status)
         return;
     try
     {
-        StfsPackage newProfile(ui->lblSavePath->text().toStdString(), StfsPackageCreate);
+        StfsPackage newProfile(ui->lblSavePath->text(), StfsPackageCreate);
 
         // set up the metadata for the profile
         newProfile.metaData->magic = CON;
@@ -103,7 +103,7 @@ void ProfileCreatorWizard::onFinished(int status)
         account.Save(newProfile.metaData->certificate.ownerConsoleType);
 
         // add the account file to the package
-        newProfile.InjectFile(accountTempPath.toStdString(), "Account");
+        newProfile.InjectFile(accountTempPath, "Account");
 
         // make a temporary copy of the dashboard gpd
         QString dashGPDTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
@@ -156,20 +156,20 @@ void ProfileCreatorWizard::onFinished(int status)
         dashGPD.Close();
 
         // inject the dash gpd into the profile
-        newProfile.InjectFile(dashGPDTempPath.toStdString(), "FFFE07D1.gpd");
+        newProfile.InjectFile(dashGPDTempPath, "FFFE07D1.gpd");
 
         // create/inject the 64x64 image
         QString img64Path = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
         ui->listWidget->currentItem()->icon().pixmap(64, 64).save(img64Path, "PNG");
-        newProfile.InjectFile(img64Path.toStdString(), "tile_64.png");
+        newProfile.InjectFile(img64Path, "tile_64.png");
 
         // create/inject the 32x32 image
         QString img32Path = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
         ui->listWidget->currentItem()->icon().pixmap(32, 32).save(img32Path, "PNG");
-        newProfile.InjectFile(img32Path.toStdString(), "tile_32.png");
+        newProfile.InjectFile(img32Path, "tile_32.png");
 
         newProfile.Rehash();
-        string path = QtHelpers::GetKVPath(newProfile.metaData->certificate.ownerConsoleType, this);
+        QString path = QtHelpers::GetKVPath(newProfile.metaData->certificate.ownerConsoleType, this);
 
         if (path != "")
             newProfile.Resign(path);

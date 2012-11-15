@@ -178,7 +178,7 @@ void CreationWizard::onFinished(int status)
 
     try
     {
-        StfsPackage package(ui->lblSavePath->text().toStdString(), ((ui->cmbxMagic->currentIndex() != 0) ? StfsPackageFemale : 0) | StfsPackageCreate);
+        StfsPackage package(ui->lblSavePath->text(), ((ui->cmbxMagic->currentIndex() != 0) ? StfsPackageFemale : 0) | StfsPackageCreate);
 
         // set the metadata
         DWORD magics[3] = { CON, LIVE, PIRS };

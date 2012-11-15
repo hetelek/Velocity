@@ -352,7 +352,7 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
 
     try
     {
-        StfsPackage picturePack(savePath.toStdString(), StfsPackageCreate);
+        StfsPackage picturePack(savePath, StfsPackageCreate);
 
         picturePack.metaData->contentType = GamerPicture;
         picturePack.metaData->displayName = ui->txtPackName->text().toStdWString();
@@ -393,14 +393,14 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
             QBuffer buffLrg(&large);
             buffLrg.open(QIODevice::WriteOnly);
             ui->listPack->item(i)->icon().pixmap(64, 64).save(&buffLrg, "PNG");
-            picturePack.InjectData((BYTE*)large.data(), large.length(), getImageName(addedIDs->at(i), true).toStdString() + ".png");
+            picturePack.InjectData((BYTE*)large.data(), large.length(), getImageName(addedIDs->at(i), true) + ".png");
 
             // inject the 32x32 image
             QByteArray small;
             QBuffer buffSm(&small);
             buffSm.open(QIODevice::WriteOnly);
             ui->listPack->item(i)->icon().pixmap(32, 32).save(&buffSm, "PNG");
-            picturePack.InjectData((BYTE*)small.data(), small.length(), getImageName(addedIDs->at(i), false).toStdString() + ".png");
+            picturePack.InjectData((BYTE*)small.data(), small.length(), getImageName(addedIDs->at(i), false) + ".png");
 
             statusBar->showMessage("Creating picture pack, " + QString::number(((float)i / (float)ui->listPack->count()) * 100, 'f', 0) + "% complete");
             QApplication::processEvents();
