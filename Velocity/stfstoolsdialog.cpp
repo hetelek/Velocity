@@ -23,6 +23,9 @@ StfsToolsDialog::~StfsToolsDialog()
 
 void StfsToolsDialog::on_spnBlock_valueChanged(int arg1)
 {
-    ui->lblAddr->setText("0x" + QString::number(package->BlockToAddress(arg1), 16).toUpper());
-    ui->lblHashAddr->setText("0x" + QString::number(package->GetHashAddressOfBlock(arg1), 16).toUpper());
+    DWORD blockNum = package->BlockToAddress(arg1);
+    DWORD hashAddr = package->GetHashAddressOfBlock(arg1);
+
+    ui->lblAddr->setText(QString::number(blockNum) + " (0x" + QString::number(blockNum, 16).toUpper() + ")");
+    ui->lblHashAddr->setText(QString::number(hashAddr) + " (0x" + QString::number(hashAddr, 16).toUpper() + ")");
 }
