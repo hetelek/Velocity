@@ -280,14 +280,14 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         // if there aren't any achievements for it, then don't add it to the game list
         if (dashGPD->gamesPlayed.at(i).achievementCount != 0)
         {
-            GameEntry g = { gpd, &dashGPD->gamesPlayed[i], false, tempPath.toStdString(), gpdName.toStdString() };
+            GameEntry g = { gpd, &dashGPD->gamesPlayed[i], false, tempPath, gpdName };
             games.push_back(g);
         }
 
         // if there are avatar awards then add it to the vector
         if (dashGPD->gamesPlayed.at(i).avatarAwardCount != 0)
         {
-            AvatarAwardGameEntry a = { gpd, &dashGPD->gamesPlayed[i], NULL, false, string(""), string("") };
+            AvatarAwardGameEntry a = { gpd, &dashGPD->gamesPlayed[i], NULL, false, "", "" };
             aaGames.push_back(a);
         }
 
@@ -407,8 +407,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
             return;
         }
         aaGames[i].gpd = gpd;
-        aaGames[i].tempFileName = tempGPDName.toStdString();
-        aaGames[i].gpdName = gpdName.toStdString();
+        aaGames[i].tempFileName = tempGPDName;
+        aaGames[i].gpdName = gpdName;
     }
 
     if (aaGames.size() >= 1)
@@ -1203,7 +1203,7 @@ void ProfileEditor::saveAll()
         // put all the avatar award gpds back in the PEC
         for (int i = 0; i < aaGames.size(); i++)
             if (aaGames.at(i).updated)
-                PEC->ReplaceFile(QString::fromStdString(aaGames.at(i).tempFileName), QString::fromStdString(aaGames.at(i).gpdName));
+                PEC->ReplaceFile(aaGames.at(i).tempFileName, aaGames.at(i).gpdName);
 
         PEC->Rehash();
 
@@ -1218,7 +1218,7 @@ void ProfileEditor::saveAll()
     // save the achievements
     for (int i = 0; i < games.size(); i++)
         if (games.at(i).updated)
-            profile->ReplaceFile(QString::fromStdString(games.at(i).tempFileName), QString::fromStdString(games.at(i).gpdName));
+            profile->ReplaceFile(games.at(i).tempFileName, games.at(i).gpdName);
 
 
     // save all of the stuff on the front page

@@ -72,7 +72,7 @@ private:
     Ui::PackageViewer *ui;
     void PopulateTreeWidget(const FileListing *entry, QTreeWidgetItem *parent = NULL);
     void GetPackagePath(QTreeWidgetItem *item, QString *out, bool folderOnly = false);
-    void SetIcon(string name, QTreeWidgetItem *item);
+    void SetIcon(const QString &name, QTreeWidgetItem *item);
     StfsPackage *package;
     bool disposePackage;
     FileListing listing;

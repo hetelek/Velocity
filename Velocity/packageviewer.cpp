@@ -135,7 +135,7 @@ void PackageViewer::PopulateTreeWidget(const FileListing *entry, QTreeWidgetItem
         else
             fileEntry = new QTreeWidgetItem(ui->treeWidget);
 
-        SetIcon(entry->fileEntries[i].name.toStdString(), fileEntry);
+        SetIcon(entry->fileEntries[i].name, fileEntry);
 
         QString name = entry->fileEntries.at(i).name;
         fileEntry->setText(0, name);
@@ -174,12 +174,12 @@ void PackageViewer::GetPackagePath(QTreeWidgetItem *item, QString *out, bool fol
         GetPackagePath(item->parent(), out);
 }
 
-void PackageViewer::SetIcon(string name, QTreeWidgetItem *item)
+void PackageViewer::SetIcon(const QString &name, QTreeWidgetItem *item)
 {
-    DWORD index = name.rfind(".");
-    string extension = "";
-    if (index != string::npos)
-        extension = name.substr(index);
+    int index = name.lastIndexOf(".");
+    QString extension = "";
+    if (index != -1)
+        extension = name.mid(index);
 
     if (extension == ".gpd" || extension == ".fit")
         item->setIcon(0, QIcon(":/Images/GpdFileIcon.png"));
@@ -557,7 +557,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             else
                 fileEntry = new QTreeWidgetItem(ui->treeWidget);
 
-            SetIcon(injectedEntry->name.toStdString(), fileEntry);
+            SetIcon(injectedEntry->name, fileEntry);
 
             fileEntry->setText(0, injectedEntry->name);
             fileEntry->setText(1, ByteSizeToString(injectedEntry->fileSize));
@@ -604,7 +604,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
                     }
                     else
                     {
-                        SetIcon(entry.name.toStdString(), items.at(0));
+                        SetIcon(entry.name, items.at(0));
                         items.at(0)->setText(0, entry.name);
                         items.at(0)->setText(1, "0x" + QString::number(entry.fileSize, 16).toUpper());
                         items.at(0)->setText(2, "0x" + QString::number(package->BlockToAddress(entry.startingBlockNum), 16).toUpper());

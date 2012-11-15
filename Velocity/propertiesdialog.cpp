@@ -35,7 +35,7 @@ PropertiesDialog::PropertiesDialog(FileEntry *entry, QString location, bool *cha
     ui->leName->setText(entry->name);
 
     // get the extension
-    int index = entry->name.lastIndexOf("\\.");
+    int index = entry->name.lastIndexOf(".");
     QString exten;
     if (entry->flags & 2)
         exten = "File folder";

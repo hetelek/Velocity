@@ -161,8 +161,8 @@ struct GameEntry
     GameGPD *gpd;
     TitleEntry *titleEntry;
     bool updated;
-    string tempFileName;
-    string gpdName;
+    QString tempFileName;
+    QString gpdName;
 };
 
 struct AvatarAwardGameEntry
@@ -171,8 +171,8 @@ struct AvatarAwardGameEntry
     TitleEntry *titleEntry;
     AvatarAwardGPD *gpd;
     bool updated;
-    string tempFileName;
-    string gpdName;
+    QString tempFileName;
+    QString gpdName;
 };
 
 enum State
