@@ -135,6 +135,9 @@ public:
     // Description: close the io and all other resources used
     void Close();
 
+    // Description: creates a folder in the specified directory
+    void CreateFolder(string pathInPackage);
+
     ~StfsPackage(void);
 private:
     FileListing fileListing;
