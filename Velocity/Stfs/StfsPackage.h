@@ -3,8 +3,6 @@
 #include "../FileIO.h"
 #include "StfsMetaData.h"
 
-#include <sstream>
-
 #include <QVector>
 #include <QString>
 
@@ -124,12 +122,12 @@ public:
     void CreateFolder(const QString &pathInPackage);
 
     ~StfsPackage(void);
+
 private:
     FileListing fileListing;
     FileListing writtenToFile;
 
     FileIO *io;
-    std::stringstream except;
 
     Sex packageSex;
     DWORD blockStep[2];

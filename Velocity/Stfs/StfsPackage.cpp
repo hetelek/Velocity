@@ -1,6 +1,8 @@
 #include "StfsPackage.h"
 
 #include <stdio.h>
+#include <sstream>
+
 using std::hex;
 
 #include <QStringList>
@@ -420,6 +422,8 @@ void StfsPackage::ExtractFile(FileEntry *entry, const QString &outPath, void (*e
 {
     if (entry->nameLen == 0)
     {
+        std::stringstream except;
+
         except.str(std::string());
         except << "STFS: File '" << entry->name.toStdString() << "' doesn't exist in the package.\n";
         throw except.str();
@@ -593,6 +597,8 @@ FileEntry StfsPackage::GetFileEntry(const QString &pathInPackage, bool checkFold
 
     if (entry.nameLen == 0)
     {
+        std::stringstream except;
+
         except.str(std::string());
         except << "STFS: File entry '" << pathInPackage.toStdString() << "' cannot be found in the package.\n";
         throw except.str();
