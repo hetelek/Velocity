@@ -56,7 +56,7 @@ void GPDBase::init()
     }
 }
 
-wstring GPDBase::readStringEntry(XDBFEntry entry)
+std::wstring GPDBase::readStringEntry(XDBFEntry entry)
 {
     // ensure that the entry is a string entry
     if (entry.type != String)
@@ -110,7 +110,7 @@ SettingEntry GPDBase::readSettingEntry(XDBFEntry entry)
         {
             DWORD strLen = io->readDword();
             io->setPosition(entryAddr + 0x18);
-            toReturn.str = new wstring(io->readWString(strLen));
+            toReturn.str = new std::wstring(io->readWString(strLen));
             break;
         }
         case Float:

@@ -182,7 +182,7 @@ void Account::SetLanguage(ConsoleLanguage language)
 	account.cachedUserFlags |= (language << 25);
 }
 
-void Account::SetGamertag(wstring gamertag)
+void Account::SetGamertag(std::wstring gamertag)
 {
     account.gamertag = gamertag;
 }
@@ -406,7 +406,7 @@ void Account::GetOnlineKey(BYTE *outKey)
 	memcpy(outKey, account.onlineKey, 0x10);
 }
 
-wstring Account::GetGamertag()
+std::wstring Account::GetGamertag()
 {
 	return account.gamertag;
 }

@@ -165,7 +165,7 @@ void XdbfDialog::showContextMenu(QPoint p)
 
             // open the file and get the length
             FileIO io(entryPath.toStdString());
-            io.setPosition(0, ios_base::end);
+            io.setPosition(0, std::ios_base::end);
             DWORD fileLen = io.getPosition();
 
             // allocate enough memory for the buffer

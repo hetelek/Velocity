@@ -29,7 +29,7 @@ void XDBF::Clean()
 {
     // create a temporary file to write the old GPD's used memory to
     char *tempFileName = tmpnam(NULL);
-    FileIO tempFile(string((char*)tempFileName), true);
+    FileIO tempFile(std::string((char*)tempFileName), true);
 
     // write the old header
     tempFile.setPosition(0);
@@ -77,7 +77,7 @@ void XDBF::Clean()
     // move the temp file to the old file's location
     rename(tempFileName, io->getFilePath().c_str());
 
-    string path = io->getFilePath();
+    std::string path = io->getFilePath();
     delete io;
     io = new FileIO(path);
 
@@ -463,11 +463,11 @@ DWORD XDBF::AllocateMemory(DWORD size)
     if (index == (freeMemory.size() - 1))
     {
         // get the position in the file of the memory allocated
-        io->setPosition(0, ios_base::end);
+        io->setPosition(0, std::ios_base::end);
         toReturn = (DWORD)io->getPosition();
 
         io->flush();
-        io->setPosition(size - 1, ios_base::end);
+        io->setPosition(size - 1, std::ios_base::end);
         io->write((BYTE)0);
         io->flush();
     }
@@ -603,7 +603,7 @@ void XDBF::writeEntryListing()
 void XDBF::writeFreeMemTable()
 {
     // update the last free memory table entry
-    io->setPosition(0, ios_base::end);
+    io->setPosition(0, std::ios_base::end);
     DWORD temp = GetSpecifier(io->getPosition());
     freeMemory[freeMemory.size() - 1].addressSpecifier = temp;
     freeMemory[freeMemory.size() - 1].length = (0xFFFFFFFF - temp);

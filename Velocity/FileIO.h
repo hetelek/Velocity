@@ -6,12 +6,6 @@
 #include <errno.h>
 #include "winnames.h"
 
-using std::string;
-using std::wstring;
-using std::fstream;
-using std::streampos;
-using std::ios_base;
-
 enum EndianType
 {
 	BigEndian,
@@ -22,9 +16,9 @@ enum EndianType
 class FileIO
 {
 public:
-	FileIO(string path, bool truncate = false);
-    void setPosition(streampos pos, ios_base::seek_dir dir = ios_base::beg);
-	streampos getPosition();
+    FileIO(std::string path, bool truncate = false);
+    void setPosition(std::streampos pos, std::ios_base::seek_dir dir = std::ios_base::beg);
+    std::streampos getPosition();
 	void close();
 	void flush();
 
@@ -42,8 +36,8 @@ public:
     double readDouble();
 
     // reading strings
-	string readString(size_t len = 0);
-	wstring readWString(size_t len = 0);
+    std::string readString(size_t len = 0);
+    std::wstring readWString(size_t len = 0);
 
 	// other reading
 	void readBytes(BYTE *buffer, size_t size);
@@ -64,12 +58,12 @@ public:
 	void write(BYTE val);
 
 	// writing strings
-	void write(string val, int forceLen = -1);
-	void write(wstring val);
+    void write(std::string val, int forceLen = -1);
+    void write(std::wstring val);
 
 	void swapEndian();
 
-	string getFilePath();
+    std::string getFilePath();
 	EndianType getEndian();
 
 	void setEndian(EndianType byteOrder);
@@ -79,7 +73,7 @@ public:
 private:
 	EndianType endian;
 	void readBytesWithChecks(void *buffer, INT32 size);
-	fstream *fstr;
-	const string filePath;
+    std::fstream *fstr;
+    const std::string filePath;
 };
 

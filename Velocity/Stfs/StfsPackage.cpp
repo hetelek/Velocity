@@ -354,7 +354,7 @@ void StfsPackage::ReadFileListing()
 
             // check for a mismatch in the total allocated blocks for the file
             fe.blocksForFile = io->readInt24(LittleEndian);
-            io->setPosition(3, ios_base::cur);
+            io->setPosition(3, std::ios_base::cur);
 
             // read more information
             fe.startingBlockNum = io->readInt24(LittleEndian);
@@ -1045,7 +1045,7 @@ DWORD StfsPackage::GetTableHashAddress(DWORD index, Level lvl)
 void StfsPackage::Resign(const QString &kvPath)
 {
     FileIO kvIo(kvPath.toStdString());
-    kvIo.setPosition(0, ios_base::end);
+    kvIo.setPosition(0, std::ios_base::end);
 
     DWORD adder = 0;
     if (kvIo.getPosition() == 0x4000)
@@ -1459,7 +1459,7 @@ INT24 StfsPackage::AllocateBlock()
     }
 
     // allocate the necessary memory
-    io->setPosition(lengthToWrite, ios_base::end);
+    io->setPosition(lengthToWrite, std::ios_base::end);
     io->write((BYTE)0);
 
     // if the top level changed, then we need to re-load the top table
@@ -1525,7 +1525,7 @@ INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
     // allocate the amount before the hash table
 
     // allocate the memory in the file
-    io->setPosition((((blockCount <= blocksUntilTable) ? blockCount : blocksUntilTable) << 0xC) - 1, ios_base::end);
+    io->setPosition((((blockCount <= blocksUntilTable) ? blockCount : blocksUntilTable) << 0xC) - 1, std::ios_base::end);
     io->write((BYTE)0);
 
     // set blocks to allocated in hash table
@@ -1536,7 +1536,7 @@ INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
     metaData->volumeDescriptor.allocatedBlockCount += ((blockCount <= blocksUntilTable) ? blockCount : blocksUntilTable);
 
     // allocate memory the hash table
-    io->setPosition(GetHashTableSkipSize(metaData->volumeDescriptor.allocatedBlockCount) - 1, ios_base::end);
+    io->setPosition(GetHashTableSkipSize(metaData->volumeDescriptor.allocatedBlockCount) - 1, std::ios_base::end);
     io->write((BYTE)0);
 
     blockCount -= blocksUntilTable;
@@ -1545,7 +1545,7 @@ INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
     while (blockCount >= 0xAA)
     {
         // allocate the memory in the file
-        io->setPosition(0xAA000 + GetHashTableSkipSize(metaData->volumeDescriptor.allocatedBlockCount + 0xAA) - 1, ios_base::end);
+        io->setPosition(0xAA000 + GetHashTableSkipSize(metaData->volumeDescriptor.allocatedBlockCount + 0xAA) - 1, std::ios_base::end);
         io->write((BYTE)0);
 
         // set all the blocks to allocated
@@ -1560,7 +1560,7 @@ INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
     if (blockCount > 0)
     {
         // allocate the extra
-        io->setPosition(GetHashTableSkipSize(metaData->volumeDescriptor.allocatedBlockCount + 0xAA) + (blockCount << 0xC) - 1, ios_base::end);
+        io->setPosition(GetHashTableSkipSize(metaData->volumeDescriptor.allocatedBlockCount + 0xAA) + (blockCount << 0xC) - 1, std::ios_base::end);
         io->write((BYTE)0);
 
         // set all the blocks to allocated
@@ -1657,7 +1657,7 @@ FileEntry StfsPackage::InjectFile(const QString &path, const QString &pathInPack
 
     FileIO fileIn(path.toStdString());
 
-    fileIn.setPosition(0, ios_base::end);
+    fileIn.setPosition(0, std::ios_base::end);
     DWORD fileSize = fileIn.getPosition();
     fileIn.setPosition(0);
 
@@ -1874,7 +1874,7 @@ void StfsPackage::ReplaceFile(const QString &path, FileEntry *entry, const QStri
 
     FileIO fileIn(path.toStdString());
 
-    fileIn.setPosition(0, ios_base::end);
+    fileIn.setPosition(0, std::ios_base::end);
     DWORD fileSize = fileIn.getPosition();
     fileIn.setPosition(0);
 

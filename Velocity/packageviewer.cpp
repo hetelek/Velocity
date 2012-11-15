@@ -627,9 +627,9 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
         return;
 
     // make sure the file double clicked on is a gpd
-    unsigned int index = item->text(0).lastIndexOf(".");
+    int index = item->text(0).lastIndexOf(".");
     QString extension;
-    if (index != string::npos)
+    if (index != -1)
         extension = item->text(0).mid(index).toLower();
 
     if (extension == ".gpd" || extension == ".fit")

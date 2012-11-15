@@ -55,7 +55,7 @@ void AvatarAsset::readHeader()
 void AvatarAsset::readBlocks()
 {
 	DWORD prevAddress = header.blockStartAddress, prevDataLen = 0;
-	io->setPosition(0, ios_base::end);
+    io->setPosition(0, std::ios_base::end);
 	DWORD fileSize = io->getPosition();
 
 	for (;;)

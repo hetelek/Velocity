@@ -6,8 +6,6 @@
 
 #include <QVector>
 
-using std::wstring;
-
 // Description: different types of entries in an XDBF file
 enum EntryType
 {
@@ -93,7 +91,7 @@ struct SettingEntry
         unsigned int int32;
         INT64 int64;
         double doubleData;
-		wstring *str;
+        std::wstring *str;
         float floatData;
 		struct
 		{
@@ -112,7 +110,7 @@ public:
 
 struct StringEntry
 {
-	wstring ws;
+    std::wstring ws;
 
 	XDBFEntry entry;
 	DWORD initialLength;
@@ -159,9 +157,9 @@ struct AchievementEntry
 	DWORD gamerscore;
 	DWORD flags;
     unsigned int unlockTime;
-	wstring name;
-	wstring lockedDescription;
-	wstring unlockedDescription;
+    std::wstring name;
+    std::wstring lockedDescription;
+    std::wstring unlockedDescription;
 };
 
 enum TitleEntryFlags
@@ -191,7 +189,7 @@ struct TitleEntry
 	BYTE femaleAvatarAwardCount;
 	DWORD flags;
     time_t lastPlayed;
-	wstring gameName;
+    std::wstring gameName;
 };
 
 enum XboxLiveCountry
@@ -426,9 +424,9 @@ struct AvatarAward
     unsigned int unlockTime;
 	AssetSubcategory subcategory;
     DWORD colorizable;
-	wstring name;
-	wstring unlockedDescription;
-	wstring lockedDescription;
+    std::wstring name;
+    std::wstring unlockedDescription;
+    std::wstring lockedDescription;
 };
 
 enum AvatarComponentMasks

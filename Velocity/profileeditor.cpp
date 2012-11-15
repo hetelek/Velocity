@@ -559,7 +559,7 @@ void ProfileEditor::addToDashGPD(SettingEntry *entry, SettingEntryType type, UIN
             entry->binaryData.data = NULL;
             break;
         case UnicodeString:
-            wstring *s = new wstring(L"");
+            std::wstring *s = new std::wstring(L"");
             entry->str = s;
             break;
     }
@@ -1248,7 +1248,7 @@ void ProfileEditor::saveAll()
     profile->ReplaceFile(accountTempPath, "Account");
 
     // gamer name
-    wstring temp = ui->txtName->text().toStdWString();
+    std::wstring temp = ui->txtName->text().toStdWString();
     dashGPD->gamerName.str = &temp;
     dashGPD->WriteSettingEntry(dashGPD->gamerName);
 

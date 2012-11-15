@@ -2,6 +2,13 @@
 
 #include <QString>
 
+using std::string;
+using std::wstring;
+using std::fstream;
+using std::streampos;
+using std::ios_base;
+
+
 FileIO::FileIO(string path, bool truncate) : filePath(path)
 {
     fstr = new fstream(path.c_str(), (std::_Ios_Openmode)(fstream::in | fstream::out | fstream::binary | (fstream::trunc * truncate)));

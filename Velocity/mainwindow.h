@@ -40,8 +40,6 @@
 #include "Stfs/StfsPackage.h"
 #include "GPD/GPDBase.h"
 
-using namespace std;
-
 Q_DECLARE_METATYPE( StfsPackage* )
 
 namespace Ui {

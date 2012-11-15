@@ -113,7 +113,7 @@ void ProfileCreatorWizard::onFinished(int status)
         DashboardGPD dashGPD(dashGPDTempPath);
 
         // change the gamerpicture key
-        wstring picKey = L"fffe07d10002000" + QString::number(ui->listWidget->currentIndex().row()).toStdWString() + L"0001000" + QString::number(ui->listWidget->currentIndex().row()).toStdWString();
+        std::wstring picKey = L"fffe07d10002000" + QString::number(ui->listWidget->currentIndex().row()).toStdWString() + L"0001000" + QString::number(ui->listWidget->currentIndex().row()).toStdWString();
         dashGPD.gamerPictureKey.str = &picKey;
         dashGPD.WriteSettingEntry(dashGPD.gamerPictureKey);
 
@@ -138,7 +138,7 @@ void ProfileCreatorWizard::onFinished(int status)
 
         FileIO io(imagePath.toStdString());
 
-        io.setPosition(0, ios_base::end);
+        io.setPosition(0, std::ios_base::end);
         DWORD fileLen = io.getPosition();
         BYTE *imageBuff = new BYTE[fileLen];
 

@@ -4,8 +4,6 @@
 
 #include <QString>
 
-using std::stringstream;
-
 QString XDBFHelpers::EntryTypeToString(EntryType type)
 {
 	if (type < 1 || type > 6)
@@ -266,7 +264,7 @@ QString XDBFHelpers::IDtoString(UINT64 id)
 		case AvatarImage:
             return QString("Avatar Image");
 		default:
-			stringstream ss;
+            std::stringstream ss;
 			ss << "0x" << std::hex << id;
             return QString::fromStdString(ss.str());
 	}

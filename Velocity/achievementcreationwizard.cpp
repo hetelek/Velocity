@@ -1,7 +1,7 @@
 #include "achievementcreationwizard.h"
 #include "ui_achievementcreationwizard.h"
 
-AchievementCreationWizard::AchievementCreationWizard(wstring gameName, QImage *achThumbnail, AchievementEntry *entry, QWidget *parent) : QWizard(parent), ui(new Ui::AchievementCreationWizard), achievement(entry), achThumbnail(achThumbnail)
+AchievementCreationWizard::AchievementCreationWizard(std::wstring gameName, QImage *achThumbnail, AchievementEntry *entry, QWidget *parent) : QWizard(parent), ui(new Ui::AchievementCreationWizard), achievement(entry), achThumbnail(achThumbnail)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
