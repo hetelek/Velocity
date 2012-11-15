@@ -179,7 +179,6 @@ void ThemeCreationWizard::openWallpaper(QLabel *imageViewer, QImage *saveImage)
         return;
 
     QPixmap thumbnail(fileName);
-
     *saveImage = QImage(fileName);
 
     imageViewer->setPixmap(thumbnail);
@@ -187,7 +186,6 @@ void ThemeCreationWizard::openWallpaper(QLabel *imageViewer, QImage *saveImage)
     imagesLoaded |= (1 << (this->currentId() - 4));
     button(QWizard::NextButton)->setEnabled(true);
 }
-
 
 void ThemeCreationWizard::on_pushButton_2_clicked()
 {

@@ -2020,6 +2020,59 @@ void StfsPackage::Close()
     io->close();
 }
 
+void StfsPackage::CreateFolder(string pathInPackage)
+{
+    // split the string and open a io
+    vector<string> split = SplitString(pathInPackage, "\\");
+
+    FileListing *folder = NULL;
+    FindDirectoryListing(split, &fileListing, &folder);
+    if (folder != NULL)
+        throw string("STFS: Directory already exists in the package.\n");
+
+    int size = split.size();
+    string fileName;
+    if(size > 1)
+    {
+        // get the name
+        fileName = split.at(size - 1);
+        split.erase(split.begin() + (size - 1));
+
+        // find the directory we'd like to inject to
+        FindDirectoryListing(split, &fileListing, &folder);
+        if(folder == NULL)
+            throw string("STFS: The given folder could not be found.\n");
+    }
+    else
+    {
+        fileName = pathInPackage;
+        folder = &fileListing;
+    }
+
+    // set up the entry
+    FileEntry entry;
+    entry.name = fileName;
+
+    if (fileName.length() > 0x28)
+        throw string("STFS: File entry name length cannot be greater than 40(0x28) characters.\n");
+
+    entry.nameLen = fileName.length();
+    entry.fileSize = 0;
+    entry.flags = Folder;
+    entry.pathIndicator = folder->folder.entryIndex;
+    entry.startingBlockNum = 0;
+    entry.blocksForFile = 0;
+    entry.createdTimeStamp = MSTimeToDWORD(TimetToMSTime(time(NULL)));
+    entry.accessTimeStamp = entry.createdTimeStamp;
+
+    FileListing newFolder;
+    newFolder.folder = entry;
+
+    // add the entry to the listing
+    folder->folderEntries.push_back(newFolder);
+    WriteFileListing();
+}
+
 void StfsPackage::GenerateRawFileListing(FileListing *in, QVector<FileEntry> *outFiles, QVector<FileEntry> *outFolders)
 {
     int fiEntries = in->fileEntries.size();
