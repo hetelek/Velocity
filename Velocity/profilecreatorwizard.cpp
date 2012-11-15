@@ -126,6 +126,7 @@ void ProfileCreatorWizard::onFinished(int status)
             io.readBytes(settingBuffer, 0x3E8);
 
             dashGPD.avatarInformation.binaryData.data = settingBuffer;
+            dashGPD.avatarInformation.binaryData.length = 0x3E8;
             dashGPD.WriteSettingEntry(dashGPD.avatarInformation);
         }
 
