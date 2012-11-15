@@ -1652,6 +1652,10 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injec
     if(FileExists(pathInPackage))
         throw string("STFS: File already exists in the package.\n");
 
+    // make sure a block is allocated for the file listing
+    if (metaData->volumeDescriptor.allocatedBlockCount == 0)
+        AllocateBlock();
+
     // split the string and open a io
     vector<string> split = SplitString(pathInPackage, "\\");
     FileListing *folder = NULL;
@@ -1781,6 +1785,10 @@ FileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPackage
 {
     if(FileExists(pathInPackage))
         throw string("STFS: File already exists in the package.\n");
+
+    // make sure a block is allocated for the file listing
+    if (metaData->volumeDescriptor.allocatedBlockCount == 0)
+        AllocateBlock();
 
     // split the string and open a io
     vector<string> split = SplitString(pathInPackage, "\\");
