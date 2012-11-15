@@ -1082,13 +1082,13 @@ void StfsPackage::Resign(const QString &kvPath)
     char tempPartNum[0x15];
     tempPartNum[0x14] = 0;
     kvIo.readBytes((BYTE*)tempPartNum, 0x14);
-    metaData->certificate.ownerConsolePartNumber = string(tempPartNum);
+    metaData->certificate.ownerConsolePartNumber = QString(tempPartNum);
 
     metaData->certificate.ownerConsoleType = (ConsoleType)kvIo.readByte();
 
     char tempGenDate[9] = {0};
     kvIo.readBytes((BYTE*)tempGenDate, 8);
-    metaData->certificate.dateGeneration = string(tempGenDate);
+    metaData->certificate.dateGeneration = QString(tempGenDate);
 
     metaData->certificate.publicExponent = kvIo.readDword();
     kvIo.readBytes(metaData->certificate.publicModulus, 0x80);

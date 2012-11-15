@@ -1,6 +1,11 @@
 #include "StfsDefinitions.h"
 
+#include <iostream>
+#include <sstream>
+
 #include <QString>
+
+#include "../FileIO.h"
 
 void ReadVolumeDescriptorEx(VolumeDescriptor *descriptor, FileIO *io, DWORD address)
 {
@@ -24,35 +29,35 @@ void ReadVolumeDescriptorEx(VolumeDescriptor *descriptor, FileIO *io, DWORD addr
     descriptor->unallocatedBlockCount = io->readDword();
 }
 
-string LicenseTypeToString(LicenseType type)
+QString LicenseTypeToString(LicenseType type)
 {
     switch (type)
     {
         case Unused:
-            return string("Unused");
+            return QString("Unused");
         case Unrestricted:
-            return string("Unrestricted");
+            return QString("Unrestricted");
         case ConsoleProfileLicense:
-            return string("ConsoleProfileLicense");
+            return QString("ConsoleProfileLicense");
         case WindowsProfileLicense:
-            return string("WindowsProfileLicense");
+            return QString("WindowsProfileLicense");
         case ConsoleLicense:
-            return string("ConsoleLicense");
+            return QString("ConsoleLicense");
         case Unknown1:
-            return string("Unknown1");
+            return QString("Unknown1");
         case Unknown2:
-            return string("Unknown2");
+            return QString("Unknown2");
         case Unknown3:
-            return string("Unknown3");
+            return QString("Unknown3");
         case Unknown4:
-            return string("Unknown4");
+            return QString("Unknown4");
         default:
             throw QString("STFS: Invalid 'License Type' value.\n");
     }
 }
 
 
-string ByteSizeToString(int bytes)
+QString ByteSizeToString(int bytes)
 {
     int B = 1; //byte
     int KB = 1024 * B; //kilobyte
@@ -70,7 +75,7 @@ string ByteSizeToString(int bytes)
     else
         result << bytes << " bytes";
 
-    return result.str();
+    return QString::fromStdString(result.str());
 }
 
 DWORD MSTimeToDWORD(MSTime time)
@@ -147,7 +152,7 @@ void ReadCertificateEx(Certificate *cert, FileIO *io, DWORD address)
     char tempPartNum[0x15];
     tempPartNum[0x14] = 0;
     io->readBytes((BYTE*)tempPartNum, 0x11);
-    cert->ownerConsolePartNumber = string(tempPartNum);
+    cert->ownerConsolePartNumber = QString(tempPartNum);
 
     DWORD temp = io->readDword();
     cert->ownerConsoleType = (ConsoleType)(temp & 3);
@@ -157,7 +162,7 @@ void ReadCertificateEx(Certificate *cert, FileIO *io, DWORD address)
 
     char tempGenDate[9] = {0};
     io->readBytes((BYTE*)tempGenDate, 8);
-    cert->dateGeneration = string(tempGenDate);
+    cert->dateGeneration = QString(tempGenDate);
 
     cert->publicExponent = io->readDword();
     io->readBytes(cert->publicModulus, 0x80);
@@ -173,110 +178,110 @@ void WriteCertificateEx(Certificate *cert, FileIO *io, DWORD address)
     // write the certificate
     io->write(cert->publicKeyCertificateSize);
     io->write(cert->ownerConsoleID, 5);
-    io->write(cert->ownerConsolePartNumber.c_str(), 0x11);
+    io->write((const char *) cert->ownerConsolePartNumber.toLatin1().constData(), 0x11);
     DWORD temp = cert->consoleTypeFlags | cert->ownerConsoleType;
     io->write(temp);
-    io->write(cert->dateGeneration.c_str(), 8);
+    io->write((const char *) cert->dateGeneration.toLatin1().constData(), 8);
     io->write(cert->publicExponent);
     io->write(cert->publicModulus, 0x80);
     io->write(cert->certificateSignature, 0x100);
     io->write(cert->signature, 0x80);
 }
 
-string MagicToString(Magic magic)
+QString MagicToString(Magic magic)
 {
     switch (magic)
     {
         case CON:
-            return string("CON ");
+            return QString("CON ");
         case LIVE:
-            return string("LIVE");
+            return QString("LIVE");
         case PIRS:
-            return string("PIRS");
+            return QString("PIRS");
         default:
-            return string("N/A");
+            return QString("N/A");
     }
 }
 
-string ConsoleTypeToString(ConsoleType type)
+QString ConsoleTypeToString(ConsoleType type)
 {
     switch (type)
     {
         case DevKit:
-            return string("DevKit");
+            return QString("DevKit");
         case Retail:
-            return string("Retail");
+            return QString("Retail");
         default:
             throw QString("STFS: Invalid console type.\n");
     }
 }
 
-string ContentTypeToString(ContentType type)
+QString ContentTypeToString(ContentType type)
 {
     switch (type)
     {
         case App:
-            return string("App");
+            return QString("App");
         case ArcadeGame:
-            return string("Arcade Game");
+            return QString("Arcade Game");
         case AvatarAssetPack:
-        return string("Avatar Asset Pack");
+            return QString("Avatar Asset Pack");
         case AvatarItem:
-            return string("AvatarItem");
+            return QString("AvatarItem");
         case CacheFile:
-            return string("Cache File");
+            return QString("Cache File");
         case CommunityGame:
-            return string("Community Game");
+            return QString("Community Game");
         case GameDemo:
-            return string("Game Demo");
+            return QString("Game Demo");
         case GamerPicture:
-            return string("Gamer Picture");
+            return QString("Gamer Picture");
         case GamerTitle:
-            return string("Gamer Title");
+            return QString("Gamer Title");
         case GameTrailer:
-            return string("Game Trailer");
+            return QString("Game Trailer");
         case GameVideo:
-            return string("Game Video");
+            return QString("Game Video");
         case InstalledGame:
-            return string("Installed Game");
+            return QString("Installed Game");
         case Installer:
-            return string("Installer");
+            return QString("Installer");
         case IPTVPauseBuffer:
-            return string("IPTV Pause Buffer");
+            return QString("IPTV Pause Buffer");
         case LicenseStore:
-            return string("License Store");
+            return QString("License Store");
         case MarketPlaceContent:
-            return string("Market Place Content");
+            return QString("Market Place Content");
         case Movie:
-            return string("Movie");
+            return QString("Movie");
         case MusicVideo:
-            return string("Music Video");
+            return QString("Music Video");
         case PodcastVideo:
-            return string("Podcast Video");
+            return QString("Podcast Video");
         case Profile:
-            return string("Profile");
+            return QString("Profile");
         case Publisher:
-            return string("Publisher");
+            return QString("Publisher");
         case SavedGame:
-            return string("Saved Game");
+            return QString("Saved Game");
         case StorageDownload:
-            return string("Storage Download");
+            return QString("Storage Download");
         case Theme:
-            return string("Theme");
+            return QString("Theme");
         case Video:
-            return string("Video");
+            return QString("Video");
         case ViralVideo:
-            return string("Viral Video");
+            return QString("Viral Video");
         case XboxDownload:
-            return string("Xbox Download");
+            return QString("Xbox Download");
         case XboxOriginalGame:
-            return string("Xbox Original Game");
+            return QString("Xbox Original Game");
         case XboxSavedGame:
-            return string("Xbox Saved Game");
+            return QString("Xbox Saved Game");
         case Xbox360Title:
-            return string("Xbox360 Title");
+            return QString("Xbox360 Title");
         case XNA:
-            return string("XNA");
+            return QString("XNA");
         default:
             throw QString("STFS: Invalid 'ContentType' value.\n");
     }

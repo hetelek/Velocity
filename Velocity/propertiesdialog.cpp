@@ -64,10 +64,10 @@ PropertiesDialog::PropertiesDialog(FileEntry *entry, QString location, bool *cha
 
     ui->lblTypeOfFile->setText(final);
     ui->lblLocation->setText(location);
-    ui->lblSize->setText(QString::fromStdString(ByteSizeToString(entry->fileSize)) + " (" + QString::number(entry->fileSize) + " bytes)");
+    ui->lblSize->setText(ByteSizeToString(entry->fileSize) + " (" + QString::number(entry->fileSize) + " bytes)");
 
     int sizeOnDisk = (entry->fileSize + 0xFFF) & 0xFFFFF000;
-    ui->lblSizeOnDisk->setText(QString::fromStdString(ByteSizeToString(sizeOnDisk)) + " (" + QString::number(sizeOnDisk) + " bytes)");
+    ui->lblSizeOnDisk->setText(ByteSizeToString(sizeOnDisk) + " (" + QString::number(sizeOnDisk) + " bytes)");
 
     // get the MSTime from
     MSTime createdtime = DWORDToMSTime(entry->createdTimeStamp);

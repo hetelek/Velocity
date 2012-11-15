@@ -27,7 +27,7 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<
     }
     else
     {
-        ui->lblMagic->setText("Magic: 0x" + QString::number(package->metaData->magic, 16).toUpper() + " (" + QString::fromStdString(MagicToString(package->metaData->magic)) + ")");
+        ui->lblMagic->setText("Magic: 0x" + QString::number(package->metaData->magic, 16).toUpper() + " (" + MagicToString(package->metaData->magic) + ")");
         ui->lblDisplayName->setText("Display Name: " + QString::fromStdWString(package->metaData->displayName));
 
         if (package->metaData->magic == LIVE || package->metaData->magic == PIRS)
@@ -35,7 +35,7 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<
 
         try
         {
-            ui->lblType->setText(QString::fromStdString("Package Type: " + ContentTypeToString(package->metaData->contentType)));
+            ui->lblType->setText("Package Type: " + ContentTypeToString(package->metaData->contentType));
         }
         catch (...)
         {
@@ -139,7 +139,7 @@ void PackageViewer::PopulateTreeWidget(const FileListing *entry, QTreeWidgetItem
 
         QString name = entry->fileEntries.at(i).name;
         fileEntry->setText(0, name);
-        fileEntry->setText(1, QString::fromStdString(ByteSizeToString(entry->fileEntries.at(i).fileSize)));
+        fileEntry->setText(1, ByteSizeToString(entry->fileEntries.at(i).fileSize));
         fileEntry->setText(2, "0x" + QString::number(package->BlockToAddress(entry->fileEntries.at(i).startingBlockNum), 16).toUpper());
         fileEntry->setText(3, "0x" + QString::number(entry->fileEntries.at(i).startingBlockNum, 16).toUpper());
 
@@ -560,7 +560,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             SetIcon(injectedEntry->name.toStdString(), fileEntry);
 
             fileEntry->setText(0, injectedEntry->name);
-            fileEntry->setText(1, QString::fromStdString(ByteSizeToString(injectedEntry->fileSize)));
+            fileEntry->setText(1, ByteSizeToString(injectedEntry->fileSize));
             fileEntry->setText(2, "0x" + QString::number(package->BlockToAddress(injectedEntry->startingBlockNum), 16).toUpper());
             fileEntry->setText(3, "0x" + QString::number(injectedEntry->startingBlockNum, 16).toUpper());
 

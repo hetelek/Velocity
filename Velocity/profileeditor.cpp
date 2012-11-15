@@ -370,7 +370,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     }
 
     // extract and parse all of the GPDs in the PEC
-    for (DWORD i = 0; i < aaGames.size(); i++)
+    for (int i = 0; i < aaGames.size(); i++)
     {
         QString titleIDStr = QString::number(aaGames.at(i).titleEntry->titleID, 16).toUpper();
 
@@ -406,9 +406,9 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
             QMessageBox::critical(this, "File Load Error", "Error loading the Avatar Award GPD '" + gpdName + "'.\n\n" + error);
             return;
         }
-        aaGames.at(i).gpd = gpd;
-        aaGames.at(i).tempFileName = tempGPDName.toStdString();
-        aaGames.at(i).gpdName = gpdName.toStdString();
+        aaGames[i].gpd = gpd;
+        aaGames[i].tempFileName = tempGPDName.toStdString();
+        aaGames[i].gpdName = gpdName.toStdString();
     }
 
     if (aaGames.size() >= 1)
@@ -576,11 +576,11 @@ ProfileEditor::~ProfileEditor()
     }
 
     // free all the game gpd memory
-    for (DWORD i = 0; i < games.size(); i++)
+    for (int i = 0; i < games.size(); i++)
         delete games.at(i).gpd;
 
     // free all of the avatar award gpds
-    for (DWORD i = 0; i < aaGames.size(); i++)
+    for (int i = 0; i < aaGames.size(); i++)
     {
         if (aaGames.at(i).titleEntry->achievementCount == 0)
            delete aaGames.at(i).gameGPD;
@@ -600,7 +600,7 @@ ProfileEditor::~ProfileEditor()
         delete profile;
 
     // delete all of the temp files
-    for (DWORD i = 0; i < tempFiles.size(); i++)
+    for (int i = 0; i < tempFiles.size(); i++)
     {
         QFile::remove(tempFiles.at(i));
         QFile::remove(tempFiles.at(i) + "_C");
@@ -891,8 +891,8 @@ void ProfileEditor::on_btnUnlockAllAchvs_clicked()
     if (btn != QMessageBox::Yes)
        return;
 
-    games.at(index).gpd->UnlockAllAchievementsOffline();
-    games.at(index).updated = true;
+    games[index].gpd->UnlockAllAchievementsOffline();
+    games[index].updated = true;
 
     DWORD gamerscoreToAdd = 0;
 
@@ -1012,7 +1012,7 @@ void ProfileEditor::on_btnUnlockAllAwards_clicked()
       return;
 
     aaGames.at(index).gpd->UnlockAllAwards();
-    aaGames.at(index).updated = true;
+    aaGames[index].updated = true;
 
     // update the ui
     for (int i = 0; i < ui->avatarAwardsList->topLevelItemCount(); i++)
@@ -1201,7 +1201,7 @@ void ProfileEditor::saveAll()
     if (PEC != NULL)
     {
         // put all the avatar award gpds back in the PEC
-        for (DWORD i = 0; i < aaGames.size(); i++)
+        for (int i = 0; i < aaGames.size(); i++)
             if (aaGames.at(i).updated)
                 PEC->ReplaceFile(QString::fromStdString(aaGames.at(i).tempFileName), QString::fromStdString(aaGames.at(i).gpdName));
 
@@ -1216,7 +1216,7 @@ void ProfileEditor::saveAll()
     }
 
     // save the achievements
-    for (DWORD i = 0; i < games.size(); i++)
+    for (int i = 0; i < games.size(); i++)
         if (games.at(i).updated)
             profile->ReplaceFile(QString::fromStdString(games.at(i).tempFileName), QString::fromStdString(games.at(i).gpdName));
 
@@ -1316,7 +1316,7 @@ void ProfileEditor::on_btnCreateAch_clicked()
     if (entry.structSize == 0x1C)
     {
         GameGPD *game = games.at(ui->gamesList->currentIndex().row()).gpd;
-        games.at(ui->gamesList->currentIndex().row()).updated = true;
+        games[ui->gamesList->currentIndex().row()].updated = true;
 
         // convert the image data to PNG and get a pointer to the data
         QByteArray ba;
@@ -1403,7 +1403,7 @@ void ProfileEditor::on_cmbxAchState_currentIndexChanged(int index)
         ui->dteAchTimestamp->setDateTime(QDateTime::currentDateTime());
     }
 
-    games.at(gameIndex).updated = true;
+    games[gameIndex].updated = true;
 }
 
 void ProfileEditor::on_cmbxAwState_currentIndexChanged(int index)
@@ -1457,7 +1457,7 @@ void ProfileEditor::on_cmbxAwState_currentIndexChanged(int index)
         ui->dteAwTimestamp->setDateTime(QDateTime::currentDateTime());
     }
 
-    aaGames.at(gameIndex).updated = true;
+    aaGames[gameIndex].updated = true;
 }
 
 void ProfileEditor::on_btnShowAll_clicked()
@@ -1526,8 +1526,8 @@ void ProfileEditor::on_dteAchTimestamp_dateTimeChanged(const QDateTime &date)
 
     entry->unlockTime = date.toTime_t();
     ui->dteAchTimestamp->setDateTime(QDateTime::fromTime_t(entry->unlockTime));
-    games.at(ui->gamesList->currentIndex().row()).gpd->WriteAchievementEntry(entry);
-    games.at(ui->gamesList->currentIndex().row()).updated = true;
+    games[ui->gamesList->currentIndex().row()].gpd->WriteAchievementEntry(entry);
+    games[ui->gamesList->currentIndex().row()].updated = true;
 
     statusBar->showMessage("Updated " + QString::fromStdWString(entry->name), 3000);
 }
@@ -1545,7 +1545,7 @@ void ProfileEditor::on_dteAwTimestamp_dateTimeChanged(const QDateTime &date)
 
     entry->unlockTime = date.toTime_t();
     aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->WriteAvatarAward(entry);
-    aaGames.at(ui->aaGamelist->currentIndex().row()).updated = true;
+    aaGames[ui->aaGamelist->currentIndex().row()].updated = true;
 
    statusBar->showMessage("Updated " + QString::fromStdWString(entry->name), 3000);
 }

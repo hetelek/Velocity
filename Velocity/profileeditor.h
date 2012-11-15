@@ -28,13 +28,10 @@
 
 // other
 #include <iostream>
-#include <vector>
 #include <stdio.h>
 #include "gpduploader.h"
 #include "achievementcreationwizard.h"
 #include "AvatarAssetDownloader.h"
-
-using namespace std;
 
 namespace Ui {
 class ProfileEditor;
@@ -256,9 +253,9 @@ private:
     Account *account;
     AvatarAssetDownloader *downloader;
 
-    vector<QString> tempFiles;
-    vector<GameEntry> games;
-    vector<AvatarAwardGameEntry> aaGames;
+    QVector<QString> tempFiles;
+    QVector<GameEntry> games;
+    QVector<AvatarAwardGameEntry> aaGames;
 
     QString pecTempPath;
     QString dashGPDTempPath;

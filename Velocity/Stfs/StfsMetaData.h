@@ -8,8 +8,6 @@
 #include "winnames.h"
 #include <iostream>
 
-using std::string;
-
 enum StfsMetadataFlags
 {
     MetadataIsPEC = 1,

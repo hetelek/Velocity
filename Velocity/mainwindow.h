@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <iostream>
-#include <vector>
 
 // qt
 #include "ui_mainwindow.h"
