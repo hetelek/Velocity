@@ -1,6 +1,6 @@
 #include "StfsPackage.h"
 #include "StfsMetaData.h"
-#include <QDebug>
+
 #include <stdio.h>
 
 StfsPackage::StfsPackage(string packagePath, DWORD flags) : flags(flags)
@@ -14,17 +14,12 @@ StfsPackage::StfsPackage(string packagePath, DWORD flags) : flags(flags)
         BYTE zeroBuffer[0x1000] = {0};
 
         // write all null bytes for the header
-        if (flags & StfsPackagePEC)
-            for (DWORD i = 0; i < (headerSize >> 0xC); i++)
-                io->write(zeroBuffer, 0x1000);
-        else
-            for (DWORD i = 0; i < ((headerSize >> 0xC) + ((flags & StfsPackageFemale) ? 1 : 2) + 1); i++)
-                io->write(zeroBuffer, 0x1000);
+        for (DWORD i = 0; i < ((headerSize >> 0xC) + ((flags & StfsPackageFemale) ? 1 : 2) + 1); i++)
+            io->write(zeroBuffer, 0x1000);
 
         // if it's female, then we need to write it to the volume descriptor
         io->setPosition((flags & StfsPackagePEC) ? 0x246 : 0x37B);
         io->write((flags & StfsPackageFemale) >> 2);
-        io->flush();
     }
 
     Parse();
@@ -76,7 +71,7 @@ void StfsPackage::Parse()
         metaData->volumeDescriptor.blockSeperation = ((flags & StfsPackageFemale) >> 2);
         metaData->volumeDescriptor.fileTableBlockCount = 1;
         metaData->volumeDescriptor.fileTableBlockNum = 0;
-        metaData->volumeDescriptor.allocatedBlockCount = (flags & StfsPackagePEC) ? 0 : 1;
+        metaData->volumeDescriptor.allocatedBlockCount = 1;
         metaData->volumeDescriptor.unallocatedBlockCount = 0;
 
         metaData->dataFileCount = 0;
@@ -99,11 +94,8 @@ void StfsPackage::Parse()
         metaData->WriteMetaData();
 
         // set the first block to allocated
-        if ((flags & StfsPackageCreate) == 0)
-        {
-            io->setPosition(((headerSize + 0xFFF) & 0xFFFFF000) + 0x14);
-            io->write((DWORD)0x80FFFFFF);
-        }
+        io->setPosition(((headerSize + 0xFFF) & 0xFFFFF000) + 0x14);
+        io->write((DWORD)0x80FFFFFF);
     }
 
     packageSex = (Sex)((~metaData->volumeDescriptor.blockSeperation) & 1);
@@ -138,23 +130,20 @@ void StfsPackage::Parse()
     topTable.addressInFile = baseAddress + ((metaData->volumeDescriptor.blockSeperation & 2) << 0xB);
     io->setPosition(topTable.addressInFile);
 
-    if (metaData->volumeDescriptor.allocatedBlockCount != 0)
+    DWORD dataBlocksPerHashTreeLevel[3] = { 1, 0xAA, 0x70E4 };
+
+    // load the information
+    topTable.entryCount = metaData->volumeDescriptor.allocatedBlockCount / dataBlocksPerHashTreeLevel[topLevel];
+    if (metaData->volumeDescriptor.allocatedBlockCount > 0x70E4 && (metaData->volumeDescriptor.allocatedBlockCount % 0x70E4 != 0))
+        topTable.entryCount++;
+    else if (metaData->volumeDescriptor.allocatedBlockCount > 0xAA && (metaData->volumeDescriptor.allocatedBlockCount % 0xAA != 0))
+        topTable.entryCount++;
+
+    for (DWORD i = 0; i < topTable.entryCount; i++)
     {
-        DWORD dataBlocksPerHashTreeLevel[3] = { 1, 0xAA, 0x70E4 };
-
-        // load the information
-        topTable.entryCount = metaData->volumeDescriptor.allocatedBlockCount / dataBlocksPerHashTreeLevel[topLevel];
-        if (metaData->volumeDescriptor.allocatedBlockCount > 0x70E4 && (metaData->volumeDescriptor.allocatedBlockCount % 0x70E4 != 0))
-            topTable.entryCount++;
-        else if (metaData->volumeDescriptor.allocatedBlockCount > 0xAA && (metaData->volumeDescriptor.allocatedBlockCount % 0xAA != 0))
-            topTable.entryCount++;
-
-        for (DWORD i = 0; i < topTable.entryCount; i++)
-        {
-            io->readBytes(topTable.entries[i].blockHash, 0x14);
-            topTable.entries[i].status = io->readByte();
-            topTable.entries[i].nextBlock = io->readInt24();
-        }
+        io->readBytes(topTable.entries[i].blockHash, 0x14);
+        topTable.entries[i].status = io->readByte();
+        topTable.entries[i].nextBlock = io->readInt24();
     }
 
     // set default values for the root of the file listing
@@ -164,8 +153,7 @@ void StfsPackage::Parse()
     fe.entryIndex = 0xFFFF;
     fileListing.folder = fe;
 
-    if (metaData->volumeDescriptor.allocatedBlockCount != 0)
-        ReadFileListing();
+    ReadFileListing();
 }
 
 Level StfsPackage::CalcualateTopLevel()
@@ -1179,7 +1167,6 @@ void StfsPackage::Resign(string kvPath)
     // write the certficate
     memcpy(metaData->certificate.signature, signature, 0x80);
     metaData->WriteCertificate();
-    io->flush();
 }
 
 
@@ -1652,10 +1639,6 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injec
     if(FileExists(pathInPackage))
         throw string("STFS: File already exists in the package.\n");
 
-    // make sure a block is allocated for the file listing
-    if (metaData->volumeDescriptor.allocatedBlockCount == 0)
-        AllocateBlock();
-
     // split the string and open a io
     vector<string> split = SplitString(pathInPackage, "\\");
     FileListing *folder = NULL;
@@ -1785,10 +1768,6 @@ FileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPackage
 {
     if(FileExists(pathInPackage))
         throw string("STFS: File already exists in the package.\n");
-
-    // make sure a block is allocated for the file listing
-    if (metaData->volumeDescriptor.allocatedBlockCount == 0)
-        AllocateBlock();
 
     // split the string and open a io
     vector<string> split = SplitString(pathInPackage, "\\");
