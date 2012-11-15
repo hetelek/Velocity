@@ -136,7 +136,7 @@ public:
     void Close();
 
     // Description: creates a folder in the specified directory
-    void CreateFolder(string pathInPackage);
+    void CreateFolder(const QString &pathInPackage);
 
     ~StfsPackage(void);
 private:

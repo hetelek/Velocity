@@ -2020,10 +2020,10 @@ void StfsPackage::Close()
     io->close();
 }
 
-void StfsPackage::CreateFolder(string pathInPackage)
+void StfsPackage::CreateFolder(const QString &pathInPackage)
 {
     // split the string and open a io
-    vector<string> split = SplitString(pathInPackage, "\\");
+    QVector<QString> split = SplitString(pathInPackage, "\\");
 
     FileListing *folder = NULL;
     FindDirectoryListing(split, &fileListing, &folder);
@@ -2031,7 +2031,7 @@ void StfsPackage::CreateFolder(string pathInPackage)
         throw string("STFS: Directory already exists in the package.\n");
 
     int size = split.size();
-    string fileName;
+    QString fileName;
     if(size > 1)
     {
         // get the name
