@@ -13,7 +13,7 @@ CertificateDialog::CertificateDialog(QStatusBar *statusBar, Certificate *cert, Q
     ui->tableWidget->setItem(1, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(cert->ownerConsoleID, 5, false)));
 
     // set the part number
-    ui->tableWidget->setItem(2, 0, new QTableWidgetItem(QString::fromStdString(cert->ownerConsolePartNumber)));
+    ui->tableWidget->setItem(2, 0, new QTableWidgetItem(cert->ownerConsolePartNumber));
 
     // set the console type
     cmbxConsoleType = new QComboBox;
@@ -36,7 +36,7 @@ CertificateDialog::CertificateDialog(QStatusBar *statusBar, Certificate *cert, Q
     cmbxRecoveryGenerated->setCurrentIndex((cert->consoleTypeFlags & RecoveryGenerated) >> 31);
 
     // set the date of generation
-    ui->tableWidget->setItem(6, 0, new QTableWidgetItem(QString::fromStdString(cert->dateGeneration)));
+    ui->tableWidget->setItem(6, 0, new QTableWidgetItem(cert->dateGeneration));
 
     // set the public exponent
     ui->tableWidget->setItem(7, 0, new QTableWidgetItem("0x" + QString::number(cert->publicExponent, 16).toUpper()));
@@ -95,10 +95,10 @@ void CertificateDialog::on_pushButton_clicked()
 
     cert->publicKeyCertificateSize = QtHelpers::ParseHexString(ui->tableWidget->itemAt(0, 0)->text());
     QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(1, 0)->text(), cert->ownerConsoleID, 5);
-    cert->ownerConsolePartNumber = ui->tableWidget->item(2, 0)->text().toStdString();
+    cert->ownerConsolePartNumber = ui->tableWidget->item(2, 0)->text();
     cert->consoleTypeFlags = (ConsoleTypeFlags)((cmbxTestKit->currentIndex() << 30) | (cmbxRecoveryGenerated->currentIndex() << 31));
     cert->ownerConsoleType = (ConsoleType)(cmbxConsoleType->currentIndex() + 1);
-    cert->dateGeneration = ui->tableWidget->item(6, 0)->text().toStdString();
+    cert->dateGeneration = ui->tableWidget->item(6, 0)->text();
     cert->publicExponent = QtHelpers::ParseHexString(ui->tableWidget->item(7, 0)->text());
 
     statusBar->showMessage("Certificate saved successfully", 3000);

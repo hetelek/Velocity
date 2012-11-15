@@ -3,10 +3,8 @@
 #include "winnames.h"
 #include "../AvatarAsset/AvatarAssetDefinintions.h"
 #include <iostream>
-#include <vector>
 
-using std::vector;
-using std::wstring;
+#include <QVector>
 
 // Description: different types of entries in an XDBF file
 enum EntryType
@@ -51,8 +49,8 @@ struct SyncEntry
 
 struct SyncList
 {
-	vector<SyncEntry> synced;
-	vector<SyncEntry> toSync;
+    QVector<SyncEntry> synced;
+    QVector<SyncEntry> toSync;
 	bool lengthChanged;
 
 	XDBFEntry entry;
@@ -68,7 +66,7 @@ struct SyncData
 
 struct XDBFEntryGroup
 {
-	vector<XDBFEntry> entries;
+    QVector<XDBFEntry> entries;
 	SyncData syncData;
 	SyncList syncs;
 };
@@ -93,7 +91,7 @@ struct SettingEntry
         unsigned int int32;
         INT64 int64;
         double doubleData;
-		wstring *str;
+        std::wstring *str;
         float floatData;
 		struct
 		{
@@ -112,7 +110,7 @@ public:
 
 struct StringEntry
 {
-	wstring ws;
+    std::wstring ws;
 
 	XDBFEntry entry;
 	DWORD initialLength;
@@ -159,9 +157,9 @@ struct AchievementEntry
 	DWORD gamerscore;
 	DWORD flags;
     unsigned int unlockTime;
-	wstring name;
-	wstring lockedDescription;
-	wstring unlockedDescription;
+    std::wstring name;
+    std::wstring lockedDescription;
+    std::wstring unlockedDescription;
 };
 
 enum TitleEntryFlags
@@ -191,7 +189,7 @@ struct TitleEntry
 	BYTE femaleAvatarAwardCount;
 	DWORD flags;
     time_t lastPlayed;
-	wstring gameName;
+    std::wstring gameName;
 };
 
 enum XboxLiveCountry
@@ -426,9 +424,9 @@ struct AvatarAward
     unsigned int unlockTime;
 	AssetSubcategory subcategory;
     DWORD colorizable;
-	wstring name;
-	wstring unlockedDescription;
-	wstring lockedDescription;
+    std::wstring name;
+    std::wstring unlockedDescription;
+    std::wstring lockedDescription;
 };
 
 enum AvatarComponentMasks

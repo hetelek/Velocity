@@ -28,13 +28,10 @@
 
 // other
 #include <iostream>
-#include <vector>
 #include <stdio.h>
 #include "gpduploader.h"
 #include "achievementcreationwizard.h"
 #include "AvatarAssetDownloader.h"
-
-using namespace std;
 
 namespace Ui {
 class ProfileEditor;
@@ -164,8 +161,8 @@ struct GameEntry
     GameGPD *gpd;
     TitleEntry *titleEntry;
     bool updated;
-    string tempFileName;
-    string gpdName;
+    QString tempFileName;
+    QString gpdName;
 };
 
 struct AvatarAwardGameEntry
@@ -174,8 +171,8 @@ struct AvatarAwardGameEntry
     TitleEntry *titleEntry;
     AvatarAwardGPD *gpd;
     bool updated;
-    string tempFileName;
-    string gpdName;
+    QString tempFileName;
+    QString gpdName;
 };
 
 enum State
@@ -256,13 +253,13 @@ private:
     Account *account;
     AvatarAssetDownloader *downloader;
 
-    vector<string> tempFiles;
-    vector<GameEntry> games;
-    vector<AvatarAwardGameEntry> aaGames;
+    QVector<QString> tempFiles;
+    QVector<GameEntry> games;
+    QVector<AvatarAwardGameEntry> aaGames;
 
-    string pecTempPath;
-    string dashGPDTempPath;
-    string accountTempPath;
+    QString pecTempPath;
+    QString dashGPDTempPath;
+    QString accountTempPath;
 
     bool dispose;
     bool *ok;
@@ -280,9 +277,9 @@ private:
     State getStateFromFlags(DWORD flags);
     void saveAll();
     void loadGameInfo(int index);
-    void loadAchievementInfo(int gameIndex, unsigned int chievIndex);
+    void loadAchievementInfo(int gameIndex, int chievIndex);
     void loadAwardGameInfo(int index);
-    void loadAvatarAwardInfo(int gameIndex, unsigned int awardIndex);
+    void loadAvatarAwardInfo(int gameIndex, int awardIndex);
     void showAllGames();
     void showAllAwardGames();
     void saveImage(QPoint p, QLabel *imgLabel);

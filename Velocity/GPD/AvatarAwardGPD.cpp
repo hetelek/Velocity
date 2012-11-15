@@ -1,9 +1,12 @@
 #include "AvatarAwardGPD.h"
+
 #include <sstream>
 
-using std::stringstream;
+#include <QString>
 
-AvatarAwardGPD::AvatarAwardGPD(string gpdPath) : GPDBase(gpdPath)
+#include "../FileIO.h"
+
+AvatarAwardGPD::AvatarAwardGPD(const QString &gpdPath) : GPDBase(gpdPath)
 {
     init();
 }
@@ -21,7 +24,7 @@ void AvatarAwardGPD::CleanGPD()
 void AvatarAwardGPD::init()
 {
     // read in all of the avatar award entries
-    for (DWORD i = 0; i < xdbf->avatarAwards.entries.size(); i++)
+    for (int i = 0; i < xdbf->avatarAwards.entries.size(); i++)
         avatarAwards.push_back(readAvatarAwardEntry(xdbf->avatarAwards.entries.at(i)));
 }
 
@@ -34,7 +37,7 @@ struct AvatarAward AvatarAwardGPD::readAvatarAwardEntry(XDBFEntry entry)
 {
     // make sure the entry passed in is an avatar award
     if (entry.type != AvatarAward)
-        throw string("GPD: Error reading avatar award, specified entry isn't an award.\n");
+        throw QString("GPD: Error reading avatar award, specified entry isn't an award.\n");
 
     struct AvatarAward award;
     award.entry = entry;
@@ -70,48 +73,48 @@ struct AvatarAward AvatarAwardGPD::readAvatarAwardEntry(XDBFEntry entry)
 void AvatarAwardGPD::UnlockAllAwards()
 {
     // iterate through all of the avtar awards
-    for (DWORD i = 0; i < avatarAwards.size(); i++)
+    for (int i = 0; i < avatarAwards.size(); i++)
     {
         // set it to unlocked
-        avatarAwards.at(i).flags |= (Unlocked | 0x100000);
+        avatarAwards[i].flags |= (Unlocked | 0x100000);
 
         // write the flags back to the file
         io->setPosition(xdbf->GetRealAddress(avatarAwards.at(i).entry.addressSpecifier) + 0x18);
         io->write(avatarAwards.at(i).flags);
 
         // update the sync crap
-        xdbf->UpdateEntry(&avatarAwards.at(i).entry);
+        xdbf->UpdateEntry(&avatarAwards[i].entry);
     }
 
     io->flush();
 }
 
-string AvatarAwardGPD::GetGUID(struct AvatarAward *award)
+QString AvatarAwardGPD::GetGUID(struct AvatarAward *award)
 {
     char guid[38];
     WORD *seg = (WORD*)&award->awardFlags;
     sprintf(guid, "%08lx-%04x-%04x-%04x-%04x%08lx", award->clothingType, seg[3], seg[2], seg[1], seg[0], award->titleID);
 
-    return string(guid);
+    return QString(guid);
 }
 
-string AvatarAwardGPD::getAwardImageURL(struct AvatarAward *award, bool little)
+QString AvatarAwardGPD::getAwardImageURL(struct AvatarAward *award, bool little)
 {
-    stringstream url;
+    std::stringstream url;
     url << "http://avatar.xboxlive.com/global/t.";
     url << std::hex << award->titleID << "/avataritem/";
 
-    url << GetGUID(award) << ((little) ? "/64" : "/128");
+    url << GetGUID(award).toStdString() << ((little) ? "/64" : "/128");
 
-    return url.str();
+    return QString::fromStdString(url.str());
 }
 
-string AvatarAwardGPD::GetLittleAwardImageURL(struct AvatarAward *award)
+QString AvatarAwardGPD::GetLittleAwardImageURL(struct AvatarAward *award)
 {
     return getAwardImageURL(award, true);
 }
 
-string AvatarAwardGPD::GetLargeAwardImageURL(struct AvatarAward *award)
+QString AvatarAwardGPD::GetLargeAwardImageURL(struct AvatarAward *award)
 {
     return getAwardImageURL(award, false);
 }
@@ -173,7 +176,7 @@ void AvatarAwardGPD::CreateAvatarAward(struct AvatarAward *award)
 void AvatarAwardGPD::DeleteAvatarAward(struct AvatarAward *award)
 {
     // remove the entry from the list
-    DWORD i;
+    int i;
     for (i = 0 ; i < avatarAwards.size(); i++)
     {
         if (avatarAwards.at(i).entry.id == award->entry.id)
@@ -183,7 +186,7 @@ void AvatarAwardGPD::DeleteAvatarAward(struct AvatarAward *award)
         }
     }
     if (i == avatarAwards.size())
-        throw string("GPD: Error deleting avatar award. Award doesn't exist.\n");
+        throw QString("GPD: Error deleting avatar award. Award doesn't exist.\n");
 
     // delete the entry from the file
     xdbf->DeleteEntry(award->entry);
@@ -193,7 +196,7 @@ WORD AvatarAwardGPD::getNextAwardIndex()
 {
     // get the highest index
     WORD highest = 0;
-    for (DWORD i = 0; i < xdbf->avatarAwards.entries.size(); i++)
+    for (int i = 0; i < xdbf->avatarAwards.entries.size(); i++)
     {
         WORD currentID = (xdbf->avatarAwards.entries.at(i).id & 0xFFFF0000) >> 16;
         if (highest < currentID)

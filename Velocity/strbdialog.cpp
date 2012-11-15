@@ -12,13 +12,13 @@ StrbDialog::StrbDialog(AvatarAsset *asset, QWidget *parent) : QDialog(parent), u
     try
     {
         AssetMetadata metadata = asset->GetAssetMetadata();
-        ui->lblGender->setText("Asset Gender: " + QString::fromStdString(AssetHelpers::AssetGenderToString(metadata.gender)));
-        ui->lblBinType->setText("Binary Type: " + QString::fromStdString(AssetHelpers::BinaryAssetTypeToString(metadata.type)));
+        ui->lblGender->setText("Asset Gender: " + AssetHelpers::AssetGenderToString(metadata.gender));
+        ui->lblBinType->setText("Binary Type: " + AssetHelpers::BinaryAssetTypeToString(metadata.type));
         ui->lblDetails->setText("Type Details: 0x" + QString::number(metadata.assetTypeDetails, 16).toUpper());
-        ui->lblSubCat->setText("Sub-Category: " + QString::fromStdString(AssetHelpers::AssetSubcategoryToString(metadata.category)));
-        ui->lblSkeletonV->setText("Skeleton Version: " + QString::fromStdString(AssetHelpers::SkeletonVersionToString(metadata.skeletonVersion)));
+        ui->lblSubCat->setText("Sub-Category: " + AssetHelpers::AssetSubcategoryToString(metadata.category));
+        ui->lblSkeletonV->setText("Skeleton Version: " + AssetHelpers::SkeletonVersionToString(metadata.skeletonVersion));
     }
-    catch(string error)
+    catch(const QString &error)
     {
         ui->groupBox->setTitle("Metadata - Not Found");
         ui->groupBox->setEnabled(false);
@@ -32,19 +32,20 @@ StrbDialog::StrbDialog(AvatarAsset *asset, QWidget *parent) : QDialog(parent), u
         ui->lblFPS->setText("Frames Per Second: " + QString::number(animation.framesPerSecond));
         ui->lblFrameCnt->setText("Frame Count: " + QString::number(animation.frameCount));
     }
-    catch (string error)
+    catch (const QString &error)
     {
         ui->groupBox_2->setTitle("Animation - Not Found");
         ui->groupBox_2->setEnabled(false);
     }
 
     // load all the blocks
-    for (DWORD i = 0; i < asset->blocks.size(); i++)
+    const QVector<STRBBlock> blocks = asset->GetBlocks();
+    for (int i = 0; i < blocks.size(); i++)
     {
         QTreeWidgetItem *item = new QTreeWidgetItem;
-        item->setText(0, QString::fromStdString(AssetHelpers::BlockIDToString(asset->blocks.at(i).id)));
-        item->setText(1, "0x" + QString::number(asset->blocks.at(i).dataAddress, 16).toUpper());
-        item->setText(2, "0x" + QString::number(asset->blocks.at(i).dataLength, 16).toUpper());
+        item->setText(0, AssetHelpers::BlockIDToString(blocks.at(i).id));
+        item->setText(1, "0x" + QString::number(blocks.at(i).dataAddress, 16).toUpper());
+        item->setText(2, "0x" + QString::number(blocks.at(i).dataLength, 16).toUpper());
 
         ui->treeWidget->insertTopLevelItem(ui->treeWidget->topLevelItemCount(), item);
     }

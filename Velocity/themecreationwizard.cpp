@@ -37,7 +37,7 @@ void ThemeCreationWizard::onFinished(int status)
         return;
     try
     {
-        StfsPackage theme(ui->lblSavePath->text().toStdString(), StfsPackageCreate);
+        StfsPackage theme(ui->lblSavePath->text(), StfsPackageCreate);
 
         // create a new file
         theme.metaData->magic = CON;
@@ -91,7 +91,7 @@ void ThemeCreationWizard::onFinished(int status)
         params.close();
 
         // inject the params file to the theme package
-        theme.InjectFile(paramsFilePath.toStdString(), "parameters.ini");
+        theme.InjectFile(paramsFilePath, "parameters.ini");
 
         // create the dash style file
         QString dashStyleFilePath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
@@ -100,7 +100,7 @@ void ThemeCreationWizard::onFinished(int status)
         ioD.close();
 
         // inject the file
-        theme.InjectFile(dashStyleFilePath.toStdString(), "DashStyle");
+        theme.InjectFile(dashStyleFilePath, "DashStyle");
 
         // fix the package
         theme.Rehash();
@@ -112,9 +112,9 @@ void ThemeCreationWizard::onFinished(int status)
 
         statusBar->showMessage("Theme created successfully", 3000);
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "Error", "An error occured while creating the theme.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error", "An error occured while creating the theme.\n\n" + error);
     }
 }
 
@@ -125,7 +125,7 @@ void ThemeCreationWizard::injectImage(StfsPackage *theme, QImage *image, QString
     buffer.open(QIODevice::WriteOnly);
     image->scaled(1280, 720).save(&buffer, "JPG");
 
-    theme->InjectData((BYTE*)ba.data(), ba.length(), fileName.toStdString());
+    theme->InjectData((BYTE*)ba.data(), ba.length(), fileName);
 }
 
 void ThemeCreationWizard::onCurrentIdChanged(int index)

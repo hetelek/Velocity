@@ -1,26 +1,17 @@
 #pragma once
 
-// other
-#include <iostream>
-#include <stdio.h>
-#include "FileIO.h"
 #include "Account/AccountDefinitions.h"
 #include "GPD/XDBFDefininitions.h"
 #include "Stfs/StfsConstants.h"
 
-// botan
-#include <botan/botan.h>
-#include <botan/sha160.h>
-#include <botan/hmac.h>
-#include <botan/arc4.h>
+#include <QString>
 
-using std::string;
-using std::wstring;
+class FileIO;
 
 class Account
 {
 public:
-    Account(std::string path, bool decrypt = true, ConsoleType type = Retail);
+    Account(const QString &path, bool decrypt = true, ConsoleType type = Retail);
 	~Account(void);
 
 	// Description: returns true if the player has a passcode, false otherwise
@@ -60,7 +51,7 @@ public:
 	ConsoleLanguage GetLanguage();
 
 	// Description: get the player's gamertag
-	wstring GetGamertag();
+    std::wstring GetGamertag();
 
 	// Description: get the player's XUID
 	UINT64 GetXUID();
@@ -72,10 +63,10 @@ public:
 	void GetPasscode(BYTE *passcode);
 
 	// Description: get the onlne domain for XboxLIVE
-	string GetOnlineDomain();
+    QString GetOnlineDomain();
 
 	// Description: get the kerbros realm for XboxLIVE
-	string GetKerbrosRealm();
+    QString GetKerbrosRealm();
 
 	// Description: get the online key for the player
 	void GetOnlineKey(BYTE *outKey);
@@ -126,14 +117,14 @@ private:
 	FileIO *io;
     bool ioPassedIn, decrypt;
 	AccountInfo account;
-    std::string outPath, path;
+    QString outPath, path;
     ConsoleType type;
 
 	void parseFile();
 
 	void writeFile();
 
-    void decryptAccount(std::string encryptedPath, std::string *outPath, ConsoleType type);
-    void encryptAccount(std::string decryptedPath, ConsoleType type, std::string *outPath = NULL);
+    void decryptAccount(const QString &encryptedPath, QString *outPath, ConsoleType type);
+    void encryptAccount(const QString &decryptedPath, ConsoleType type, QString *outPath = NULL);
 };
 

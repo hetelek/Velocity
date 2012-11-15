@@ -3,8 +3,7 @@
 #include <iostream>
 #include "winnames.h"
 
-using std::string;
-using std::wstring;
+#include <QString>
 
 enum PasscodeKeys
 {
@@ -63,13 +62,13 @@ struct AccountInfo
 {
 	DWORD reservedFlags;
 	DWORD liveFlags;
-	wstring gamertag;
+    std::wstring gamertag;
 	UINT64 xuid;
 	DWORD cachedUserFlags;
 	XboxLiveServiceProvider serviceProvider;
 	BYTE passcode[4];
-	string onlineDomain;
-	string kerbrosRealm;
+    QString onlineDomain;
+    QString kerbrosRealm;
 	BYTE onlineKey[0x10];
 };
 

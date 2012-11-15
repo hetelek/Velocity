@@ -4,18 +4,19 @@
 #include "XDBFDefininitions.h"
 #include "XDBFHelpers.h"
 #include "GPDBase.h"
-#include <iostream>
 
-using std::string;
+#include <QVector>
+
+class FileIO;
 
 class AvatarAwardGPD : public GPDBase
 {
 public:
-    AvatarAwardGPD(string gpdPath);
+    AvatarAwardGPD(const QString &gpdPath);
     AvatarAwardGPD(FileIO *io);
     ~AvatarAwardGPD(void);
 
-    vector<struct AvatarAward> avatarAwards;
+    QVector<struct AvatarAward> avatarAwards;
 
     // Description: get the gender of the avatar award passed in
     static AssetGender GetAssetGender(struct AvatarAward *award);
@@ -24,13 +25,13 @@ public:
     void UnlockAllAwards();
 
     // Description: get the URL of the image of the award passed in, hosted on xbox.com, 64x64
-    static string GetLittleAwardImageURL(struct AvatarAward *award);
+    static QString GetLittleAwardImageURL(struct AvatarAward *award);
 
     // Description: get the URL of the image of the award passed in, hosted on xbox.com, 128x128
-    static string GetLargeAwardImageURL(struct AvatarAward *award);
+    static QString GetLargeAwardImageURL(struct AvatarAward *award);
 
     // Description: get the GUID of the avatar award, used in URLs on xbox.com
-    static string GetGUID(struct AvatarAward *award);
+    static QString GetGUID(struct AvatarAward *award);
 
     // Description: write the avatar award back to the gpd
     void WriteAvatarAward(struct AvatarAward *award);
@@ -50,7 +51,7 @@ private:
     struct AvatarAward readAvatarAwardEntry(XDBFEntry entry);
 
     // Description: get the URl of the image of the award passed in, hosted on xbox.com
-    static string getAwardImageURL(struct AvatarAward *award, bool little);
+    static QString getAwardImageURL(struct AvatarAward *award, bool little);
 
     // Description: read in all the stuff that needs to be read at the start
     void init();

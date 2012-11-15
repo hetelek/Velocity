@@ -1,7 +1,9 @@
 #include "renamedialog.h"
 #include "ui_renamedialog.h"
 
-RenameDialog::RenameDialog(QWidget *parent, std::string *newName) :
+#include <QString>
+
+RenameDialog::RenameDialog(QWidget *parent, QString *newName) :
     QDialog(parent),
     ui(new Ui::RenameDialog),
     outName(newName)
@@ -9,7 +11,7 @@ RenameDialog::RenameDialog(QWidget *parent, std::string *newName) :
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
-    ui->leRename->setText(QString::fromStdString(*newName));
+    ui->leRename->setText(*newName);
 }
 
 RenameDialog::~RenameDialog()
@@ -19,7 +21,7 @@ RenameDialog::~RenameDialog()
 
 void RenameDialog::on_pushButton_clicked()
 {
-    *outName = ui->leRename->text().toStdString();
+    *outName = ui->leRename->text();
     close();
 }
 void RenameDialog::on_pushButton_2_clicked()

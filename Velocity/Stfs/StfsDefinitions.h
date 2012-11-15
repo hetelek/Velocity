@@ -3,12 +3,11 @@
 
 #include "winnames.h"
 #include "StfsConstants.h"
-#include "FileIO.h"
-#include <iostream>
-#include <sstream>
 #include <time.h>
 
-using std::string;
+#include <QString>
+
+class FileIO;
 
 enum LicenseType
 {
@@ -48,10 +47,10 @@ struct Certificate
 {
     WORD publicKeyCertificateSize;
     BYTE ownerConsoleID[5];
-    string ownerConsolePartNumber;
+    QString ownerConsolePartNumber;
     ConsoleType ownerConsoleType;
     ConsoleTypeFlags consoleTypeFlags;
-    string dateGeneration;
+    QString dateGeneration;
     DWORD publicExponent;
     BYTE publicModulus[0x80];
     BYTE certificateSignature[0x100];
@@ -77,15 +76,15 @@ void ReadCertificateEx(Certificate *cert, FileIO *io, DWORD address);
 
 void WriteCertificateEx(Certificate *cert, FileIO *io, DWORD address);
 
-string MagicToString(Magic magic);
+QString MagicToString(Magic magic);
 
-string ContentTypeToString(ContentType type);
+QString ContentTypeToString(ContentType type);
 
-string ConsoleTypeToString(ConsoleType type);
+QString ConsoleTypeToString(ConsoleType type);
 
-string ByteSizeToString(int bytes);
+QString ByteSizeToString(int bytes);
 
-string LicenseTypeToString(LicenseType type);
+QString LicenseTypeToString(LicenseType type);
 
 MSTime DWORDToMSTime(DWORD winTime);
 

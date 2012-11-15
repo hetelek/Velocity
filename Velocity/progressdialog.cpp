@@ -22,7 +22,7 @@ void ProgressDialog::startExtracting()
     // get all the stfs file entries
     for (int i = 0; i < filesToExtract.size(); i++)
     {
-        FileEntry temp = package->GetFileEntry(filesToExtract.at(i).toStdString());
+        FileEntry temp = package->GetFileEntry(filesToExtract.at(i));
         if (temp.blocksForFile == 0)
             totalBlocksToExtract++;
         else

@@ -3,6 +3,8 @@
 
 #include <QDialog>
 
+class QString;
+
 namespace Ui {
 class RenameDialog;
 }
@@ -12,7 +14,7 @@ class RenameDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit RenameDialog(QWidget *parent = 0, std::string *newName = 0);
+    explicit RenameDialog(QWidget *parent = 0, QString *newName = 0);
     ~RenameDialog();
     
 private slots:
@@ -22,7 +24,7 @@ private slots:
 
 private:
     Ui::RenameDialog *ui;
-    std::string *outName;
+    QString *outName;
 };
 
 #endif // RENAMEDIALOG_H

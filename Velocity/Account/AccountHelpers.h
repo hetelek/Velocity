@@ -1,22 +1,19 @@
 #pragma once
 
-#include "AccountDefinitions.h"
-#include "GPD/XDBFHelpers.h"
 #include "GPD/XDBFDefininitions.h"
-#include "FileIO.h"
-#include <iostream>
+#include "AccountDefinitions.h"
 
-using std::string;
+#include <QString>
 
 class AccountHelpers
 {
 public:
-	static string CountryToString(XboxLiveCountry country);
+    static QString CountryToString(XboxLiveCountry country);
 
-	static string SubscriptionTeirToString(SubscriptionTeir teir);
+    static QString SubscriptionTeirToString(SubscriptionTeir teir);
 
-	static string ConsoleLanguageToString(ConsoleLanguage language);
+    static QString ConsoleLanguageToString(ConsoleLanguage language);
 
-	static string XboxLiveServiceProviderToString(XboxLiveServiceProvider provider);
+    static QString XboxLiveServiceProviderToString(XboxLiveServiceProvider provider);
 };
 

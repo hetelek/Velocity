@@ -1,218 +1,218 @@
 #include "AssetHelpers.h"
 
-string AssetHelpers::AssetSubcategoryToString(AssetSubcategory category)
+QString AssetHelpers::AssetSubcategoryToString(AssetSubcategory category)
 {
 	switch (category)
 	{
 		case CarryableCarryable:
-			return string("Carryable, Carryable");
+            return QString("Carryable, Carryable");
 		case CostumeCasualSuit:
-			return string("Costume, Casual Suit");
+            return QString("Costume, Casual Suit");
 		case CostumeCostume:
-			return string("Costume, Costume");
+            return QString("Costume, Costume");
 		case CostumeFormalSuit:
-			return string("Costume, Formal Suit");
+            return QString("Costume, Formal Suit");
 		case CostumeLast:
-			return string("Costume, Last");
+            return QString("Costume, Last");
 		case CostumeLongDress:
-			return string("Costume, Long Dress");
+            return QString("Costume, Long Dress");
 		case CostumeShortDress:
-			return string("Costume, Short Dress");
+            return QString("Costume, Short Dress");
 		case EarringsDanglers:
-			return string("Earrings, Danglers");
+            return QString("Earrings, Danglers");
 		case EarringsLargehoops:
-			return string("Earrings, Largehoops");
+            return QString("Earrings, Largehoops");
 		case EarringsSingleDangler:
-			return string("Earrings, Single Dangler");
+            return QString("Earrings, Single Dangler");
 		case EarringsSingleLargeHoop:
-			return string("Earrings, Single Large Hoop");
+            return QString("Earrings, Single Large Hoop");
 		case EarringsSingleSmallHoop:
-			return string("Earrings, Single Small Hoop");
+            return QString("Earrings, Single Small Hoop");
 		case EarringsSingleStud:
-			return string("Earrings, Single Stud");
+            return QString("Earrings, Single Stud");
 		case EarringsSmallHoops:
-			return string("Earrings, Small Hoops");
+            return QString("Earrings, Small Hoops");
 		case EarringsStuds:
-			return string("Earrings, Studs");
+            return QString("Earrings, Studs");
 		case GlassesCostume:
-			return string("Glasses, Costume");
+            return QString("Glasses, Costume");
 		case GlassesGlasses:
-			return string("Glasses, Glasses");
+            return QString("Glasses, Glasses");
 		case GlassesSunglasses:
-			return string("Glasses, Sunglasses");
+            return QString("Glasses, Sunglasses");
 		case GlovesFingerless:
-			return string("Gloves, Fingerless");
+            return QString("Gloves, Fingerless");
 		case GlovesFullFingered:
-			return string("Gloves, Full Fingered");
+            return QString("Gloves, Full Fingered");
 		case HatBaseballCap:
-			return string("Hat, Baseball Cap");
+            return QString("Hat, Baseball Cap");
 		case HatBeanie:
-			return string("Hat, Beanie");
+            return QString("Hat, Beanie");
 		case HatBearskin:
-			return string("Hat, Bearskin");
+            return QString("Hat, Bearskin");
 		case HatBrimmed:
-			return string("Hat, Brimmed");
+            return QString("Hat, Brimmed");
 		case HatCostume:
-			return string("Hat, Costume");
+            return QString("Hat, Costume");
 		case HatFez:
-			return string("Hat, Fez");
+            return QString("Hat, Fez");
 		case HatFlatCap:
-			return string("Hat, Flat Cap");
+            return QString("Hat, Flat Cap");
 		case HatHeadwrap:
-			return string("Hat, Headwrap");
+            return QString("Hat, Headwrap");
 		case HatHelmet:
-			return string("Hat, Helmet");
+            return QString("Hat, Helmet");
 		case HatPeakCap:
-			return string("Hat, Peak Cap");
+            return QString("Hat, Peak Cap");
 		case RingLast:
-			return string("Ring, Last");
+            return QString("Ring, Last");
 		case RingLeft:
-			return string("Ring, Left");
+            return QString("Ring, Left");
 		case RingRight:
-			return string("Ring, Right");
+            return QString("Ring, Right");
 		case ShirtCoat:
-			return string("Shirt, Coat");
+            return QString("Shirt, Coat");
 		case ShirtHoodie:
-			return string("Shirt, Hoodie");
+            return QString("Shirt, Hoodie");
 		case ShirtJacket:
-			return string("Shirt, Jacket");
+            return QString("Shirt, Jacket");
 		case ShirtLongSleeveShirt:
-			return string("Shirt, Long Sleeve Shirt");
+            return QString("Shirt, Long Sleeve Shirt");
 		case ShirtLongSleeveTee:
-			return string("Shirt, Long Sleeve Tee");
+            return QString("Shirt, Long Sleeve Tee");
 		case ShirtPolo:
-			return string("Shirt, Polo");
+            return QString("Shirt, Polo");
 		case ShirtShortSleeveShirt:
-			return string("Shirt, Short Sleeve Shirt");
+            return QString("Shirt, Short Sleeve Shirt");
 		case ShirtSportsTee:
-			return string("Shirt, Sports Tee");
+            return QString("Shirt, Sports Tee");
 		case ShirtSweater:
-			return string("Shirt, Sweater");
+            return QString("Shirt, Sweater");
 		case ShirtTee:
-			return string("Shirt, Tee");
+            return QString("Shirt, Tee");
 		case ShirtVest:
-			return string("Shirt, Vest");
+            return QString("Shirt, Vest");
 		case ShoesCostume:
-			return string("Shoes, Costume");
+            return QString("Shoes, Costume");
 		case ShoesFormal:
-			return string("Shoes, Formal");
+            return QString("Shoes, Formal");
 		case ShoesHeels:
-			return string("Shoes, Heels");
+            return QString("Shoes, Heels");
 		case ShoesHighBoots:
-			return string("Shoes, High Boots");
+            return QString("Shoes, High Boots");
 		case ShoesPumps:
-			return string("Shoes, Pumps");
+            return QString("Shoes, Pumps");
 		case ShoesSandals:
-			return string("Shoes, Sandals");
+            return QString("Shoes, Sandals");
 		case ShoesShortBoots:
-			return string("Shoes, Short Boots");
+            return QString("Shoes, Short Boots");
 		case ShoesTrainers:
-			return string("Shoes, Trainers");
+            return QString("Shoes, Trainers");
 		case TrousersCargo:
-			return string("Trousers, Cargo");
+            return QString("Trousers, Cargo");
 		case TrousersHotpants:
-			return string("Trousers, Hotpants");
+            return QString("Trousers, Hotpants");
 		case TrousersJeans:
-			return string("Trousers, Jeans");
+            return QString("Trousers, Jeans");
 		case TrousersKilt:
-			return string("Trousers, Kilt");
+            return QString("Trousers, Kilt");
 		case TrousersLeggings:
-			return string("Trousers, Leggings");
+            return QString("Trousers, Leggings");
 		case TrousersLongShorts:
-			return string("Trousers, Long Shorts");
+            return QString("Trousers, Long Shorts");
 		case TrousersLongSkirt:
-			return string("Trousers, Long Skirt");
+            return QString("Trousers, Long Skirt");
 		case TrousersShorts:
-			return string("Trousers, Shorts");
+            return QString("Trousers, Shorts");
 		case TrousersShortSkirt:
-			return string("Trousers, Short Skirt");
+            return QString("Trousers, Short Skirt");
 		case TrousersTrousers:
-			return string("Trousers, Trousers");
+            return QString("Trousers, Trousers");
 		case WristwearBands:
-			return string("Wristwear, Bands");
+            return QString("Wristwear, Bands");
 		case WristwearBracelet:
-			return string("Wristwear, Bracelet");
+            return QString("Wristwear, Bracelet");
 		case WristwearSweatbands:
-			return string("Wristwear, Sweatbands");
+            return QString("Wristwear, Sweatbands");
 		case WristwearWatch:
-			return string("Wristwear, Watch");
+            return QString("Wristwear, Watch");
 		default:
-			throw string("Asset: Error converting 'AssetSubcategory' to string, invalid value.\n");
+            throw QString("Asset: Error converting 'AssetSubcategory' to string, invalid value.\n");
 	}
 }
 
-string AssetHelpers::AssetGenderToString(AssetGender gender)
+QString AssetHelpers::AssetGenderToString(AssetGender gender)
 {
 	switch (gender)
 	{
 		case Male:
-			return string("Male");
+            return QString("Male");
 		case Female:
-			return string("Female");
+            return QString("Female");
 		case Both:
-			return string("Both");
+            return QString("Both");
 		default:
-			throw string("Asset: Error converting 'AssetGender' to string, invalid value.");
+            throw QString("Asset: Error converting 'AssetGender' to string, invalid value.");
 	}
 }
 
-string AssetHelpers::SkeletonVersionToString(SkeletonVersion version)
+QString AssetHelpers::SkeletonVersionToString(SkeletonVersion version)
 {
 	switch (version)
 	{
 		case Nxe:
-			return string("Nxe");
+            return QString("Nxe");
 		case Natal:
-			return string("Natal");
+            return QString("Natal");
 		default:
-			throw string("Asset: Invalid 'Skeleton Version' value.\n");
+            throw QString("Asset: Invalid 'Skeleton Version' value.\n");
 	}
 }
 
-string AssetHelpers::BlockIDToString(STRRBBlockId id)
+QString AssetHelpers::BlockIDToString(STRRBBlockId id)
 {
 	switch (id)
 	{
 		case STRBAnimation:
-			return string("Animation");
+            return QString("Animation");
 		case STRBAssetMetadata:
-			return string("Asset Metadata");
+            return QString("Asset Metadata");
 		case STRBAssetMetadataVersioned:
-			return string("Asset Metadata Versioned");
+            return QString("Asset Metadata Versioned");
 		case STRBCustomColorTable:
-			return string("Custom Color Table");
+            return QString("Custom Color Table");
 		case STRBEof:
-			return string("Eof");
+            return QString("Eof");
 		case STRBInvalid:
-			return string("Invalid");
+            return QString("Invalid");
 		case STRBModel:
-			return string("Model");
+            return QString("Model");
 		case STRBShapeOverrides:
-			return string("Shape Overrides");
+            return QString("Shape Overrides");
 		case STRBSkeleton:
-			return string("Skeleton");
+            return QString("Skeleton");
 		case STRBTexture:
-			return string("Texture");
+            return QString("Texture");
 		default:
-			throw string("STRB: Invalid 'STRBBlockId' value.\n");
+            throw QString("STRB: Invalid 'STRBBlockId' value.\n");
 	}
 }
 
-string AssetHelpers::BinaryAssetTypeToString(BinaryAssetType type)
+QString AssetHelpers::BinaryAssetTypeToString(BinaryAssetType type)
 {
 	switch (type)
 	{
 		case Component:
-			return string("Component");
+            return QString("Component");
 		case Texture:
-			return string("Texture");
+            return QString("Texture");
 		case ShapeOverride:
-			return string("ShapeOverride");
+            return QString("ShapeOverride");
 		case Animation:
-			return string("Animation");
+            return QString("Animation");
 		case ShapeOverridePost:
-			return string("ShapeOverridePost");
+            return QString("ShapeOverridePost");
 		default:
-			throw string("Asset: Invalid 'BinaryAssetType' value.\n");
+            throw QString("Asset: Invalid 'BinaryAssetType' value.\n");
 	}
 }

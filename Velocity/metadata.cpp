@@ -621,9 +621,9 @@ void Metadata::on_pushButton_clicked()
         package->metaData->WriteMetaData();
         statusBar->showMessage("Saved metadata successfully", 3000);
     }
-    catch(string error)
+    catch(const QString &error)
     {
-        QMessageBox::critical(this, "Error", "Failed to save metadata.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error", "Failed to save metadata.\n\n" + error);
     }
 
     this->close();

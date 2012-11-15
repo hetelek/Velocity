@@ -56,7 +56,7 @@ TransferFlagsDialog::TransferFlagsDialog(QStatusBar *statusBar, BYTE *flags, QWi
         tempFlag >>= 1;
     }
 
-    for (DWORD i = 0; i < availableFlags.size(); i++)
+    for (int i = 0; i < availableFlags.size(); i++)
         ui->comboBox->addItem(availableFlags.at(i).name);
 
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);

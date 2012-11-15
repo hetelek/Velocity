@@ -1,14 +1,15 @@
 #include "AvatarAsset.h"
 
+#include "FileIO.h"
 
-AvatarAsset::AvatarAsset(string assetPath) : ioPassedIn(false)
+AvatarAsset::AvatarAsset(const QString &assetPath) : ioPassedIn(false)
 {
 	metadata.gender = (AssetGender)0;
 	customColors.entries = NULL;
 	customColors.count = 0;
 	animation.frameCount = 0;
 
-	io = new FileIO(assetPath);
+    io = new FileIO(assetPath.toStdString());
 	readHeader();
 	readBlocks();
 }
@@ -31,7 +32,7 @@ void AvatarAsset::readHeader()
 	// read in the magic to verify the file
 	header.magic = io->readDword();
 	if (header.magic != 0x53545242)
-		throw string("STRB: Invalid magic.\n");
+        throw QString("STRB: Invalid magic.\n");
 
 	// read in the rest of the header
 	header.blockAlignmentStored = (bool)io->readByte();
@@ -54,7 +55,7 @@ void AvatarAsset::readHeader()
 void AvatarAsset::readBlocks()
 {
 	DWORD prevAddress = header.blockStartAddress, prevDataLen = 0;
-	io->setPosition(0, ios_base::end);
+    io->setPosition(0, std::ios_base::end);
 	DWORD fileSize = io->getPosition();
 
 	for (;;)
@@ -87,7 +88,7 @@ void AvatarAsset::readBlocks()
 
 		// check the values read in
 		if (block.dataLength < 0 || block.fieldSize == 0 || (block.dataLength % block.fieldSize) != 0)
-			throw string("STRB: Invalid block header value(s).\n");
+            throw QString("STRB: Invalid block header value(s).\n");
 
 		prevAddress = curBlockAddress + header.blockHeaderSize;
 		block.dataAddress = prevAddress;
@@ -195,7 +196,12 @@ void AvatarAsset::ReadBlockData(STRBBlock *block)
 	io->setPosition(block->dataAddress);
 
 	// read in the block data
-	io->readBytes(block->data, block->dataLength);
+    io->readBytes(block->data, block->dataLength);
+}
+
+const QVector<STRBBlock> &AvatarAsset::GetBlocks()
+{
+    return blocks;
 }
 
 void AvatarAsset::readAnimationInfo(DWORD pos)
@@ -225,7 +231,7 @@ void AvatarAsset::readAnimationInfo(DWORD pos)
 DWORD AvatarAsset::roundUpToBlockAlignment(DWORD valueToRound)
 {
     if (((header.blockAlignment & (header.blockAlignment - 1)) != 0) || (header.blockAlignment == 0))
-		throw string("STRB: Error when rounding.\n");
+        throw QString("STRB: Error when rounding.\n");
     int blockAlignment = header.blockAlignment;
     return (((valueToRound + blockAlignment) - 1) & ~(blockAlignment - 1));
 }
@@ -233,7 +239,7 @@ DWORD AvatarAsset::roundUpToBlockAlignment(DWORD valueToRound)
 ColorTable AvatarAsset::GetCustomColorTable()
 {
 	if (customColors.entries == NULL)
-		throw string("Asset: No color table found for asset.\n");
+        throw QString("Asset: No color table found for asset.\n");
 
 	return customColors;
 }
@@ -241,7 +247,7 @@ ColorTable AvatarAsset::GetCustomColorTable()
 struct Animation AvatarAsset::GetAnimation()
 {
 	if (animation.frameCount == 0)
-		throw string("Asset: No animation found for asset.\n");
+        throw QString("Asset: No animation found for asset.\n");
 
 	return animation;
 }
@@ -250,7 +256,7 @@ AssetMetadata AvatarAsset::GetAssetMetadata()
 {
 	// if the metadata doesn't exist then we need to throw an error
 	if (metadata.gender == 0)
-		throw string("Asset: No metadata available for asset.\n");
+        throw QString("Asset: No metadata available for asset.\n");
 
 	return metadata;
 }
@@ -269,7 +275,7 @@ AvatarAsset::~AvatarAsset(void)
 		delete customColors.entries;
 
 	// cleanup the blocks
-	for (DWORD i = 0; i < blocks.size(); i++)
+    for (int i = 0; i < blocks.size(); i++)
 		if (blocks.at(i).data != NULL)
 			delete blocks.at(i).data;
 }

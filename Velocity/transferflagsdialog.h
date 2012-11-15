@@ -10,9 +10,8 @@
 // other
 #include "winnames.h"
 #include <iostream>
-#include <vector>
 
-using namespace std;
+#include <QVector>
 
 namespace Ui {
 class TransferFlagsDialog;
@@ -46,8 +45,8 @@ private:
     BYTE *flags;
     QStatusBar *statusBar;
 
-    vector<Flag> availableFlags;
-    vector<Flag> usedFlags;
+    QVector<Flag> availableFlags;
+    QVector<Flag> usedFlags;
 };
 
 #endif // TRANSFERFLAGSDIALOG_H

@@ -1,9 +1,13 @@
 #include "XDBF.h"
 #include <stdio.h>
 
-XDBF::XDBF(string gpdPath) : ioPassedIn(false)
+#include <algorithm>
+
+#include "../FileIO.h"
+
+XDBF::XDBF(const QString &gpdPath) : ioPassedIn(false)
 {
-    io = new FileIO(gpdPath);
+    io = new FileIO(gpdPath.toStdString());
 
     init();
     readHeader();
@@ -25,7 +29,7 @@ void XDBF::Clean()
 {
     // create a temporary file to write the old GPD's used memory to
     char *tempFileName = tmpnam(NULL);
-    FileIO tempFile(string((char*)tempFileName), true);
+    FileIO tempFile(std::string((char*)tempFileName), true);
 
     // write the old header
     tempFile.setPosition(0);
@@ -73,7 +77,7 @@ void XDBF::Clean()
     // move the temp file to the old file's location
     rename(tempFileName, io->getFilePath().c_str());
 
-    string path = io->getFilePath();
+    std::string path = io->getFilePath();
     delete io;
     io = new FileIO(path);
 
@@ -95,19 +99,19 @@ void XDBF::Clean()
 void XDBF::writeNewEntryGroup(XDBFEntryGroup *group, FileIO *newIO)
 {
     // iterate through all of the entries
-    for (DWORD i = 0; i < group->entries.size(); i++)
-        writeNewEntry(&group->entries.at(i), newIO);
+    for (int i = 0; i < group->entries.size(); i++)
+        writeNewEntry(&group->entries[i], newIO);
 
     // write the sync crap
     writeNewEntry(&group->syncs.entry, newIO);
     writeNewEntry(&group->syncData.entry, newIO);
 }
 
-void XDBF::writeNewEntryGroup(vector<XDBFEntry> *group, FileIO *newIO)
+void XDBF::writeNewEntryGroup(QVector<XDBFEntry> *group, FileIO *newIO)
 {
     // iterate through all of the entries
-    for (DWORD i = 0; i < group->size(); i++)
-        writeNewEntry(&group->at(i), newIO);
+    for (int i = 0; i < group->size(); i++)
+        writeNewEntry(&(*group)[i], newIO);
 }
 
 void XDBF::writeNewEntry(XDBFEntry *entry, FileIO *newIO)
@@ -158,7 +162,7 @@ void XDBF::readHeader()
     // ensure the magic is correct
     header.magic = io->readDword();
     if (header.magic != 0x58444246)
-        throw string("XDBF: Invalid magic.\n");
+        throw QString("XDBF: Invalid magic.\n");
 
     // read in the rest of the header
     header.version = io->readDword();
@@ -196,7 +200,7 @@ SyncData XDBF::readSyncData(XDBFEntry entry)
 {
     // make sure the entry passed in is sync data
     if (entry.type == Image || entry.type == String || (entry.id != 0x200000000 && entry.id != 2))
-        throw string("XDBF: Error reading sync list. Specified entry isn't a sync list.\n");
+        throw QString("XDBF: Error reading sync list. Specified entry isn't a sync list.\n");
 
     // preserve io position
     DWORD pos = (DWORD)io->getPosition();
@@ -237,7 +241,7 @@ SyncList XDBF::readSyncList(XDBFEntry entry)
 {
     // make sure the entry passed in is a sync list
     if (entry.type == Image || entry.type == String || (entry.id != 0x100000000 && entry.id != 1))
-        throw string("XDBF: Error reading sync list. Specified entry isn't a sync list.\n");
+        throw QString("XDBF: Error reading sync list. Specified entry isn't a sync list.\n");
 
     // preserve io position
     DWORD pos = (DWORD)io->getPosition();
@@ -286,7 +290,7 @@ void XDBF::writeSyncList(SyncList *syncs)
     io->setPosition(GetRealAddress(syncs->entry.addressSpecifier));
 
     // write the synced ones
-    for (DWORD i = 0; i < syncs->synced.size(); i++)
+    for (int i = 0; i < syncs->synced.size(); i++)
     {
         io->write(syncs->synced.at(i).entryID);
         io->write(syncs->synced.at(i).syncValue);
@@ -323,7 +327,7 @@ DWORD XDBF::GetSpecifier(DWORD address)
 {
     DWORD headerSize = (header.entryTableLength * 0x12) + (header.freeMemTableLength * 8) + 0x18;
     if (address < headerSize)
-        throw string("XDBF: Invalid address for converting.\n");
+        throw QString("XDBF: Invalid address for converting.\n");
     return address - headerSize;
 }
 
@@ -345,7 +349,7 @@ XDBFEntry XDBF::CreateEntry(EntryType type, UINT64 id, DWORD size)
     }
 
     // make sure the entry doesn't already exist
-    vector<XDBFEntry> *entries;
+    QVector<XDBFEntry> *entries;
     switch (entry.type)
     {
         case Achievement:
@@ -367,11 +371,11 @@ XDBFEntry XDBF::CreateEntry(EntryType type, UINT64 id, DWORD size)
             entries = &avatarAwards.entries;
             break;
         default:
-            throw string("XDBF: Error creating entry. Invalid entry type.\n");
+            throw QString("XDBF: Error creating entry. Invalid entry type.\n");
     }
-    for (DWORD i = 0; i < entries->size(); i++)
+    for (int i = 0; i < entries->size(); i++)
         if (entries->at(i).id == entry.id)
-            throw string("XDBF: Error creating entry. Entry already exists.\n");
+            throw QString("XDBF: Error creating entry. Entry already exists.\n");
 
     // allocate memory for the entry
     entry.addressSpecifier = GetSpecifier(AllocateMemory(size));
@@ -459,11 +463,11 @@ DWORD XDBF::AllocateMemory(DWORD size)
     if (index == (freeMemory.size() - 1))
     {
         // get the position in the file of the memory allocated
-        io->setPosition(0, ios_base::end);
+        io->setPosition(0, std::ios_base::end);
         toReturn = (DWORD)io->getPosition();
 
         io->flush();
-        io->setPosition(size - 1, ios_base::end);
+        io->setPosition(size - 1, std::ios_base::end);
         io->write((BYTE)0);
         io->flush();
     }
@@ -536,7 +540,7 @@ void XDBF::readEntryGroup(XDBFEntryGroup *group, EntryType type)
     io->setPosition((DWORD)io->getPosition() - 0x12);
 }
 
-void XDBF::readEntryGroup(vector<XDBFEntry> *group, EntryType type)
+void XDBF::readEntryGroup(QVector<XDBFEntry> *group, EntryType type)
 {
     XDBFEntry entry;
 
@@ -599,23 +603,23 @@ void XDBF::writeEntryListing()
 void XDBF::writeFreeMemTable()
 {
     // update the last free memory table entry
-    io->setPosition(0, ios_base::end);
+    io->setPosition(0, std::ios_base::end);
     DWORD temp = GetSpecifier(io->getPosition());
-    freeMemory.at(freeMemory.size() - 1).addressSpecifier = temp;
-    freeMemory.at(freeMemory.size() - 1).length = (0xFFFFFFFF - temp);
+    freeMemory[freeMemory.size() - 1].addressSpecifier = temp;
+    freeMemory[freeMemory.size() - 1].length = (0xFFFFFFFF - temp);
 
     // seek to the free memory table position
     io->setPosition(0x18 + (header.entryTableLength * 0x12));
 
     // write the table
-    for (DWORD i = 0; i < freeMemory.size(); i++)
+    for (int i = 0; i < freeMemory.size(); i++)
     {
         io->write(freeMemory.at(i).addressSpecifier);
         io->write(freeMemory.at(i).length);
     }
 
     // null out the rest of the table
-    for (DWORD i = 0; i < (header.freeMemTableLength - freeMemory.size()); i++)
+    for (int i = 0; i < (header.freeMemTableLength - freeMemory.size()); i++)
         io->write((UINT64)0);
 }
 
@@ -643,14 +647,14 @@ void XDBF::writeEntryGroup(XDBFEntryGroup *group)
             writeEntry(&group->syncData.entry);
 
         // write all the entries
-        for (DWORD i = 0; i < group->entries.size(); i++)
-            writeEntry(&group->entries.at(i));
+        for (int i = 0; i < group->entries.size(); i++)
+            writeEntry(&group->entries[i]);
     }
     else
     {
         // write all the entries
-        for (DWORD i = 0; i < group->entries.size(); i++)
-            writeEntry(&group->entries.at(i));
+        for (int i = 0; i < group->entries.size(); i++)
+            writeEntry(&group->entries[i]);
 
         // write the sync stuffs
         if (group->syncs.entry.type != 0)
@@ -660,13 +664,13 @@ void XDBF::writeEntryGroup(XDBFEntryGroup *group)
     }
 }
 
-void XDBF::writeEntryGroup(vector<XDBFEntry> *group)
+void XDBF::writeEntryGroup(QVector<XDBFEntry> *group)
 {
     std::sort(group->begin(), group->end(), compareEntries);
 
     // write all the entries
-    for (DWORD i = 0; i < group->size(); i++)
-        writeEntry(&group->at(i));
+    for (int i = 0; i < group->size(); i++)
+        writeEntry(&(*group)[i]);
 }
 
 void XDBF::writeEntry(XDBFEntry *entry)
@@ -699,16 +703,16 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
             group = &avatarAwards;
             break;
         default:
-            throw string("XDBF: Error updating entry. Invalid entry type.\n");
+            throw QString("XDBF: Error updating entry. Invalid entry type.\n");
     }
 
     // find the entry in the table and update it
-    for (DWORD i = 0; i < group->entries.size(); i++)
+    for (int i = 0; i < group->entries.size(); i++)
     {
         if (group->entries.at(i).id == entry->id)
         {
-            group->entries.at(i).addressSpecifier = entry->addressSpecifier;
-            group->entries.at(i).length = entry->length;
+            group->entries[i].addressSpecifier = entry->addressSpecifier;
+            group->entries[i].length = entry->length;
         }
     }
 
@@ -729,7 +733,7 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
     }
 
     // find the sync if it isn't already in the queue
-    for (DWORD i = 0; i < group->syncs.synced.size(); i++)
+    for (int i = 0; i < group->syncs.synced.size(); i++)
     {
         if (group->syncs.synced.at(i).entryID == entry->id)
         {
@@ -756,7 +760,7 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
 void XDBF::RewriteEntry(XDBFEntry entry, BYTE *entryBuffer)
 {
     // get the entry list
-    vector<XDBFEntry> *entryList;
+    QVector<XDBFEntry> *entryList;
     switch (entry.type)
     {
         case Achievement:
@@ -778,23 +782,23 @@ void XDBF::RewriteEntry(XDBFEntry entry, BYTE *entryBuffer)
             entryList = &avatarAwards.entries;
             break;
         default:
-            throw string("XDBF: Error rewriting entry, entry type not supported.\n");
+            throw QString("XDBF: Error rewriting entry, entry type not supported.\n");
     }
 
     // make sure the entry already exists
-    DWORD i;
+    int i;
     for (i = 0; i < entryList->size(); i++)
         if (entryList->at(i).id == entry.id)
             break;
     if (i == entryList->size())
-        throw string("XDBF: Error rewriting entry, entry not found.\n");
+        throw QString("XDBF: Error rewriting entry, entry not found.\n");
 
     // if the size has changed, then we need to reallocate memory
     if (entry.length != entryList->at(i).length)
     {
         DeallocateMemory(entryList->at(i).addressSpecifier, entryList->at(i).length);
-        entryList->at(i).addressSpecifier = entry.length = GetSpecifier(AllocateMemory(entry.length));
-        entryList->at(i).length = entry.length;
+        (*entryList)[i].addressSpecifier = entry.length = GetSpecifier(AllocateMemory(entry.length));
+        (*entryList)[i].length = entry.length;
     }
 
     // write the entry
@@ -802,14 +806,14 @@ void XDBF::RewriteEntry(XDBFEntry entry, BYTE *entryBuffer)
     io->write(entryBuffer, entry.length);
 
     // update the file
-    UpdateEntry(&entryList->at(i));
+    UpdateEntry(&(*entryList)[i]);
     writeEntryListing();
 }
 
 void XDBF::DeleteEntry(XDBFEntry entry)
 {
     // make sure that the entry exists
-    vector<XDBFEntry> *entries;
+    QVector<XDBFEntry> *entries;
     XDBFEntryGroup *group = 0;
     switch (entry.type)
     {
@@ -836,15 +840,15 @@ void XDBF::DeleteEntry(XDBFEntry entry)
             group = &avatarAwards;
             break;
         default:
-            throw string("XDBF: Error deleting entry. Invalid entry type.\n");
+            throw QString("XDBF: Error deleting entry. Invalid entry type.\n");
     }
-    DWORD index;
+    int index;
     for (index = 0; index < entries->size(); index++)
         if (entries->at(index).id == entry.id)
             break;
     // if the entry doesn't exist then we have some problems
     if (index == entries->size())
-        throw string("XDBF: Error deleting entry. Specified entry doesn't exist.");
+        throw QString("XDBF: Error deleting entry. Specified entry doesn't exist.");
 
     // deallocate the entry's memory
     DeallocateMemory(GetRealAddress(entry.addressSpecifier), entry.length);
@@ -860,13 +864,13 @@ void XDBF::DeleteEntry(XDBFEntry entry)
         case Title:
         case AvatarAward:
             // find the sync and delete it
-            for (DWORD i = 0; i < group->syncs.synced.size(); i++)
+            for (int i = 0; i < group->syncs.synced.size(); i++)
                 if (group->syncs.synced.at(i).entryID == entry.id)
                 {
                     group->syncs.synced.erase(group->syncs.synced.begin() + i);
                     goto writeSyncs;
                 }
-            for (DWORD i = 0; i < group->syncs.toSync.size(); i++)
+            for (int i = 0; i < group->syncs.toSync.size(); i++)
                 if (group->syncs.toSync.at(i).entryID == entry.id)
                 {
                     group->syncs.toSync.erase(group->syncs.toSync.begin() + i);
@@ -878,7 +882,7 @@ void XDBF::DeleteEntry(XDBFEntry entry)
                 break;
 
         default:
-            throw string("XDBF: Error deleting entry. Invalid entry type.\n");
+            throw QString("XDBF: Error deleting entry. Invalid entry type.\n");
     }
 
     // re-write the entry table

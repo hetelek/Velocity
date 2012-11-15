@@ -1,21 +1,18 @@
 #pragma once
 
-#include <iostream>
 #include "AvatarAssetDefinintions.h"
-
-using std::string;
+#include <QString>
 
 class AssetHelpers
 {
 public:
-	static string AssetSubcategoryToString(AssetSubcategory category);
+    static QString AssetSubcategoryToString(AssetSubcategory category);
 
-	static string AssetGenderToString(AssetGender gender);
+    static QString AssetGenderToString(AssetGender gender);
 
-	static string BinaryAssetTypeToString(BinaryAssetType type);
+    static QString BinaryAssetTypeToString(BinaryAssetType type);
 
-	static string SkeletonVersionToString(SkeletonVersion version);
+    static QString SkeletonVersionToString(SkeletonVersion version);
 
-	static string BlockIDToString(STRRBBlockId id);
+    static QString BlockIDToString(STRRBBlockId id);
 };
-

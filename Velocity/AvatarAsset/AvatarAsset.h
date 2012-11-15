@@ -1,21 +1,18 @@
 #pragma once
 
-#include "FileIO.h"
 #include "AvatarAssetDefinintions.h"
-#include <iostream>
-#include <vector>
 
-using std::string;
-using std::vector;
+class FileIO;
+
+#include <QVector>
+#include <QString>
 
 class AvatarAsset
 {
 public:
-	AvatarAsset(string assetPath);
+    AvatarAsset(const QString &assetPath);
 	AvatarAsset(FileIO *io);
 	~AvatarAsset(void);
-
-	vector<STRBBlock> blocks;
 
 	// Description: retrieve the metadata that describes the asset
 	AssetMetadata GetAssetMetadata();
@@ -29,8 +26,12 @@ public:
 	// Description: read the block's data in
 	void ReadBlockData(STRBBlock *block);
 
+    const QVector<STRBBlock> &GetBlocks();
 private:
-	FileIO *io;
+
+    QVector<STRBBlock> blocks;
+
+    FileIO *io;
 	bool ioPassedIn;
 	STRBHeader header;
 	AssetMetadata metadata;

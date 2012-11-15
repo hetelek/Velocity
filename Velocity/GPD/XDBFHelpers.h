@@ -5,15 +5,15 @@
 #include <iostream>
 #include <time.h>
 
-using std::string;
+#include <QString>
 
 class XDBFHelpers
 {
 public:
 
-	static string EntryTypeToString(EntryType type);
+    static QString EntryTypeToString(EntryType type);
 
-	static string SettingEntryTypeToString(SettingEntryType type);
+    static QString SettingEntryTypeToString(SettingEntryType type);
 
 	static bool CompareEntries(XDBFEntry a, XDBFEntry b);
 
@@ -21,15 +21,15 @@ public:
 
     static FILETIME TimeTtoFILETIME(time_t time);
 
-    static string AchievementTypeToString(AchievementFlags type);
+    static QString AchievementTypeToString(AchievementFlags type);
 
-	static string RegionIDtoString(XboxLiveCountry id);
+    static QString RegionIDtoString(XboxLiveCountry id);
 
-	static string AssetSubcategoryToString(AssetSubcategory category);
+	static QString AssetSubcategoryToString(AssetSubcategory category);
 
-	static string AssetGenderToString(AssetGender gender);
+	static QString AssetGenderToString(AssetGender gender);
 
-	static string IDtoString(UINT64 id);
+    static QString IDtoString(UINT64 id);
 
-    static string GetAchievementState(AchievementEntry *entry);
+    static QString GetAchievementState(AchievementEntry *entry);
 };

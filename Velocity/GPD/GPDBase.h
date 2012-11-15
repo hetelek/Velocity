@@ -1,25 +1,27 @@
 #pragma once
 
 #include <iostream>
+
 #include "XDBF.h"
 #include "XDBFDefininitions.h"
-#include <vector>
 
-using std::string;
-using std::vector;
+class FileIO;
+
+#include <QString>
+#include <QVector>
 
 class GPDBase
 {
 public:
     GPDBase(FileIO *io);
-    GPDBase(string gpdPath);
+    GPDBase(const QString &gpdPath);
 
     ~GPDBase(void);
     XDBF *xdbf;
 
-    vector<ImageEntry> images;
-    vector<StringEntry> strings;
-    vector<SettingEntry> settings;
+    QVector<ImageEntry> images;
+    QVector<StringEntry> strings;
+    QVector<SettingEntry> settings;
 
     // Description: delete the setting entry passed in from the xdbf file
     void DeleteSettingEntry(SettingEntry setting);
@@ -48,7 +50,7 @@ protected:
 
 private:
     // Description: read the string entry passed in
-    wstring readStringEntry(XDBFEntry entry);
+    std::wstring readStringEntry(XDBFEntry entry);
 
     // Description: read the setting entry passed in
     SettingEntry readSettingEntry(XDBFEntry entry);

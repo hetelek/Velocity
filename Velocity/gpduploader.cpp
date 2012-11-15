@@ -38,17 +38,17 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
         GameGPD *gpd;
         try
         {
-            gpd = new GameGPD(gamePath.toStdString());
+            gpd = new GameGPD(gamePath);
         }
-        catch (string error)
+        catch (const QString &error)
         {
-            qDebug() << titleID << " Error: " << QString::fromStdString(error);
+            qDebug() << titleID << " Error: " << error;
             return;
         }
 
         // calculate total gamerscore
         int totalGamerscore = 0;
-        for (DWORD x = 0; x < gpd->achievements.size(); x++)
+        for (int x = 0; x < gpd->achievements.size(); x++)
             totalGamerscore += gpd->achievements.at(x).gamerscore;
 
         // check for award GPD
@@ -56,10 +56,10 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
         if (QFile::exists(awardPath))
         {
             // open the award gpd, get the amount of awards
-            AvatarAwardGPD agpd(awardPath.toStdString());
+            AvatarAwardGPD agpd(awardPath);
             awards = agpd.avatarAwards.size();
 
-            for (DWORD x = 0; x < agpd.avatarAwards.size(); x++)
+            for (int x = 0; x < agpd.avatarAwards.size(); x++)
             {
                 struct AvatarAward award = agpd.avatarAwards.at(x);
                 AssetGender g = AvatarAwardGPD::GetAssetGender(&award);
@@ -102,7 +102,7 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
         }
 
         // lock all achievements
-        for (DWORD x = 0; x < gpd->achievements.size(); x++)
+        for (int x = 0; x < gpd->achievements.size(); x++)
         {
             AchievementEntry chiev = gpd->achievements.at(x);
             chiev.flags &= 0xF;
@@ -124,9 +124,9 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
         // send the GPD(s) to the server
         sendRequest(gamePath, (QFile::exists(awardPath)) ? awardPath : "", titleName, titleID, achievementCount, totalGamerscore, awards, mAwards, fAwards);
     }
-    catch (string s)
+    catch (const QString &s)
     {
-        qDebug() << QString::fromStdString(s) + "\r\n" + gamePath;
+        qDebug() << s + "\r\n" + gamePath;
         return;
     }
     catch(...)

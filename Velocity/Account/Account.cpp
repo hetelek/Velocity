@@ -1,17 +1,32 @@
 #include "Account.h"
 
-Account::Account(std::string path, bool decrypt, ConsoleType type) : ioPassedIn(false), decrypt(decrypt), path(path), type(type)
+#include <QString>
+#include <QFile>
+
+// other
+#include <iostream>
+#include <stdio.h>
+#include "FileIO.h"
+
+// botan
+#include <botan/botan.h>
+#include <botan/sha160.h>
+#include <botan/hmac.h>
+#include <botan/arc4.h>
+
+
+Account::Account(const QString &path, bool decrypt, ConsoleType type) : ioPassedIn(false), decrypt(decrypt), path(path), type(type)
 {
     Botan::LibraryInitializer init;
 
     if (decrypt)
     {
         decryptAccount(path, &outPath, type);
-        io = new FileIO(outPath);
+        io = new FileIO(outPath.toStdString());
     }
     else
     {
-        io = new FileIO(path);
+        io = new FileIO(path.toStdString());
         outPath = path;
     }
 
@@ -39,9 +54,9 @@ void Account::parseFile()
 	account.passcode[2] = io->readByte();
 	account.passcode[3] = io->readByte();
 
-	account.onlineDomain = io->readString(20);
+    account.onlineDomain = QString::fromStdString(io->readString(20));
 	io->setPosition(0x50);
-	account.kerbrosRealm = io->readString(24);
+    account.kerbrosRealm = QString::fromStdString(io->readString(24));
 	
 	io->readBytes(account.onlineKey, 0x10);
 }
@@ -167,7 +182,7 @@ void Account::SetLanguage(ConsoleLanguage language)
 	account.cachedUserFlags |= (language << 25);
 }
 
-void Account::SetGamertag(wstring gamertag)
+void Account::SetGamertag(std::wstring gamertag)
 {
     account.gamertag = gamertag;
 }
@@ -189,10 +204,10 @@ void Account::Save(ConsoleType type)
     encryptAccount(outPath, type, &path);
 }
 
-void Account::decryptAccount(std::string encryptedPath, std::string *outPath, ConsoleType type)
+void Account::decryptAccount(const QString &encryptedPath, QString *outPath, ConsoleType type)
 {
     // open the encrypted file
-    FileIO encIo(encryptedPath);
+    FileIO encIo(encryptedPath.toStdString());
     BYTE hmacHash[0x10];
     BYTE rc4Key[0x14];
 
@@ -240,12 +255,12 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
     hmacSha1.final(confoundPayloadHash);
 
     if (memcmp(confoundPayloadHash, hmacHash, 0x10) != 0)
-        throw string("Account: Account decryption failed.\n");
+        throw QString("Account: Account decryption failed.\n");
 
 
     // write the payload
-    *outPath = std::string(tmpnam(NULL));
-    FileIO decrypted(*outPath, true);
+    *outPath = QString(tmpnam(NULL));
+    FileIO decrypted(outPath->toStdString(), true);
     decrypted.write(payload, 0x17C);
     decrypted.flush();
 
@@ -254,9 +269,9 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
     encIo.close();
 }
 
-void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::string *outPath)
+void Account::encryptAccount(const QString &decryptedPath, ConsoleType type, QString *outPath)
 {
-    FileIO decIo(decryptedPath);
+    FileIO decIo(decryptedPath.toStdString());
     BYTE decryptedData[0x184];
 
     // copy in the the confounder
@@ -282,8 +297,8 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
 
     // begin writing the payload
     if (outPath == NULL)
-        *outPath = std::string(tmpnam(NULL));
-    FileIO encrypted(*outPath, true);
+        *outPath = QString(tmpnam(NULL));
+    FileIO encrypted(outPath->toStdString(), true);
     encrypted.write(hmacHash, 0x10);
 
     // generate the rc4 key
@@ -337,10 +352,10 @@ void Account::writeFile()
 	io->write(account.passcode[2]);
 	io->write(account.passcode[3]);
 
-	io->write(account.onlineDomain);
+    io->write(account.onlineDomain.toStdString());
 
 	io->setPosition(0x50);
-	io->write(account.kerbrosRealm);
+    io->write(account.kerbrosRealm.toStdString());
 
 	io->setPosition(0x68);
 	io->write(account.onlineKey, 0x10);
@@ -376,14 +391,14 @@ void Account::GetPasscode(BYTE *passcode)
     memcpy(passcode, account.passcode, 4);
 }
 
-string Account::GetOnlineDomain()
+QString Account::GetOnlineDomain()
 {
-	return account.onlineDomain;
+    return account.onlineDomain;
 }
 
-string Account::GetKerbrosRealm()
+QString Account::GetKerbrosRealm()
 {
-	return account.kerbrosRealm;
+    return account.kerbrosRealm;
 }
 
 void Account::GetOnlineKey(BYTE *outKey)
@@ -391,7 +406,7 @@ void Account::GetOnlineKey(BYTE *outKey)
 	memcpy(outKey, account.onlineKey, 0x10);
 }
 
-wstring Account::GetGamertag()
+std::wstring Account::GetGamertag()
 {
 	return account.gamertag;
 }
@@ -400,5 +415,5 @@ Account::~Account(void)
 {
     io->close();
     delete io;
-    remove(outPath.c_str());
+    QFile::remove(outPath);
 }

@@ -1,10 +1,19 @@
 #include "FileIO.h"
 
+#include <QString>
+
+using std::string;
+using std::wstring;
+using std::fstream;
+using std::streampos;
+using std::ios_base;
+
+
 FileIO::FileIO(string path, bool truncate) : filePath(path)
 {
     fstr = new fstream(path.c_str(), (std::_Ios_Openmode)(fstream::in | fstream::out | fstream::binary | (fstream::trunc * truncate)));
     if (!fstr->is_open())
-        throw std::string("FileIO: Error opening the file. " + string(strerror(errno)) + "\n");
+        throw QString("FileIO: Error opening the file. %1\n").arg(errno);
 	endian = BigEndian;
 }
 
@@ -68,7 +77,7 @@ UINT64 FileIO::readMultiByte(size_t size)
 	case 8:
 		return readUInt64();
 	default:
-		throw string("FileIO: Invalid multi-byte size.\n");
+        throw QString("FileIO: Invalid multi-byte size.\n");
 	}
 }
 

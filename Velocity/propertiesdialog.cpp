@@ -10,7 +10,7 @@ PropertiesDialog::PropertiesDialog(FileEntry *entry, QString location, bool *cha
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
     QtHelpers::GenAdjustWidgetAppearanceToOS(this);
-    setWindowTitle(QString::fromStdString(entry->name) + " Properties");
+    setWindowTitle(entry->name + " Properties");
 
     bool folder = (entry->flags & 2);
     location = location.insert(0, '\\');
@@ -32,15 +32,15 @@ PropertiesDialog::PropertiesDialog(FileEntry *entry, QString location, bool *cha
             location = "";
     }
 
-    ui->leName->setText(QString::fromStdString(entry->name));
+    ui->leName->setText(entry->name);
 
     // get the extension
-    size_t index = entry->name.rfind('.');
+    int index = entry->name.lastIndexOf(".");
     QString exten;
     if (entry->flags & 2)
         exten = "File folder";
-    else if (index != string::npos)
-        exten = QString::fromStdString(entry->name.substr(index)).toLower();
+    else if (index != -1)
+        exten = entry->name.mid(index).toLower();
     else
         exten = "File";
 
@@ -64,10 +64,10 @@ PropertiesDialog::PropertiesDialog(FileEntry *entry, QString location, bool *cha
 
     ui->lblTypeOfFile->setText(final);
     ui->lblLocation->setText(location);
-    ui->lblSize->setText(QString::fromStdString(ByteSizeToString(entry->fileSize)) + " (" + QString::number(entry->fileSize) + " bytes)");
+    ui->lblSize->setText(ByteSizeToString(entry->fileSize) + " (" + QString::number(entry->fileSize) + " bytes)");
 
     int sizeOnDisk = (entry->fileSize + 0xFFF) & 0xFFFFF000;
-    ui->lblSizeOnDisk->setText(QString::fromStdString(ByteSizeToString(sizeOnDisk)) + " (" + QString::number(sizeOnDisk) + " bytes)");
+    ui->lblSizeOnDisk->setText(ByteSizeToString(sizeOnDisk) + " (" + QString::number(sizeOnDisk) + " bytes)");
 
     // get the MSTime from
     MSTime createdtime = DWORDToMSTime(entry->createdTimeStamp);
@@ -120,7 +120,7 @@ void PropertiesDialog::on_btnCancel_clicked()
 
 void PropertiesDialog::on_leName_textChanged(const QString &arg1)
 {
-    if (arg1.toStdString() != entry->name && !ui->btnApply->isEnabled())
+    if (arg1 != entry->name && !ui->btnApply->isEnabled())
         ui->btnApply->setEnabled(true);
 }
 
@@ -138,7 +138,7 @@ void PropertiesDialog::on_cbFolder_toggled(bool checked)
 
 void PropertiesDialog::updateEntry()
 {
-    entry->name = ui->leName->text().toStdString();
+    entry->name = ui->leName->text();
 
     int consecState = ui->cbConsecutive->checkState();
     int folderState = ui->cbFolder->checkState();

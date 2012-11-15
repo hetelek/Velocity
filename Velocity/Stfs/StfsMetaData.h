@@ -8,8 +8,6 @@
 #include "winnames.h"
 #include <iostream>
 
-using std::string;
-
 enum StfsMetadataFlags
 {
     MetadataIsPEC = 1,
@@ -78,10 +76,10 @@ public:
 	DWORD dataFileCount;
 	UINT64 dataFileCombinedSize;
 	BYTE deviceID[0x14];
-	wstring displayName;
-	wstring displayDescription;
-	wstring publisherName;
-	wstring titleName;
+    std::wstring displayName;
+    std::wstring displayDescription;
+    std::wstring publisherName;
+    std::wstring titleName;
     BYTE transferFlags;
 	DWORD thumbnailImageSize;
 	DWORD titleThumbnailImageSize;

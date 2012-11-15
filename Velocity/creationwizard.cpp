@@ -178,7 +178,7 @@ void CreationWizard::onFinished(int status)
 
     try
     {
-        StfsPackage package(ui->lblSavePath->text().toStdString(), ((ui->cmbxMagic->currentIndex() != 0) ? StfsPackageFemale : 0) | StfsPackageCreate);
+        StfsPackage package(ui->lblSavePath->text(), ((ui->cmbxMagic->currentIndex() != 0) ? StfsPackageFemale : 0) | StfsPackageCreate);
 
         // set the metadata
         DWORD magics[3] = { CON, LIVE, PIRS };
@@ -208,9 +208,9 @@ void CreationWizard::onFinished(int status)
         package.Rehash();
         package.Resign(QtHelpers::GetKVPath(package.metaData->certificate.ownerConsoleType, this));
     }
-    catch (string error)
+    catch (const QString &error)
     {
-        QMessageBox::critical(this, "Error", "An error occured while creating the package.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error", "An error occured while creating the package.\n\n" + error);
         return;
     }
 

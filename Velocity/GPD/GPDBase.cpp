@@ -1,9 +1,12 @@
 #include "GPDBase.h"
 
+#include <QString>
 
-GPDBase::GPDBase(string path) : ioPassedIn(false)
+#include "../FileIO.h"
+
+GPDBase::GPDBase(const QString &path) : ioPassedIn(false)
 {
-    io = new FileIO(path);
+    io = new FileIO(path.toStdString());
     xdbf = new XDBF(io);
 
     init();
@@ -19,7 +22,7 @@ GPDBase::GPDBase(FileIO *io) : ioPassedIn(true), io(io)
 void GPDBase::init()
 {
     // read all the images
-    for (DWORD i = 0; i < xdbf->images.size(); i++)
+    for (int i = 0; i < xdbf->images.size(); i++)
     {
         // set up the information
         ImageEntry image;
@@ -36,11 +39,11 @@ void GPDBase::init()
     }
 
     // read all the settings
-    for (DWORD i = 0; i < xdbf->settings.entries.size(); i++)
+    for (int i = 0; i < xdbf->settings.entries.size(); i++)
         settings.push_back(readSettingEntry(xdbf->settings.entries.at(i)));
 
     // read all the strings
-    for (DWORD i = 0; i < xdbf->strings.size(); i++)
+    for (int i = 0; i < xdbf->strings.size(); i++)
     {
         // read in the string entry
         StringEntry entry;
@@ -53,11 +56,11 @@ void GPDBase::init()
     }
 }
 
-wstring GPDBase::readStringEntry(XDBFEntry entry)
+std::wstring GPDBase::readStringEntry(XDBFEntry entry)
 {
     // ensure that the entry is a string entry
     if (entry.type != String)
-        throw string("XDBF: Error reading string entry. Specified entry isn't a string.\n");
+        throw QString("XDBF: Error reading string entry. Specified entry isn't a string.\n");
 
     // seek to the entry's position
     io->setPosition(xdbf->GetRealAddress(entry.addressSpecifier));
@@ -70,7 +73,7 @@ SettingEntry GPDBase::readSettingEntry(XDBFEntry entry)
 {
     // ensure the entry is a setting entry
     if (entry.type != Setting)
-        throw string("XDBF: Error reading setting entry. The entry specified isn't a setting.\n");
+        throw QString("XDBF: Error reading setting entry. The entry specified isn't a setting.\n");
 
     SettingEntry toReturn;
     toReturn.entry = entry;
@@ -84,7 +87,7 @@ SettingEntry GPDBase::readSettingEntry(XDBFEntry entry)
     if (toReturn.type <= 0 || toReturn.type > 7)
     {
         printf("%llX\n", entry.id);
-        throw string("XDBF: Error reading setting entry. Invalid setting entry type.\n");
+        throw QString("XDBF: Error reading setting entry. Invalid setting entry type.\n");
     }
 
     // skip past the nonsense
@@ -107,7 +110,7 @@ SettingEntry GPDBase::readSettingEntry(XDBFEntry entry)
         {
             DWORD strLen = io->readDword();
             io->setPosition(entryAddr + 0x18);
-            toReturn.str = new wstring(io->readWString(strLen));
+            toReturn.str = new std::wstring(io->readWString(strLen));
             break;
         }
         case Float:
@@ -135,7 +138,7 @@ SettingEntry GPDBase::readSettingEntry(XDBFEntry entry)
 void GPDBase::DeleteSettingEntry(SettingEntry setting)
 {
     // remove the entry from the list
-    DWORD i;
+    int i;
     for (i = 0; i < settings.size(); i++)
     {
         if (settings.at(i).entry.id == setting.entry.id)
@@ -145,7 +148,7 @@ void GPDBase::DeleteSettingEntry(SettingEntry setting)
         }
     }
     if (i > settings.size())
-        throw string("GPD: Error deleting setting entry. Setting doesn't exist.\n");
+        throw QString("GPD: Error deleting setting entry. Setting doesn't exist.\n");
 
     // delete the entry from the file
     xdbf->DeleteEntry(setting.entry);
@@ -154,7 +157,7 @@ void GPDBase::DeleteSettingEntry(SettingEntry setting)
 void GPDBase::DeleteImageEntry(ImageEntry image)
 {
     // remove the entry from the list
-    DWORD i;
+    int i;
     for (i = 0 ; i < images.size(); i++)
     {
         if (images.at(i).entry.id == image.entry.id)
@@ -164,7 +167,7 @@ void GPDBase::DeleteImageEntry(ImageEntry image)
         }
     }
     if (i > settings.size())
-        throw string("GPD: Error deleting image entry. Image doesn't exist.\n");
+        throw QString("GPD: Error deleting image entry. Image doesn't exist.\n");
 
     // delete the entry from the file
     xdbf->DeleteEntry(image.entry);
@@ -189,7 +192,7 @@ void GPDBase::CreateSettingEntry(SettingEntry *setting, UINT64 entryID)
         entryLen = 0x18 + (setting->binaryData.length * 2);
         break;
     default:
-        throw string("GPD: Error creating setting entry. Invalid setting entry type.\n");
+        throw QString("GPD: Error creating setting entry. Invalid setting entry type.\n");
     }
 
     // create the xdbf entry
@@ -318,7 +321,7 @@ void GPDBase::Close()
 GPDBase::~GPDBase(void)
 {
     // deallocate all of the image memory
-    for (DWORD i = 0; i < images.size(); i++)
+    for (int i = 0; i < images.size(); i++)
         delete[] images.at(i).image;
 
     delete io;

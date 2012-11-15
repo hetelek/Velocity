@@ -1,7 +1,10 @@
 #include "GameGPD.h"
 
+#include <QString>
 
-GameGPD::GameGPD(string filePath) : GPDBase(filePath)
+#include "../FileIO.h"
+
+GameGPD::GameGPD(const QString &filePath) : GPDBase(filePath)
 {
 	init();
 }
@@ -21,7 +24,7 @@ AchievementEntry GameGPD::readAchievementEntry(XDBFEntry entry)
 {
 	// ensure that the entry passed in is an achievement entry
 	if (entry.type != Achievement)
-		throw string("GPD: Error reading achievement entry. Specified entry isn't an achievement.\n");
+        throw QString("GPD: Error reading achievement entry. Specified entry isn't an achievement.\n");
 
 	// seek to the begining of the achievement entry
 	io->setPosition(xdbf->GetRealAddress(entry.addressSpecifier));
@@ -111,7 +114,7 @@ void GameGPD::CreateAchievement(AchievementEntry *entry, BYTE *thumbnail, DWORD 
 
 	// make sure that the image is a PNG
 	if (*(DWORD*)thumbnail != 0x474E5089)
-		throw string("GPD: Error creating image entry. Image must be a PNG.\n");
+        throw QString("GPD: Error creating image entry. Image must be a PNG.\n");
 
 	// create a new image entry for the thumbnail
 	XDBFEntry imageEntry = xdbf->CreateEntry(Image, entry->imageID, thumbnailLen);
@@ -136,7 +139,7 @@ void GameGPD::CreateAchievement(AchievementEntry *entry, BYTE *thumbnail, DWORD 
     xdbf->UpdateEntry(&imageEntry);
 }
 
-string GameGPD::GetAchievementType(AchievementEntry *entry)
+QString GameGPD::GetAchievementType(AchievementEntry *entry)
 {
     return XDBFHelpers::AchievementTypeToString((AchievementFlags)(entry->flags & 7));
 }
@@ -144,7 +147,7 @@ string GameGPD::GetAchievementType(AchievementEntry *entry)
 void GameGPD::DeleteAchievement(AchievementEntry *entry)
 {
 	// remove the entry from the list
-	DWORD i;
+    int i;
 	for (i = 0 ; i < achievements.size(); i++)
 	{
 		if (achievements.at(i).entry.id == entry->entry.id)
@@ -154,7 +157,7 @@ void GameGPD::DeleteAchievement(AchievementEntry *entry)
 		}
 	}
 	if (i == achievements.size())
-		throw string("GPD: Error deleting achievement. Achievement doesn't exist.\n");
+        throw QString("GPD: Error deleting achievement. Achievement doesn't exist.\n");
 
 	// delete the entry from the file
 	xdbf->DeleteEntry(entry->entry);
@@ -162,7 +165,7 @@ void GameGPD::DeleteAchievement(AchievementEntry *entry)
 
 bool GameGPD::GetAchievementThumbnail(AchievementEntry *entry, ImageEntry *out)
 {
-	for (DWORD i = 0; i < images.size(); i++)
+    for (int i = 0; i < images.size(); i++)
 	{
 		if (images.at(i).entry.id == entry->imageID)
 		{
@@ -176,33 +179,33 @@ bool GameGPD::GetAchievementThumbnail(AchievementEntry *entry, ImageEntry *out)
 void GameGPD::UnlockAllAchievementsOffline()
 {
 	// iterate through all of the achievements
-	for (DWORD i = 0; i < achievements.size(); i++)
+    for (int i = 0; i < achievements.size(); i++)
 	{
 		// unlock the achievement
-		achievements.at(i).flags |= Unlocked;
+        achievements[i].flags |= Unlocked;
 
 		// write the updated flags to the entry
 		io->setPosition(xdbf->GetRealAddress(achievements.at(i).entry.addressSpecifier) + 0x10);
 		io->write(achievements.at(i).flags);
 
 		// update the sync stuff
-		xdbf->UpdateEntry(&achievements.at(i).entry);
+        xdbf->UpdateEntry(&achievements[i].entry);
     }
 }
 
 void GameGPD::init()
 {
 	// read all of the achievement entries
-	for (DWORD i = 0; i < xdbf->achievements.entries.size(); i++)
+    for (int i = 0; i < xdbf->achievements.entries.size(); i++)
 		achievements.push_back(readAchievementEntry(xdbf->achievements.entries.at(i)));
 
 	// find the thumbnail for the game
-	for (DWORD i = 0; i < images.size(); i++)
+    for (int i = 0; i < images.size(); i++)
 		if (images.at(i).entry.id == 0x8000)
 			thumbnail = images.at(i);
 
 	// find the game name string
-	for (DWORD i = 0; i < strings.size(); i++)
+    for (int i = 0; i < strings.size(); i++)
 		if (strings.at(i).entry.id == 0x8000)
 			gameName = strings.at(i);
 }
