@@ -389,6 +389,7 @@ void StfsMetaData::WriteMetaData()
         io->write((BYTE)enabled);
         io->write(consoleID, 5);
     }
+    io->flush();
 }
 
 void StfsMetaData::WriteVolumeDescriptor()

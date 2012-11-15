@@ -168,8 +168,27 @@ void ProfileCreatorWizard::onFinished(int status)
         ui->listWidget->currentItem()->icon().pixmap(32, 32).save(img32Path, "PNG");
         newProfile.InjectFile(img32Path.toStdString(), "tile_32.png");
 
-        newProfile.Rehash();
+        // create a PEC file
+        QString pecPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+        StfsPackage pec(pecPath.toStdString(), StfsPackagePEC | StfsPackageCreate);
+
+        // set the ids so they match the profile
+        memcpy(pec.metaData->profileID, newProfile.metaData->profileID, 8);
+
+        // make sure this bool is true
+        pec.metaData->enabled = true;
+        pec.metaData->WriteMetaData();
+
+        //pec.Rehash();
+
         string path = QtHelpers::GetKVPath(newProfile.metaData->certificate.ownerConsoleType, this);
+        if (path != "")
+            pec.Resign(path);
+        pec.Close();
+
+        // inject the PEC into the profile
+        newProfile.InjectFile(pecPath.toStdString(), "PEC");
+        newProfile.Rehash();
 
         if (path != "")
             newProfile.Resign(path);
