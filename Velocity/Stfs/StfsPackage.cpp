@@ -2042,7 +2042,7 @@ void StfsPackage::CreateFolder(string pathInPackage)
     FileListing *folder = NULL;
     FindDirectoryListing(split, &fileListing, &folder);
     if (folder != NULL)
-        throw string("Directory already exists in the package.");
+        throw string("STFS: Directory already exists in the package.\n");
 
     int size = split.size();
     string fileName;
