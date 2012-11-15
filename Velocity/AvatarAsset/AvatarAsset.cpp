@@ -1,15 +1,15 @@
 #include "AvatarAsset.h"
 
-#include <QString>
+#include "FileIO.h"
 
-AvatarAsset::AvatarAsset(string assetPath) : ioPassedIn(false)
+AvatarAsset::AvatarAsset(const QString &assetPath) : ioPassedIn(false)
 {
 	metadata.gender = (AssetGender)0;
 	customColors.entries = NULL;
 	customColors.count = 0;
 	animation.frameCount = 0;
 
-	io = new FileIO(assetPath);
+    io = new FileIO(assetPath.toStdString());
 	readHeader();
 	readBlocks();
 }
@@ -196,7 +196,12 @@ void AvatarAsset::ReadBlockData(STRBBlock *block)
 	io->setPosition(block->dataAddress);
 
 	// read in the block data
-	io->readBytes(block->data, block->dataLength);
+    io->readBytes(block->data, block->dataLength);
+}
+
+const QVector<STRBBlock> &AvatarAsset::GetBlocks()
+{
+    return blocks;
 }
 
 void AvatarAsset::readAnimationInfo(DWORD pos)
@@ -270,7 +275,7 @@ AvatarAsset::~AvatarAsset(void)
 		delete customColors.entries;
 
 	// cleanup the blocks
-	for (DWORD i = 0; i < blocks.size(); i++)
+    for (int i = 0; i < blocks.size(); i++)
 		if (blocks.at(i).data != NULL)
 			delete blocks.at(i).data;
 }

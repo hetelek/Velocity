@@ -638,7 +638,7 @@ void ProfileEditor::loadGameInfo(int index)
     {
         QTreeWidgetItem *item = new QTreeWidgetItem;
         item->setText(0, QString::fromStdWString(curGPD->achievements.at(i).name).replace("\n", ""));
-        item->setText(1, QString::fromStdString(XDBFHelpers::GetAchievementState(&curGPD->achievements.at(i))));
+        item->setText(1, XDBFHelpers::GetAchievementState(&curGPD->achievements.at(i)));
         item->setText(2, QString::number(curGPD->achievements.at(i).gamerscore));
 
         ui->achievementsList->insertTopLevelItem(ui->achievementsList->topLevelItemCount(), item);
@@ -717,7 +717,7 @@ void ProfileEditor::loadAchievementInfo(int gameIndex, unsigned int chievIndex)
     ui->lblAchName->setText(QString::fromStdWString(entry.name).trimmed());
     ui->lblAchLockDesc->setText("Locked: <span style=\"color:#4f4f4f;\">" + QString::fromStdWString(entry.lockedDescription) + "</span>");
     ui->lblAchUnlDesc->setText("Unlocked: <span style=\"color:#4f4f4f;\">" + QString::fromStdWString(entry.unlockedDescription) + "</span>");
-    ui->lblAchType->setText("Type: <span style=\"color:#4f4f4f;\">" + QString::fromStdString(GameGPD::GetAchievementType(&entry)) + "</span>");
+    ui->lblAchType->setText("Type: <span style=\"color:#4f4f4f;\">" + GameGPD::GetAchievementType(&entry) + "</span>");
     ui->lblAchGamescore->setText(QString::number(entry.gamerscore));
 
     if (entry.flags & UnlockedOnline)
@@ -768,7 +768,7 @@ void ProfileEditor::loadAwardGameInfo(int index)
     {
         QTreeWidgetItem *item = new QTreeWidgetItem;
         item->setText(0, QString::fromStdWString(gpd->avatarAwards.at(i).name).replace("\n", ""));
-        item->setText(1, QString::fromStdString(XDBFHelpers::AssetGenderToString(gpd->GetAssetGender(&gpd->avatarAwards.at(i)))));
+        item->setText(1, XDBFHelpers::AssetGenderToString(gpd->GetAssetGender(&gpd->avatarAwards.at(i))));
 
         if (gpd->avatarAwards.at(i).flags & UnlockedOnline)
             item->setText(2, "Unlocked Online");
@@ -835,14 +835,14 @@ void ProfileEditor::loadAvatarAwardInfo(int gameIndex, unsigned int awardIndex)
 
     try
     {
-         ui->lblAwType->setText("Type: <span style=\"color:#4f4f4f;\">" + QString::fromStdString(XDBFHelpers::AssetSubcategoryToString(award->subcategory)) + "</span>");
+         ui->lblAwType->setText("Type: <span style=\"color:#4f4f4f;\">" + XDBFHelpers::AssetSubcategoryToString(award->subcategory) + "</span>");
     }
     catch (...)
     {
         ui->lblAwType->setText("Type: <span style=\"color:#4f4f4f;\"><i>Unknown</i></span>");
     }
 
-    ui->lblAwGender->setText("Gender: <span style=\"color:#4f4f4f;\">" + QString::fromStdString(XDBFHelpers::AssetGenderToString(aaGames.at(gameIndex).gpd->GetAssetGender(award))) + "</span>");
+    ui->lblAwGender->setText("Gender: <span style=\"color:#4f4f4f;\">" + XDBFHelpers::AssetGenderToString(aaGames.at(gameIndex).gpd->GetAssetGender(award)) + "</span>");
     ui->lblAwSecret->setText(QString("Secret: <span style=\"color:#4f4f4f;\">") + ((award->flags & 0xFFFF) ? "No" : "Yes") + "</span>");
 
     if (award->flags & UnlockedOnline)

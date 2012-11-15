@@ -399,7 +399,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                 }
                 case 0x53545242:
                 {
-                    AvatarAsset *asset = new AvatarAsset(fileName.toStdString());
+                    AvatarAsset *asset = new AvatarAsset(fileName);
 
                     StrbDialog *dialog = new StrbDialog(asset, this);
                     ui->mdiArea->addSubWindow(dialog);
@@ -504,7 +504,7 @@ void MainWindow::on_actionSTRB_File_triggered()
         if (fileName.isEmpty())
             return;
 
-        AvatarAsset *asset = new AvatarAsset(fileName.toStdString());
+        AvatarAsset *asset = new AvatarAsset(fileName);
 
         StrbDialog *dialog = new StrbDialog(asset, this);
         ui->mdiArea->addSubWindow(dialog);

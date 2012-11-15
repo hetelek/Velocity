@@ -6,7 +6,7 @@
 
 QString AccountHelpers::CountryToString(XboxLiveCountry country)
 {
-    return QString::fromStdString(XDBFHelpers::RegionIDtoString(country));
+    return XDBFHelpers::RegionIDtoString(country);
 }
 
 QString AccountHelpers::SubscriptionTeirToString(SubscriptionTeir teir)

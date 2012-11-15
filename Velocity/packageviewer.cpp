@@ -691,7 +691,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
         package->ExtractFile(packagePath, tempName);
 
         // show the avatar asset dialog
-        AvatarAsset *asset = new AvatarAsset(tempName.toStdString());
+        AvatarAsset *asset = new AvatarAsset(tempName);
         statusBar->showMessage("STRB file parsed successfully", 3000);
 
         StrbDialog dialog(asset, this);

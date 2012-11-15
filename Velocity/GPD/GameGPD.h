@@ -35,7 +35,7 @@ public:
 	void DeleteAchievement(AchievementEntry *entry);
 
 	// Description: get the type of an achievement
-    static string GetAchievementType(AchievementEntry *entry);
+    static QString GetAchievementType(AchievementEntry *entry);
 
 	// Decription: retrieves the thumbnail image for the achievement passed in, returns true if found and false if not
 	bool GetAchievementThumbnail(AchievementEntry *entry, ImageEntry *out);

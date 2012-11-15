@@ -137,7 +137,7 @@ void GameGPD::CreateAchievement(AchievementEntry *entry, BYTE *thumbnail, DWORD 
     xdbf->UpdateEntry(&imageEntry);
 }
 
-string GameGPD::GetAchievementType(AchievementEntry *entry)
+QString GameGPD::GetAchievementType(AchievementEntry *entry)
 {
     return XDBFHelpers::AchievementTypeToString((AchievementFlags)(entry->flags & 7));
 }

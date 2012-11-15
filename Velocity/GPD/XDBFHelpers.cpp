@@ -6,21 +6,21 @@
 
 using std::stringstream;
 
-string XDBFHelpers::EntryTypeToString(EntryType type)
+QString XDBFHelpers::EntryTypeToString(EntryType type)
 {
 	if (type < 1 || type > 6)
         throw QString("XDBF: Invalid entry type.\n");
 
-	string strings[6] = { "Achievement", "Image", "Setting", "Title", "String", "Avatar Award" };
-	return strings[type - 1];
+    QString strings[6] = { "Achievement", "Image", "Setting", "Title", "String", "Avatar Award" };
+    return strings[type - 1];
 }
 
-string XDBFHelpers::SettingEntryTypeToString(SettingEntryType type)
+QString XDBFHelpers::SettingEntryTypeToString(SettingEntryType type)
 {
 	if (type <= 0 || type > 7)
         throw QString("XDBF: Invalid setting entry type.\n");
 
-	string strings[7] = { "Int32", "Int64", "Double", "Unicode String", "Float", "Binary", "DataTime" };
+    QString strings[7] = { "Int32", "Int64", "Double", "Unicode String", "Float", "Binary", "DataTime" };
 	return strings[type - 1];
 }
 
@@ -48,7 +48,7 @@ FILETIME XDBFHelpers::TimeTtoFILETIME(time_t time)
 	return toReturn;
 }
 
-string XDBFHelpers::GetAchievementState(AchievementEntry *entry)
+QString XDBFHelpers::GetAchievementState(AchievementEntry *entry)
 {
     if (entry->flags & UnlockedOnline)
         return "Unlocked Online";
@@ -58,442 +58,442 @@ string XDBFHelpers::GetAchievementState(AchievementEntry *entry)
         return "Locked";
 }
 
-string XDBFHelpers::AchievementTypeToString(AchievementFlags type)
+QString XDBFHelpers::AchievementTypeToString(AchievementFlags type)
 {
 	switch (type)
 	{
         case Completion:
-            return string("Completion");
+            return QString("Completion");
         case Leveling:
-            return string("Leveling");
+            return QString("Leveling");
         case Unlock:
-            return string("Unlock");
+            return QString("Unlock");
         case Event:
-            return string("Event");
+            return QString("Event");
         case Tournament:
-            return string("Tournament");
+            return QString("Tournament");
         case Checkpoint:
-            return string("Checkpoint");
+            return QString("Checkpoint");
         case Other:
-            return string("Other");
+            return QString("Other");
         default:
             throw QString("GPD: Invalid achievement type.\n");
 	}
 }
 
-string XDBFHelpers::AssetSubcategoryToString(AssetSubcategory category)
+QString XDBFHelpers::AssetSubcategoryToString(AssetSubcategory category)
 {
 	return AssetHelpers::AssetSubcategoryToString(category);
 }
 
-string XDBFHelpers::AssetGenderToString(AssetGender gender)
+QString XDBFHelpers::AssetGenderToString(AssetGender gender)
 {
 	return AssetHelpers::AssetGenderToString(gender);
 }
 
-string XDBFHelpers::IDtoString(UINT64 id)
+QString XDBFHelpers::IDtoString(UINT64 id)
 {
 	switch (id)
 	{
 		case WebConnectionSpeed:
-			return string("Web Connection Speed");
+            return QString("Web Connection Speed");
 		case WebEmailFormat:
-			return string("Web Email Format");
+            return QString("Web Email Format");
 		case WebFavoriteGame:
-			return string("Web Favorite Game");
+            return QString("Web Favorite Game");
 		case WebFavoriteGame1:
-			return string("Web Favorite Game1");
+            return QString("Web Favorite Game1");
 		case WebFavoriteGame2:
-			return string("Web Favorite Game 2");
+            return QString("Web Favorite Game 2");
 		case WebFavoriteGame3:
-			return string("Web Favorite Game 3");
+            return QString("Web Favorite Game 3");
 		case WebFavoriteGame4:
-			return string("Web Favorite Game 4");
+            return QString("Web Favorite Game 4");
 		case WebFavoriteGame5:
-			return string("Web Favorite Game 5");
+            return QString("Web Favorite Game 5");
 		case WebFavoriteGenre:
-			return string("Web Favorite Genre");
+            return QString("Web Favorite Genre");
 		case WebFlags:
-			return string("Web Flags");
+            return QString("Web Flags");
 		case WebFlash:
-			return string("Web Flash");
+            return QString("Web Flash");
 		case WebPlatformsOwned:
-			return string("Web Platforms Owned");
+            return QString("Web Platforms Owned");
 		case WebSpam:
-			return string("Web Spam");
+            return QString("Web Spam");
 		case WebVideoPreference:
-			return string("Web Video Preference");
+            return QString("Web Video Preference");
 		case CruxBgLargePublic:
-			return string("Crux Bg Large Public");
+            return QString("Crux Bg Large Public");
 		case CruxBgSmallPublic:
-			return string("Crux Bg Small Public");
+            return QString("Crux Bg Small Public");
 		case CruxBio:
-			return string("Crux Bio");
+            return QString("Crux Bio");
 		case CruxBkgdImage:
-			return string("Crux Bkgd Image");
+            return QString("Crux Bkgd Image");
 		case CruxLastChangeTime:
-			return string("Crux Last Change Time");
+            return QString("Crux Last Change Time");
 		case CruxMediaMotto:
-			return string("Crux Media Motto");
+            return QString("Crux Media Motto");
 		case CruxMediaPicture:
-			return string("Crux Media Picture");
+            return QString("Crux Media Picture");
 		case CruxMediaStyle1:
-			return string("Crux Media Style 1");
+            return QString("Crux Media Style 1");
 		case CruxMediaStyle2:
-			return string("Crux Media Style 2");
+            return QString("Crux Media Style 2");
 		case CruxMediaStyle3:
-			return string("Crux Media Style 3");
+            return QString("Crux Media Style 3");
 		case CruxOfflineId:
-			return string("Crux Offline Id");
+            return QString("Crux Offline Id");
 		case CruxTopAlbum1:
-			return string("Crux Top Album 1");
+            return QString("Crux Top Album 1");
 		case CruxTopAlbum2:
-			return string("Crux Top Album 2");
+            return QString("Crux Top Album 2");
 		case CruxTopAlbum3:
-			return string("Crux Top Album 3");
+            return QString("Crux Top Album 3");
 		case CruxTopAlbum4:
-			return string("Crux Top Album 4");
+            return QString("Crux Top Album 4");
 		case CruxTopAlbum5:
-			return string("Crux Top Album 5");
+            return QString("Crux Top Album 5");
 		case CruxTopMediaid1:
-			return string("Crux Top Mediaid 1");
+            return QString("Crux Top Mediaid 1");
 		case CruxTopMediaid2:
-			return string("Crux Top Mediaid 2");
+            return QString("Crux Top Mediaid 2");
 		case CruxTopMediaid3:
-			return string("Crux Top Mediaid 3");
+            return QString("Crux Top Mediaid 3");
 		case CruxTopMusic:
-			return string("Crux Top Music");
+            return QString("Crux Top Music");
 		case FriendsappShowBuddies:
-			return string("Friendsapp Show Buddies");
+            return QString("Friendsapp Show Buddies");
 		case GamerActionAutoAim:
-			return string("Gamer Action Auto Aim");
+            return QString("Gamer Action Auto Aim");
 		case GamerActionAutoCenter:
-			return string("Gamer Action Auto Center");
+            return QString("Gamer Action Auto Center");
 		case GamerActionMovementControl:
-			return string("Gamer Action Movement Control");
+            return QString("Gamer Action Movement Control");
 		case GamerControlSensitivity:
-			return string("Gamer Control Sensitivity");
+            return QString("Gamer Control Sensitivity");
 		case GamerDifficulty:
-			return string("Gamer Difficulty");
+            return QString("Gamer Difficulty");
 		case GamerPreferredColorFirst:
-			return string("Gamer Preferred Color First");
+            return QString("Gamer Preferred Color First");
 		case GamerPreferredColorSecond:
-			return string("Gamer Preferred Color Second");
+            return QString("Gamer Preferred Color Second");
 		case GamerPresenceUserState:
-			return string("Gamer Presence User State");
+            return QString("Gamer Presence User State");
 		case GamerRaceAcceleratorControl:
-			return string("Gamer Race Accelerator Control");
+            return QString("Gamer Race Accelerator Control");
 		case GamerRaceBrakeControl:
-			return string("Gamer Race Brake Control");
+            return QString("Gamer Race Brake Control");
 		case GamerRaceCameraLocation:
-			return string("Gamer Race Camera Location");
+            return QString("Gamer Race Camera Location");
 		case GamerRaceTransmission:
-			return string("Gamer Race Transmission");
+            return QString("Gamer Race Transmission");
 		case GamerTier:
-			return string("Gamer Tier");
+            return QString("Gamer Tier");
 		case GamerType:
-			return string("Gamer Type");
+            return QString("Gamer Type");
 		case YearsOnLive:
-			return string("Years On LIVE");
+            return QString("Years On LIVE");
 		case GamerYaxisInversion:
-			return string("Gamer Yaxis Inversion");
+            return QString("Gamer Yaxis Inversion");
 		case GamercardAchievementsEarned:
-			return string("Gamercard Achievements Earned");
+            return QString("Gamercard Achievements Earned");
 		case GamercardAvatarInfo1:
-			return string("Gamercard Avatar Info 1");
+            return QString("Gamercard Avatar Info 1");
 		case GamercardAvatarInfo2:
-			return string("Gamercard Avatar Info 2");
+            return QString("Gamercard Avatar Info 2");
 		case GamercardCred:
-			return string("Gamercard Cred");
+            return QString("Gamercard Cred");
 		case GamercardHasVision:
-			return string("Gamercard Has Vision");
+            return QString("Gamercard Has Vision");
 		case GamercardMotto:
-			return string("Gamercard Motto");
+            return QString("Gamercard Motto");
 		case GamercardPartyInfo:
-			return string("Gamercard Party Info");
+            return QString("Gamercard Party Info");
 		case GamercardPersonalPicture:
-			return string("Gamercard Personal Picture");
+            return QString("Gamercard Personal Picture");
 		case GamercardPictureKey:
-			return string("Gamercard Picture Key");
+            return QString("Gamercard Picture Key");
 		case GamercardRegion:
-			return string("Gamercard Region");
+            return QString("Gamercard Region");
 		case GamercardRep:
-			return string("Gamercard Rep");
+            return QString("Gamercard Rep");
 		case GamercardServiceTypeFlags:
-			return string("Gamercard Service Type Flags");
+            return QString("Gamercard Service Type Flags");
 		case GamercardTitleAchievementsEarned:
-			return string("Gamercard Title Achievements Earned");
+            return QString("Gamercard Title Achievements Earned");
 		case GamercardTitleCredEarned:
-			return string("Gamercard Title Cred Earned");
+            return QString("Gamercard Title Cred Earned");
 		case GamercardTitlesPlayed:
-			return string("Gamercard Titles Played");
+            return QString("Gamercard Titles Played");
 		case GamercardUserBio:
-			return string("Gamercard User Bio");
+            return QString("Gamercard User Bio");
 		case GamercardUserLocation:
-			return string("Gamercard User Location");
+            return QString("Gamercard User Location");
 		case GamercardUserName:
-			return string("Gamercard User Name");
+            return QString("Gamercard User Name");
 		case GamercardUserUrl:
-			return string("Gamercard User Url");
+            return QString("Gamercard User Url");
 		case GamercardZone:
-			return string("Gamercard Zone");
+            return QString("Gamercard Zone");
 		case MessengerAutoSignin:
-			return string("Messenger Auto Signin");
+            return QString("Messenger Auto Signin");
 		case MessengerSignupState:
-			return string("Messenger Signup State");
+            return QString("Messenger Signup State");
 		case OptionControllerVibration:
-			return string("Option Controller Vibration");
+            return QString("Option Controller Vibration");
 		case OptionVoiceMuted:
-			return string("Option Voice Muted");
+            return QString("Option Voice Muted");
 		case OptionVoiceThruSpeakers:
-			return string("Option Voice Thru Speakers");
+            return QString("Option Voice Thru Speakers");
 		case OptionVoiceVolume:
-			return string("Option Voice Volume");
+            return QString("Option Voice Volume");
 		case Permissions:
-			return string("Permissions");
+            return QString("Permissions");
 		case SaveWindowsLivePassword:
-			return string("Save Windows Live Password");
+            return QString("Save Windows Live Password");
 		case TitleSpecific1:
-			return string("Title Specific 1");
+            return QString("Title Specific 1");
 		case TitleSpecific2:
-			return string("Title Specific 2");
+            return QString("Title Specific 2");
 		case TitleSpecific3:
-			return string("Title Specific 3");
+            return QString("Title Specific 3");
 		case LastOnLIVE:
-			return string("Last On LIVE");
+            return QString("Last On LIVE");
 		case TitleInformation:
-			return string("Title Information");
+            return QString("Title Information");
 		case AvatarImage:
-			return string("Avatar Image");
+            return QString("Avatar Image");
 		default:
 			stringstream ss;
 			ss << "0x" << std::hex << id;
-			return ss.str();
+            return QString::fromStdString(ss.str());
 	}
 }
 
-string XDBFHelpers::RegionIDtoString(XboxLiveCountry id)
+QString XDBFHelpers::RegionIDtoString(XboxLiveCountry id)
 {
 	switch (id)
 	{
 		case Albania:
-			return string("Albania");
+            return QString("Albania");
 		case Algeria:
-			return string("Algeria");
+            return QString("Algeria");
 		case Argentina:
-			return string("Argentina");
+            return QString("Argentina");
 		case Armenia:
-			return string("Armenia");
+            return QString("Armenia");
 		case Australia:
-			return string("Australia");
+            return QString("Australia");
 		case Austria:
-			return string("Austria");
+            return QString("Austria");
 		case Azerbaijan:
-			return string("Azerbaijan");
+            return QString("Azerbaijan");
 		case Bahrain:
-			return string("Bahrain");
+            return QString("Bahrain");
 		case Belarus:
-			return string("Belarus");
+            return QString("Belarus");
 		case Belgium:
-			return string("Belgium");
+            return QString("Belgium");
 		case Belize:
-			return string("Belize");
+            return QString("Belize");
 		case Bolivia:
-			return string("Bolivia");
+            return QString("Bolivia");
 		case Brazil:
-			return string("Brazil");
+            return QString("Brazil");
 		case BruneiDarussalam:
-			return string("Brunei Darussalam");
+            return QString("Brunei Darussalam");
 		case Bulgaria:
-			return string("Bulgaria");
+            return QString("Bulgaria");
 		case Canada:
-			return string("Canada");
+            return QString("Canada");
 		case Chile:
-			return string("Chile");
+            return QString("Chile");
 		case China:
-			return string("China");
+            return QString("China");
 		case Colombia:
-			return string("Colombia");
+            return QString("Colombia");
 		case CostaRica:
-			return string("CostaRica");
+            return QString("CostaRica");
 		case Croatia:
-			return string("Croatia");
+            return QString("Croatia");
 		case CzechRepublic:
-			return string("Czech Republic");
+            return QString("Czech Republic");
 		case Denmark:
-			return string("Denmark");
+            return QString("Denmark");
 		case DominicanRepublic:
-			return string("Dominican Republic");
+            return QString("Dominican Republic");
 		case Ecuador:
-			return string("Ecuador");
+            return QString("Ecuador");
 		case Egypt:
-			return string("Egypt");
+            return QString("Egypt");
 		case ElSalvador:
-			return string("ElSalvador");
+            return QString("ElSalvador");
 		case Estonia:
-			return string("Estonia");
+            return QString("Estonia");
 		case FaroeIslands:
-			return string("Faroe Islands");
+            return QString("Faroe Islands");
 		case Finland:
-			return string("Finland");
+            return QString("Finland");
 		case France:
-			return string("France");
+            return QString("France");
 		case Georgia:
-			return string("Georgia");
+            return QString("Georgia");
 		case Germany:
-			return string("Germany");
+            return QString("Germany");
 		case Greece:
-			return string("Greece");
+            return QString("Greece");
 		case Guatemala:
-			return string("Guatemala");
+            return QString("Guatemala");
 		case Honduras:
-			return string("Honduras");
+            return QString("Honduras");
 		case HongKong:
-			return string("HongKong");
+            return QString("HongKong");
 		case Hungary:
-			return string("Hungary");
+            return QString("Hungary");
 		case Iceland:
-			return string("Iceland");
+            return QString("Iceland");
 		case India:
-			return string("India");
+            return QString("India");
 		case Indonesia:
-			return string("Indonesia");
+            return QString("Indonesia");
 		case Iran:
-			return string("Iran");
+            return QString("Iran");
 		case Iraq:
-			return string("Iraq");
+            return QString("Iraq");
 		case Ireland:
-			return string("Ireland");
+            return QString("Ireland");
 		case Israel:
-			return string("Israel");
+            return QString("Israel");
 		case Italy:
-			return string("Italy");
+            return QString("Italy");
 		case Jamaica:
-			return string("Jamaica");
+            return QString("Jamaica");
 		case Japan:
-			return string("Japan");
+            return QString("Japan");
 		case Jordan:
-			return string("Jordan");
+            return QString("Jordan");
 		case Kazakhstan:
-			return string("Kazakhstan");
+            return QString("Kazakhstan");
 		case Kenya:
-			return string("Kenya");
+            return QString("Kenya");
 		case Korea:
-			return string("Korea");
+            return QString("Korea");
 		case Kuwait:
-			return string("Kuwait");
+            return QString("Kuwait");
 		case Kyrgyzstan:
-			return string("Kyrgyzstan");
+            return QString("Kyrgyzstan");
 		case Latvia:
-			return string("Latvia");
+            return QString("Latvia");
 		case Lebanon:
-			return string("Lebanon");
+            return QString("Lebanon");
 		case LibyanArabJamahiriya:
-			return string("Libyan Arab Jamahiriya");
+            return QString("Libyan Arab Jamahiriya");
 		case Liechtenstein:
-			return string("Liechtenstein");
+            return QString("Liechtenstein");
 		case Lithuania:
-			return string("Lithuania");
+            return QString("Lithuania");
 		case Luxembourg:
-			return string("Luxembourg");
+            return QString("Luxembourg");
 		case Macao:
-			return string("Macao");
+            return QString("Macao");
 		case Macedonia:
-			return string("Macedonia");
+            return QString("Macedonia");
 		case Malaysia:
-			return string("Malaysia");
+            return QString("Malaysia");
 		case Maldives:
-			return string("Maldives");
+            return QString("Maldives");
 		case Mexico:
-			return string("Mexico");
+            return QString("Mexico");
 		case Monaco:
-			return string("Monaco");
+            return QString("Monaco");
 		case Mongolia:
-			return string("Mongolia");
+            return QString("Mongolia");
 		case Morocco:
-			return string("Morocco");
+            return QString("Morocco");
 		case Netherlands:
-			return string("Netherlands");
+            return QString("Netherlands");
 		case NewZealand:
-			return string("New Zealand");
+            return QString("New Zealand");
 		case Nicaragua:
-			return string("Nicaragua");
+            return QString("Nicaragua");
 		case Norway:
-			return string("Norway");
+            return QString("Norway");
 		case Oman:
-			return string("Oman");
+            return QString("Oman");
 		case Pakistan:
-			return string("Pakistan");
+            return QString("Pakistan");
 		case Panama:
-			return string("Panama");
+            return QString("Panama");
 		case Paraguay:
-			return string("Paraguay");
+            return QString("Paraguay");
 		case Peru:
-			return string("Peru");
+            return QString("Peru");
 		case Philippines:
-			return string("Philippines");
+            return QString("Philippines");
 		case Poland:
-			return string("Poland");
+            return QString("Poland");
 		case Portugal:
-			return string("Portugal");
+            return QString("Portugal");
 		case PuertoRico:
-			return string("Puerto Rico");
+            return QString("Puerto Rico");
 		case Qatar:
-			return string("Qatar");
+            return QString("Qatar");
 		case Romania:
-			return string("Romania");
+            return QString("Romania");
 		case RussianFederation:
-			return string("Russian Federation");
+            return QString("Russian Federation");
 		case SaudiArabia:
-			return string("SaudiArabia");
+            return QString("SaudiArabia");
 		case Singapore:
-			return string("Singapore");
+            return QString("Singapore");
 		case Slovakia:
-			return string("Slovakia");
+            return QString("Slovakia");
 		case Slovenia:
-			return string("Slovenia");
+            return QString("Slovenia");
 		case SouthAfrica:
-			return string("SouthAfrica");
+            return QString("SouthAfrica");
 		case Spain:
-			return string("Spain");
+            return QString("Spain");
 		case Sweden:
-			return string("Sweden");
+            return QString("Sweden");
 		case Switzerland:
-			return string("Switzerland");
+            return QString("Switzerland");
 		case SyrianArabRepublic:
-			return string("Syrian Arab Republic");
+            return QString("Syrian Arab Republic");
 		case Taiwan:
-			return string("Taiwan");
+            return QString("Taiwan");
 		case Thailand:
-			return string("Thailand");
+            return QString("Thailand");
 		case TrinidadAndTobago:
-			return string("Trinidad And Tobago");
+            return QString("Trinidad And Tobago");
 		case Tunisia:
-			return string("Tunisia");
+            return QString("Tunisia");
 		case Turkey:
-			return string("Turkey");
+            return QString("Turkey");
 		case Ukraine:
-			return string("Ukraine");
+            return QString("Ukraine");
 		case UnitedArabEmirates:
-			return string("United Arab Emirates");
+            return QString("United Arab Emirates");
 		case UnitedKingdom:
-			return string("United Kingdom");
+            return QString("United Kingdom");
 		case UnitedStates:
-			return string("United States");
+            return QString("United States");
 		case Unknown:
-			return string("Unknown");
+            return QString("Unknown");
 		case Uruguay:
-			return string("Uruguay");
+            return QString("Uruguay");
 		case Uzbekistan:
-			return string("Uzbekistan");
+            return QString("Uzbekistan");
 		case Venezuela:
-			return string("Venezuela");
+            return QString("Venezuela");
 		case Vietnam:
-			return string("Vietnam");
+            return QString("Vietnam");
 		case Yemen:
-			return string("Yemen");
+            return QString("Yemen");
 		case Zimbabwe:
-			return string("Zimbabwe");
+            return QString("Zimbabwe");
 		default:
             throw QString("GPD: Error converting region ID to string, invalid region.\n");
 	}
