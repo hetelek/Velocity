@@ -280,6 +280,13 @@ void MainWindow::LoadAllPlugins()
 
 MainWindow::~MainWindow()
 {
+    // close all of the open subviews
+    QList<QMdiSubWindow*> subWindows = ui->mdiArea->subWindowList();
+    for (DWORD i = 0; i < subWindows.length(); i++)
+    {
+        subWindows.at(i)->setParent(NULL);
+        delete subWindows.at(i);
+    }
     delete ui;
 }
 
