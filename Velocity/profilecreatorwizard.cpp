@@ -168,6 +168,9 @@ void ProfileCreatorWizard::onFinished(int status)
         ui->listWidget->currentItem()->icon().pixmap(32, 32).save(img32Path, "PNG");
         newProfile.InjectFile(img32Path.toStdString(), "tile_32.png");
 
+        // create the avatar assets folder
+        newProfile.CreateFolder("AvatarAssets");
+
         newProfile.Rehash();
         string path = QtHelpers::GetKVPath(newProfile.metaData->certificate.ownerConsoleType, this);
 
