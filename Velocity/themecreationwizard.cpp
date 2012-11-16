@@ -28,7 +28,9 @@ ThemeCreationWizard::ThemeCreationWizard(QStatusBar *statusBar, QWidget *parent)
 
 ThemeCreationWizard::~ThemeCreationWizard()
 {
-
+    // free all the images allocated on the heap
+    for (DWORD i = 0; i < allocatedImages.size(); i++)
+        delete allocatedImages.at(i);
 }
 
 void ThemeCreationWizard::onFinished(int status)
@@ -178,10 +180,11 @@ void ThemeCreationWizard::openWallpaper(QLabel *imageViewer, QImage *saveImage)
     if (fileName == "")
         return;
 
-    QPixmap thumbnail(fileName);
+    QPixmap *thumbnail = new QPixmap(fileName);
     *saveImage = QImage(fileName);
+    allocatedImages.push_back(thumbnail);
 
-    imageViewer->setPixmap(thumbnail);
+    imageViewer->setPixmap(*thumbnail);
     imageViewer->setScaledContents(true);
     imagesLoaded |= (1 << (this->currentId() - 4));
     button(QWizard::NextButton)->setEnabled(true);

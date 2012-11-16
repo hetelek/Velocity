@@ -90,6 +90,7 @@ private:
     Ui::ThemeCreationWizard *ui;
     QImage wallpaper1, wallpaper2, wallpaper3, wallpaper4;
     QStatusBar *statusBar;
+    QList<QPixmap*> allocatedImages;
 
     BYTE imagesLoaded;
 
