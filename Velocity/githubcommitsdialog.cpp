@@ -38,15 +38,15 @@ GitHubCommitsDialog::~GitHubCommitsDialog()
 
 void GitHubCommitsDialog::onReply(QNetworkReply *reply)
 {
-    // if we can't connect to the server, then quit
-    if (reply->bytesAvailable() == 0)
+    // parse the response
+    bool ok;
+    QList<QVariant> commits = QtJson::Json::parse(QString(reply->readAll()), ok).toList();
+
+    if (!ok)
     {
         label->setText("Error connecting to GitHub...");
         return;
     }
-
-    // parse the response
-    QList<QVariant> commits = QtJson::Json::parse(QString(reply->readAll())).toList();
 
     // iterate through all of the commits
     foreach (QVariant commit, commits)
