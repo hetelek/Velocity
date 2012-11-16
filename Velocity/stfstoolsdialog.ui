@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>STFS Tools</string>
+   <string>STFS Tool</string>
   </property>
   <property name="windowIcon">
    <iconset resource="Resources.qrc">

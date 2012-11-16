@@ -12,8 +12,7 @@ StfsToolsDialog::StfsToolsDialog(StfsPackage *package, QWidget *parent) : QDialo
     else
         ui->spnBlock->setMaximum(package->metaData->volumeDescriptor.allocatedBlockCount - 1);
 
-    ui->lblAddr->setText("0x" + QString::number(package->BlockToAddress(0), 16).toUpper());
-    ui->lblHashAddr->setText("0x" + QString::number(package->GetHashAddressOfBlock(0), 16).toUpper());
+    on_spnBlock_valueChanged(0);
 }
 
 StfsToolsDialog::~StfsToolsDialog()
