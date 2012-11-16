@@ -15,6 +15,9 @@
 #include <QDropEvent>
 #include <QFile>
 #include <QPluginLoader>
+#include <QNetworkRequest>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 // forms
 #include "profileeditor.h"
@@ -38,6 +41,7 @@
 #include "PluginInterfaces/igpdmodder.h"
 #include "qthelpers.h"
 #include "FileIO.h"
+#include "json.h"
 #include "Stfs/StfsPackage.h"
 #include "GPD/GPDBase.h"
 
@@ -105,9 +109,12 @@ private slots:
 
     void on_actionFATX_File_Path_triggered();
 
+    void versionReplyFinished(QNetworkReply *aReply);
+
 private:
     Ui::MainWindow *ui;
     QSettings *settings;
+    QNetworkAccessManager *manager;
     QList<QAction*> gpdActions, gameActions;
 
     void LoadFiles(QList<QUrl> &filePaths);

@@ -47,6 +47,10 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
     ui->mdiArea->addSubWindow(dialog);
     dialog->show();
 
+    manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(versionReplyFinished(QNetworkReply*)));
+    manager->get(QNetworkRequest(QUrl("http://velocity.expetelek.com/app.data")));
+
     LoadFiles(arguments);
 }
 
@@ -200,7 +204,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
 
 void MainWindow::on_actionDonate_triggered()
 {
-    QDesktopServices::openUrl(QUrl("http://goo.gl/0nBpD"));
+    QDesktopServices::openUrl(QUrl("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GW3CMHU8F9DT2"));
 }
 
 void MainWindow::on_actionView_Wiki_triggered()
@@ -626,5 +630,26 @@ void MainWindow::on_actionFATX_File_Path_triggered()
     catch (string error)
     {
         QMessageBox::critical(this, "Package Error", "An error has occurred while opening the package.\n\n" + QString::fromStdString(error));
+    }
+}
+
+void MainWindow::versionReplyFinished(QNetworkReply *aReply)
+{
+    QString jsonStr(aReply->readAll());
+
+    bool ok;
+    QVariantMap result = QtJson::Json::parse(jsonStr, ok).toMap();
+
+    if (!ok)
+        return;
+
+    QString version = result["version"].toString();
+    QString downloadPage = result["dl_page"].toString();
+
+    if (VERSION != version)
+    {
+        QMessageBox::StandardButton selection = (QMessageBox::StandardButton)QMessageBox::question(this, "Version " + version, "Version " + version + " of Velocity is available for download. Would you like to be brought to the download page?", QMessageBox::Yes, QMessageBox::No);
+        if (selection == QMessageBox::Yes)
+            QDesktopServices::openUrl(QUrl(downloadPage));
     }
 }
