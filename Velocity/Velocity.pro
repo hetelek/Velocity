@@ -12,6 +12,8 @@ mac | win32 {
 
 TARGET = Velocity
 TEMPLATE = app
+VERSION = 0.0.0.1
+DEFINES += VERSION=\\\"$$VERSION\\\"
 
 win32 {
     RC_FILE = velocity.rc
