@@ -78,5 +78,6 @@
         <file>Images/gamerscore.png</file>
         <file>Images/avatar.png</file>
         <file>Images/hdd.png</file>
+        <file>Images/star.png</file>
     </qresource>
 </RCC>

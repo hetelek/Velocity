@@ -9,6 +9,11 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     ui->setupUi(this);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     QtHelpers::GenAdjustWidgetAppearanceToOS(this);
+    unlockEverything = new QPushButton("Unlock Everything", this);
+    unlockEverything->setIcon(QIcon(":/Images/star.png"));
+    unlockEverything->setHidden(true);
+    ui->tabWidget->setCornerWidget(unlockEverything);
+    connect(unlockEverything, SIGNAL(clicked()), this, SLOT(onUnlockEverything()));
 
 #ifdef __linux__
     QFont f = ui->lblAchName->font();
@@ -43,7 +48,6 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     ui->avatarAwardsList->header()->resizeSection(0, 350);
     ui->avatarAwardsList->header()->resizeSection(1, 125);
     ui->avatarAwardsList->header()->resizeSection(2, 125);
-
 
     // verify that the package is a profile
     if (profile->metaData->contentType != Profile)
@@ -889,62 +893,17 @@ void ProfileEditor::on_btnUnlockAllAchvs_clicked()
                           QString::fromStdWString(games.at(index).titleEntry->gameName) + " offline?", QMessageBox::Yes, QMessageBox::No);
 
     if (btn != QMessageBox::Yes)
-       return;
-
-    games.at(index).gpd->UnlockAllAchievementsOffline();
-    games.at(index).updated = true;
-
-    DWORD gamerscoreToAdd = 0;
+        return;
 
     // update the ui
     for (int i = 0; i < ui->achievementsList->topLevelItemCount(); i++)
     {
         QTreeWidgetItem *item = ui->achievementsList->topLevelItem(i);
-        if (!item->text(1).toLower().contains("unlocked"))
-            gamerscoreToAdd += games.at(index).gpd->achievements.at(i).gamerscore;
         if (item->text(1) != "Unlocked Online")
             item->setText(1, "Unlocked Offline");
     }
 
-    // make sure that the settings exist
-    SettingEntry settingGamerscore, settingAchievements;
-    settingGamerscore.int32 = settingAchievements.int32 = 0xFFFFFFFF;
-    for (DWORD i = 0; i < games.at(index).gpd->settings.size(); i++)
-        if (games.at(index).gpd->settings.at(i).entry.id == GamercardTitleAchievementsEarned)
-            settingAchievements = games.at(index).gpd->settings.at(i);
-        else if (games.at(index).gpd->settings.at(i).entry.id == GamercardTitleCredEarned)
-            settingGamerscore = games.at(index).gpd->settings.at(i);
-
-    // if the settings don't exist, then create them
-    if (settingGamerscore.int32 == 0xFFFFFFFF)
-    {
-        settingGamerscore.type = Int32;
-        settingGamerscore.int32 = 0;
-        games.at(index).gpd->CreateSettingEntry(&settingGamerscore, GamercardTitleCredEarned);
-    }
-    if (settingAchievements.int32 == 0xFFFFFFFF)
-    {
-        settingAchievements.type = Int32;
-        settingAchievements.int32 = 0;
-        games.at(index).gpd->CreateSettingEntry(&settingAchievements, GamercardTitleAchievementsEarned);
-    }
-
-    // set the settings to the max amounts
-    settingGamerscore.int32 = games.at(index).titleEntry->totalGamerscore;
-    settingAchievements.int32 = games.at(index).titleEntry->achievementCount;
-
-    // write the settings
-    games.at(index).gpd->WriteSettingEntry(settingGamerscore);
-    games.at(index).gpd->WriteSettingEntry(settingAchievements);
-
-    games.at(index).titleEntry->achievementsUnlocked = games.at(index).titleEntry->achievementCount;
-    games.at(index).titleEntry->gamerscoreUnlocked = games.at(index).titleEntry->totalGamerscore;
-    games.at(index).titleEntry->flags |= (SyncAchievement | DownloadAchievementImage);
-
-    dashGPD->WriteTitleEntry(games.at(index).titleEntry);
-
-    dashGPD->gamerscoreUnlocked.int32 += gamerscoreToAdd;
-    dashGPD->WriteSettingEntry(dashGPD->gamerscoreUnlocked);
+    unlockAllAchievements(index);
 
     ui->lblGameAchvs->setText("<span style=\"color:#4f4f4f;\">" + QString::number(games.at(index).titleEntry->achievementsUnlocked) + " out of " + QString::number(games.at(index).titleEntry->achievementCount) + " unlocked</span>");
     ui->lblGameGamerscore->setText("<span style=\"color:#4f4f4f;\">" + QString::number(games.at(index).titleEntry->gamerscoreUnlocked) + " out of " + QString::number(games.at(index).titleEntry->totalGamerscore) + " unlocked</span>");
@@ -1011,9 +970,6 @@ void ProfileEditor::on_btnUnlockAllAwards_clicked()
     if (btn != QMessageBox::Yes)
       return;
 
-    aaGames.at(index).gpd->UnlockAllAwards();
-    aaGames.at(index).updated = true;
-
     // update the ui
     for (int i = 0; i < ui->avatarAwardsList->topLevelItemCount(); i++)
     {
@@ -1022,13 +978,6 @@ void ProfileEditor::on_btnUnlockAllAwards_clicked()
             item->setText(2, "Unlocked Offline");
     }
 
-    // update the title entry
-    aaGames.at(index).titleEntry->avatarAwardsEarned = aaGames.at(index).titleEntry->avatarAwardCount;
-    aaGames.at(index).titleEntry->maleAvatarAwardsEarned = aaGames.at(index).titleEntry->maleAvatarAwardCount;
-    aaGames.at(index).titleEntry->femaleAvatarAwardsEarned = aaGames.at(index).titleEntry->femaleAvatarAwardCount;
-    aaGames.at(index).titleEntry->flags |= (DownloadAvatarAward | SyncAvatarAward);
-
-    dashGPD->WriteTitleEntry(aaGames.at(index).titleEntry);
     ui->lblAwGameAwards->setText("<span style=\"color:#4f4f4f;\">" + QString::number(aaGames.at(index).titleEntry->avatarAwardsEarned) + " out of " + QString::number(aaGames.at(index).titleEntry->avatarAwardCount) + " unlocked</span>");
     statusBar->showMessage("All awards unlocked for " + QString::fromStdWString(aaGames.at(index).titleEntry->gameName), 3000);
 }
@@ -1588,4 +1537,121 @@ void ProfileEditor::on_txtAwardGameSearch_textChanged(const QString & /* arg1 */
     // add all the matched ones to the list
     for (int i = 0; i < itemsMatched.count(); i++)
         ui->aaGamelist->setItemHidden(itemsMatched.at(i), false);
+}
+
+void ProfileEditor::on_tabWidget_currentChanged(int index)
+{
+    unlockEverything->setHidden(index == 0);
+    unlockEverything->setEnabled(((index == 1) ? (ui->gamesList->topLevelItemCount() != 0) : (ui->aaGamelist->topLevelItemCount() != 0)));
+}
+
+void ProfileEditor::onUnlockEverything()
+{
+    QMessageBox::StandardButton btn = QMessageBox::question(this, "Continue?", "Are you sure that you want to unlock all achievements and avatar awards offline?", QMessageBox::Yes, QMessageBox::No);
+    if (btn != QMessageBox::Yes)
+        return;
+
+    QString max =  QString::number(ui->gamesList->topLevelItemCount() + ui->aaGamelist->topLevelItemCount());
+    statusBar->showMessage("Unlocking... 0/" + max);
+    ui->tabWidget->setEnabled(false);
+
+    // unlock all achievements
+    for (DWORD i = 0; i < ui->gamesList->topLevelItemCount(); i++)
+    {
+        unlockAllAchievements(i);
+
+        statusBar->showMessage("Unlocking... " + QString::number(i + 1) + "/" + max);
+        QApplication::processEvents();
+    }
+    if (ui->gamesList->topLevelItemCount() != 0)
+    {
+        ui->gamesList->setCurrentItem(ui->gamesList->topLevelItem(0));
+        ui->gamesList->topLevelItem(0)->setSelected(true);
+        loadGameInfo(ui->gamesList->currentIndex().row());
+        loadAchievementInfo(ui->gamesList->currentIndex().row(), 0);
+    }
+
+    // unlock all awards
+    for (DWORD i = 0; i < ui->aaGamelist->topLevelItemCount(); i++)
+    {
+        unlockAllAwards(i);
+
+        statusBar->showMessage("Unlocking... " + QString::number(i + ui->gamesList->topLevelItemCount() + 1) + "/" + max);
+        QApplication::processEvents();
+    }
+    if (ui->aaGamelist->topLevelItemCount() != 0)
+    {
+        ui->aaGamelist->setCurrentItem(ui->aaGamelist->topLevelItem(0));
+        ui->aaGamelist->topLevelItem(0)->setSelected(true);
+        loadAwardGameInfo(ui->aaGamelist->currentIndex().row());
+        loadAvatarAwardInfo(ui->aaGamelist->currentIndex().row(), 0);
+    }
+
+    statusBar->showMessage("Successfully unlocked everything", 3000);
+    ui->tabWidget->setEnabled(true);
+}
+
+void ProfileEditor::unlockAllAchievements(int index)
+{
+    DWORD gamerscoreToAdd = 0;
+    for (DWORD i = 0; i < games.at(index).gpd->achievements.size(); i++)
+        if ((games.at(index).gpd->achievements.at(i).flags & Unlocked) == 0)
+            gamerscoreToAdd += games.at(index).gpd->achievements.at(i).gamerscore;
+
+    games.at(index).gpd->UnlockAllAchievementsOffline();
+    games.at(index).updated = true;
+
+    // make sure that the settings exist
+    SettingEntry settingGamerscore, settingAchievements;
+    settingGamerscore.int32 = settingAchievements.int32 = 0xFFFFFFFF;
+    for (DWORD i = 0; i < games.at(index).gpd->settings.size(); i++)
+        if (games.at(index).gpd->settings.at(i).entry.id == GamercardTitleAchievementsEarned)
+            settingAchievements = games.at(index).gpd->settings.at(i);
+        else if (games.at(index).gpd->settings.at(i).entry.id == GamercardTitleCredEarned)
+            settingGamerscore = games.at(index).gpd->settings.at(i);
+
+    // if the settings don't exist, then create them
+    if (settingGamerscore.int32 == 0xFFFFFFFF)
+    {
+        settingGamerscore.type = Int32;
+        settingGamerscore.int32 = 0;
+        games.at(index).gpd->CreateSettingEntry(&settingGamerscore, GamercardTitleCredEarned);
+    }
+    if (settingAchievements.int32 == 0xFFFFFFFF)
+    {
+        settingAchievements.type = Int32;
+        settingAchievements.int32 = 0;
+        games.at(index).gpd->CreateSettingEntry(&settingAchievements, GamercardTitleAchievementsEarned);
+    }
+
+    // set the settings to the max amounts
+    settingGamerscore.int32 = games.at(index).titleEntry->totalGamerscore;
+    settingAchievements.int32 = games.at(index).titleEntry->achievementCount;
+
+    // write the settings
+    games.at(index).gpd->WriteSettingEntry(settingGamerscore);
+    games.at(index).gpd->WriteSettingEntry(settingAchievements);
+
+    games.at(index).titleEntry->achievementsUnlocked = games.at(index).titleEntry->achievementCount;
+    games.at(index).titleEntry->gamerscoreUnlocked = games.at(index).titleEntry->totalGamerscore;
+    games.at(index).titleEntry->flags |= (SyncAchievement | DownloadAchievementImage);
+
+    dashGPD->WriteTitleEntry(games.at(index).titleEntry);
+
+    dashGPD->gamerscoreUnlocked.int32 += gamerscoreToAdd;
+    dashGPD->WriteSettingEntry(dashGPD->gamerscoreUnlocked);
+}
+
+void ProfileEditor::unlockAllAwards(int index)
+{
+    aaGames.at(index).gpd->UnlockAllAwards();
+    aaGames.at(index).updated = true;
+
+    // update the title entry
+    aaGames.at(index).titleEntry->avatarAwardsEarned = aaGames.at(index).titleEntry->avatarAwardCount;
+    aaGames.at(index).titleEntry->maleAvatarAwardsEarned = aaGames.at(index).titleEntry->maleAvatarAwardCount;
+    aaGames.at(index).titleEntry->femaleAvatarAwardsEarned = aaGames.at(index).titleEntry->femaleAvatarAwardCount;
+    aaGames.at(index).titleEntry->flags |= (DownloadAvatarAward | SyncAvatarAward);
+
+    dashGPD->WriteTitleEntry(aaGames.at(index).titleEntry);
 }
