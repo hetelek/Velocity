@@ -305,7 +305,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         }
 
         // create the tree widget item
-        QTreeWidgetItem *item = new QTreeWidgetItem(ui->gamesList);
+        QTreeWidgetItem *item = new QTreeWidgetItem;
         item->setText(0, QString::fromStdWString(gpd->gameName.ws));
 
         // set the thumbnail
