@@ -3,7 +3,7 @@
 
 Q_DECLARE_METATYPE(TitleEntry)
 
-GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dispose) : QDialog(parent), ui(new Ui::GameAdderDialog), package(package), dispose(dispose)
+GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dispose, bool *ok) : QDialog(parent), ui(new Ui::GameAdderDialog), package(package), dispose(dispose)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -39,6 +39,15 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
     mainDir = "http://velocity.expetelek.com/gameadder/";
 
     manager = new QNetworkAccessManager(this);
+
+    // check for a connection
+    if (manager->networkAccessible() != QNetworkAccessManager::Accessible)
+    {
+        QMessageBox::warning(this, "Listing Error", "The listing could not be parsed. Try again later, as the servers may be down and make sure Velocity has access to the internet.");
+        *ok = false;
+        return;
+    }
+
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gameReplyFinished(QNetworkReply*)));
     manager->get(QNetworkRequest(QUrl(mainDir + "listing.php")));
 
@@ -51,6 +60,8 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
 
     connect(ui->treeWidgetAllGames, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showRemoveContextMenu_AllGames(QPoint)));
     connect(ui->treeWidgetQueue, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showRemoveContextMenu_QueuedGames(QPoint)));
+
+    *ok = true;
 }
 
 GameAdderDialog::~GameAdderDialog()

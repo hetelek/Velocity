@@ -344,12 +344,16 @@ void PackageViewer::onOpenInSelected(QAction *action)
     {
         if (action == gameAdder)
         {
-            GameAdderDialog dialog(package, this, false);
-            dialog.exec();
+            bool ok;
+            GameAdderDialog dialog(package, this, false, &ok);
+            if (ok)
+            {
+                dialog.exec();
 
-            ui->treeWidget->clear();
-            listing = package->GetFileListing();
-            PopulateTreeWidget(&listing);
+                ui->treeWidget->clear();
+                listing = package->GetFileListing();
+                PopulateTreeWidget(&listing);
+            }
         }
         else if (action == profileEditor)
         {

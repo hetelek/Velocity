@@ -26,6 +26,13 @@ GitHubCommitsDialog::GitHubCommitsDialog(QWidget *parent) :
 
     label->setWordWrap(true);
 
+    // make sure we can connect to the internet
+    if (manager->networkAccessible() != QNetworkAccessManager::Accessible)
+    {
+        label->setText("<center>Error connecting to GitHub...</center>");
+        return;
+    }
+
     // make a request to the API
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(onReply(QNetworkReply*)));
     manager->get(QNetworkRequest(QUrl("https://api.github.com/repos/hetelek/velocity/commits")));

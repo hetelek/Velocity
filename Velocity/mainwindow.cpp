@@ -591,10 +591,13 @@ void MainWindow::on_actionGame_Adder_triggered()
 
     StfsPackage *package = new StfsPackage(fileName.toStdString());
 
-    GameAdderDialog dialog(package, this);
-    dialog.exec();
+    bool ok;
+    GameAdderDialog dialog(package, this, true, &ok);
+    if (ok)
+        dialog.exec();
 
     package->Close();
+    delete package;
 }
 
 void MainWindow::on_actionGamer_Picture_Pack_Creator_triggered()
