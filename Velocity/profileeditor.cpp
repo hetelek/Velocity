@@ -1553,7 +1553,7 @@ void ProfileEditor::on_tabWidget_currentChanged(int index)
 
 void ProfileEditor::onUnlockEverything()
 {
-    QMessageBox::StandardButton btn = QMessageBox::question(this, "Continue?", "Are you sure that you want to unlock all achievements and avatar awards offline?", QMessageBox::Yes, QMessageBox::No);
+    QMessageBox::StandardButton btn = (QMessageBox::StandardButton)QMessageBox::question(this, "Continue?", "Are you sure that you want to unlock all achievements and avatar awards offline?", QMessageBox::Yes, QMessageBox::No);
     if (btn != QMessageBox::Yes)
         return;
 
