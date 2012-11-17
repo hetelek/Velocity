@@ -180,6 +180,8 @@ void GameAdderDialog::showRemoveContextMenu_AllGames(QPoint point)
 
 void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath, TitleEntry entry, bool error)
 {
+    delete sender();
+
     ui->progressBar->setValue(((double)++downloadedCount / (double)totalDownloadCount) * 100);
     QMutex m;
     if (!error)
@@ -340,6 +342,9 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
             {
                 package->Close();
                 delete package;
+
+                if (pecPackage != NULL)
+                    delete pecPackage;
             }
         }
         catch (std::string error)
@@ -414,6 +419,7 @@ void GameAdderDialog::on_pushButton_clicked()
     if (pecPackage != NULL)
     {
         pecPackage->Close();
+        delete pecPackage;
         QFile::remove(pecTempPath);
     }
 
