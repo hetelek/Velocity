@@ -30,8 +30,8 @@ mac {
 }
 
 unix:!mac {
-    INCLUDEPATH += "/usr/include/botan-1.10"
-    LIBS += "/usr/lib/libbotan-1.10.a"
+    INCLUDEPATH += "/usr/local/include/botan-1.10"
+    LIBS += "/usr/local/lib/libbotan-1.10.a"
 }
 
 VERSION = 1.0.0
