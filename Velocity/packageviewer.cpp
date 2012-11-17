@@ -65,7 +65,7 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<
             ui->txtDeviceID->setEnabled(false);
         }
 
-        openInMenu = new QMenu;
+        openInMenu = new QMenu(this);
         if (package->metaData->contentType == Profile)
         {
             profileEditor = new QAction("Profile Editor", this);

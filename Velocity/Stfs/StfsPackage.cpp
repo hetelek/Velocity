@@ -2104,5 +2104,6 @@ void StfsPackage::GenerateRawFileListing(FileListing *in, vector<FileEntry> *out
 StfsPackage::~StfsPackage(void)
 {
     io->close();
+    delete io;
     delete metaData;
 }

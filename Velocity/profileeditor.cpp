@@ -49,6 +49,15 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     ui->avatarAwardsList->header()->resizeSection(1, 125);
     ui->avatarAwardsList->header()->resizeSection(2, 125);
 
+    gameBoxArtManager = new QNetworkAccessManager(this);
+    connect(gameBoxArtManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinishedBoxArt(QNetworkReply*)));
+
+    awardBoxArtManager = new QNetworkAccessManager(this);
+    connect(awardBoxArtManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinishedAwBoxArt(QNetworkReply*)));
+
+    awardThumbnailManager = new QNetworkAccessManager(this);
+    connect(awardThumbnailManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinishedAwImg(QNetworkReply*)));
+
     // verify that the package is a profile
     if (profile->metaData->contentType != Profile)
     {
@@ -640,7 +649,7 @@ void ProfileEditor::loadGameInfo(int index)
     // load all the achievements
     for (DWORD i = 0; i < curGPD->achievements.size(); i++)
     {
-        QTreeWidgetItem *item = new QTreeWidgetItem;
+        QTreeWidgetItem *item = new QTreeWidgetItem(ui->achievementsList);
         item->setText(0, QString::fromStdWString(curGPD->achievements.at(i).name).replace("\n", ""));
         item->setText(1, QString::fromStdString(XDBFHelpers::GetAchievementState(&curGPD->achievements.at(i))));
         item->setText(2, QString::number(curGPD->achievements.at(i).gamerscore));
@@ -662,10 +671,8 @@ void ProfileEditor::loadGameInfo(int index)
     ui->lblGameAchvs->setText("<span style=\"color:#4f4f4f;\">" + QString::number(title->achievementsUnlocked) + " out of " + QString::number(title->achievementCount) + " unlocked" + "</span>");
     ui->lblGameGamerscore->setText("<span style=\"color:#4f4f4f;\">" + QString::number(title->gamerscoreUnlocked) + " out of " + QString::number(title->totalGamerscore) + " unlocked" + "</span>");
 
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinishedBoxArt(QNetworkReply*)));
     string tmp = DashboardGPD::GetSmallBoxArtURL(title);
-    manager->get(QNetworkRequest(QUrl(QString::fromStdString(tmp))));
+    gameBoxArtManager->get(QNetworkRequest(QUrl(QString::fromStdString(tmp))));
 }
 
 void ProfileEditor::saveImage(QPoint p, QLabel *imgLabel)
@@ -770,7 +777,7 @@ void ProfileEditor::loadAwardGameInfo(int index)
     // load all the avatar awards for the game
     for (DWORD i = 0; i < gpd->avatarAwards.size(); i++)
     {
-        QTreeWidgetItem *item = new QTreeWidgetItem;
+        QTreeWidgetItem *item = new QTreeWidgetItem(ui->avatarAwardsList);
         item->setText(0, QString::fromStdWString(gpd->avatarAwards.at(i).name).replace("\n", ""));
         item->setText(1, QString::fromStdString(XDBFHelpers::AssetGenderToString(gpd->GetAssetGender(&gpd->avatarAwards.at(i)))));
 
@@ -798,17 +805,18 @@ void ProfileEditor::loadAwardGameInfo(int index)
     ui->lblAwGameAwards->setText("<span style=\"color:#4f4f4f;\">" + QString::number(title->avatarAwardsEarned) + " out of " + QString::number(title->avatarAwardCount) + " unlocked" + "</span>");
 
     // download the box art image
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinishedAwBoxArt(QNetworkReply*)));
     string tmp = DashboardGPD::GetSmallBoxArtURL(title);
-    manager->get(QNetworkRequest(QUrl(QString::fromStdString(tmp))));
+    awardBoxArtManager->get(QNetworkRequest(QUrl(QString::fromStdString(tmp))));
 }
 
 void ProfileEditor::replyFinishedAwBoxArt(QNetworkReply *aReply)
 {
     QByteArray boxArt = aReply->readAll();
     if(boxArt.size() != 0 && !boxArt.contains("File not found."))
+    {
+        ui->imgAwBoxArt->clear();
         ui->imgAwBoxArt->setPixmap(QPixmap::fromImage(QImage::fromData(boxArt)));
+    }
     else
         ui->imgAwBoxArt->setText("<i>Unable to download image.</i>");
 }
@@ -822,9 +830,6 @@ void ProfileEditor::loadAvatarAwardInfo(int gameIndex, unsigned int awardIndex)
 {
     if (gameIndex < 0)
         return;
-/*    if (awardIndex < 0)
-        return;
-*/
 
     if (awardIndex >= aaGames.at(gameIndex).gpd->avatarAwards.size())
         return;
@@ -868,17 +873,18 @@ void ProfileEditor::loadAvatarAwardInfo(int gameIndex, unsigned int awardIndex)
     ui->dteAwTimestamp->setDateTime(QDateTime::fromTime_t(award->unlockTime));
 
     // download the thumbnail
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinishedAwImg(QNetworkReply*)));
     string tmp = AvatarAwardGPD::GetLargeAwardImageURL(award);
-    manager->get(QNetworkRequest(QUrl(QString::fromStdString(tmp))));
+    awardThumbnailManager->get(QNetworkRequest(QUrl(QString::fromStdString(tmp))));
 }
 
 void ProfileEditor::replyFinishedAwImg(QNetworkReply *aReply)
 {
     QByteArray img = aReply->readAll();
     if(img.size() != 0 && !img.contains("File not found."))
+    {
+        ui->imgAw->clear();
         ui->imgAw->setPixmap(QPixmap::fromImage(QImage::fromData(img)));
+    }
     else
         ui->imgAw->setText("<i>Unable to download image.</i>");
 }
