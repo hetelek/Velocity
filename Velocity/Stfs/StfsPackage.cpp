@@ -1167,6 +1167,8 @@ void StfsPackage::Resign(string kvPath)
     // write the certficate
     memcpy(metaData->certificate.signature, signature, 0x80);
     metaData->WriteCertificate();
+
+    delete[] dataToSign;
 }
 
 
@@ -1979,6 +1981,8 @@ void StfsPackage::ReplaceFile(string path, FileEntry *entry, string pathInPackag
         fileIn.readBytes(toWrite, remainder);
 
         io->write(toWrite, remainder);
+
+        delete[] toWrite;
     }
 
     // update the progress if needed
