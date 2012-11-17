@@ -325,7 +325,7 @@ GPDBase::~GPDBase(void)
     for (DWORD i = 0 ; i < settings.size(); i++)
     {
         if (settings.at(i).type == Binary)
-            delete settings.at(i).binaryData.data;
+            delete[] settings.at(i).binaryData.data;
         else if (settings.at(i).type == UnicodeString)
             delete settings.at(i).str;
     }
