@@ -1561,10 +1561,13 @@ void ProfileEditor::onUnlockEverything()
     statusBar->showMessage("Unlocking... 0/" + max);
     ui->tabWidget->setEnabled(false);
 
+    DWORD totalGamerscore = 0;
+
     // unlock all achievements
     for (DWORD i = 0; i < ui->gamesList->topLevelItemCount(); i++)
     {
         unlockAllAchievements(i);
+        totalGamerscore += games.at(i).titleEntry->totalGamerscore;
 
         statusBar->showMessage("Unlocking... " + QString::number(i + 1) + "/" + max);
         QApplication::processEvents();
@@ -1576,6 +1579,9 @@ void ProfileEditor::onUnlockEverything()
         loadGameInfo(ui->gamesList->currentIndex().row());
         loadAchievementInfo(ui->gamesList->currentIndex().row(), 0);
     }
+
+    // update the ui
+    ui->lblGamerscore->setText(QString::number(totalGamerscore) + "G");
 
     // unlock all awards
     for (DWORD i = 0; i < ui->aaGamelist->topLevelItemCount(); i++)
