@@ -41,7 +41,7 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
     manager = new QNetworkAccessManager(this);
 
     // check for a connection
-    if (manager->networkAccessible() != QNetworkAccessManager::Accessible)
+    if (manager->networkAccessible() == QNetworkAccessManager::NotAccessible)
     {
         QMessageBox::warning(this, "Listing Error", "The listing could not be parsed. Try again later, as the servers may be down and make sure Velocity has access to the internet.");
         *ok = false;

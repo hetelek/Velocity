@@ -27,7 +27,7 @@ GitHubCommitsDialog::GitHubCommitsDialog(QWidget *parent) :
     label->setWordWrap(true);
 
     // make sure we can connect to the internet
-    if (manager->networkAccessible() != QNetworkAccessManager::Accessible)
+    if (manager->networkAccessible() == QNetworkAccessManager::NotAccessible)
     {
         label->setText("<center>Error connecting to GitHub...</center>");
         return;
