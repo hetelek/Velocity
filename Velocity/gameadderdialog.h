@@ -48,7 +48,7 @@ private slots:
 private:
     Ui::GameAdderDialog *ui;
     QString mainDir;
-    QNetworkAccessManager *manager;
+    QNetworkAccessManager *manager, *imageManager;
     DashboardGPD *dashGPD;
     QString dashGPDTempPath, pecTempPath;
     QStringList notSuccessful;

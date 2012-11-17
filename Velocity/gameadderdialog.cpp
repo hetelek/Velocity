@@ -46,6 +46,9 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
     ui->treeWidgetAllGames->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->treeWidgetQueue->setContextMenuPolicy(Qt::CustomContextMenu);
 
+    imageManager = new QNetworkAccessManager(this);
+    connect(imageManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(thumbnailReplyFinished(QNetworkReply*)));
+
     connect(ui->treeWidgetAllGames, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showRemoveContextMenu_AllGames(QPoint)));
     connect(ui->treeWidgetQueue, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showRemoveContextMenu_QueuedGames(QPoint)));
 }
@@ -134,11 +137,17 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
 
 void GameAdderDialog::thumbnailReplyFinished(QNetworkReply *aReply)
 {
-    QByteArray thumbnail = aReply->readAll();
-    if(thumbnail.size() != 0 && !thumbnail.contains("File not found."))
-        ui->imgThumbnail->setPixmap(QPixmap::fromImage(QImage::fromData(thumbnail)));
+    int count = ui->treeWidgetAllGames->selectedItems().count();
+    if (count != 1)
+        ui->imgThumbnail->setPixmap(QPixmap(":/Images/watermark.png"));
     else
-        ui->imgThumbnail->setText("<i>Unable to download image.</i>");
+    {
+        QByteArray thumbnail = aReply->readAll();
+        if(thumbnail.size() != 0 && !thumbnail.contains("File not found."))
+            ui->imgThumbnail->setPixmap(QPixmap::fromImage(QImage::fromData(thumbnail)));
+        else
+            ui->imgThumbnail->setText("<i>Unable to download image.</i>");
+    }
 }
 
 void GameAdderDialog::showRemoveContextMenu_AllGames(QPoint point)
@@ -175,6 +184,12 @@ void GameAdderDialog::showRemoveContextMenu_AllGames(QPoint point)
 
             delete items.at(i);
         }
+        ui->lblAchievements->setText("N/A");
+        ui->lblAvatarAwards->setText("N/A");
+        ui->lblGameName->setText("");
+        ui->lblGamerscore->setText("N/A");
+        ui->lblTitleID->setText("");
+        ui->imgThumbnail->setPixmap(QPixmap(":/Images/watermark.png"));
     }
 }
 
@@ -401,17 +416,27 @@ void GameAdderDialog::on_treeWidgetAllGames_currentItemChanged(QTreeWidgetItem *
         return;
     }
 
-    TitleEntry entry = current->data(0, Qt::UserRole).value<TitleEntry>();
+    if (ui->treeWidgetAllGames->selectedItems().count() == 1)
+    {
+        TitleEntry entry = current->data(0, Qt::UserRole).value<TitleEntry>();
 
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(thumbnailReplyFinished(QNetworkReply*)));
-    manager->get(QNetworkRequest(QUrl("http://image.xboxlive.com/global/t." + QString::number(entry.titleID, 16) + "/icon/0/8000")));
+        imageManager->get(QNetworkRequest(QUrl("http://image.xboxlive.com/global/t." + QString::number(entry.titleID, 16) + "/icon/0/8000")));
 
-    ui->lblGameName->setText("" + QString::fromStdWString(entry.gameName));
-    ui->lblTitleID->setText("<span style=\"color:#4f4f4f;\">" + QString::number(entry.titleID, 16).toUpper() + "</span>");
-    ui->lblGamerscore->setText("" + QString::number(entry.totalGamerscore));
-    ui->lblAvatarAwards->setText("" + QString::number(entry.avatarAwardCount));
-    ui->lblAchievements->setText(QString::number(entry.achievementCount));
+        ui->lblGameName->setText("" + QString::fromStdWString(entry.gameName));
+        ui->lblTitleID->setText("<span style=\"color:#4f4f4f;\">" + QString::number(entry.titleID, 16).toUpper() + "</span>");
+        ui->lblGamerscore->setText("" + QString::number(entry.totalGamerscore));
+        ui->lblAvatarAwards->setText("" + QString::number(entry.avatarAwardCount));
+        ui->lblAchievements->setText(QString::number(entry.achievementCount));
+    }
+    else
+    {
+        ui->lblAchievements->setText("N/A");
+        ui->lblAvatarAwards->setText("N/A");
+        ui->lblGameName->setText("");
+        ui->lblGamerscore->setText("N/A");
+        ui->lblTitleID->setText("");
+        ui->imgThumbnail->setPixmap(QPixmap(":/Images/watermark.png"));
+    }
 }
 
 void GameAdderDialog::on_pushButton_clicked()
