@@ -28,7 +28,7 @@ void XdbfDialog::addEntriesToTable(vector<XDBFEntry> entries, QString type)
     for (DWORD i = 0; i < entries.size(); i++)
     {
         // create an item
-        QTreeWidgetItem *item = new QTreeWidgetItem;
+        QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
         item->setText(0, QString::fromStdString(XDBFHelpers::IDtoString(entries.at(i).id)));
         item->setText(1, "0x" + QString::number(gpd->xdbf->GetRealAddress(entries.at(i).addressSpecifier), 16).toUpper());
         item->setText(2, "0x" + QString::number(entries.at(i).length, 16).toUpper());

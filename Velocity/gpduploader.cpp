@@ -32,16 +32,19 @@ GPDUploader::GPDUploader(QStringList gamePaths, QStringList avatarPaths, QString
 
 void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID)
 {
+    GameGPD *gpd = NULL;
     try
     {
         // open the GPD
-        GameGPD *gpd;
         try
         {
             gpd = new GameGPD(gamePath.toStdString());
         }
         catch (string error)
         {
+            if (gpd)
+                delete gpd;
+
             qDebug() << titleID << " Error: " << QString::fromStdString(error);
             return;
         }
@@ -120,6 +123,7 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
         QString titleName = QString::fromStdWString(gpd->gameName.ws);
         DWORD achievementCount = gpd->achievements.size();
         delete gpd;
+        gpd = NULL;
 
         // send the GPD(s) to the server
         sendRequest(gamePath, (QFile::exists(awardPath)) ? awardPath : "", titleName, titleID, achievementCount, totalGamerscore, awards, mAwards, fAwards);
@@ -127,12 +131,14 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
     catch (string s)
     {
         qDebug() << QString::fromStdString(s) + "\r\n" + gamePath;
-        return;
     }
     catch(...)
     {
         qDebug() << "unknown error (uploading gpd)";
     }
+
+    if (gpd)
+        delete gpd;
 }
 
 void GPDUploader::reply(QNetworkReply *reply)

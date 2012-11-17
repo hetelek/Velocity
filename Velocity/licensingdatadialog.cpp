@@ -29,7 +29,7 @@ LicensingDataDialog::LicensingDataDialog(QStatusBar *statusBar, LicenseEntry *en
     {
         ui->tableWidget->insertRow(i);
 
-        cmbxLicenseTypes[i] = new QComboBox;
+        cmbxLicenseTypes[i] = new QComboBox(this);
         for (DWORD x = 0; x < 9; x++)
         {
             cmbxLicenseTypes[i]->addItem(licenseTypes[x].name);

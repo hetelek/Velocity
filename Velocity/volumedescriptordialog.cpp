@@ -11,14 +11,14 @@ VolumeDescriptorDialog::VolumeDescriptorDialog(QStatusBar *statusBar, VolumeDesc
     ui->tableWidget->setItem(0, 0, new QTableWidgetItem("0x" + QString::number(desc->size, 16).toUpper()));
 
     // load top table
-    cmbxHashTable = new QComboBox;
+    cmbxHashTable = new QComboBox(this);
     cmbxHashTable->addItem("Top Table");
     cmbxHashTable->addItem("Bottom Table");
     ui->tableWidget->setCellWidget(1, 0, cmbxHashTable);
     cmbxHashTable->setCurrentIndex((desc->blockSeperation >> 1) & 1);
 
     // load package type
-    cmbxPackageType = new QComboBox;
+    cmbxPackageType = new QComboBox(this);
     cmbxPackageType->addItem("Female");
     cmbxPackageType->addItem("Male");
     ui->tableWidget->setCellWidget(2, 0, cmbxPackageType);

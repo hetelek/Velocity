@@ -85,7 +85,7 @@ Metadata::Metadata(QStatusBar *statusBar, StfsPackage *package, QWidget *parent)
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
-    btnCertificate = new QPushButton;
+    btnCertificate = new QPushButton(this);
 
 
     if (package->IsPEC())
@@ -95,7 +95,7 @@ Metadata::Metadata(QStatusBar *statusBar, StfsPackage *package, QWidget *parent)
     else
     {
         // set the magic
-        cmbxMagic = new QComboBox;
+        cmbxMagic = new QComboBox(this);
         cmbxMagic->addItem("CON ");
         cmbxMagic->addItem("LIVE");
         cmbxMagic->addItem("PIRS");
@@ -126,7 +126,7 @@ Metadata::Metadata(QStatusBar *statusBar, StfsPackage *package, QWidget *parent)
     if (!package->IsPEC())
     {
         // set the license table button
-        btnLicense = new QPushButton();
+        btnLicense = new QPushButton(this);
         btnLicense->setText("View License Table");
         btnLicense->setIcon(QIcon(":/Images/license.png"));
         ui->tableWidget->setCellWidget(2, 0, btnLicense);
@@ -155,7 +155,7 @@ Metadata::Metadata(QStatusBar *statusBar, StfsPackage *package, QWidget *parent)
     }
 
     // set the volume descriptor button
-    btnVolDesc = new QPushButton();
+    btnVolDesc = new QPushButton(this);
     btnVolDesc->setText("View Volume Descriptor");
     btnVolDesc->setIcon(QIcon(":/Images/descriptor.png"));
     ui->tableWidget->setCellWidget(16, 0, btnVolDesc);
@@ -174,7 +174,7 @@ Metadata::Metadata(QStatusBar *statusBar, StfsPackage *package, QWidget *parent)
             ui->tableWidget->setVerticalHeaderItem(19, new QTableWidgetItem("Asset Subcategory"));
 
             // populate the subcategory combobox
-            cmbxSubcategory = new QComboBox;
+            cmbxSubcategory = new QComboBox(this);
             for (DWORD i = 0; i < 64; i++)
             {
                 cmbxSubcategory->addItem(subcategoryStructs[i].name);
@@ -195,7 +195,7 @@ Metadata::Metadata(QStatusBar *statusBar, StfsPackage *package, QWidget *parent)
             ui->tableWidget->setVerticalHeaderItem(22, new QTableWidgetItem("Skeleton Version"));
 
             // set the skeleton version combobox
-            cmbxSkeletonVersion = new QComboBox;
+            cmbxSkeletonVersion = new QComboBox(this);
             cmbxSkeletonVersion->addItem("Nxe");
             cmbxSkeletonVersion->addItem("Natal");
             cmbxSkeletonVersion->addItem("Both");
@@ -236,7 +236,7 @@ Metadata::Metadata(QStatusBar *statusBar, StfsPackage *package, QWidget *parent)
         ui->tableWidget->setItem(23 + offset, 0, new QTableWidgetItem(QString::fromStdWString(package->metaData->titleName)));
 
         // set the transfer flags button
-        btnTransFlags = new QPushButton();
+        btnTransFlags = new QPushButton(this);
         btnTransFlags->setText("View Transfer Flags");
         btnTransFlags->setIcon(QIcon(":/Images/flag.png"));
         ui->tableWidget->setCellWidget(24 + offset, 0, btnTransFlags);
@@ -252,7 +252,7 @@ Metadata::Metadata(QStatusBar *statusBar, StfsPackage *package, QWidget *parent)
             case TitleUpdate:
             {
                 // installer type
-                cmbxInstallerType = new QComboBox;
+                cmbxInstallerType = new QComboBox(this);
                 cmbxInstallerType->addItem("System Update");
                 cmbxInstallerType->addItem("Title Update");
                 cmbxInstallerType->setCurrentIndex(package->metaData->installerType == TitleUpdate);
@@ -285,7 +285,7 @@ Metadata::Metadata(QStatusBar *statusBar, StfsPackage *package, QWidget *parent)
             case TitleContentProgressCache:
             {
                 // set resume state combobox
-                cmbxResumeState = new QComboBox;
+                cmbxResumeState = new QComboBox(this);
                 int indexSet = -1;
                 for (DWORD i = 0; i < 6; i++)
                 {
@@ -323,7 +323,7 @@ Metadata::Metadata(QStatusBar *statusBar, StfsPackage *package, QWidget *parent)
                 ui->tableWidget->setItem(30 + offset, 0, new QTableWidgetItem(QString::number(package->metaData->bytesProcessed)));
 
                 // last modified
-                lastModified = new QDateTimeEdit;
+                lastModified = new QDateTimeEdit(this);
                 lastModified->setDateTime(QDateTime::fromTime_t(package->metaData->lastModified));
 
                 ui->tableWidget->insertRow(31 + offset);
@@ -366,16 +366,6 @@ void Metadata::btnLicenseClicked()
 
 Metadata::~Metadata()
 {
-    if (!package->IsPEC())
-        delete cmbxMagic;
-    if (cmbxSubcategory != NULL)
-        delete cmbxSubcategory;
-    if (cmbxSkeletonVersion != NULL)
-        delete cmbxSkeletonVersion;
-    if (cmbxResumeState != NULL)
-        delete cmbxResumeState;
-    if (lastModified != NULL)
-        delete lastModified;
     delete ui;
 }
 

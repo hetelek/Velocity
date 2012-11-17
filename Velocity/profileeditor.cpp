@@ -1289,7 +1289,7 @@ void ProfileEditor::on_btnCreateAch_clicked()
         game->CreateAchievement(&entry, (BYTE*)ba.data(), ba.length());
 
         // add the achievement to the UI
-        QTreeWidgetItem *item = new QTreeWidgetItem;
+        QTreeWidgetItem *item = new QTreeWidgetItem(this);
         item->setText(0, QString::fromStdWString(entry.name));
         item->setText(1, "Locked");
         item->setText(2, QString::number(entry.gamerscore));

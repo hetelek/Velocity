@@ -450,6 +450,9 @@ void StfsPackage::ExtractFile(FileEntry *entry, string outPath, void (*extractPr
                 extractProgress(arg, entry->blocksForFile, entry->blocksForFile);
 
             outFile.close();
+
+            // free the temp buffer
+            delete[] buffer;
             return;
         }
         else

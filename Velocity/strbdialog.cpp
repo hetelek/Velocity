@@ -41,7 +41,7 @@ StrbDialog::StrbDialog(AvatarAsset *asset, QWidget *parent) : QDialog(parent), u
     // load all the blocks
     for (DWORD i = 0; i < asset->blocks.size(); i++)
     {
-        QTreeWidgetItem *item = new QTreeWidgetItem;
+        QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
         item->setText(0, QString::fromStdString(AssetHelpers::BlockIDToString(asset->blocks.at(i).id)));
         item->setText(1, "0x" + QString::number(asset->blocks.at(i).dataAddress, 16).toUpper());
         item->setText(2, "0x" + QString::number(asset->blocks.at(i).dataLength, 16).toUpper());

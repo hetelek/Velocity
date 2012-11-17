@@ -16,20 +16,20 @@ CertificateDialog::CertificateDialog(QStatusBar *statusBar, Certificate *cert, Q
     ui->tableWidget->setItem(2, 0, new QTableWidgetItem(QString::fromStdString(cert->ownerConsolePartNumber)));
 
     // set the console type
-    cmbxConsoleType = new QComboBox;
+    cmbxConsoleType = new QComboBox(this);
     cmbxConsoleType->addItem("Devkit");
     cmbxConsoleType->addItem("Retail");
     ui->tableWidget->setCellWidget(3, 0, cmbxConsoleType);
     cmbxConsoleType->setCurrentIndex(cert->ownerConsoleType - 1);
 
     // set up the console type flags
-    cmbxTestKit = new QComboBox;
+    cmbxTestKit = new QComboBox(this);
     cmbxTestKit->addItem("No");
     cmbxTestKit->addItem("Yes");
     ui->tableWidget->setCellWidget(4, 0, cmbxTestKit);
     cmbxTestKit->setCurrentIndex((cert->consoleTypeFlags & TestKit) >> 30);
 
-    cmbxRecoveryGenerated = new QComboBox;
+    cmbxRecoveryGenerated = new QComboBox(this);
     cmbxRecoveryGenerated->addItem("No");
     cmbxRecoveryGenerated->addItem("Yes");
     ui->tableWidget->setCellWidget(5, 0, cmbxRecoveryGenerated);

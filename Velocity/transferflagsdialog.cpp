@@ -45,7 +45,7 @@ TransferFlagsDialog::TransferFlagsDialog(QStatusBar *statusBar, BYTE *flags, QWi
     {
         if (tempFlag & 1)
         {
-            QTreeWidgetItem *item = new QTreeWidgetItem;
+            QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
             item->setText(0, availableFlags.at(i - added).name);
             item->setText(1, "0x" + QString::number(availableFlags.at(i - added).value, 16).toUpper());
             ui->treeWidget->insertTopLevelItem(added, item);
@@ -102,7 +102,7 @@ void TransferFlagsDialog::on_pushButton_clicked()
         return;
 
     // add the flag to the list
-    QTreeWidgetItem *item = new QTreeWidgetItem;
+    QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
     item->setText(0, availableFlags.at(ui->comboBox->currentIndex()).name);
     item->setText(1, "0x" + QString::number(availableFlags.at(ui->comboBox->currentIndex()).value, 16));
     ui->treeWidget->insertTopLevelItem(0, item);

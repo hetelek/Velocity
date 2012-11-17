@@ -22,7 +22,7 @@ GamerPicturePackDialog::GamerPicturePackDialog(QStatusBar *statusBar, QWidget *p
     manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamercardNetworkReply(QNetworkReply*)));
 
-    gpManager = new QNetworkAccessManager();
+    gpManager = new QNetworkAccessManager(this);
     connect(gpManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamerPictureDownloaded(QNetworkReply*)));
 
     connect(ui->txtSearch, SIGNAL(returnPressed()), this, SLOT(on_pushButton_clicked()));
@@ -196,7 +196,7 @@ void GamerPicturePackDialog::findGamerPictures(QString titleID)
     // reset the manager
     disconnect(gpManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamerPictureDownloaded(QNetworkReply*)));
     delete gpManager;
-    gpManager = new QNetworkAccessManager();
+    gpManager = new QNetworkAccessManager(this);
     connect(gpManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamerPictureDownloaded(QNetworkReply*)));
 
     // make a bunch of requests
@@ -482,7 +482,7 @@ void GamerPicturePackDialog::on_btnStopSearch_clicked()
 {
     disconnect(gpManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamerPictureDownloaded(QNetworkReply*)));
     delete gpManager;
-    gpManager = new QNetworkAccessManager();
+    gpManager = new QNetworkAccessManager(this);
     connect(gpManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamerPictureDownloaded(QNetworkReply*)));
     QApplication::processEvents();
 
