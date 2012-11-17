@@ -44,7 +44,7 @@ void GitHubCommitsDialog::onReply(QNetworkReply *reply)
 
     if (!ok)
     {
-        label->setText("Error connecting to GitHub...");
+        label->setText("<center>Error connecting to GitHub...</center>");
         return;
     }
 
