@@ -183,6 +183,12 @@ void ThemeCreationWizard::openWallpaper(QLabel *imageViewer, QImage *saveImage)
         return;
 
     QPixmap *thumbnail = new QPixmap(fileName);
+    if (thumbnail->isNull())
+    {
+        QMessageBox::warning(this, "Invalid Image", "The requested image could not be loaded successfully.");
+        return;
+    }
+
     *saveImage = QImage(fileName);
     allocatedImages.push_back(thumbnail);
 
