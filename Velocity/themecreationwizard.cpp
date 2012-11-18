@@ -31,7 +31,7 @@ ThemeCreationWizard::ThemeCreationWizard(QStatusBar *statusBar, QWidget *parent)
 ThemeCreationWizard::~ThemeCreationWizard()
 {
     // free all the images allocated on the heap
-    for (DWORD i = 0; i < allocatedImages.size(); i++)
+    for (int i = 0; i < allocatedImages.size(); i++)
         delete allocatedImages.at(i);
 }
 
