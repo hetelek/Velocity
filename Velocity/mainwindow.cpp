@@ -44,6 +44,7 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
         ui->statusBar->showMessage("Welcome to Velocity!", 10000);
 
     GitHubCommitsDialog *dialog = new GitHubCommitsDialog(this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
     ui->mdiArea->addSubWindow(dialog);
     dialog->show();
 
@@ -348,6 +349,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                         if (settings->value("PackageDropAction").toInt() == OpenInPackageViewer)
                         {
                             PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gpdActions, this);
+                            viewer->setAttribute(Qt::WA_DeleteOnClose);
                             ui->mdiArea->addSubWindow(viewer);
                             viewer->show();
 
@@ -368,6 +370,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                         if (settings->value("ProfileDropAction").toInt() == OpenInPackageViewer)
                         {
                             PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gpdActions, this);
+                            viewer->setAttribute(Qt::WA_DeleteOnClose);
                             ui->mdiArea->addSubWindow(viewer);
                             viewer->show();
 
@@ -386,6 +389,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                         {
                             bool ok;
                             ProfileEditor *editor = new ProfileEditor(ui->statusBar, package, true, &ok, this);
+                            editor->setAttribute(Qt::WA_DeleteOnClose);
 
                             if (ok)
                             {
@@ -403,6 +407,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                     ui->statusBar->showMessage("GPD parsed successfully", 3000);
 
                     XdbfDialog *dialog = new XdbfDialog(ui->statusBar, gpd, NULL, this);
+                    dialog->setAttribute(Qt::WA_DeleteOnClose);
                     ui->mdiArea->addSubWindow(dialog);
                     dialog->show();
 
@@ -413,6 +418,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                     AvatarAsset *asset = new AvatarAsset(fileName);
 
                     StrbDialog *dialog = new StrbDialog(asset, this);
+                    dialog->setAttribute(Qt::WA_DeleteOnClose);
                     ui->mdiArea->addSubWindow(dialog);
                     dialog->show();
 
@@ -447,6 +453,7 @@ void MainWindow::on_actionProfile_Editor_triggered()
 
         if (*ok)
         {
+            editor->setAttribute(Qt::WA_DeleteOnClose);
             ui->mdiArea->addSubWindow(editor);
             editor->show();
         }
@@ -474,6 +481,7 @@ void MainWindow::on_actionPackage_triggered()
     {
         StfsPackage *package = new StfsPackage(fileName.toStdString());
         PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gpdActions, this);
+        viewer->setAttribute(Qt::WA_DeleteOnClose);
         ui->mdiArea->addSubWindow(viewer);
         viewer->show();
 
@@ -498,6 +506,7 @@ void MainWindow::on_actionXDBF_File_triggered()
         ui->statusBar->showMessage("GPD parsed successfully", 3000);
 
         XdbfDialog *dialog = new XdbfDialog(ui->statusBar, gpd, NULL, this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
         ui->mdiArea->addSubWindow(dialog);
         dialog->show();
     }
@@ -518,6 +527,7 @@ void MainWindow::on_actionSTRB_File_triggered()
         AvatarAsset *asset = new AvatarAsset(fileName.toStdString());
 
         StrbDialog *dialog = new StrbDialog(asset, this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
         ui->mdiArea->addSubWindow(dialog);
         dialog->show();
     }
@@ -541,6 +551,7 @@ void MainWindow::on_actionCreate_Package_triggered()
         StfsPackage *package = new StfsPackage(packagePath.toStdString());
 
         PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gpdActions, this);
+        viewer->setAttribute(Qt::WA_DeleteOnClose);
         ui->mdiArea->addSubWindow(viewer);
         viewer->show();
 
@@ -555,6 +566,7 @@ void MainWindow::on_actionCreate_Package_triggered()
 void MainWindow::on_actionTitle_ID_Finder_triggered()
 {
     TitleIdFinderDialog *dialog = new TitleIdFinderDialog(ui->statusBar, this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
     ui->mdiArea->addSubWindow(dialog);
     dialog->show();
 }
@@ -579,15 +591,19 @@ void MainWindow::on_actionGame_Adder_triggered()
 
     StfsPackage *package = new StfsPackage(fileName.toStdString());
 
-    GameAdderDialog dialog(package, this);
-    dialog.exec();
+    bool ok;
+    GameAdderDialog dialog(package, this, true, &ok);
+    if (ok)
+        dialog.exec();
 
     package->Close();
+    delete package;
 }
 
 void MainWindow::on_actionGamer_Picture_Pack_Creator_triggered()
 {
     GamerPicturePackDialog *dialog = new GamerPicturePackDialog(ui->statusBar, this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
     ui->mdiArea->addSubWindow(dialog);
     dialog->show();
 }
@@ -624,6 +640,7 @@ void MainWindow::on_actionFATX_File_Path_triggered()
     {
         StfsPackage *package = new StfsPackage(fileName.toStdString());
         FATXPathGenDialog *dialog = new FATXPathGenDialog(package, this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
         ui->mdiArea->addSubWindow(dialog);
         dialog->show();
     }

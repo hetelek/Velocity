@@ -259,12 +259,13 @@ void GPDBase::WriteSettingEntry(SettingEntry setting)
                 setting.entry.addressSpecifier = xdbf->GetSpecifier(entryAddr);
 
                 io->setPosition(entryAddr);
-                io->write((UINT64)setting.entry.id);
+                io->write((DWORD)setting.entry.id);
+                io->write((DWORD)0);
                 io->write((BYTE)setting.type);
                 io->setPosition(entryAddr + 0x10);
             }
             io->write((DWORD)((setting.str->size() + 1) * 2));
-            io->setPosition(entryAddr + 0x18);
+            io->write((DWORD)0);
             io->write(*setting.str);
             break;
         }
@@ -285,7 +286,7 @@ void GPDBase::WriteSettingEntry(SettingEntry setting)
                 io->setPosition(entryAddr + 0x10);
             }
             io->write(setting.binaryData.length);
-            io->setPosition(entryAddr + 0x18);
+            io->write((DWORD)0);
             io->write(setting.binaryData.data, setting.binaryData.length);
             break;
     }

@@ -883,6 +883,10 @@ void XDBF::DeleteEntry(XDBFEntry entry)
 
     // re-write the entry table
     writeEntryListing();
+
+    // update the header
+    header.entryCount--;
+    writeHeader();
 }
 
 void XDBF::ExtractEntry(XDBFEntry entry, BYTE *outBuffer)

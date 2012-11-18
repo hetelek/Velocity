@@ -29,7 +29,7 @@ class GameAdderDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit GameAdderDialog(StfsPackage *package, QWidget *parent = 0, bool dispose = true);
+    explicit GameAdderDialog(StfsPackage *package, QWidget *parent = 0, bool dispose = true, bool *ok = NULL);
     ~GameAdderDialog();
 
 private slots:

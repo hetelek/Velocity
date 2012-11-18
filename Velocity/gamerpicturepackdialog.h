@@ -58,6 +58,7 @@ private slots:
 private:
     Ui::GamerPicturePackDialog *ui;
     TitleIdFinder *titleIDFinder;
+    QString currentSearchName;
 
     QList<TitleData> *currentTitles;
     QList<QString> *searchedIDs;
