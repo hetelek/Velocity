@@ -33,9 +33,6 @@ GamerPicturePackDialog::~GamerPicturePackDialog()
     delete searchedIDs;
     delete addedIDs;
     delete searchedTitleIDs;
-    delete titleIDFinder;
-    delete gpManager;
-    QApplication::processEvents();
 
     statusBar->showMessage("");
 
@@ -64,12 +61,15 @@ void GamerPicturePackDialog::gamercardNetworkReply(QNetworkReply *reply)
         QPixmap gamerpic;
         gamerpic.loadFromData(reply->readAll(), "PNG");
 
+        QString url = reply->url().toString();
+        QString picID = url.mid(url.indexOf("t.") + 2, 8).toUpper() + "." + url.mid(url.length() - 4).toUpper();
+
         QListWidgetItem *item = new QListWidgetItem(ui->listSearch);
         item->setIcon(QIcon(gamerpic));
+        item->setToolTip("<b>" + currentSearchName + "</b><br />" + picID);
         ui->listSearch->addItem(item);
 
-        QString url = reply->url().toString();
-        searchedIDs->push_back(url.mid(url.indexOf("t.") + 2, 8) + url.mid(url.length() - 4));
+        searchedIDs->push_back(picID);
 
         statusBar->clearMessage();
     }
@@ -145,12 +145,14 @@ void GamerPicturePackDialog::on_pushButton_clicked()
         if (searchedTitleIDs->contains(ui->txtSearch->text().toULong(&ok, 16)))
             return;
 
+        currentSearchName = ui->txtSearch->text();
         searchedTitleIDs->push_back(ui->txtSearch->text().toULong(&ok, 16));
         findGamerPictures(ui->txtSearch->text().toUpper());
     }
     else
     {
         ui->btnStopSearch->setEnabled(false);
+        currentSearchName = ui->txtSearch->text();
         manager->get(QNetworkRequest(QUrl("http://gamercard.xbox.com/en-US/" + ui->txtSearch->text() + ".card")));
     }
 }
@@ -175,19 +177,20 @@ void GamerPicturePackDialog::onTitleIDSearchReturn(QList<TitleData> titlesFound)
     }
 }
 
-void GamerPicturePackDialog::on_listGameNames_itemClicked(QListWidgetItem * /* item */)
+void GamerPicturePackDialog::on_listGameNames_itemClicked(QListWidgetItem *item)
 {
     // make sure that we haven't already searched for the title
     if (searchedTitleIDs->contains(currentTitles->at(ui->listGameNames->currentIndex().row()).titleID))
         return;
     searchedTitleIDs->push_back(currentTitles->at(ui->listGameNames->currentIndex().row()).titleID);
 
+    currentSearchName = item->text();
     findGamerPictures(QString::number(currentTitles->at(ui->listGameNames->currentIndex().row()).titleID, 16));
 }
 
 void GamerPicturePackDialog::findGamerPictures(QString titleID)
 {
-    statusBar->showMessage("Searching for gamerpictures....");
+    statusBar->showMessage("Finding gamerpictures for " + titleID.toUpper());
     ui->btnStopSearch->setEnabled(true);
 
     // offsets to search from
@@ -220,12 +223,15 @@ void GamerPicturePackDialog::gamerPictureDownloaded(QNetworkReply *reply)
         if (image.isNull())
             return;
 
+        QString pictureID = reply->url().toString().mid(reply->url().toString().indexOf("t.") + 2, 8) + "." + reply->url().toString().mid(reply->url().toString().length() - 4);
+
         // add the gamerpicture to the list widget
         QListWidgetItem *item = new QListWidgetItem(ui->listSearch);
         item->setIcon(QIcon(QPixmap::fromImage(image)));
+        item->setToolTip("<b>" + currentSearchName + "</b><br />" + pictureID);
         ui->listSearch->addItem(item);
 
-        searchedIDs->push_back(reply->url().toString().mid(reply->url().toString().indexOf("t.") + 2, 8) + reply->url().toString().mid(reply->url().toString().length() - 4));
+        searchedIDs->push_back(pictureID);
 
         reply->deleteLater();
         QCoreApplication::processEvents();
