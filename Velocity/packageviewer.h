@@ -68,6 +68,10 @@ private slots:
 
     void onOpenInSelected(QAction *action);
 
+    void aboutToShow();
+
+    void aboutToHide();
+
 private:
     Ui::PackageViewer *ui;
     void PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *parent = NULL);

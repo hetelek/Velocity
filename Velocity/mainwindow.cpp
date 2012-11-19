@@ -623,8 +623,11 @@ void MainWindow::on_actionModder_triggered()
 
         // get package
         StfsPackage *package = NULL;
-        if (menuAction->property("package").isValid())
+        if (menuAction->property("package").isValid() && menuAction->property("fromPackageViewer").isValid())
+        {
+             menuAction->setProperty("fromPackageViewer", QVariant::Invalid);
              package = menuAction->property("package").value<StfsPackage*>();
+        }
 
         LoadPlugin(menuAction->data().toString(), false, package);
     }

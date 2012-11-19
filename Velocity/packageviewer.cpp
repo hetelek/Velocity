@@ -71,6 +71,7 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<
             profileEditor = new QAction("Profile Editor", this);
             gameAdder = new QAction("Game Adder", this); 
 
+            connect(openInMenu, SIGNAL(aboutToShow()), this, SLOT(aboutToShow()));
             connect(openInMenu, SIGNAL(triggered(QAction*)), this, SLOT(onOpenInSelected(QAction*)));
 
             ui->btnOpenIn->setEnabled(true);
@@ -364,6 +365,12 @@ void PackageViewer::onOpenInSelected(QAction *action)
                 editor.exec();
         }
     }
+}
+
+void PackageViewer::aboutToShow()
+{
+    for (int i = 0; i < gpdActions.size(); i++)
+        gpdActions.at(i)->setProperty("fromPackageViewer", QVariant(true));
 }
 
 void PackageViewer::showRemoveContextMenu(QPoint point)
