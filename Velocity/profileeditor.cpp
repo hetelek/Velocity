@@ -94,6 +94,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
 
     try
     {
+        statusBar->showMessage("Loading profile...");
+
         // extract the account file
         accountTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
         profile->ExtractFile("Account", accountTempPath);
@@ -244,6 +246,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         return;
     }
 
+    QApplication::processEvents();
+
 
     ////////////////////////////
     // LOAD ACHIEVEMENTS
@@ -326,6 +330,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         // add it to the avatar award game list if needed
         if (dashGPD->gamesPlayed.at(i).avatarAwardCount != 0)
             ui->aaGamelist->insertTopLevelItem(ui->aaGamelist->topLevelItemCount(), new QTreeWidgetItem(*item));
+
+        QApplication::processEvents();
     }
 
     if (ui->gamesList->topLevelItemCount() >= 1)
@@ -424,6 +430,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         aaGames.at(i).gpd = gpd;
         aaGames.at(i).tempFileName = tempGPDName;
         aaGames.at(i).gpdName = gpdName.toStdString();
+
+        QApplication::processEvents();
     }
 
     if (aaGames.size() >= 1)
@@ -977,6 +985,8 @@ void ProfileEditor::on_btnUnlockAllAwards_clicked()
 
     if (btn != QMessageBox::Yes)
       return;
+
+    unlockAllAwards(index);
 
     // update the ui
     for (int i = 0; i < ui->avatarAwardsList->topLevelItemCount(); i++)

@@ -48,6 +48,9 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
     ui->mdiArea->addSubWindow(dialog);
     dialog->show();
 
+    pluginManager = new QNetworkAccessManager(this);
+    connect(pluginManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(pluginVersionReplyFinished(QNetworkReply*)));
+
     manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(versionReplyFinished(QNetworkReply*)));
     manager->get(QNetworkRequest(QUrl("http://velocity.expetelek.com/app.data")));
@@ -148,6 +151,10 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
             }
             else
             {
+                pluginManager->setProperty("name", gpd->ToolName());
+                pluginManager->setProperty("version", gpd->Version());
+                pluginManager->get(QNetworkRequest(QUrl("http://velocity.expetelek.com/plugin.php?tid=" + QString::number(gpd->TitleID(), 16) + "&type=0")));
+
                 // get the dialog, and connect signals/slots
                 QDialog *widget = gpd->GetDialog();
                 connect(widget, SIGNAL(PluginFinished()), this, SLOT(PluginFinished()));
@@ -616,8 +623,11 @@ void MainWindow::on_actionModder_triggered()
 
         // get package
         StfsPackage *package = NULL;
-        if (menuAction->property("package").isValid())
+        if (menuAction->property("package").isValid() && menuAction->property("fromPackageViewer").isValid())
+        {
+             menuAction->setProperty("fromPackageViewer", QVariant::Invalid);
              package = menuAction->property("package").value<StfsPackage*>();
+        }
 
         LoadPlugin(menuAction->data().toString(), false, package);
     }
@@ -666,6 +676,33 @@ void MainWindow::versionReplyFinished(QNetworkReply *aReply)
     if (VERSION != version)
     {
         QMessageBox::StandardButton selection = (QMessageBox::StandardButton)QMessageBox::question(this, "Version " + version, "Version " + version + " of Velocity is available for download. Would you like to be brought to the download page?", QMessageBox::Yes, QMessageBox::No);
+        if (selection == QMessageBox::Yes)
+            QDesktopServices::openUrl(QUrl(downloadPage));
+    }
+}
+
+void MainWindow::pluginVersionReplyFinished(QNetworkReply *aReply)
+{
+    if (!sender()->property("name").isValid() || !sender()->property("version").isValid())
+        return;
+
+    QString name = sender()->property("name").toString();
+    QString currVersion = sender()->property("version").toString();
+
+    QString jsonStr(aReply->readAll());
+
+    bool ok;
+    QVariantMap result = QtJson::Json::parse(jsonStr, ok).toMap();
+
+    if (!ok || result.contains("data"))
+        return;
+
+    QString version = result["version"].toString();
+    QString downloadPage = result["dl_page"].toString();
+
+    if (currVersion != version)
+    {
+        QMessageBox::StandardButton selection = (QMessageBox::StandardButton)QMessageBox::question(this, "Version " + version, "Version " + version + " of the tool, " + name + ", is available for download. Would you like to be brought to the download page?", QMessageBox::Yes, QMessageBox::No);
         if (selection == QMessageBox::Yes)
             QDesktopServices::openUrl(QUrl(downloadPage));
     }
