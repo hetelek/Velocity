@@ -93,11 +93,12 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                 // add the action
                 gameActions.push_back(action);
                 ui->menuGame_Modders->addAction(action);
+                qDebug() << loader.unload();
             }
             else
             {
                 // get the dialog, and connect signals/slots
-                QWidget *widget = game->GetDialog();
+                QDialog *widget = game->GetDialog();
                 connect(widget, SIGNAL(PluginFinished()), this, SLOT(PluginFinished()));
 
                 if (package == NULL)
@@ -122,9 +123,18 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                     }
                 }
 
-                ui->mdiArea->addSubWindow(widget);
-                widget->show();
-                game->LoadPackage(package, this);
+                Arguments *args = new Arguments;
+                args->package = package;
+
+                bool ok;
+                game->LoadPackage(package, &ok, args);
+
+                if (ok)
+                {
+                    widget->exec();
+                    widget->close();
+                    qDebug() << loader.unload();
+                }
             }
         }
         else if (gpd)
