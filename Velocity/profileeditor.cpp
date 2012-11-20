@@ -24,6 +24,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     setMinimumHeight(485);
 
     int btnSize = 37;
+
+    unlockEverything->setFont(ui->btnUnlockAllAchvs->font());
 #elif __APPLE__
     int btnSize = 37;
     setMinimumSize(1000, 520);
