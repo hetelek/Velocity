@@ -646,7 +646,6 @@ void MainWindow::on_actionModder_triggered()
 
         // get package
         StfsPackage *package = NULL;
-        qDebug() << menuAction->property("fromPackageViewer").isValid();
         if (menuAction->property("package").isValid() && menuAction->property("fromPackageViewer").isValid())
         {
              menuAction->setProperty("fromPackageViewer", QVariant::Invalid);
