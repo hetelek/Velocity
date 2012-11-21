@@ -311,8 +311,6 @@ void MainWindow::LoadAllPlugins()
     QDir path(settings->value("PluginPath").toString());
     qDebug() << "Plugin Directory: " << path.absolutePath();
 
-    ui->statusBar->showMessage("Plugin Directory: " + path.absolutePath(), 3000);
-
     foreach (QString filename, path.entryList(QDir::Files))
     {
         qDebug() << filename;
