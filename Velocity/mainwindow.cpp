@@ -103,7 +103,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                 pluginManager->get(QNetworkRequest(QUrl("http://velocity.expetelek.com/plugin.php?tid=" + QString::number(game->TitleID(), 16) + "&type=0")));
 
                 // get the dialog, and connect signals/slots
-                QDialog *widget = game->GetDialog();
+                QDialog *widget = (QDialog*)game->GetDialog();
                 connect(widget, SIGNAL(PluginFinished()), this, SLOT(PluginFinished()));
 
                 try
@@ -179,7 +179,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                 pluginManager->get(QNetworkRequest(QUrl("http://velocity.expetelek.com/plugin.php?tid=" + QString::number(gpd->TitleID(), 16) + "&type=0")));
 
                 // get the dialog, and connect signals/slots
-                QDialog *widget = gpd->GetDialog();
+                QDialog *widget = (QDialog*)gpd->GetDialog();
                 connect(widget, SIGNAL(PluginFinished()), this, SLOT(PluginFinished()));
 
                 try
