@@ -2,7 +2,8 @@
 #include "ui_packageviewer.h"
 
 PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<QAction *> gpdActions, QList<QAction *> gameActions, QWidget *parent, bool disposePackage) :
-    QDialog(parent),ui(new Ui::PackageViewer), package(package), disposePackage(disposePackage), parent (parent), statusBar(statusBar),  gpdActions(gpdActions), gameActions(gameActions)
+    QDialog(parent),ui(new Ui::PackageViewer), package(package), disposePackage(disposePackage), parent (parent), statusBar(statusBar),  gpdActions(gpdActions),
+    gameActions(gameActions), openInMenu(NULL)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -97,7 +98,7 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<
     }
 
 
-    if (openInMenu->actions().size() > 0)
+    if (openInMenu != NULL && openInMenu->actions().size() > 0)
     {
         ui->btnOpenIn->setEnabled(true);
         ui->btnOpenIn->setMenu(openInMenu);
