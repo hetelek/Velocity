@@ -33,6 +33,7 @@
 #include "gpduploader.h"
 #include "achievementcreationwizard.h"
 #include "AvatarAssetDownloader.h"
+#include "MemoryStream.h"
 
 using namespace std;
 

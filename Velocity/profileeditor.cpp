@@ -1476,7 +1476,11 @@ void ProfileEditor::on_chxLIVE_stateChanged(int arg1)
     if (arg1 == 0)
         account->SetXUIDOffline();
     else
-        account->SetXUIDOnline();
+    {
+        MemoryStream m(profile->metaData->profileID, 8);
+        m.setPosition(0);
+        account->SetXUID(0x9000000000000 | (m.readUInt64() & 0xFFFFFFFFFFFF));
+    }
     ui->lblXUID->setText(QString::number(account->GetXUID(), 16).toUpper());
 }
 
