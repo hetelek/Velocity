@@ -14,7 +14,6 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
     if (!settings->contains("AnonData"))
         settings->setValue("AnonData", true);
 
-    LoadAllPlugins();
     setCentralWidget(ui->mdiArea);
     ui->mdiArea->setAcceptDrops(false);
     setAcceptDrops(true);
@@ -42,6 +41,8 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
     }
     else
         ui->statusBar->showMessage("Welcome to Velocity!", 10000);
+
+    LoadAllPlugins();
 
     GitHubCommitsDialog *dialog = new GitHubCommitsDialog(this);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
@@ -305,6 +306,8 @@ void MainWindow::LoadAllPlugins()
 {
     QDir path(settings->value("PluginPath").toString());
     qDebug() << "Plugin Directory: " << path.absolutePath();
+
+    ui->statusBar->showMessage("Plugin Directory: " + path.absolutePath(), 3000);
 
     foreach (QString filename, path.entryList(QDir::Files))
     {
