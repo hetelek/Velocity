@@ -10,11 +10,7 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
     if (!settings->contains("ProfileDropAction"))
         settings->setValue("ProfileDropAction", 0);
     if (!settings->contains("PluginPath"))
-#ifdef __APPLE__
-        settings->setValue("PluginPath", "Velocity.app/plugins");
-#else
         settings->setValue("PluginPath", "./plugins");
-#endif
     if (!settings->contains("AnonData"))
         settings->setValue("AnonData", true);
 
