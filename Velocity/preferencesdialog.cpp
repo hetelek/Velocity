@@ -10,10 +10,11 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 
 #ifdef __WIN32__
     QSize size(477, 160);
-#elif __unix__ | __APPLE__
-    QSize size(477, 182);
-#endif
     setFixedSize(size);
+#elif __unix__
+    QSize size(477, 182);
+    setFixedSize(size);
+#endif
 
     settings = new QSettings("Exetelek", "Velocity");
 
