@@ -87,7 +87,8 @@ SOURCES += main.cpp \
     json.cpp \
 	githubcommitsdialog.cpp \
 	gpduploader.cpp \
-    fatxpathgendialog.cpp
+    fatxpathgendialog.cpp \
+    MemoryStream.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -146,7 +147,8 @@ HEADERS  += mainwindow.h \
     json.h \
 	githubcommitsdialog.h \
 	gpduploader.h \
-    fatxpathgendialog.h
+    fatxpathgendialog.h \
+    MemoryStream.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
