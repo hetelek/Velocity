@@ -116,6 +116,9 @@ public:
     // Description: set the gamer's XUID to offline
     void SetXUIDOnline();
 
+    // Description: set the gamer's XUID
+    void SetXUID(UINT64 xuid);
+
     // Description: set the service provider for the player
     void SetOnlineServiceProvider(XboxLiveServiceProvider provider);
 

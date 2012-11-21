@@ -149,6 +149,11 @@ void Account::SetXUIDOffline()
     account.xuid = 0;
 }
 
+void Account::SetXUID(UINT64 xuid)
+{
+    account.xuid = xuid;
+}
+
 void Account::SetSubscriptionTeir(SubscriptionTeir teir)
 {
 	account.cachedUserFlags &= (~0xF00000);
