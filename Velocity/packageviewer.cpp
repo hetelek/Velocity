@@ -73,6 +73,8 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<
             profileEditor = new QAction("Profile Editor", this);
             gameAdder = new QAction("Game Adder", this);
 
+            connect(openInMenu, SIGNAL(triggered(QAction*)), this, SLOT(onOpenInSelected(QAction*)));
+
             openInMenu->addAction(profileEditor);
             openInMenu->addAction(gameAdder);
         }
