@@ -1397,7 +1397,7 @@ void ProfileEditor::on_cmbxAwState_currentIndexChanged(int index)
 
         // update the title entry
         updateAvatarAward(aaGames.at(gameIndex).titleEntry, gpd, &gpd->avatarAwards.at(awardIndex), StateLocked);
-        ui->dteAchTimestamp->setEnabled(false);
+        ui->dteAwTimestamp->setEnabled(false);
     }
     else if (index == 1)
     {
@@ -1406,9 +1406,9 @@ void ProfileEditor::on_cmbxAwState_currentIndexChanged(int index)
 
         // update the title entry
         updateAvatarAward(aaGames.at(gameIndex).titleEntry, gpd, &gpd->avatarAwards.at(awardIndex), StateUnlockedOffline);
-        ui->dteAchTimestamp->setEnabled(false);
+        ui->dteAwTimestamp->setEnabled(false);
 
-                ui->lblAwGameAwards->setText("<span style=\"color:#4f4f4f;\">Awards: " + QString::number(aaGames.at(gameIndex).titleEntry->avatarAwardsEarned) + " out of " + QString::number(aaGames.at(gameIndex).titleEntry->avatarAwardCount) + " unlocked</span>");
+        ui->lblAwGameAwards->setText("<span style=\"color:#4f4f4f;\">Awards: " + QString::number(aaGames.at(gameIndex).titleEntry->avatarAwardsEarned) + " out of " + QString::number(aaGames.at(gameIndex).titleEntry->avatarAwardCount) + " unlocked</span>");
     }
     else
     {
