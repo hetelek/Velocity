@@ -34,8 +34,6 @@ unix:!mac {
     LIBS += "/usr/local/lib/libbotan-1.10.a"
 }
 
-VERSION = 1.0.0
-
 UI_DIR = ../Velocity
 
 SOURCES += main.cpp \
