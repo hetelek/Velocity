@@ -697,9 +697,14 @@ void MainWindow::versionReplyFinished(QNetworkReply *aReply)
     QString version = result["version"].toString();
     QString downloadPage = result["dl_page"].toString();
 
+    bool hasMessage = result.contains("message");
+    QString message = "<br><br>";
+    if (hasMessage)
+        message += result["message"].toString();
+
     if (!version.contains(VERSION))
     {
-        QMessageBox::StandardButton selection = (QMessageBox::StandardButton)QMessageBox::question(this, "Version " + version, "Version " + version + " of Velocity is available for download. Would you like to be brought to the download page?", QMessageBox::Yes, QMessageBox::No);
+        QMessageBox::StandardButton selection = (QMessageBox::StandardButton)QMessageBox::question(this, "Version " + version, "Version " + version + " of Velocity is available for download. Your current version is " + VERSION + ". Would you like to be brought to the download page?" + (hasMessage ? message : ""), QMessageBox::Yes, QMessageBox::No);
         if (selection == QMessageBox::Yes)
             QDesktopServices::openUrl(QUrl(downloadPage));
     }
@@ -730,4 +735,9 @@ void MainWindow::pluginVersionReplyFinished(QNetworkReply *aReply)
         if (selection == QMessageBox::Yes)
             QDesktopServices::openUrl(QUrl(downloadPage));
     }
+}
+
+void MainWindow::on_actionCheck_For_Updates_triggered()
+{
+    manager->get(QNetworkRequest(QUrl("http://velocity.expetelek.com/app.data")));
 }
