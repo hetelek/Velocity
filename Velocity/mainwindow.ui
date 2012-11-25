@@ -112,10 +112,12 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionCheck_For_Updates"/>
+    <addaction name="separator"/>
     <addaction name="actionView_Wiki"/>
     <addaction name="actionDonate"/>
+    <addaction name="separator"/>
     <addaction name="actionAbout"/>
-    <addaction name="actionCheck_For_Updates"/>
    </widget>
    <widget class="QMenu" name="menuPlugins">
     <property name="title">
@@ -311,6 +313,10 @@
    </property>
   </action>
   <action name="actionCheck_For_Updates">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/updates.png</normaloff>:/Images/updates.png</iconset>
+   </property>
    <property name="text">
     <string>Check For Updates</string>
    </property>
