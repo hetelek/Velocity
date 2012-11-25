@@ -80,5 +80,6 @@
         <file>Images/hdd.png</file>
         <file>Images/star.png</file>
         <file>Images/updates.png</file>
+        <file>Images/hammer.png</file>
     </qresource>
 </RCC>
