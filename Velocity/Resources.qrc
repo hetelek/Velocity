@@ -79,5 +79,6 @@
         <file>Images/avatar.png</file>
         <file>Images/hdd.png</file>
         <file>Images/star.png</file>
+        <file>Images/updates.png</file>
     </qresource>
 </RCC>
