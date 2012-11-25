@@ -7,6 +7,7 @@
 #include <QUuid>
 #include <QUrl>
 #include <QDir>
+#include <QDebug>
 
 // other
 #include "winnames.h"

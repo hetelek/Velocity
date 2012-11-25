@@ -21,7 +21,7 @@ void GPDDownloader::BeginDownload()
 void GPDDownloader::onRequestFinished(int /* id */, bool error)
 {
     if (error)
-        return;
+        qDebug() << http->errorString();
     else if (http->bytesAvailable() < 1)
         return;
 
