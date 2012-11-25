@@ -52,6 +52,8 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
     pluginManager = new QNetworkAccessManager(this);
     connect(pluginManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(pluginVersionReplyFinished(QNetworkReply*)));
 
+    firstUpdateCheck = true;
+
     manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(versionReplyFinished(QNetworkReply*)));
     manager->get(QNetworkRequest(QUrl("http://velocity.expetelek.com/app.data")));
@@ -708,6 +710,10 @@ void MainWindow::versionReplyFinished(QNetworkReply *aReply)
         if (selection == QMessageBox::Yes)
             QDesktopServices::openUrl(QUrl(downloadPage));
     }
+    else if (!firstUpdateCheck)
+        QMessageBox::information(this, "Already Up-to-Date", "This version of Velocity is already the latest.");
+
+    firstUpdateCheck = false;
 }
 
 void MainWindow::pluginVersionReplyFinished(QNetworkReply *aReply)

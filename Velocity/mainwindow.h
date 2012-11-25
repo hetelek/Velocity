@@ -120,6 +120,7 @@ private:
     QSettings *settings;
     QNetworkAccessManager *manager, *pluginManager;
     QList<QAction*> gpdActions, gameActions;
+    bool firstUpdateCheck;
 
     void LoadFiles(QList<QUrl> &filePaths);
 };
