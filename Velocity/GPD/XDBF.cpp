@@ -88,6 +88,11 @@ void XDBF::Clean()
     strings.clear();
     avatarAwards.entries.clear();
 
+    // clear the free memory
+    freeMemory.clear();
+    XDBFFreeMemEntry  entry = { 0, 0xFFFFFFFF };
+    freeMemory.push_back(entry);
+
     // reload the file listing
     readEntryTable();
 }
@@ -612,7 +617,7 @@ void XDBF::writeFreeMemTable()
 
     // make sure we didn't run out of free memory table space
     if (freeMemory.size() > header.freeMemTableLength)
-        throw string("XDBF: Free memory table too large for file.\n");
+        Clean();
 
     // write the table
     for (DWORD i = 0; i < freeMemory.size(); i++)
