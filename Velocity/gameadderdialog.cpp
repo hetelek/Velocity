@@ -208,7 +208,7 @@ void GameAdderDialog::showRemoveContextMenu_AllGames(QPoint point)
     }
 }
 
-void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath, TitleEntry entry, bool error)
+void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath, TitleEntry &entry, bool error)
 {
     delete sender();
 
@@ -302,29 +302,6 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
             QMessageBox::warning(this, "Warning", "Not all games could be added successfully! The following game(s) failed:\n" + games);
         }
 
-        // make sure that all of the games were added correctly
-        bool problems = false;
-        for (DWORD i = 0; i < ui->treeWidgetQueue->topLevelItemCount(); i++)
-        {
-            TitleEntry entry = ui->treeWidgetQueue->topLevelItem(i)->data(0, Qt::UserRole).value<TitleEntry>();
-            if (!package->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
-            {
-                dashGPD->DeleteTitleEntry(&entry);
-                if (!pecPackage->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
-                    pecPackage->RemoveFile(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd");
-                problems = true;
-            }
-            if (entry.avatarAwardCount != 0 && !pecPackage->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
-            {
-                try { dashGPD->DeleteTitleEntry(&entry); }
-                catch(...) { }
-                problems = true;
-            }
-        }
-
-        if (problems)
-            QMessageBox::warning(this, "Error Adding Games", "Some of the games weren't added correctly.");
-
         try
         {
             m.lock();
@@ -337,6 +314,38 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
             close();
         }
         dashGPD->Close();
+
+        // make sure that all of the games were added correctly
+        bool problems = false;
+        for (DWORD i = 0; i < ui->treeWidgetQueue->topLevelItemCount(); i++)
+        {
+            TitleEntry entry = ui->treeWidgetQueue->topLevelItem(i)->data(0, Qt::UserRole).value<TitleEntry>();
+            bool exists = true;
+            if (!package->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
+            {
+                exists = false;
+                dashGPD->DeleteTitleEntry(&entry);
+                if (pecPackage->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
+                    pecPackage->RemoveFile(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd");
+                problems = true;
+                qDebug() << "Problem " << QString::fromStdWString(entry.gameName);
+            }
+            if (entry.avatarAwardCount != 0 && !pecPackage->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
+            {
+                try { dashGPD->DeleteTitleEntry(&entry); }
+                catch (std::string error) { qDebug() << "Problem " << QString::fromStdString(error); }
+                catch(...) { }
+
+                if (exists)
+                    package->RemoveFile(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd");
+
+                problems = true;
+                qDebug() << "Problem " << QString::fromStdWString(entry.gameName);
+            }
+        }
+
+        if (problems)
+            QMessageBox::warning(this, "Error Adding Games", "Some of the games weren't added correctly.");
 
         try
         {
@@ -518,7 +527,7 @@ void GameAdderDialog::on_pushButton_2_clicked()
         if (!package->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
         {
             GPDDownloader *downloader = new GPDDownloader(entry, entry.avatarAwardCount != 0, this);
-            connect(downloader, SIGNAL(FinishedDownloading(QString, QString, TitleEntry, bool)), this, SLOT(finishedDownloadingGPD(QString, QString, TitleEntry, bool)));
+            connect(downloader, SIGNAL(FinishedDownloading(QString, QString, TitleEntry&, bool)), this, SLOT(finishedDownloadingGPD(QString, QString, TitleEntry&, bool)));
             downloader->BeginDownload();
         }
         else
