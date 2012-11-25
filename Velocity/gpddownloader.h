@@ -22,7 +22,7 @@ public:
     void BeginDownload();
 
 signals:
-    void FinishedDownloading(QString gameGPDPath, QString awardGPDPath, TitleEntry entry, bool error);
+    void FinishedDownloading(QString, QString, TitleEntry&, bool);
 
 public slots:
     void onDone(bool);
