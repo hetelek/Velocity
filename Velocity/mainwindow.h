@@ -113,6 +113,8 @@ private slots:
 
     void pluginVersionReplyFinished(QNetworkReply *aReply);
 
+    void on_actionCheck_For_Updates_triggered();
+
 private:
     Ui::MainWindow *ui;
     QSettings *settings;

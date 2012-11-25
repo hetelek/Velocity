@@ -115,6 +115,7 @@
     <addaction name="actionView_Wiki"/>
     <addaction name="actionDonate"/>
     <addaction name="actionAbout"/>
+    <addaction name="actionCheck_For_Updates"/>
    </widget>
    <widget class="QMenu" name="menuPlugins">
     <property name="title">
@@ -307,6 +308,11 @@
    </property>
    <property name="text">
     <string>FATX File Path Tool</string>
+   </property>
+  </action>
+  <action name="actionCheck_For_Updates">
+   <property name="text">
+    <string>Check For Updates</string>
    </property>
   </action>
  </widget>
