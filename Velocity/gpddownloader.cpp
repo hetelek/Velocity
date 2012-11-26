@@ -1,6 +1,6 @@
 #include "gpddownloader.h"
 
-GPDDownloader::GPDDownloader(TitleEntry entry, bool hasAwards, QObject * /* parent */ ) : entry(entry), hasAwards(hasAwards)
+GPDDownloader::GPDDownloader(TitleEntry entry, int index, bool hasAwards, QObject * /* parent */ ) : entry(entry), indexIn(index), hasAwards(hasAwards)
 {
     gpdDirectory = "/gameadder/";
     gpdWritten = false;
@@ -16,6 +16,11 @@ void GPDDownloader::BeginDownload()
 {
     QString url = gpdDirectory + "game/" + QString::number(entry.titleID, 16).toUpper() + ".gpd";
     http->get(url);
+}
+
+int GPDDownloader::index()
+{
+    return indexIn;
 }
 
 void GPDDownloader::onRequestFinished(int /* id */, bool error)

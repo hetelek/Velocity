@@ -208,9 +208,11 @@ void GameAdderDialog::showRemoveContextMenu_AllGames(QPoint point)
     }
 }
 
-void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath, TitleEntry &entry, bool error)
+void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath, TitleEntry entry, bool error)
 {
-    delete sender();
+    GPDDownloader *downloader = (GPDDownloader*)sender();
+    int index = downloader->index();
+    delete downloader;
 
     ui->progressBar->setValue(((double)++downloadedCount / (double)totalDownloadCount) * 100);
     QMutex m;
@@ -229,6 +231,7 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
         QString gpdName = QString::number(entry.titleID, 16).toUpper() + ".gpd";
         try
         {
+            qDebug() << "Started " << QString::fromStdWString(entry.gameName);
             // inject the game gpd
             m.lock();
             package->InjectFile(gamePath.toStdString(), gpdName.toStdString());
@@ -276,8 +279,11 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
             // update the dash gpd
             m.lock();
             dashGPD->CreateTitleEntry(&entry);
+            ui->treeWidgetQueue->topLevelItem(index)->setData(0, Qt::UserRole, QVariant::fromValue(entry));
             dashGPD->gamePlayedCount.int32++;
             m.unlock();
+
+            qDebug() << "Ended " << QString::fromStdWString(entry.gameName);
         }
         catch (std::string error)
         {
@@ -324,17 +330,21 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
             if (!package->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
             {
                 exists = false;
-                dashGPD->DeleteTitleEntry(&entry);
+                try { dashGPD->DeleteTitleEntry(&entry); }
+                catch (std::string error) { qDebug() << "Problem " << QString::fromStdString(error); }
+                catch(...) { qDebug() << "Problem unknown"; }
+
                 if (pecPackage->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
                     pecPackage->RemoveFile(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd");
                 problems = true;
                 qDebug() << "Problem " << QString::fromStdWString(entry.gameName);
+
             }
             if (entry.avatarAwardCount != 0 && !pecPackage->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
             {
                 try { dashGPD->DeleteTitleEntry(&entry); }
                 catch (std::string error) { qDebug() << "Problem " << QString::fromStdString(error); }
-                catch(...) { }
+                catch(...) { qDebug() << "Problem unknown"; }
 
                 if (exists)
                     package->RemoveFile(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd");
@@ -526,8 +536,8 @@ void GameAdderDialog::on_pushButton_2_clicked()
 
         if (!package->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
         {
-            GPDDownloader *downloader = new GPDDownloader(entry, entry.avatarAwardCount != 0, this);
-            connect(downloader, SIGNAL(FinishedDownloading(QString, QString, TitleEntry&, bool)), this, SLOT(finishedDownloadingGPD(QString, QString, TitleEntry&, bool)));
+            GPDDownloader *downloader = new GPDDownloader(entry, i, entry.avatarAwardCount != 0, this);
+            connect(downloader, SIGNAL(FinishedDownloading(QString, QString, TitleEntry, bool)), this, SLOT(finishedDownloadingGPD(QString, QString, TitleEntry, bool)));
             downloader->BeginDownload();
         }
         else
