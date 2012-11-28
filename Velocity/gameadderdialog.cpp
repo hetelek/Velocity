@@ -359,9 +359,13 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
 
         try
         {
+            dashGPD->Close();
+            delete dashGPD;
+
             m.lock();
             package->ReplaceFile(dashGPDTempPath.toStdString(), "FFFE07D1.gpd");
             m.unlock();
+
             QFile::remove(dashGPDTempPath);
         }
         catch (std::string error)
