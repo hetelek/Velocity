@@ -225,12 +225,12 @@ void PackageViewer::on_btnFix_clicked()
     bool success = true, resigned = false;
 
     // verify the profile and device id
-    if (!QtHelpers::VerifyHexStringBuffer(ui->txtProfileID->text()) || ui->txtProfileID->text().length() != 16)
+    if ((!QtHelpers::VerifyHexStringBuffer(ui->txtProfileID->text()) || ui->txtProfileID->text().length() != 16) && !package->IsPEC())
     {
         QMessageBox::warning(this, "Invalid Value", "The profile ID must be 16 hexadecimal digits.");
         return;
     }
-    if (!QtHelpers::VerifyHexStringBuffer(ui->txtDeviceID->text()) || ui->txtDeviceID->text().length() != 40)
+    if ((!QtHelpers::VerifyHexStringBuffer(ui->txtDeviceID->text()) || ui->txtDeviceID->text().length() != 40) && !package->IsPEC())
     {
         QMessageBox::warning(this, "Invalid Value", "The device ID must be 40 hexadecimal digits.");
         return;
@@ -253,7 +253,7 @@ void PackageViewer::on_btnFix_clicked()
         QMessageBox::critical(this, "Error", "Failed to rehash the package.\n\n" + QString::fromStdString(error));
     }
 
-    if (package->metaData->magic == CON)
+    if (package->metaData->magic == CON || package->IsPEC())
     {
         try
         {
@@ -269,7 +269,7 @@ void PackageViewer::on_btnFix_clicked()
         {
             success = false;
             QMessageBox::critical(this, "Error", "Failed to resign the package.\n\n" + QString::fromStdString(error));
-    }
+        }
     }
 
     if (success)
