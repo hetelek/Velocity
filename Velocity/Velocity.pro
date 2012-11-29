@@ -86,7 +86,8 @@ SOURCES += main.cpp \
 	githubcommitsdialog.cpp \
 	gpduploader.cpp \
     fatxpathgendialog.cpp \
-    MemoryStream.cpp
+    MemoryStream.cpp \
+    profilecleanerwizard.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -146,7 +147,8 @@ HEADERS  += mainwindow.h \
 	githubcommitsdialog.h \
 	gpduploader.h \
     fatxpathgendialog.h \
-    MemoryStream.h
+    MemoryStream.h \
+    profilecleanerwizard.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -175,7 +177,8 @@ FORMS    += mainwindow.ui \
 	gamerpicturepackdialog.ui \
 	preferencesdialog.ui \
     githubcommitsdialog.ui \
-    fatxpathgendialog.ui
+    fatxpathgendialog.ui \
+    profilecleanerwizard.ui
 
 RESOURCES += \
     Resources.qrc

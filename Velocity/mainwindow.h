@@ -35,6 +35,7 @@
 #include "preferencesdialog.h"
 #include "githubcommitsdialog.h"
 #include "fatxpathgendialog.h"
+#include "profilecleanerwizard.h"
 
 // other
 #include "PluginInterfaces/igamemodder.h"
@@ -113,7 +114,11 @@ private slots:
 
     void pluginVersionReplyFinished(QNetworkReply *aReply);
 
+<<<<<<< HEAD
+    void on_actionProfile_Cleaner_triggered();
+=======
     void on_actionCheck_For_Updates_triggered();
+>>>>>>> b8419bb45cb63c43c2f96ced09d646076755f63f
 
 private:
     Ui::MainWindow *ui;

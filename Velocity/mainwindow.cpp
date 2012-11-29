@@ -743,7 +743,14 @@ void MainWindow::pluginVersionReplyFinished(QNetworkReply *aReply)
     }
 }
 
+<<<<<<< HEAD
+void MainWindow::on_actionProfile_Cleaner_triggered()
+{
+    ProfileCleanerWizard wiz(this);
+    wiz.exec();
+=======
 void MainWindow::on_actionCheck_For_Updates_triggered()
 {
     manager->get(QNetworkRequest(QUrl("http://velocity.expetelek.com/app.data")));
+>>>>>>> b8419bb45cb63c43c2f96ced09d646076755f63f
 }

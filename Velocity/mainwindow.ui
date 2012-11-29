@@ -101,6 +101,7 @@
      <addaction name="actionProfile_Creator"/>
      <addaction name="actionProfile_Editor"/>
      <addaction name="actionGame_Adder"/>
+     <addaction name="actionProfile_Cleaner"/>
     </widget>
     <addaction name="menuProfile_Editor"/>
     <addaction name="actionTheme_Creator"/>
@@ -159,7 +160,7 @@
   <action name="actionCreate_Package">
    <property name="icon">
     <iconset resource="Resources.qrc">
-     <normaloff>:/Images/new file.png</normaloff>:/Images/new file.png</iconset>
+     <normaloff>:/Images/packageIcon.png</normaloff>:/Images/packageIcon.png</iconset>
    </property>
    <property name="text">
     <string>Create Package</string>
@@ -185,7 +186,7 @@
   </action>
   <action name="actionPackage">
    <property name="icon">
-    <iconset resource="Resources.qrc">
+    <iconset>
      <normaloff>:/Images/package.png</normaloff>:/Images/package.png</iconset>
    </property>
    <property name="text">
@@ -312,6 +313,11 @@
     <string>FATX File Path Tool</string>
    </property>
   </action>
+<<<<<<< HEAD
+  <action name="actionProfile_Cleaner">
+   <property name="text">
+    <string>Profile Cleaner</string>
+=======
   <action name="actionCheck_For_Updates">
    <property name="icon">
     <iconset resource="Resources.qrc">
@@ -319,6 +325,7 @@
    </property>
    <property name="text">
     <string>Check For Updates</string>
+>>>>>>> b8419bb45cb63c43c2f96ced09d646076755f63f
    </property>
   </action>
  </widget>
