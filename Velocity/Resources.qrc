@@ -15,7 +15,6 @@
         <file>Images/DefaultFileIcon.png</file>
         <file>Images/cancel.png</file>
         <file>Images/extract.png</file>
-        <file>Images/new file.png</file>
         <file>Images/new folder.png</file>
         <file>Images/rename.png</file>
         <file>Images/save.png</file>
@@ -25,14 +24,12 @@
         <file>Images/flag.png</file>
         <file>Images/add.png</file>
         <file>Images/delete.png</file>
-        <file>Images/package.png</file>
         <file>Images/gpd.png</file>
         <file>Images/asset.png</file>
         <file>Images/avatar-body.png</file>
         <file>Images/HiddenAchievement.png</file>
         <file>Images/unlock.png</file>
         <file>Images/replace.png</file>
-        <file>Images/package512.png</file>
         <file>Images/trophy.png</file>
         <file>Images/properties.png</file>
         <file>Images/clean.png</file>
@@ -68,7 +65,6 @@
         <file>Images/open.png</file>
         <file>Images/profile.png</file>
         <file>Images/find.png</file>
-        <file>Images/themebig.png</file>
         <file>Images/themesmall.png</file>
         <file>Images/start.png</file>
         <file>Images/wiki.png</file>
@@ -79,6 +75,10 @@
         <file>Images/avatar.png</file>
         <file>Images/hdd.png</file>
         <file>Images/star.png</file>
+        <file>Images/cleaner.png</file>
+        <file>Images/themeAvatar.png</file>
+        <file>Images/packageAvatar.png</file>
+        <file>Images/packageIcon.png</file>
         <file>Images/updates.png</file>
         <file>Images/hammer.png</file>
     </qresource>
