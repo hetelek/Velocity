@@ -42,6 +42,9 @@ public:
     // Description: close all open resources attatched to the file
     void Close();
 
+    // Description: remove all of the unused memory
+    void Clean();
+
 protected:
     bool ioPassedIn;
     FileIO *io;

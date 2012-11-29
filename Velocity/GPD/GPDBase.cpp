@@ -163,7 +163,7 @@ void GPDBase::DeleteImageEntry(ImageEntry image)
             break;
         }
     }
-    if (i > settings.size())
+    if (i > images.size())
         throw string("GPD: Error deleting image entry. Image doesn't exist.\n");
 
     // delete the entry from the file
@@ -314,6 +314,11 @@ void GPDBase::WriteImageEntry(ImageEntry image)
 void GPDBase::Close()
 {
     io->close();
+}
+
+void GPDBase::Clean()
+{
+    xdbf->Clean();
 }
 
 GPDBase::~GPDBase(void)
