@@ -41,10 +41,15 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_radioButton_clicked(bool checked);
+
+    void on_radioButton_2_clicked(bool checked);
+
 private:
     Ui::ProfileCreatorWizard *ui;
     UINT64 profileID;
     QStatusBar *statusBar;
+    ConsoleType consoleType;
 
     bool verifyGamertag(QString gamertag);
 };

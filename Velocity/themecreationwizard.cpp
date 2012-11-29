@@ -2,7 +2,7 @@
 #include "ui_themecreationwizard.h"
 
 ThemeCreationWizard::ThemeCreationWizard(QStatusBar *statusBar, QWidget *parent) :
-    QWizard(parent), ui(new Ui::ThemeCreationWizard), statusBar(statusBar), imagesLoaded(0)
+    QWizard(parent), ui(new Ui::ThemeCreationWizard), statusBar(statusBar), imagesLoaded(0), consoleType(Retail)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -45,7 +45,7 @@ void ThemeCreationWizard::onFinished(int status)
 
         // create a new file
         theme.metaData->magic = CON;
-        theme.metaData->certificate.ownerConsoleType = (ui->cmbxType->currentIndex() == 0) ? Retail : DevKit;
+        theme.metaData->certificate.ownerConsoleType = consoleType;
         theme.metaData->certificate.consoleTypeFlags = (ConsoleTypeFlags)0;
 
         theme.metaData->contentType = Theme;
@@ -231,4 +231,16 @@ void ThemeCreationWizard::on_pushButton_6_clicked()
         return;
 
     ui->lblSavePath->setText(filePath);
+}
+
+void ThemeCreationWizard::on_radioButton_clicked(bool checked)
+{
+    if (checked)
+        consoleType = Retail;
+}
+
+void ThemeCreationWizard::on_radioButton_2_clicked(bool checked)
+{
+    if (checked)
+        consoleType = DevKit;
 }

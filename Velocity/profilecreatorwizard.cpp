@@ -2,7 +2,7 @@
 #include "ui_profilecreatorwizard.h"
 
 ProfileCreatorWizard::ProfileCreatorWizard(QStatusBar *statusBar, QWidget *parent) :
-    QWizard(parent), ui(new Ui::ProfileCreatorWizard), statusBar(statusBar)
+    QWizard(parent), ui(new Ui::ProfileCreatorWizard), statusBar(statusBar), consoleType(Retail)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -54,7 +54,7 @@ void ProfileCreatorWizard::onFinished(int status)
 
         // set up the metadata for the profile
         newProfile.metaData->magic = CON;
-        newProfile.metaData->certificate.ownerConsoleType = (ui->cmbxType->currentIndex() == 0) ? Retail : DevKit;
+        newProfile.metaData->certificate.ownerConsoleType = consoleType;
 
         newProfile.metaData->contentType = Profile;
         newProfile.metaData->metaDataVersion = 2;
@@ -229,4 +229,16 @@ void ProfileCreatorWizard::on_pushButton_clicked()
 
     if (fileName != "")
         ui->lblSavePath->setText(fileName);
+}
+
+void ProfileCreatorWizard::on_radioButton_clicked(bool checked)
+{
+    if (checked)
+        consoleType = Retail;
+}
+
+void ProfileCreatorWizard::on_radioButton_2_clicked(bool checked)
+{
+    if (checked)
+        consoleType = DevKit;
 }

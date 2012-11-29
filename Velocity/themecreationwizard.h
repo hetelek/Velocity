@@ -86,6 +86,10 @@ private slots:
 
     void on_pushButton_6_clicked();
 
+    void on_radioButton_clicked(bool checked);
+
+    void on_radioButton_2_clicked(bool checked);
+
 private:
     Ui::ThemeCreationWizard *ui;
     QImage wallpaper1, wallpaper2, wallpaper3, wallpaper4;
@@ -93,6 +97,7 @@ private:
     QList<QPixmap*> allocatedImages;
 
     BYTE imagesLoaded;
+    ConsoleType consoleType;
 
     void openWallpaper(QLabel *imageViewer, QImage *saveImage);
 

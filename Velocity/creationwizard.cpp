@@ -2,7 +2,7 @@
 #include "ui_creationwizard.h"
 
 CreationWizard::CreationWizard(QString *fileName, QWidget *parent) :
-    QWizard(parent), ui(new Ui::CreationWizard), fileName(fileName)
+    QWizard(parent), ui(new Ui::CreationWizard), fileName(fileName), consoleType(Retail), magic(CON)
 {
     connect(this, SIGNAL(currentIdChanged(int)), SLOT(onCurrentIdChanged(int)));
     connect(this, SIGNAL(finished(int)), this, SLOT(onFinished(int)));
@@ -122,30 +122,6 @@ void CreationWizard::on_btnOpenThumbnail_clicked()
     openImage(ui->imgThumbnail);
 }
 
-void CreationWizard::on_cmbxMagic_currentIndexChanged(int index)
-{
-    QString before = "", after = "";
-#ifdef __APPLE__
-    before = "<font size=3>";
-    after = "</font>";
-#endif
-    if (index == 0)
-    {
-        ui->label_4->setText(before + "CON packages are console signed packages which means that they can be edited for use on a retail Xbox 360 console. These types of packages are typically used to store profiles, savegames and other offline content." + after);
-        magic = CON;
-    }
-    else if (index == 1)
-    {
-        ui->label_4->setText(before + "LIVE packages are strong signed meaning that only Microsoft can resign these packages, therefore they are very secure. These packages are used to store DLC such as game trailers and game add-ons." + after);
-        magic = LIVE;
-    }
-    else
-    {
-        ui->label_4->setText(before + "PIRS packages are strong signed meaning that only Microsoft can resign these packages, therefore they are very secure. These packages are used for internal files, as well as avatar awards." + after);
-        magic = PIRS;
-    }
-}
-
 void CreationWizard::on_btnOpenTitleThumbnail_clicked()
 {
     openImage(ui->imgTitleThumbnail);
@@ -178,12 +154,11 @@ void CreationWizard::onFinished(int status)
 
     try
     {
-        StfsPackage package(ui->lblSavePath->text().toStdString(), ((ui->cmbxMagic->currentIndex() != 0) ? StfsPackageFemale : 0) | StfsPackageCreate);
+        StfsPackage package(ui->lblSavePath->text().toStdString(), ((magic != CON) ? StfsPackageFemale : 0) | StfsPackageCreate);
 
         // set the metadata
-        DWORD magics[3] = { CON, LIVE, PIRS };
-        package.metaData->magic = (Magic)magics[ui->cmbxMagic->currentIndex()];
-        package.metaData->certificate.ownerConsoleType = (ui->cmbxType->currentIndex() == 0) ? Retail : DevKit;
+        package.metaData->magic = magic;
+        package.metaData->certificate.ownerConsoleType = consoleType;
         package.metaData->contentType = (ContentType)getContentType();
         package.metaData->titleID = QtHelpers::ParseHexString(ui->txtTitleID->text());
         package.metaData->displayName = ui->txtDisplayName->text().toStdWString();
@@ -282,4 +257,34 @@ DWORD CreationWizard::getContentType()
     else if (contentType == "XNA")
         return 0xE0000;
     return 0;
+}
+
+void CreationWizard::on_radioButton_clicked(bool checked)
+{
+    if (checked)
+        consoleType = Retail;
+}
+
+void CreationWizard::on_radioButton_2_clicked(bool checked)
+{
+    if (checked)
+        consoleType = DevKit;
+}
+
+void CreationWizard::on_radioButton_3_clicked(bool checked)
+{
+    if (checked)
+        magic = CON;
+}
+
+void CreationWizard::on_radioButton_4_clicked(bool checked)
+{
+    if (checked)
+        magic = LIVE;
+}
+
+void CreationWizard::on_radioButton_5_clicked(bool checked)
+{
+    if (checked)
+        magic = PIRS;
 }
