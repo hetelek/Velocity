@@ -876,12 +876,14 @@ void XDBF::DeleteEntry(XDBFEntry entry)
                 if (group->syncs.synced.at(i).entryID == entry.id)
                 {
                     group->syncs.synced.erase(group->syncs.synced.begin() + i);
+                    group->syncs.lengthChanged = true;
                     goto writeSyncs;
                 }
             for (DWORD i = 0; i < group->syncs.toSync.size(); i++)
                 if (group->syncs.toSync.at(i).entryID == entry.id)
                 {
                     group->syncs.toSync.erase(group->syncs.toSync.begin() + i);
+                    group->syncs.lengthChanged = true;
                     break;
                 }
 
