@@ -170,6 +170,7 @@ void ProfileCleanerWizard::clean()
     memcpy(newProfile.metaData->titleThumbnailImage, profile->metaData->titleThumbnailImage, profile->metaData->titleThumbnailImageSize);
     newProfile.metaData->thumbnailImageSize = profile->metaData->thumbnailImageSize;
     newProfile.metaData->titleThumbnailImageSize = profile->metaData->titleThumbnailImageSize;
+    newProfile.metaData->titleName = profile->metaData->titleName;
     newProfile.metaData->transferFlags = profile->metaData->transferFlags;
     newProfile.metaData->version = profile->metaData->version;
 
@@ -187,7 +188,12 @@ void ProfileCleanerWizard::clean()
     d.rmdir(directory);
     qDebug() << "Deletion complete";
 
+    // fix the profile
+    newProfile.Rehash();
+    newProfile.Resign(QtHelpers::GetKVPath(newProfile.metaData->certificate.ownerConsoleType, this));
+
     newProfile.Close();
+
     QFileInfo info(newProfilePath);
     ui->lblEndSize->setText(QString::fromStdString(ByteSizeToString(info.size())));
     ui->lblDataRemoved->setText(QString::fromStdString(ByteSizeToString(initialSize - info.size())));
