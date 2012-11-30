@@ -88,6 +88,11 @@ void ProfileCleanerWizard::clean()
     extractAll(&f, directory);
     qDebug() << "Extraction complete";
 
+    QStringList exceptions;
+    exceptions.push_back("FFFE07D1.gpd");
+    exceptions.push_back("FFFE07DE.gpd");
+    exceptions.push_back("584D07D1.gpd");
+
     // iterate through all of the GPDs in the profile
     QFileInfoList files = d.entryInfoList();
     for (DWORD i = 0; i < files.size(); i++)
@@ -96,9 +101,9 @@ void ProfileCleanerWizard::clean()
         {
             try
             {
-                GPDBase gpd(files.at(i).absoluteFilePath().toStdString());
+               /* GPDBase gpd(files.at(i).absoluteFilePath().toStdString());
 
-                if (op == Purify && files.at(i).fileName() != QString("FFFE07D1.gpd"))
+                if (op == Purify && !exceptions.contains(files.at(i).fileName()))
                 {
                     DWORD offset = 0, settingCount = gpd.settings.size();
                     for (DWORD i = 0; i < settingCount; i++)
@@ -109,7 +114,7 @@ void ProfileCleanerWizard::clean()
                             gpd.DeleteSettingEntry(gpd.settings.at(offset));
                     }
                 }
-                if ((op == Purify || op == Sweep) && files.at(i).fileName() != QString("FFFE07D1.gpd"))
+                if ((op == Purify || op == Sweep) && !exceptions.contains(files.at(i).fileName()))
                 {
                     DWORD offset = 0, imageCount = gpd.images.size();
                     for (DWORD i = 0; i < imageCount; i++)
@@ -122,7 +127,7 @@ void ProfileCleanerWizard::clean()
                 }
 
                 gpd.Clean();
-                QApplication::processEvents();
+                QApplication::processEvents();*/
             }
             catch (string error)
             {
