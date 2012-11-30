@@ -428,10 +428,13 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
             if (!isFolder)
                 contextMenu.addAction(QPixmap(":/Images/replace.png"), "Replace File");
+            else
+            {
+                contextMenu.addSeparator();
+                contextMenu.addAction(QPixmap(":/Images/add.png"), "Inject Here");
+            }
         }
 
-        contextMenu.addSeparator();
-        contextMenu.addAction(QPixmap(":/Images/add.png"), "Inject Here");
         contextMenu.addSeparator();
         contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
     }
