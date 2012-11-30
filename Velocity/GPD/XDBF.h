@@ -104,6 +104,9 @@ private:
     // Description: null out the structs that need it
     void init();
 
+    // Description: update the final entry in the free memory, stores the file length
+    void updateFreeMemTable();
+
     // Description: write an entry to the entry table
     void writeEntry(XDBFEntry *entry);
 

@@ -36,10 +36,6 @@ void XDBF::Clean()
     tempFile.write(header.freeMemTableLength);
     tempFile.write((DWORD)1);
 
-    // write the free mem table value
-    tempFile.setPosition((header.entryTableLength * 0x12) + 0x1C);
-    tempFile.write((DWORD)0xFFFFFFFF);
-
     // seek to the first position in the file where data can be written
     tempFile.setPosition(GetRealAddress(0) - 1);
     tempFile.write((BYTE)0);
@@ -90,8 +86,12 @@ void XDBF::Clean()
 
     // clear the free memory
     freeMemory.clear();
-    XDBFFreeMemEntry  entry = { 0, 0xFFFFFFFF };
+
+    io->setPosition(0, ios_base::end);
+    XDBFFreeMemEntry  entry = { GetSpecifier(io->getPosition()), 0xFFFFFFFF - GetSpecifier(io->getPosition()) };
     freeMemory.push_back(entry);
+
+    writeFreeMemTable();
 
     // reload the file listing
     readEntryTable();
@@ -474,6 +474,9 @@ DWORD XDBF::AllocateMemory(DWORD size)
         io->setPosition(size - 1, ios_base::end);
         io->write((BYTE)0);
         io->flush();
+
+        updateFreeMemTable();
+        writeFreeMemTable();
     }
     else
     {
@@ -514,9 +517,19 @@ void XDBF::DeallocateMemory(DWORD addr, DWORD size)
 
     // update the header
     header.freeMemTableEntryCount++;
+    updateFreeMemTable();
 
     // update the table
     writeFreeMemTable();
+}
+
+void XDBF::updateFreeMemTable()
+{
+    io->setPosition(0, ios_base::end);
+    DWORD len = GetSpecifier(io->getPosition());
+
+    freeMemory.back().addressSpecifier = len;
+    freeMemory.back().length = 0xFFFFFFFF - len;
 }
 
 void XDBF::readEntryGroup(XDBFEntryGroup *group, EntryType type)
