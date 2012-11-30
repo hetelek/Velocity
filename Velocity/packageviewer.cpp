@@ -567,7 +567,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         if (path.isEmpty())
             return;
 
-        if (totalCount > 1)
+        if (totalCount == 1)
         {
             GetPackagePath(items.at(0), &packagePath, true);
 
