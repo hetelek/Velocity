@@ -101,7 +101,7 @@ void ProfileCleanerWizard::clean()
         {
             try
             {
-               /* GPDBase gpd(files.at(i).absoluteFilePath().toStdString());
+                GPDBase gpd(files.at(i).absoluteFilePath().toStdString());
 
                 if (op == Purify && !exceptions.contains(files.at(i).fileName()))
                 {
@@ -127,7 +127,7 @@ void ProfileCleanerWizard::clean()
                 }
 
                 gpd.Clean();
-                QApplication::processEvents();*/
+                QApplication::processEvents();
             }
             catch (string error)
             {
