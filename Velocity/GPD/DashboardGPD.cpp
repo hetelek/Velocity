@@ -213,7 +213,7 @@ void DashboardGPD::DeleteTitleEntry(TitleEntry *entry)
 			break;
 		}
 	}
-	if (i == gamesPlayed.size())
+    if (i > gamesPlayed.size())
 		throw string("GPD: Error deleting title entry. Title doesn't exist.\n");
 
 	// delete the entry from the file

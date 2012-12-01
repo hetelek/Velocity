@@ -45,19 +45,21 @@ private slots:
     void on_txtSearch_textChanged(const QString &arg1);
     void on_btnShowAll_2_clicked(bool checked);
 
+    void on_pushButton_3_clicked();
+
 private:
     Ui::GameAdderDialog *ui;
-    QString mainDir;
     QNetworkAccessManager *manager, *imageManager;
     DashboardGPD *dashGPD;
-    QString dashGPDTempPath, pecTempPath;
+    QString dashGPDTempPath, pecTempPath, getParams;
     QStringList notSuccessful;
     StfsPackage *package, *pecPackage;
 
-    bool allowInjection, existed, dispose;
+    bool allowInjection, existed, dispose, warned;
     int totalDownloadCount, downloadedCount;
 
     void showAllItems();
+    void getListing();
 };
 
 #endif // GAMEADDERDIALOG_H

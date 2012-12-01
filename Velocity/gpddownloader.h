@@ -7,6 +7,7 @@
 #include <QUuid>
 #include <QUrl>
 #include <QDir>
+#include <QDebug>
 
 // other
 #include "winnames.h"
@@ -17,11 +18,12 @@ class GPDDownloader : public QObject
 {
     Q_OBJECT
 public:
-    explicit GPDDownloader(TitleEntry entry, bool hasAwards = false, QObject *parent = 0);
+    explicit GPDDownloader(TitleEntry entry, int index, bool hasAwards = false, QObject *parent = 0);
     void BeginDownload();
+    int index();
 
 signals:
-    void FinishedDownloading(QString gameGPDPath, QString awardGPDPath, TitleEntry entry, bool error);
+    void FinishedDownloading(QString, QString, TitleEntry, bool);
 
 public slots:
     void onDone(bool);
@@ -32,6 +34,7 @@ private:
     QString gpdDirectory, titleID, awardGPD, gameGPD;
     TitleEntry entry;
     bool hasAwards, gpdWritten;
+    int indexIn;
 };
 
 #endif // GPDDOWNLOADER_H

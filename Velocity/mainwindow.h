@@ -35,6 +35,7 @@
 #include "preferencesdialog.h"
 #include "githubcommitsdialog.h"
 #include "fatxpathgendialog.h"
+#include "profilecleanerwizard.h"
 
 // other
 #include "PluginInterfaces/igamemodder.h"
@@ -113,11 +114,16 @@ private slots:
 
     void pluginVersionReplyFinished(QNetworkReply *aReply);
 
+    void on_actionProfile_Cleaner_triggered();
+
+    void on_actionCheck_For_Updates_triggered();
+
 private:
     Ui::MainWindow *ui;
     QSettings *settings;
     QNetworkAccessManager *manager, *pluginManager;
     QList<QAction*> gpdActions, gameActions;
+    bool firstUpdateCheck;
 
     void LoadFiles(QList<QUrl> &filePaths);
 };

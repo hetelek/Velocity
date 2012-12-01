@@ -36,10 +36,6 @@ void XDBF::Clean()
     tempFile.write(header.freeMemTableLength);
     tempFile.write((DWORD)1);
 
-    // write the free mem table value
-    tempFile.setPosition((header.entryTableLength * 0x12) + 0x1C);
-    tempFile.write((DWORD)0xFFFFFFFF);
-
     // seek to the first position in the file where data can be written
     tempFile.setPosition(GetRealAddress(0) - 1);
     tempFile.write((BYTE)0);
@@ -87,6 +83,15 @@ void XDBF::Clean()
     titlesPlayed.entries.clear();
     strings.clear();
     avatarAwards.entries.clear();
+
+    // clear the free memory
+    freeMemory.clear();
+
+    io->setPosition(0, ios_base::end);
+    XDBFFreeMemEntry  entry = { GetSpecifier(io->getPosition()), 0xFFFFFFFF - GetSpecifier(io->getPosition()) };
+    freeMemory.push_back(entry);
+
+    writeFreeMemTable();
 
     // reload the file listing
     readEntryTable();
@@ -268,7 +273,6 @@ SyncList XDBF::readSyncList(XDBFEntry entry)
 
 void XDBF::writeSyncList(SyncList *syncs)
 {
-
     // if the length has changed, then we need to allocated more/less memory
     if (syncs->lengthChanged)
     {
@@ -280,6 +284,7 @@ void XDBF::writeSyncList(SyncList *syncs)
 
         // allocate new memory
         syncs->entry.addressSpecifier = GetSpecifier(AllocateMemory(syncs->entry.length));
+        syncs->lengthChanged = false;
     }
 
     // seek to the sync list position
@@ -402,6 +407,7 @@ XDBFEntry XDBF::CreateEntry(EntryType type, UINT64 id, DWORD size)
             // create a sync for the entry
             SyncEntry sync = { entry.id, settings.syncData.nextSyncID++ };
             settings.syncs.toSync.push_back(sync);
+            settings.syncs.lengthChanged = true;
             // re-write the sync list
             writeSyncList(&settings.syncs);
             writeSyncData(&settings.syncData);
@@ -414,6 +420,7 @@ XDBFEntry XDBF::CreateEntry(EntryType type, UINT64 id, DWORD size)
             // create a sync for the entry
             SyncEntry sync = { entry.id, titlesPlayed.syncData.nextSyncID++ };
             titlesPlayed.syncs.toSync.push_back(sync);
+            titlesPlayed.syncs.lengthChanged = true;
             // re-write the sync list
             writeSyncList(&titlesPlayed.syncs);
             writeSyncData(&titlesPlayed.syncData);
@@ -429,6 +436,7 @@ XDBFEntry XDBF::CreateEntry(EntryType type, UINT64 id, DWORD size)
             // create a sync for the entry
             SyncEntry sync = { entry.id, avatarAwards.syncData.nextSyncID++ };
             avatarAwards.syncs.toSync.push_back(sync);
+            avatarAwards.syncs.lengthChanged = true;
             // re-write the sync list
             writeSyncList(&avatarAwards.syncs);
             writeSyncData(&avatarAwards.syncData);
@@ -466,6 +474,9 @@ DWORD XDBF::AllocateMemory(DWORD size)
         io->setPosition(size - 1, ios_base::end);
         io->write((BYTE)0);
         io->flush();
+
+        updateFreeMemTable();
+        writeFreeMemTable();
     }
     else
     {
@@ -506,9 +517,19 @@ void XDBF::DeallocateMemory(DWORD addr, DWORD size)
 
     // update the header
     header.freeMemTableEntryCount++;
+    updateFreeMemTable();
 
     // update the table
     writeFreeMemTable();
+}
+
+void XDBF::updateFreeMemTable()
+{
+    io->setPosition(0, ios_base::end);
+    DWORD len = GetSpecifier(io->getPosition());
+
+    freeMemory.back().addressSpecifier = len;
+    freeMemory.back().length = 0xFFFFFFFF - len;
 }
 
 void XDBF::readEntryGroup(XDBFEntryGroup *group, EntryType type)
@@ -606,6 +627,10 @@ void XDBF::writeFreeMemTable()
 
     // seek to the free memory table position
     io->setPosition(0x18 + (header.entryTableLength * 0x12));
+
+    // make sure we didn't run out of free memory table space
+    if (freeMemory.size() > header.freeMemTableLength)
+        Clean();
 
     // write the table
     for (DWORD i = 0; i < freeMemory.size(); i++)
@@ -864,12 +889,14 @@ void XDBF::DeleteEntry(XDBFEntry entry)
                 if (group->syncs.synced.at(i).entryID == entry.id)
                 {
                     group->syncs.synced.erase(group->syncs.synced.begin() + i);
+                    group->syncs.lengthChanged = true;
                     goto writeSyncs;
                 }
             for (DWORD i = 0; i < group->syncs.toSync.size(); i++)
                 if (group->syncs.toSync.at(i).entryID == entry.id)
                 {
                     group->syncs.toSync.erase(group->syncs.toSync.begin() + i);
+                    group->syncs.lengthChanged = true;
                     break;
                 }
 

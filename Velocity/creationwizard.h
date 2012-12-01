@@ -30,8 +30,6 @@ private slots:
 
     void on_btnOpenThumbnail_clicked();
 
-    void on_cmbxMagic_currentIndexChanged(int index);
-
     void on_btnOpenTitleThumbnail_clicked();
 
     void on_txtTitleID_textChanged(const QString &arg1);
@@ -40,11 +38,22 @@ private slots:
 
     void onFinished(int status);
 
+    void on_radioButton_clicked(bool checked);
+
+    void on_radioButton_2_clicked(bool checked);
+
+    void on_radioButton_3_clicked(bool checked);
+
+    void on_radioButton_4_clicked(bool checked);
+
+    void on_radioButton_5_clicked(bool checked);
+
 private:
     Ui::CreationWizard *ui;
     Magic magic;
     ContentType type;
     QString *fileName;
+    ConsoleType consoleType;
 
     void openImage(QLabel *img);
     DWORD getContentType();

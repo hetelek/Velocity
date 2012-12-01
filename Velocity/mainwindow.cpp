@@ -52,6 +52,8 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
     pluginManager = new QNetworkAccessManager(this);
     connect(pluginManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(pluginVersionReplyFinished(QNetworkReply*)));
 
+    firstUpdateCheck = true;
+
     manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(versionReplyFinished(QNetworkReply*)));
     manager->get(QNetworkRequest(QUrl("http://velocity.expetelek.com/app.data")));
@@ -697,12 +699,21 @@ void MainWindow::versionReplyFinished(QNetworkReply *aReply)
     QString version = result["version"].toString();
     QString downloadPage = result["dl_page"].toString();
 
-    if (VERSION != version)
+    bool hasMessage = result.contains("message");
+    QString message = "<br><br>";
+    if (hasMessage)
+        message += result["message"].toString();
+
+    if (!version.contains(VERSION))
     {
-        QMessageBox::StandardButton selection = (QMessageBox::StandardButton)QMessageBox::question(this, "Version " + version, "Version " + version + " of Velocity is available for download. Would you like to be brought to the download page?", QMessageBox::Yes, QMessageBox::No);
+        QMessageBox::StandardButton selection = (QMessageBox::StandardButton)QMessageBox::question(this, "Version " + version, "Version " + version + " of Velocity is available for download. Your current version is " + VERSION + ". Would you like to be brought to the download page?" + (hasMessage ? message : ""), QMessageBox::Yes, QMessageBox::No);
         if (selection == QMessageBox::Yes)
             QDesktopServices::openUrl(QUrl(downloadPage));
     }
+    else if (!firstUpdateCheck)
+        QMessageBox::information(this, "Already Up-to-Date", "This version of Velocity is already the latest.");
+
+    firstUpdateCheck = false;
 }
 
 void MainWindow::pluginVersionReplyFinished(QNetworkReply *aReply)
@@ -730,4 +741,15 @@ void MainWindow::pluginVersionReplyFinished(QNetworkReply *aReply)
         if (selection == QMessageBox::Yes)
             QDesktopServices::openUrl(QUrl(downloadPage));
     }
+}
+
+void MainWindow::on_actionProfile_Cleaner_triggered()
+{
+    ProfileCleanerWizard wiz(this);
+    wiz.exec();
+}
+
+void MainWindow::on_actionCheck_For_Updates_triggered()
+{
+    manager->get(QNetworkRequest(QUrl("http://velocity.expetelek.com/app.data")));
 }

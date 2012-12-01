@@ -8,6 +8,8 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
+    warned = false;
+
     QFont f = ui->lblGameName->font();
 #ifdef __WIN32
     f.setPointSize(10);
@@ -36,7 +38,6 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
     }
 
     pecTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
-    mainDir = "http://velocity.expetelek.com/gameadder/";
 
     manager = new QNetworkAccessManager(this);
 
@@ -49,7 +50,8 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
     }
 
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gameReplyFinished(QNetworkReply*)));
-    manager->get(QNetworkRequest(QUrl(mainDir + "listing.php")));
+    getParams = "";
+    getListing();
 
     // setup the context menus
     ui->treeWidgetAllGames->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -144,6 +146,8 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
 
     // sort the items alphabetically
     ui->treeWidgetAllGames->sortByColumn(0, Qt::AscendingOrder);
+
+    ui->tabWidget->setEnabled(true);
 }
 
 void GameAdderDialog::thumbnailReplyFinished(QNetworkReply *aReply)
@@ -206,7 +210,9 @@ void GameAdderDialog::showRemoveContextMenu_AllGames(QPoint point)
 
 void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath, TitleEntry entry, bool error)
 {
-    delete sender();
+    GPDDownloader *downloader = (GPDDownloader*)sender();
+    int index = downloader->index();
+    delete downloader;
 
     ui->progressBar->setValue(((double)++downloadedCount / (double)totalDownloadCount) * 100);
     QMutex m;
@@ -225,6 +231,7 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
         QString gpdName = QString::number(entry.titleID, 16).toUpper() + ".gpd";
         try
         {
+            qDebug() << "Started " << QString::fromStdWString(entry.gameName);
             // inject the game gpd
             m.lock();
             package->InjectFile(gamePath.toStdString(), gpdName.toStdString());
@@ -272,8 +279,11 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
             // update the dash gpd
             m.lock();
             dashGPD->CreateTitleEntry(&entry);
+            ui->treeWidgetQueue->topLevelItem(index)->setData(0, Qt::UserRole, QVariant::fromValue(entry));
             dashGPD->gamePlayedCount.int32++;
             m.unlock();
+
+            qDebug() << "Ended " << QString::fromStdWString(entry.gameName);
         }
         catch (std::string error)
         {
@@ -309,13 +319,52 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
             QMessageBox::critical(this, "Error Writing Entry", "The entry was not written successfully.\n\n" + QString::fromStdString(error));
             close();
         }
-        dashGPD->Close();
+
+        // make sure that all of the games were added correctly
+        bool problems = false;
+        for (DWORD i = 0; i < ui->treeWidgetQueue->topLevelItemCount(); i++)
+        {
+            TitleEntry entry = ui->treeWidgetQueue->topLevelItem(i)->data(0, Qt::UserRole).value<TitleEntry>();
+            bool exists = true;
+            if (!package->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
+            {
+                exists = false;
+                try { dashGPD->DeleteTitleEntry(&entry); }
+                catch (std::string error) { qDebug() << "Problem " << QString::fromStdString(error); }
+                catch(...) { qDebug() << "Problem unknown"; }
+
+                if (pecPackage->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
+                    pecPackage->RemoveFile(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd");
+                problems = true;
+                qDebug() << "Problem " << QString::fromStdWString(entry.gameName);
+
+            }
+            if (entry.avatarAwardCount != 0 && !pecPackage->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
+            {
+                try { dashGPD->DeleteTitleEntry(&entry); }
+                catch (std::string error) { qDebug() << "Problem " << QString::fromStdString(error); }
+                catch(...) { qDebug() << "Problem unknown"; }
+
+                if (exists)
+                    package->RemoveFile(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd");
+
+                problems = true;
+                qDebug() << "Problem " << QString::fromStdWString(entry.gameName);
+            }
+        }
+
+        if (problems)
+            QMessageBox::warning(this, "Error Adding Games", "Some of the games weren't added correctly.");
 
         try
         {
+            dashGPD->Close();
+            delete dashGPD;
+
             m.lock();
             package->ReplaceFile(dashGPDTempPath.toStdString(), "FFFE07D1.gpd");
             m.unlock();
+
             QFile::remove(dashGPDTempPath);
         }
         catch (std::string error)
@@ -490,7 +539,7 @@ void GameAdderDialog::on_pushButton_2_clicked()
 
         if (!package->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
         {
-            GPDDownloader *downloader = new GPDDownloader(entry, entry.avatarAwardCount != 0, this);
+            GPDDownloader *downloader = new GPDDownloader(entry, i, entry.avatarAwardCount != 0, this);
             connect(downloader, SIGNAL(FinishedDownloading(QString, QString, TitleEntry, bool)), this, SLOT(finishedDownloadingGPD(QString, QString, TitleEntry, bool)));
             downloader->BeginDownload();
         }
@@ -514,6 +563,14 @@ void GameAdderDialog::showAllItems()
 {
     for (int i = 0; i < ui->treeWidgetAllGames->topLevelItemCount(); i++)
         ui->treeWidgetAllGames->topLevelItem(i)->setHidden(false);
+}
+
+void GameAdderDialog::getListing()
+{
+    ui->treeWidgetAllGames->clear();
+    ui->treeWidgetQueue->clear();
+    ui->tabWidget->setEnabled(false);
+    manager->get(QNetworkRequest(QUrl("http://velocity.expetelek.com/gameadder/listing.php" + getParams)));
 }
 
 void GameAdderDialog::on_btnShowAll_clicked()
@@ -564,4 +621,31 @@ void GameAdderDialog::on_btnShowAll_2_clicked(bool checked)
         if (entry.avatarAwardCount == 0)
             ui->treeWidgetAllGames->topLevelItem(i)->setHidden(checked);
     }
+}
+
+void GameAdderDialog::on_pushButton_3_clicked()
+{
+    bool developerMode = ui->pushButton_3->isChecked();
+    if (developerMode)
+    {
+        if (!warned)
+        {
+            warned = true;
+            QMessageBox::StandardButton selection = (QMessageBox::StandardButton)QMessageBox::warning(this, "Developer Mode?", "Developer mode will display games that have not yet been approved by the Velocity developers. With this said, these games could potentially corrupt your profile. Would you like to continue?", QMessageBox::Yes, QMessageBox::No);
+            if (selection == QMessageBox::No)
+            {
+                ui->pushButton_3->setChecked(false);
+                getParams = "";
+                return;
+            }
+            else
+                getParams = "?dev=1";
+        }
+        else
+            getParams = "?dev=1";
+    }
+    else
+        getParams = "";
+
+    getListing();
 }

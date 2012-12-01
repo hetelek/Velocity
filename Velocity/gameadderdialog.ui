@@ -267,14 +267,25 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_3">
+             <property name="text">
+              <string>Developer Mode</string>
+             </property>
+             <property name="icon">
+              <iconset resource="Resources.qrc">
+               <normaloff>:/Images/hammer.png</normaloff>:/Images/hammer.png</iconset>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
         </layout>
        </item>
       </layout>
-      <zorder>lblGameName</zorder>
-      <zorder>lblAvatarAwards</zorder>
-      <zorder>lblAvatarAwards_2</zorder>
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">

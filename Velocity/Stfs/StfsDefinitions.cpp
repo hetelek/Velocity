@@ -37,14 +37,14 @@ string LicenseTypeToString(LicenseType type)
             return string("WindowsProfileLicense");
         case ConsoleLicense:
             return string("ConsoleLicense");
-        case Unknown1:
-            return string("Unknown1");
-        case Unknown2:
-            return string("Unknown2");
-        case Unknown3:
-            return string("Unknown3");
-        case Unknown4:
-            return string("Unknown4");
+        case MediaFlags:
+            return string("MediaFlags");
+        case KeyVaultPrivileges:
+            return string("KeyVaultPrivileges");
+        case HyperVisorFlags:
+            return string("HyperVisorFlags");
+        case UserPrivileges:
+            return string("UserPrivileges");
         default:
             throw string("STFS: Invalid 'License Type' value.\n");
     }

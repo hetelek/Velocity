@@ -8,10 +8,10 @@ LicenseTypeStruct licenseTypes[] =
     { "Console Profile", (LicenseType)9 },
     { "Windows Profile", (LicenseType)3 },
     { "Console", (LicenseType)0xF000 },
-    { "Unknown1", (LicenseType)0xE000 },
-    { "Unknown2", (LicenseType)0xD000 },
-    { "Unknown3", (LicenseType)0xC000 },
-    { "Unknown4", (LicenseType)0xB000 },
+    { "MediaFlags", (LicenseType)0xE000 },
+    { "KeyVaultPrivileges", (LicenseType)0xD000 },
+    { "HyperVisorFlags", (LicenseType)0xC000 },
+    { "UserPrivileges", (LicenseType)0xB000 },
 };
 
 LicensingDataDialog::LicensingDataDialog(QStatusBar *statusBar, LicenseEntry *entryTable, bool unlockable, QWidget *parent) :

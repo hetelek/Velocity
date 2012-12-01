@@ -1115,8 +1115,8 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
 
             entry->gamerscoreUnlocked -= chiev->gamerscore;
 
-            dashGPD->achievementsUnlocked.int32++;
-            dashGPD->gamerscoreUnlocked.int32 += chiev->gamerscore;
+            dashGPD->achievementsUnlocked.int32--;
+            dashGPD->gamerscoreUnlocked.int32 -= chiev->gamerscore;
 
             dashGPD->WriteSettingEntry(dashGPD->achievementsUnlocked);
             dashGPD->WriteSettingEntry(dashGPD->gamerscoreUnlocked);
@@ -1172,6 +1172,7 @@ void ProfileEditor::saveAll()
             if (aaGames.at(i).updated)
                 PEC->ReplaceFile(aaGames.at(i).tempFileName, aaGames.at(i).gpdName);
 
+        PEC->metaData->WriteMetaData();
         PEC->Rehash();
 
         if (path != "")
@@ -1208,8 +1209,6 @@ void ProfileEditor::saveAll()
             account->SetOnlineServiceProvider(PartnerNet);
             break;
     }
-
-    profile->metaData->certificate.ownerConsoleType = (ConsoleType)(ui->cmbxConsoleType->currentIndex() + 1);
 
     account->Save(profile->metaData->certificate.ownerConsoleType);
     profile->ReplaceFile(accountTempPath, "Account");
@@ -1254,6 +1253,7 @@ void ProfileEditor::saveAll()
     profile->ReplaceFile(dashGPDTempPath, "FFFE07D1.gpd");
 
     // fix the package
+    profile->metaData->WriteMetaData();
     profile->Rehash();
     if (path != "")
         profile->Resign(path);
@@ -1678,4 +1678,25 @@ void ProfileEditor::unlockAllAwards(int index)
     aaGames.at(index).titleEntry->flags |= (DownloadAvatarAward | SyncAvatarAward);
 
     dashGPD->WriteTitleEntry(aaGames.at(index).titleEntry);
+}
+
+void ProfileEditor::on_cmbxConsoleType_currentIndexChanged(int index)
+{
+    if (index == 0)
+    {
+        profile->metaData->certificate.ownerConsoleType = DevKit;
+        if (PEC)
+            PEC->metaData->certificate.ownerConsoleType = DevKit;
+    }
+    else
+    {
+        profile->metaData->certificate.ownerConsoleType = Retail;
+        profile->metaData->certificate.consoleTypeFlags = 0;
+        if (PEC)
+        {
+            PEC->metaData->certificate.ownerConsoleType = Retail;
+            PEC->metaData->certificate.consoleTypeFlags = 0;
+        }
+
+    }
 }

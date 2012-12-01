@@ -79,9 +79,9 @@
       <iconset resource="Resources.qrc">
        <normaloff>:/Images/open.png</normaloff>:/Images/open.png</iconset>
      </property>
-     <addaction name="actionPackage"/>
-     <addaction name="actionXDBF_File"/>
      <addaction name="actionSTRB_File"/>
+     <addaction name="actionXDBF_File"/>
+     <addaction name="actionPackage"/>
     </widget>
     <addaction name="menuOpen"/>
     <addaction name="actionCreate_Package"/>
@@ -98,22 +98,26 @@
       <iconset resource="Resources.qrc">
        <normaloff>:/Images/profile.png</normaloff>:/Images/profile.png</iconset>
      </property>
+     <addaction name="actionGame_Adder"/>
+     <addaction name="actionProfile_Cleaner"/>
      <addaction name="actionProfile_Creator"/>
      <addaction name="actionProfile_Editor"/>
-     <addaction name="actionGame_Adder"/>
     </widget>
     <addaction name="menuProfile_Editor"/>
-    <addaction name="actionTheme_Creator"/>
-    <addaction name="actionTitle_ID_Finder"/>
-    <addaction name="actionGamer_Picture_Pack_Creator"/>
     <addaction name="actionFATX_File_Path"/>
+    <addaction name="actionGamer_Picture_Pack_Creator"/>
+    <addaction name="actionTitle_ID_Finder"/>
+    <addaction name="actionTheme_Creator"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionCheck_For_Updates"/>
+    <addaction name="separator"/>
     <addaction name="actionView_Wiki"/>
     <addaction name="actionDonate"/>
+    <addaction name="separator"/>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuPlugins">
@@ -156,7 +160,7 @@
   <action name="actionCreate_Package">
    <property name="icon">
     <iconset resource="Resources.qrc">
-     <normaloff>:/Images/new file.png</normaloff>:/Images/new file.png</iconset>
+     <normaloff>:/Images/packageIcon.png</normaloff>:/Images/packageIcon.png</iconset>
    </property>
    <property name="text">
     <string>Create Package</string>
@@ -183,7 +187,7 @@
   <action name="actionPackage">
    <property name="icon">
     <iconset resource="Resources.qrc">
-     <normaloff>:/Images/package.png</normaloff>:/Images/package.png</iconset>
+     <normaloff>:/Images/packageIcon.png</normaloff>:/Images/packageIcon.png</iconset>
    </property>
    <property name="text">
     <string>Package</string>
@@ -307,6 +311,20 @@
    </property>
    <property name="text">
     <string>FATX File Path Tool</string>
+   </property>
+  </action>
+  <action name="actionProfile_Cleaner">
+   <property name="text">
+    <string>Profile Cleaner</string>
+   </property>
+  </action>
+  <action name="actionCheck_For_Updates">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/updates.png</normaloff>:/Images/updates.png</iconset>
+   </property>
+   <property name="text">
+    <string>Check For Updates</string>
    </property>
   </action>
  </widget>

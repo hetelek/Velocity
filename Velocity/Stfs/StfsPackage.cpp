@@ -1461,7 +1461,7 @@ INT24 StfsPackage::AllocateBlock()
             {
                 topTable.entryCount++;
                 topTable.entries[topTable.entryCount - 1].status = 0;
-                topTable.entries[topTable.entryCount - 1].nextBlock = INT24_MAX;
+                topTable.entries[topTable.entryCount - 1].nextBlock = 0;
 
                 // write it to the file
                 io->setPosition(topTable.addressInFile + ((tablesPerLevel[i] - 1) * 0x18) + 0x15);
@@ -1803,7 +1803,7 @@ FileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPackage
     FileEntry entry;
     entry.name = fileName;
     entry.fileSize = fileSize;
-    entry.flags = 0;
+    entry.flags = ConsecutiveBlocks;
     entry.pathIndicator = folder->folder.entryIndex;
     entry.startingBlockNum = INT24_MAX;
     entry.blocksForFile = ((fileSize + 0xFFF) & 0xFFFFFFF000) >> 0xC;
