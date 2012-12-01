@@ -17,11 +17,10 @@ enum LicenseType
     ConsoleProfileLicense = 0x0009,
     WindowsProfileLicense = 0x0003,
     ConsoleLicense = 0xF000,
-    //These unknowns seem to be media related.
-    Unknown1 = 0xE000,
-    Unknown2 = 0xD000,
-    Unknown3 = 0xC000,
-    Unknown4 = 0xB000
+    MediaFlags = 0xE000,
+    KeyVaultPrivileges = 0xD000,
+    HyperVisorFlags = 0xC000,
+    UserPrivileges = 0xB000
 };
 
 struct LicenseEntry
