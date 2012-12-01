@@ -319,7 +319,6 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
             QMessageBox::critical(this, "Error Writing Entry", "The entry was not written successfully.\n\n" + QString::fromStdString(error));
             close();
         }
-        dashGPD->Close();
 
         // make sure that all of the games were added correctly
         bool problems = false;
