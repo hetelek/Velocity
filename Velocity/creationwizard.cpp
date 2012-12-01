@@ -56,6 +56,7 @@ void CreationWizard::onCurrentIdChanged(int id)
         {
             ui->lwContentTypes->addItem("App");
             ui->lwContentTypes->addItem("Arcade Game");
+            ui->lwContentTypes->addItem("Avatar Item");
             ui->lwContentTypes->addItem("Community Game");
             ui->lwContentTypes->addItem("Game Demo");
             ui->lwContentTypes->addItem("Gamer Picture");
@@ -78,7 +79,6 @@ void CreationWizard::onCurrentIdChanged(int id)
         else
         {
             ui->lwContentTypes->addItem("Avatar Asset Pack");
-            ui->lwContentTypes->addItem("Avatar Item");
             ui->lwContentTypes->addItem("Theme");
         }
         ui->lwContentTypes->setCurrentItem(ui->lwContentTypes->item(0));
@@ -179,6 +179,8 @@ void CreationWizard::onFinished(int status)
         package.metaData->titleThumbnailImage = (BYTE*)ba2.data();
         package.metaData->titleThumbnailImageSize = ba2.length();
 
+        package.metaData->WriteMetaData();
+
         // fix the pacakge
         package.Rehash();
         if (package.metaData->magic == CON)
@@ -195,13 +197,15 @@ void CreationWizard::onFinished(int status)
 
 DWORD CreationWizard::getContentType()
 {
-    QString contentType = ui->lwContentTypes->currentItem()->text();
+    QString contentType = ui->lwContentTypes->currentItem()->text().trimmed();
     if (contentType == "App")
         return 0x7000;
     else if (contentType == "Arcade Game")
         return 0xD0000;
     else if (contentType == "Avatar Item")
         return 0x9000;
+    else if (contentType == "Avatar Asset Pack")
+        return 0x8000;
     else if (contentType == "Cache File")
         return 0x40000;
     else if (contentType == "Community Game")
