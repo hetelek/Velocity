@@ -7,6 +7,7 @@ CreationWizard::CreationWizard(QString *fileName, QWidget *parent) :
     connect(this, SIGNAL(currentIdChanged(int)), SLOT(onCurrentIdChanged(int)));
     connect(this, SIGNAL(finished(int)), this, SLOT(onFinished(int)));
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
     magic = CON;
     ui->setupUi(this);

@@ -1691,11 +1691,11 @@ void ProfileEditor::on_cmbxConsoleType_currentIndexChanged(int index)
     else
     {
         profile->metaData->certificate.ownerConsoleType = Retail;
-        profile->metaData->certificate.consoleTypeFlags = 0;
+        profile->metaData->certificate.consoleTypeFlags = (ConsoleTypeFlags)0;
         if (PEC)
         {
             PEC->metaData->certificate.ownerConsoleType = Retail;
-            PEC->metaData->certificate.consoleTypeFlags = 0;
+            PEC->metaData->certificate.consoleTypeFlags = (ConsoleTypeFlags)0;
         }
 
     }
