@@ -518,7 +518,7 @@ void ProfileEditor::onAssetsDoneDownloading()
         newAsset.metaData->subCategory = award->subcategory;
         newAsset.metaData->colorizable = award->colorizable;
         QtHelpers::ParseHexStringBuffer(downloader->GetGUID().replace("-", "").toUpper(), newAsset.metaData->guid, 0x10);
-        newAsset.metaData->skeletonVersion = Nxe; //TODO: figure out where the skeleton version is in the guid
+        newAsset.metaData->skeletonVersion = (downloader->GetV2TempPath() != "") ? Natal : Nxe;
         newAsset.metaData->WriteMetaData();
 
         try { newAsset.InjectFile(downloader->GetV1TempPath().toStdString(), "asset.bin"); }

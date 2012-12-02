@@ -1,7 +1,7 @@
 #include "AvatarAssetDownloader.h"
 
 AvatarAssetDownloader::AvatarAssetDownloader(QString titleID, QString guid, QObject *parent) :
-    QObject(parent), titleID(titleID), guid(guid), v1Done(false), v2Done(false)
+    QObject(parent), titleID(titleID), guid(guid), v1Done(false), v2Done(false), v1TempPath(QString("")), v2TempPath(QString(""))
 {
     http = new QHttp(this);
     http->setHost("download.xboxlive.com");
