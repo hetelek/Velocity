@@ -884,7 +884,9 @@ void ProfileEditor::loadAvatarAwardInfo(int gameIndex, unsigned int awardIndex)
 
     // download the thumbnail
     string tmp = AvatarAwardGPD::GetLargeAwardImageURL(award);
-    awardThumbnailManager->get(QNetworkRequest(QUrl(QString::fromStdString(tmp))));
+    QNetworkRequest request(QUrl(QString::fromStdString(tmp)));
+    request.setAttribute(1001, QVariant::fromValue(award));
+    awardThumbnailManager->get(request);
 }
 
 void ProfileEditor::replyFinishedAwImg(QNetworkReply *aReply)
@@ -894,6 +896,52 @@ void ProfileEditor::replyFinishedAwImg(QNetworkReply *aReply)
     {
         ui->imgAw->clear();
         ui->imgAw->setPixmap(QPixmap::fromImage(QImage::fromData(img)));
+
+        struct AvatarAward *award = aReply->request().attribute(1001).value<struct AvatarAward*>();
+
+        // add the avatar image to the gpd if it isn't already there
+        if (ok && !ui->imgAw->pixmap()->isNull())
+        {
+            for (int i = 0; i < games.size(); i++)
+            {
+                if (games.at(i).titleEntry->titleID == award->titleID)
+                {
+                    GameGPD *gpd = games.at(i).gpd;
+                    int x;
+                    for (x = 0; x < gpd->images.size(); x++)
+                        if (gpd->images.at(x).entry.id == award->imageID)
+                            break;
+                    if (x == gpd->images.size())
+                    {
+                        ImageEntry image;
+                        QByteArray ba;
+                        QBuffer buffer(&ba);
+                        buffer.open(QIODevice::WriteOnly);
+
+                        ui->imgAw->pixmap()->scaled(64, 64).save(&buffer, "PNG");
+                        image.image = new BYTE[ba.length()];
+                        image.length = ba.length();
+                        image.initialLength = ba.length();
+
+                        memcpy(image.image, ba.data(), ba.length());
+
+                        try
+                        {
+                            gpd->CreateImageEntry(&image, award->imageID);
+                            games.at(i).updated = true;
+                            break;
+                        }
+                        catch (string error)
+                        {
+                            QMessageBox::warning(this, "Save Error", "An error occurred while adding the avatar image to your profile.\n\n" + QString::fromStdString(error));
+                            return;
+                        }
+                    }
+                    else
+                        break;
+                }
+            }
+        }
     }
     else
         ui->imgAw->setText("<i>Unable to download image.</i>");
@@ -1292,13 +1340,21 @@ void ProfileEditor::on_btnCreateAch_clicked()
         QPixmap::fromImage(thumbnail).save(&buffer, "PNG");
 
         // get the next available image id
-        DWORD last = 0;
+        int max = 0;
         for (DWORD i = 0; i < game->achievements.size(); i++)
-            last = game->achievements.at(i).imageID;
-        entry.imageID = last + 1;
+            if (max < game->achievements.at(i).imageID)
+                max = game->achievements.at(i).imageID;
+        entry.imageID = max + 1;
 
         // add the achievement to the game
-        game->CreateAchievement(&entry, (BYTE*)ba.data(), ba.length());
+        try
+        {
+            game->CreateAchievement(&entry, (BYTE*)ba.data(), ba.length());
+        }
+        catch (string error)
+        {
+            QMessageBox::critical(this, "Creation Error", "An error occurred while creating an achievement.\n\n" + QString::fromStdString(error));
+        }
 
         // add the achievement to the UI
         QTreeWidgetItem *item = new QTreeWidgetItem(ui->achievementsList);

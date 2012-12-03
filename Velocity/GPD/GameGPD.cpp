@@ -96,6 +96,13 @@ void GameGPD::CreateAchievement(AchievementEntry *entry, BYTE *thumbnail, DWORD 
 	DWORD entryLen = 0x1C + ((entry->name.size() + entry->unlockedDescription.size() + entry->lockedDescription.size() + 3) * 2);
 	entry->initialLength = entryLen;
 
+    // get the next id for the achievement
+    int max = 0;
+    for (DWORD i = 0; i < achievements.size(); i++)
+        if (achievements.at(i).achievementID > max)
+            max = achievements.at(i).achievementID;
+    entry->achievementID = max + 1;
+
 	// create a new xdbf entry
 	entry->entry = xdbf->CreateEntry(Achievement, entry->achievementID, entryLen);
 
