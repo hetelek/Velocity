@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>546</width>
-    <height>375</height>
+    <width>604</width>
+    <height>466</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,21 +23,13 @@
    <enum>Qt::RichText</enum>
   </property>
   <widget class="QWizardPage" name="wizardPage1">
+   <property name="title">
+    <string>Achievement Creation Wizard</string>
+   </property>
+   <property name="subTitle">
+    <string>Welcome!</string>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; font-weight:600;&quot;&gt;Achievement Creation Wizard&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
     <item>
      <spacer name="verticalSpacer">
       <property name="orientation">
@@ -52,31 +44,44 @@ p, li { white-space: pre-wrap; }
      </spacer>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,6">
       <item>
        <widget class="QLabel" name="label">
         <property name="minimumSize">
          <size>
-          <width>175</width>
-          <height>175</height>
+          <width>150</width>
+          <height>300</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>175</width>
-          <height>175</height>
+          <width>150</width>
+          <height>300</height>
          </size>
         </property>
         <property name="text">
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="Resources.qrc">:/Images/trophy.png</pixmap>
+         <pixmap resource="Resources.qrc">:/Images/achievement creation.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
         </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_7">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <widget class="QLabel" name="label_3">
@@ -120,31 +125,44 @@ p, li { white-space: pre-wrap; }
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,1,6">
       <item>
        <widget class="QLabel" name="label_6">
         <property name="minimumSize">
          <size>
-          <width>175</width>
-          <height>175</height>
+          <width>150</width>
+          <height>300</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>175</width>
-          <height>175</height>
+          <width>150</width>
+          <height>300</height>
          </size>
         </property>
         <property name="text">
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="Resources.qrc">:/Images/trophy.png</pixmap>
+         <pixmap resource="Resources.qrc">:/Images/achievement creation.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
         </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -251,26 +269,26 @@ p, li { white-space: pre-wrap; }
    </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="1" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,1,6">
       <item>
        <widget class="QLabel" name="label_8">
         <property name="minimumSize">
          <size>
-          <width>175</width>
-          <height>175</height>
+          <width>150</width>
+          <height>300</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>175</width>
-          <height>175</height>
+          <width>150</width>
+          <height>300</height>
          </size>
         </property>
         <property name="text">
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="Resources.qrc">:/Images/trophy.png</pixmap>
+         <pixmap resource="Resources.qrc">:/Images/achievement creation.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
@@ -278,7 +296,20 @@ p, li { white-space: pre-wrap; }
        </widget>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_7">
+       <spacer name="horizontalSpacer_8">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_7" stretch="1,1">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <item>
@@ -296,6 +327,19 @@ p, li { white-space: pre-wrap; }
           </item>
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <spacer name="verticalSpacer_15">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
             <item>
              <widget class="QLabel" name="imgThumbnail">
               <property name="minimumSize">
@@ -425,31 +469,44 @@ p, li { white-space: pre-wrap; }
      </spacer>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_8">
+     <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="0,1,6">
       <item>
        <widget class="QLabel" name="label_11">
         <property name="minimumSize">
          <size>
-          <width>175</width>
-          <height>175</height>
+          <width>150</width>
+          <height>300</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>175</width>
-          <height>175</height>
+          <width>150</width>
+          <height>300</height>
          </size>
         </property>
         <property name="text">
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="Resources.qrc">:/Images/trophy.png</pixmap>
+         <pixmap resource="Resources.qrc">:/Images/achievement creation.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
         </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_9">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -549,31 +606,44 @@ p, li { white-space: pre-wrap; }
      </spacer>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_10">
+     <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="0,1,6">
       <item>
        <widget class="QLabel" name="label_13">
         <property name="minimumSize">
          <size>
-          <width>175</width>
-          <height>175</height>
+          <width>150</width>
+          <height>300</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>175</width>
-          <height>175</height>
+          <width>150</width>
+          <height>300</height>
          </size>
         </property>
         <property name="text">
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="Resources.qrc">:/Images/trophy.png</pixmap>
+         <pixmap resource="Resources.qrc">:/Images/achievement creation.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
         </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_10">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -699,31 +769,44 @@ p, li { white-space: pre-wrap; }
      </spacer>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_12">
+     <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="0,1,6">
       <item>
        <widget class="QLabel" name="label_14">
         <property name="minimumSize">
          <size>
-          <width>175</width>
-          <height>175</height>
+          <width>150</width>
+          <height>300</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>175</width>
-          <height>175</height>
+          <width>150</width>
+          <height>300</height>
          </size>
         </property>
         <property name="text">
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="Resources.qrc">:/Images/trophy.png</pixmap>
+         <pixmap resource="Resources.qrc">:/Images/achievement creation.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
         </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_11">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -803,78 +886,79 @@ p, li { white-space: pre-wrap; }
    </layout>
   </widget>
   <widget class="QWizardPage" name="wizardPage_5">
-   <layout class="QVBoxLayout" name="verticalLayout_15">
+   <property name="title">
+    <string>The End</string>
+   </property>
+   <property name="subTitle">
+    <string>You're done</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_14">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_14">
+     <spacer name="verticalSpacer_13">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="0,1,6">
       <item>
-       <widget class="QLabel" name="label_9">
-        <property name="text">
-         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; font-weight:600;&quot;&gt;The End.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <widget class="QLabel" name="label_15">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>300</height>
+         </size>
         </property>
-        <property name="wordWrap">
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>300</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap resource="Resources.qrc">:/Images/achievement creation.png</pixmap>
+        </property>
+        <property name="scaledContents">
          <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
-       <spacer name="verticalSpacer_13">
+       <spacer name="horizontalSpacer_12">
         <property name="orientation">
-         <enum>Qt::Vertical</enum>
+         <enum>Qt::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>20</width>
-          <height>40</height>
+          <width>40</width>
+          <height>20</height>
          </size>
         </property>
        </spacer>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_13">
-        <item>
-         <widget class="QLabel" name="label_15">
-          <property name="minimumSize">
-           <size>
-            <width>175</width>
-            <height>175</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>175</width>
-            <height>175</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="pixmap">
-           <pixmap resource="Resources.qrc">:/Images/trophy.png</pixmap>
-          </property>
-          <property name="scaledContents">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="lblAchievementType_3">
-          <property name="text">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+       <widget class="QLabel" name="lblAchievementType_3">
+        <property name="text">
+         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;You have successfully created a custom achievement. Click finish to add the achievement to &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>

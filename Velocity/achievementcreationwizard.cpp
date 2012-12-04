@@ -16,7 +16,7 @@ AchievementCreationWizard::AchievementCreationWizard(wstring gameName, QImage *a
     connect(this, SIGNAL(finished(int)), this, SLOT(onFinished(int)));
 
     ui->lblAchievementType_3->setText("You have successfully created a custom achievement. Click finish to add the achievement to " + QString::fromStdWString(gameName) + ".");
-    ui->label_3->setText("Welcome to the achievement creation wizard! This wizard will allow you to create an achievement for the game " + QString::fromStdWString(gameName) + ". The achievement you create will only be obtainable through modding, and since it isn't an official achievement, your friends on XboxLIVE will not be able to see it.\r\n\r\nClick next to begin.");
+    ui->label_3->setText("Welcome to the achievement creation wizard! This wizard will allow you to create an achievement for " + QString::fromStdWString(gameName) + ". The achievement you create will only be obtainable through modding, and since it isn't an official achievement, your friends on XboxLIVE will not be able to see it.\r\n\r\nClick next to begin.");
 }
 
 AchievementCreationWizard::~AchievementCreationWizard()
