@@ -30,7 +30,6 @@
         <file>Images/HiddenAchievement.png</file>
         <file>Images/unlock.png</file>
         <file>Images/replace.png</file>
-        <file>Images/trophy.png</file>
         <file>Images/properties.png</file>
         <file>Images/clean.png</file>
         <file>Images/convert.png</file>
@@ -81,5 +80,6 @@
         <file>Images/packageIcon.png</file>
         <file>Images/updates.png</file>
         <file>Images/hammer.png</file>
+        <file>Images/achievement creation.png</file>
     </qresource>
 </RCC>
