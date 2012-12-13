@@ -1,15 +1,25 @@
 #include "progressdialog.h"
 #include "ui_progressdialog.h"
 
-ProgressDialog::ProgressDialog(StfsPackage *package, QList<QString> filesToExtract, QList<QString> outPaths, QWidget *parent) :
-    QDialog(parent),  ui(new Ui::ProgressDialog), package(package), filesToExtract(filesToExtract), outPaths(outPaths), overallProgress(0), totalBlocksToExtract(0), filesExtracted(0), prevPrgress(0)
+ProgressDialog::ProgressDialog(StfsPackage *package, QList<QString> filesToExtract, QList<QString> outPaths, bool injecting, QWidget *parent) :
+    QDialog(parent),  ui(new Ui::ProgressDialog), package(package), filesToExtract(filesToExtract), outPaths(outPaths), injecting(injecting), overallProgress(0), totalBlocksToExtract(0), filesExtracted(0), prevPrgress(0)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
     // update the ui
-    setWindowTitle("Extracting File(s)");
+    if (injecting)
+        setWindowTitle("Injecting File(s)");
+    else
+        setWindowTitle("Extracting File(s)");
+}
 
+void ProgressDialog::startWorking()
+{
+    if (injecting)
+        startInjecting();
+    else
+        startExtracting();
 }
 
 ProgressDialog::~ProgressDialog()
@@ -33,6 +43,10 @@ void ProgressDialog::startExtracting()
     ui->progressBar_2->setMaximum(totalBlocksToExtract);
 
     extractNextFile();
+}
+
+void ProgressDialog::startInjecting()
+{
 }
 
 void ProgressDialog::extractNextFile()

@@ -479,7 +479,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             ProgressDialog *dialog = new ProgressDialog(package, packagePaths, outPaths, this);
             dialog->setModal(true);
             dialog->show();
-            dialog->startExtracting();
+            dialog->startWorking();
 
             successCount++;
         }

@@ -20,8 +20,8 @@ class ProgressDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit ProgressDialog(StfsPackage *package, QList<QString> filesToExtract, QList<QString> outPaths, QWidget *parent = 0);
-    void startExtracting();
+    explicit ProgressDialog(StfsPackage *package, QList<QString> filesToExtract, QList<QString> outPaths, bool injecting = false, QWidget *parent = 0);
+    void startWorking();
     ~ProgressDialog();
 
 private slots:
@@ -40,6 +40,10 @@ private:
     DWORD prevPrgress;
 
     void extractNextFile();
+    void startExtracting();
+    void startInjecting();
+
+    bool injecting;
 };
 
 #endif // PROGRESSDIALOG_H
