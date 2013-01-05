@@ -5,19 +5,13 @@
 #include <string.h>
 #include <errno.h>
 #include "winnames.h"
+#include "IO/BaseIO.h"
 
 using std::string;
 using std::wstring;
 using std::fstream;
 using std::streampos;
 using std::ios_base;
-
-enum EndianType
-{
-	BigEndian,
-	LittleEndian,
-	Default
-};
 
 class FileIO
 {
