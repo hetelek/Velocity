@@ -41,7 +41,6 @@ SOURCES += main.cpp \
     packageviewer.cpp \
     profileeditor.cpp \
     about.cpp \
-    Stfs/StfsMetaData.cpp \
     FileIO.cpp \
     GPD/XDBF.cpp \
     GPD/GPDBase.cpp \
@@ -53,7 +52,6 @@ SOURCES += main.cpp \
     metadata.cpp \
     certificatedialog.cpp \
     qthelpers.cpp \
-    volumedescriptordialog.cpp \
     licensingdatadialog.cpp \
     transferflagsdialog.cpp \
     xdbfdialog.cpp \
@@ -87,13 +85,24 @@ SOURCES += main.cpp \
     gpduploader.cpp \
     fatxpathgendialog.cpp \
     MemoryStream.cpp \
-    profilecleanerwizard.cpp
+    profilecleanerwizard.cpp \
+    Stfs/XContentHeader.cpp \
+    svoddialog.cpp \
+    svodfileinfodialog.cpp \
+    Disc/svod.cpp \
+    Disc/gdfx.cpp \
+    IO/BaseIO.cpp \
+    IO/MultiFileIO.cpp \
+    IO/SvodIO.cpp \
+    stfsvolumedescriptordialog.cpp \
+    svodtooldialog.cpp \
+    svodvolumedescriptordialog.cpp \
+    multiprogressdialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
     profileeditor.h \
     about.h \
-    Stfs/StfsMetaData.h \
     Stfs/StfsConstants.h \
     FileIO.h \
     FileIO.h \
@@ -110,7 +119,6 @@ HEADERS  += mainwindow.h \
     metadata.h \
     certificatedialog.h \
     qthelpers.h \
-    volumedescriptordialog.h \
     licensingdatadialog.h \
     transferflagsdialog.h \
     xdbfdialog.h \
@@ -148,7 +156,19 @@ HEADERS  += mainwindow.h \
     gpduploader.h \
     fatxpathgendialog.h \
     MemoryStream.h \
-    profilecleanerwizard.h
+    profilecleanerwizard.h \
+    Stfs/XContentHeader.h \
+    svoddialog.h \
+    svodfileinfodialog.h \
+    Disc/svod.h \
+    Disc/gdfx.h \
+    IO/BaseIO.h \
+    IO/MultiFileIO.h \
+    IO/SvodIO.h \
+    stfsvolumedescriptordialog.h \
+    svodtooldialog.h \
+    svodvolumedescriptordialog.h \
+    multiprogressdialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -156,7 +176,6 @@ FORMS    += mainwindow.ui \
     about.ui \
     metadata.ui \
     certificatedialog.ui \
-    volumedescriptordialog.ui \
     licensingdatadialog.ui \
     transferflagsdialog.ui \
     xdbfdialog.ui \
@@ -178,7 +197,13 @@ FORMS    += mainwindow.ui \
     preferencesdialog.ui \
     githubcommitsdialog.ui \
     fatxpathgendialog.ui \
-    profilecleanerwizard.ui
+    profilecleanerwizard.ui \
+    svoddialog.ui \
+    svodfileinfodialog.ui \
+    svodtooldialog.ui \
+    svodvolumedescriptordialog.ui \
+    stfsvolumedescriptordialog.ui \
+    multiprogressdialog.ui
 
 RESOURCES += \
     Resources.qrc

@@ -82,6 +82,7 @@
      <addaction name="actionSTRB_File"/>
      <addaction name="actionXDBF_File"/>
      <addaction name="actionPackage"/>
+     <addaction name="actionSVOD_System"/>
     </widget>
     <addaction name="menuOpen"/>
     <addaction name="actionCreate_Package"/>
@@ -325,6 +326,15 @@
    </property>
    <property name="text">
     <string>Check For Updates</string>
+   </property>
+  </action>
+  <action name="actionSVOD_System">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/svod.png</normaloff>:/Images/svod.png</iconset>
+   </property>
+   <property name="text">
+    <string>SVOD System</string>
    </property>
   </action>
  </widget>

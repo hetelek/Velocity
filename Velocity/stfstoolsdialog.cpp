@@ -7,10 +7,10 @@ StfsToolsDialog::StfsToolsDialog(StfsPackage *package, QWidget *parent) : QDialo
     ui->setupUi(this);
     QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
-    if (package->metaData->volumeDescriptor.allocatedBlockCount == 0)
+    if (package->metaData->stfsVolumeDescriptor.allocatedBlockCount == 0)
         ui->spnBlock->setMaximum(0);
     else
-        ui->spnBlock->setMaximum(package->metaData->volumeDescriptor.allocatedBlockCount - 1);
+        ui->spnBlock->setMaximum(package->metaData->stfsVolumeDescriptor.allocatedBlockCount - 1);
 
     on_spnBlock_valueChanged(0);
 }
