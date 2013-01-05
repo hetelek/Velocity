@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "Disc/svod.h"
 
 MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -752,4 +753,24 @@ void MainWindow::on_actionProfile_Cleaner_triggered()
 void MainWindow::on_actionCheck_For_Updates_triggered()
 {
     manager->get(QNetworkRequest(QUrl("http://velocity.expetelek.com/app.data")));
+}
+
+void MainWindow::on_actionSVOD_System_triggered()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, "Open an SVOD root descriptor...", QtHelpers::DesktopLocation());
+
+    if (filePath.isEmpty())
+        return;
+
+    try
+    {
+        SVOD *svod = new SVOD(filePath.toStdString());
+        SvodDialog *dialog = new SvodDialog(svod, ui->statusBar, this);
+        ui->mdiArea->addSubWindow(dialog);
+        dialog->show();
+    }
+    catch (string error)
+    {
+        QMessageBox::critical(this, "SVOD Error", "An error has occurred while opening the SVOD system.\n\n" + QString::fromStdString(error));
+    }
 }

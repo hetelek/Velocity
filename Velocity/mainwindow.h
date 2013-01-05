@@ -36,6 +36,7 @@
 #include "githubcommitsdialog.h"
 #include "fatxpathgendialog.h"
 #include "profilecleanerwizard.h"
+#include "svoddialog.h"
 
 // other
 #include "PluginInterfaces/igamemodder.h"
@@ -45,6 +46,8 @@
 #include "json.h"
 #include "Stfs/StfsPackage.h"
 #include "GPD/GPDBase.h"
+#include "IO/MultiFileIO.h"
+#include "Disc/svod.h"
 
 using namespace std;
 
@@ -117,6 +120,8 @@ private slots:
     void on_actionProfile_Cleaner_triggered();
 
     void on_actionCheck_For_Updates_triggered();
+
+    void on_actionSVOD_System_triggered();
 
 private:
     Ui::MainWindow *ui;
