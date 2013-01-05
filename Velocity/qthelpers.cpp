@@ -213,3 +213,71 @@ void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
             }
         }
 }
+
+
+void QtHelpers::SearchTreeWidget(QTreeWidget *widget, QLineEdit *searchWidget, QString searchString)
+{
+    QList<QTreeWidgetItem*> itemsMatched = widget->findItems(searchWidget->text(), Qt::MatchContains | Qt::MatchRecursive);
+
+    for (int i = 0; i < widget->topLevelItemCount(); i++)
+        QtHelpers::HideAllItems(widget->topLevelItem(i));
+
+    if (itemsMatched.count() == 0 || searchString == "")
+    {
+        searchWidget->setStyleSheet("color: rgb(255, 1, 1);");
+        for (int i = 0; i < widget->topLevelItemCount(); i++)
+        {
+            QtHelpers::ShowAllItems(widget->topLevelItem(i));
+            QtHelpers::CollapseAllChildren(widget->topLevelItem(i));
+        }
+        return;
+    }
+
+    searchWidget->setStyleSheet("");
+    // add all the matched ones to the list
+    for (int i = 0; i < itemsMatched.count(); i++)
+    {
+        // show all the item's parents
+        QTreeWidgetItem *parent = itemsMatched.at(i)->parent();
+        while (parent != NULL)
+        {
+            widget->setItemHidden(parent, false);
+            parent->setExpanded(true);
+            parent = parent->parent();
+        }
+
+        // show the item itself
+        widget->setItemHidden(itemsMatched.at(i), false);
+    }
+}
+
+void QtHelpers::HideAllItems(QTreeWidgetItem *parent)
+{
+    for (int i = 0; i < parent->childCount(); i++)
+    {
+        if (parent->child(i)->childCount() != 0)
+            QtHelpers::HideAllItems(parent->child(i));
+        parent->child(i)->setHidden(true);
+    }
+    parent->setHidden(true);
+}
+
+void QtHelpers::ShowAllItems(QTreeWidgetItem *parent)
+{
+    for (int i = 0; i < parent->childCount(); i++)
+    {
+        if (parent->child(i)->childCount() != 0)
+            QtHelpers::HideAllItems(parent->child(i));
+        parent->child(i)->setHidden(false);
+    }
+    parent->setHidden(false);
+}
+
+void QtHelpers::CollapseAllChildren(QTreeWidgetItem *item)
+{
+    item->setExpanded(false);
+
+    // collapse all children
+    for (int i = 0; i < item->childCount(); i++)
+        QtHelpers::CollapseAllChildren(item->child(i));
+}
