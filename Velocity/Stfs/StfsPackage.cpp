@@ -1,5 +1,5 @@
 #include "StfsPackage.h"
-#include "StfsMetaData.h"
+#include "XContentHeader.h".h"
 
 #include <stdio.h>
 
@@ -28,9 +28,9 @@ StfsPackage::StfsPackage(string packagePath, DWORD flags) : flags(flags)
 void StfsPackage::Parse()
 {
     if (flags & StfsPackageCreate)
-        metaData = new StfsMetaData(io, (flags & StfsPackagePEC) | MetadataSkipRead | MetadataDontFreeThumbnails);
+        metaData = new XContentHeader(io, (flags & StfsPackagePEC) | MetadataSkipRead | MetadataDontFreeThumbnails);
     else
-        metaData = new StfsMetaData(io, (flags & StfsPackagePEC));
+        metaData = new XContentHeader(io, (flags & StfsPackagePEC));
 
     // if the pacakge was created, then give all the metadata a default value
     if (flags & StfsPackageCreate)
@@ -67,12 +67,12 @@ void StfsPackage::Parse()
         memset(metaData->profileID, 0, 8);
 
         // volume descriptor
-        metaData->volumeDescriptor.size = 0x24;
-        metaData->volumeDescriptor.blockSeperation = ((flags & StfsPackageFemale) >> 2);
-        metaData->volumeDescriptor.fileTableBlockCount = 1;
-        metaData->volumeDescriptor.fileTableBlockNum = 0;
-        metaData->volumeDescriptor.allocatedBlockCount = 1;
-        metaData->volumeDescriptor.unallocatedBlockCount = 0;
+        metaData->stfsVolumeDescriptor.size = 0x24;
+        metaData->stfsVolumeDescriptor.blockSeperation = ((flags & StfsPackageFemale) >> 2);
+        metaData->stfsVolumeDescriptor.fileTableBlockCount = 1;
+        metaData->stfsVolumeDescriptor.fileTableBlockNum = 0;
+        metaData->stfsVolumeDescriptor.allocatedBlockCount = 1;
+        metaData->stfsVolumeDescriptor.unallocatedBlockCount = 0;
 
         metaData->dataFileCount = 0;
         metaData->dataFileCombinedSize = 0;
@@ -98,7 +98,11 @@ void StfsPackage::Parse()
         io->write((DWORD)0x80FFFFFF);
     }
 
-    packageSex = (Sex)((~metaData->volumeDescriptor.blockSeperation) & 1);
+    // make sure the file system is STFS
+    if (metaData->fileSystem != FileSystemSTFS && (flags & StfsPackagePEC) == 0)
+        throw string("STFS: Invalid file system header.\n");
+
+    packageSex = (Sex)((~metaData->stfsVolumeDescriptor.blockSeperation) & 1);
 
     if (packageSex == StfsFemale)
     {
@@ -115,9 +119,9 @@ void StfsPackage::Parse()
     firstHashTableAddress = (metaData->headerSize + 0x0FFF) & 0xFFFFF000;
 
     // calculate the number of tables per level
-    tablesPerLevel[0] = (metaData->volumeDescriptor.allocatedBlockCount / 0xAA) + ((metaData->volumeDescriptor.allocatedBlockCount % 0xAA != 0) ? 1 : 0);
-    tablesPerLevel[1] = (tablesPerLevel[0] / 0xAA) + ((tablesPerLevel[0] % 0xAA != 0 && metaData->volumeDescriptor.allocatedBlockCount > 0xAA) ? 1 : 0);
-    tablesPerLevel[2] = (tablesPerLevel[1] / 0xAA) + ((tablesPerLevel[1] % 0xAA != 0 && metaData->volumeDescriptor.allocatedBlockCount > 0x70E4) ? 1 : 0);
+    tablesPerLevel[0] = (metaData->stfsVolumeDescriptor.allocatedBlockCount / 0xAA) + ((metaData->stfsVolumeDescriptor.allocatedBlockCount % 0xAA != 0) ? 1 : 0);
+    tablesPerLevel[1] = (tablesPerLevel[0] / 0xAA) + ((tablesPerLevel[0] % 0xAA != 0 && metaData->stfsVolumeDescriptor.allocatedBlockCount > 0xAA) ? 1 : 0);
+    tablesPerLevel[2] = (tablesPerLevel[1] / 0xAA) + ((tablesPerLevel[1] % 0xAA != 0 && metaData->stfsVolumeDescriptor.allocatedBlockCount > 0x70E4) ? 1 : 0);
 
     // calculate the level of the top table
     topLevel = CalcualateTopLevel();
@@ -127,16 +131,16 @@ void StfsPackage::Parse()
     topTable.level = topLevel;
 
     DWORD baseAddress = (topTable.trueBlockNumber << 0xC) + firstHashTableAddress;
-    topTable.addressInFile = baseAddress + ((metaData->volumeDescriptor.blockSeperation & 2) << 0xB);
+    topTable.addressInFile = baseAddress + ((metaData->stfsVolumeDescriptor.blockSeperation & 2) << 0xB);
     io->setPosition(topTable.addressInFile);
 
     DWORD dataBlocksPerHashTreeLevel[3] = { 1, 0xAA, 0x70E4 };
 
     // load the information
-    topTable.entryCount = metaData->volumeDescriptor.allocatedBlockCount / dataBlocksPerHashTreeLevel[topLevel];
-    if (metaData->volumeDescriptor.allocatedBlockCount > 0x70E4 && (metaData->volumeDescriptor.allocatedBlockCount % 0x70E4 != 0))
+    topTable.entryCount = metaData->stfsVolumeDescriptor.allocatedBlockCount / dataBlocksPerHashTreeLevel[topLevel];
+    if (metaData->stfsVolumeDescriptor.allocatedBlockCount > 0x70E4 && (metaData->stfsVolumeDescriptor.allocatedBlockCount % 0x70E4 != 0))
         topTable.entryCount++;
-    else if (metaData->volumeDescriptor.allocatedBlockCount > 0xAA && (metaData->volumeDescriptor.allocatedBlockCount % 0xAA != 0))
+    else if (metaData->stfsVolumeDescriptor.allocatedBlockCount > 0xAA && (metaData->stfsVolumeDescriptor.allocatedBlockCount % 0xAA != 0))
         topTable.entryCount++;
 
     for (DWORD i = 0; i < topTable.entryCount; i++)
@@ -158,11 +162,11 @@ void StfsPackage::Parse()
 
 Level StfsPackage::CalcualateTopLevel()
 {
-    if (metaData->volumeDescriptor.allocatedBlockCount <= 0xAA)
+    if (metaData->stfsVolumeDescriptor.allocatedBlockCount <= 0xAA)
         return Zero;
-    else if (metaData->volumeDescriptor.allocatedBlockCount <= 0x70E4)
+    else if (metaData->stfsVolumeDescriptor.allocatedBlockCount <= 0x70E4)
         return One;
-    else if (metaData->volumeDescriptor.allocatedBlockCount <= 0x4AF768)
+    else if (metaData->stfsVolumeDescriptor.allocatedBlockCount <= 0x4AF768)
         return Two;
     else
         throw string("STFS: Invalid number of allocated blocks.\n");
@@ -238,7 +242,7 @@ DWORD StfsPackage::ComputeLevel2BackingHashBlockNumber(DWORD /*blockNum*/)
 
 DWORD StfsPackage::GetHashAddressOfBlock(DWORD blockNum)
 {
-    if (blockNum >= metaData->volumeDescriptor.allocatedBlockCount)
+    if (blockNum >= metaData->stfsVolumeDescriptor.allocatedBlockCount)
          throw string("STFS: Reference to illegal block number.\n");
 
     DWORD hashAddr = (ComputeLevel0BackingHashBlockNumber(blockNum) << 0xC) + firstHashTableAddress;
@@ -247,7 +251,7 @@ DWORD StfsPackage::GetHashAddressOfBlock(DWORD blockNum)
     switch (topLevel)
     {
         case 0:
-            hashAddr += ((metaData->volumeDescriptor.blockSeperation & 2) << 0xB);
+            hashAddr += ((metaData->stfsVolumeDescriptor.blockSeperation & 2) << 0xB);
             break;
         case 1:
             hashAddr += ((topTable.entries[blockNum / 0xAA].status & 0x40) << 6);
@@ -264,7 +268,7 @@ DWORD StfsPackage::GetHashAddressOfBlock(DWORD blockNum)
 
 HashEntry StfsPackage::GetBlockHashEntry(DWORD blockNum)
 {
-    if (blockNum >= metaData->volumeDescriptor.allocatedBlockCount)
+    if (blockNum >= metaData->stfsVolumeDescriptor.allocatedBlockCount)
         throw string("STFS: Reference to illegal block number.\n");
 
     // go to the position of the hash address
@@ -281,7 +285,7 @@ HashEntry StfsPackage::GetBlockHashEntry(DWORD blockNum)
 
 void StfsPackage::ExtractBlock(DWORD blockNum, BYTE *data, DWORD length)
 {
-    if (blockNum >= metaData->volumeDescriptor.allocatedBlockCount)
+    if (blockNum >= metaData->stfsVolumeDescriptor.allocatedBlockCount)
          throw string("STFS: Reference to illegal block number.\n");
 
     // check for an invalid block length
@@ -302,15 +306,15 @@ void StfsPackage::ReadFileListing()
 
     // setup the entry for the block chain
     FileEntry entry;
-    entry.startingBlockNum = metaData->volumeDescriptor.fileTableBlockNum;
-    entry.fileSize = (metaData->volumeDescriptor.fileTableBlockCount * 0x1000);
+    entry.startingBlockNum = metaData->stfsVolumeDescriptor.fileTableBlockNum;
+    entry.fileSize = (metaData->stfsVolumeDescriptor.fileTableBlockCount * 0x1000);
 
     // generate a block chain for the full file listing
     DWORD block = entry.startingBlockNum;
 
     FileListing fl;
     DWORD currentAddr;
-    for(DWORD x = 0; x < metaData->volumeDescriptor.fileTableBlockCount; x++)
+    for(DWORD x = 0; x < metaData->stfsVolumeDescriptor.fileTableBlockCount; x++)
     {
         currentAddr = BlockToAddress(block);
         io->setPosition(currentAddr);
@@ -736,7 +740,7 @@ HashTable StfsPackage::GetLevelNHashTable(DWORD index, Level lvl)
 
         // calculate the number of entries in the requested table
         if (index + 1 == tablesPerLevel[lvl])
-            toReturn.entryCount = (lvl == Zero) ? metaData->volumeDescriptor.allocatedBlockCount % 0xAA : tablesPerLevel[lvl - 1] % 0xAA;
+            toReturn.entryCount = (lvl == Zero) ? metaData->stfsVolumeDescriptor.allocatedBlockCount % 0xAA : tablesPerLevel[lvl - 1] % 0xAA;
         else
             toReturn.entryCount = 0xAA;
     }
@@ -748,7 +752,7 @@ HashTable StfsPackage::GetLevelNHashTable(DWORD index, Level lvl)
 
         // calculate the number of entries in the requested table
         if (index + 1 == tablesPerLevel[lvl])
-            toReturn.entryCount = metaData->volumeDescriptor.allocatedBlockCount % 0xAA;
+            toReturn.entryCount = metaData->stfsVolumeDescriptor.allocatedBlockCount % 0xAA;
         else
             toReturn.entryCount = 0xAA;
     }
@@ -777,14 +781,14 @@ DWORD StfsPackage::GetHashTableEntryCount(DWORD index, Level lvl)
     else if (lvl + 1 == topLevel)
     {
         if (index + 1 == tablesPerLevel[lvl])
-            return (lvl == Zero) ? metaData->volumeDescriptor.allocatedBlockCount % 0xAA : tablesPerLevel[lvl - 1] % 0xAA;
+            return (lvl == Zero) ? metaData->stfsVolumeDescriptor.allocatedBlockCount % 0xAA : tablesPerLevel[lvl - 1] % 0xAA;
         else
             return 0xAA;
     }
     else
     {
         if (index + 1 == tablesPerLevel[lvl])
-            return metaData->volumeDescriptor.allocatedBlockCount % 0xAA;
+            return metaData->stfsVolumeDescriptor.allocatedBlockCount % 0xAA;
         else
             return 0xAA;
     }
@@ -885,7 +889,7 @@ void StfsPackage::Rehash()
                 // write the number of blocks hashed by this table at the bottom of the table, MS why?
                 DWORD blocksHashed;
                 if (i + 1 == topTable.entryCount)
-                    blocksHashed = (metaData->volumeDescriptor.allocatedBlockCount % 0x70E4 == 0) ? 0x70E4 : metaData->volumeDescriptor.allocatedBlockCount % 0x70E4;
+                    blocksHashed = (metaData->stfsVolumeDescriptor.allocatedBlockCount % 0x70E4 == 0) ? 0x70E4 : metaData->stfsVolumeDescriptor.allocatedBlockCount % 0x70E4;
                 else
                     blocksHashed = 0x70E4;
                 FileIO::swapEndian(&blocksHashed, 1, 4);
@@ -907,13 +911,13 @@ void StfsPackage::Rehash()
     // write the number of blocks the table hashes at the bottom of the hash table, MS why?
     if (topTable.level >= One)
     {
-        DWORD allocatedBlockCountSwapped = metaData->volumeDescriptor.allocatedBlockCount;
+        DWORD allocatedBlockCountSwapped = metaData->stfsVolumeDescriptor.allocatedBlockCount;
         FileIO::swapEndian(&allocatedBlockCountSwapped, 1, 4);
         ((DWORD*)&blockBuffer)[0x3FC] = allocatedBlockCountSwapped;
     }
 
     // hash the top table
-    HashBlock(blockBuffer, metaData->volumeDescriptor.topHashTableHash);
+    HashBlock(blockBuffer, metaData->stfsVolumeDescriptor.topHashTableHash);
 
     // write new hash block to the package
     io->setPosition(topTable.addressInFile);
@@ -975,7 +979,7 @@ void StfsPackage::SwapTable(DWORD index, Level lvl)
     // if the level requested to be swapped is the top level, we need to invert the '2' bit of the block seperation
     if (lvl == topTable.level)
     {
-        metaData->volumeDescriptor.blockSeperation ^= 2;
+        metaData->stfsVolumeDescriptor.blockSeperation ^= 2;
         metaData->WriteVolumeDescriptor();
     }
     else
@@ -1021,7 +1025,7 @@ DWORD StfsPackage::GetHashTableAddress(DWORD index, Level lvl)
 
     // if the level requested is the top, then we need to reference the '2' bit of the block seperation
     else if (lvl == topTable.level)
-        return baseAddress + ((metaData->volumeDescriptor.blockSeperation & 2) << 0xB);
+        return baseAddress + ((metaData->stfsVolumeDescriptor.blockSeperation & 2) << 0xB);
     // otherwise, go to the table's hash to figure out which table to use
     else
     {
@@ -1045,7 +1049,7 @@ DWORD StfsPackage::GetTableHashAddress(DWORD index, Level lvl)
 
     // add the hash offset to the base address so we use the correct table
     if (lvl + 1 == topLevel)
-        baseHashAddress += ((metaData->volumeDescriptor.blockSeperation & 2) << 0xB);
+        baseHashAddress += ((metaData->stfsVolumeDescriptor.blockSeperation & 2) << 0xB);
     else
         baseHashAddress += ((topTable.entries[index].status & 0x40) << 6);
 
@@ -1177,7 +1181,7 @@ void StfsPackage::Resign(string kvPath)
 
 void StfsPackage::SetBlockStatus(DWORD blockNum, BlockStatusLevelZero status)
 {
-    if (blockNum >= metaData->volumeDescriptor.allocatedBlockCount)
+    if (blockNum >= metaData->stfsVolumeDescriptor.allocatedBlockCount)
          throw string("STFS: Reference to illegal block number.\n");
 
     DWORD statusAddress = GetHashAddressOfBlock(blockNum) + 0x14;
@@ -1283,7 +1287,7 @@ void StfsPackage::WriteFileListing(bool usePassed, vector<FileEntry> *outFis, ve
     bool alwaysAllocate = false, firstCheck = true;
 
     // go to the block where the file listing begins (for overwriting)
-    DWORD block = metaData->volumeDescriptor.fileTableBlockNum;
+    DWORD block = metaData->stfsVolumeDescriptor.fileTableBlockNum;
     io->setPosition(BlockToAddress(block));
 
     DWORD outFileSize = outFolders.size();
@@ -1378,9 +1382,9 @@ void StfsPackage::WriteFileListing(bool usePassed, vector<FileEntry> *outFis, ve
     io->write(nullBytes, remainer);
 
     // update the file table block count and write it to file
-    metaData->volumeDescriptor.fileTableBlockCount = (outFoldersAndFilesSize / 0x40) + 1;
+    metaData->stfsVolumeDescriptor.fileTableBlockCount = (outFoldersAndFilesSize / 0x40) + 1;
     if (outFoldersAndFilesSize % 0x40 == 0 && outFoldersAndFilesSize != 0)
-        metaData->volumeDescriptor.fileTableBlockCount--;
+        metaData->stfsVolumeDescriptor.fileTableBlockCount--;
     metaData->WriteVolumeDescriptor();
 
     ReadFileListing();
@@ -1388,7 +1392,7 @@ void StfsPackage::WriteFileListing(bool usePassed, vector<FileEntry> *outFis, ve
 
 void StfsPackage::SetNextBlock(DWORD blockNum, INT24 nextBlockNum)
 {
-    if (blockNum >= metaData->volumeDescriptor.allocatedBlockCount)
+    if (blockNum >= metaData->stfsVolumeDescriptor.allocatedBlockCount)
         throw string("STFS: Reference to illegal block number.\n");
 
     DWORD hashLoc = GetHashAddressOfBlock(blockNum) + 0x15;
@@ -1440,13 +1444,13 @@ INT24 StfsPackage::AllocateBlock()
     DWORD lengthToWrite = 0xFFF;
 
     // update the allocated block count
-    metaData->volumeDescriptor.allocatedBlockCount++;
+    metaData->stfsVolumeDescriptor.allocatedBlockCount++;
 
     // recalculate the hash table counts to see if we need to make any new tables
     DWORD recalcTablesPerLevel[3];
-    recalcTablesPerLevel[0] = (metaData->volumeDescriptor.allocatedBlockCount / 0xAA) + ((metaData->volumeDescriptor.allocatedBlockCount % 0xAA != 0) ? 1 : 0);
-    recalcTablesPerLevel[1] = (recalcTablesPerLevel[0] / 0xAA) + ((recalcTablesPerLevel[0] % 0xAA != 0 && metaData->volumeDescriptor.allocatedBlockCount > 0xAA) ? 1 : 0);
-    recalcTablesPerLevel[2] = (recalcTablesPerLevel[1] / 0xAA) + ((recalcTablesPerLevel[1] % 0xAA != 0 && metaData->volumeDescriptor.allocatedBlockCount > 0x70E4) ? 1 : 0);
+    recalcTablesPerLevel[0] = (metaData->stfsVolumeDescriptor.allocatedBlockCount / 0xAA) + ((metaData->stfsVolumeDescriptor.allocatedBlockCount % 0xAA != 0) ? 1 : 0);
+    recalcTablesPerLevel[1] = (recalcTablesPerLevel[0] / 0xAA) + ((recalcTablesPerLevel[0] % 0xAA != 0 && metaData->stfsVolumeDescriptor.allocatedBlockCount > 0xAA) ? 1 : 0);
+    recalcTablesPerLevel[2] = (recalcTablesPerLevel[1] / 0xAA) + ((recalcTablesPerLevel[1] % 0xAA != 0 && metaData->stfsVolumeDescriptor.allocatedBlockCount > 0x70E4) ? 1 : 0);
 
     // allocate memory for hash tables if needed
     for (int i = 2; i >= 0; i--)
@@ -1481,8 +1485,8 @@ INT24 StfsPackage::AllocateBlock()
         topLevel = newTop;
         topTable.level = topLevel;
 
-        DWORD blockOffset = metaData->volumeDescriptor.blockSeperation & 2;
-        metaData->volumeDescriptor.blockSeperation &= 0xFD;
+        DWORD blockOffset = metaData->stfsVolumeDescriptor.blockSeperation & 2;
+        metaData->stfsVolumeDescriptor.blockSeperation &= 0xFD;
         topTable.addressInFile = GetHashTableAddress(0, topLevel);
         topTable.entryCount = 2;
         topTable.trueBlockNumber = ComputeLevelNBackingHashBlockNumber(0, topLevel);
@@ -1495,26 +1499,26 @@ INT24 StfsPackage::AllocateBlock()
         io->write((BYTE)topTable.entries[0].status);
 
         // clear the top hash offset
-        metaData->volumeDescriptor.blockSeperation &= 0xFD;
+        metaData->stfsVolumeDescriptor.blockSeperation &= 0xFD;
 
     }
 
     // write the block status
-    io->setPosition(GetHashAddressOfBlock(metaData->volumeDescriptor.allocatedBlockCount - 1) + 0x14);
+    io->setPosition(GetHashAddressOfBlock(metaData->stfsVolumeDescriptor.allocatedBlockCount - 1) + 0x14);
     io->write((BYTE)Allocated);
 
     if (topLevel == Zero)
     {
         topTable.entryCount++;
-        topTable.entries[metaData->volumeDescriptor.allocatedBlockCount - 1].status = (BYTE)Allocated;
-        topTable.entries[metaData->volumeDescriptor.allocatedBlockCount - 1].nextBlock = INT24_MAX;
+        topTable.entries[metaData->stfsVolumeDescriptor.allocatedBlockCount - 1].status = (BYTE)Allocated;
+        topTable.entries[metaData->stfsVolumeDescriptor.allocatedBlockCount - 1].nextBlock = INT24_MAX;
     }
 
     // terminate the chain
     io->write((INT24)0xFFFFFF);
 
     metaData->WriteVolumeDescriptor();
-    return metaData->volumeDescriptor.allocatedBlockCount - 1;
+    return metaData->stfsVolumeDescriptor.allocatedBlockCount - 1;
 }
 
 DWORD StfsPackage::GetBlocksUntilNextHashTable(DWORD currentBlock)
@@ -1524,10 +1528,10 @@ DWORD StfsPackage::GetBlocksUntilNextHashTable(DWORD currentBlock)
 
 INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
 {
-    INT24 returnValue = metaData->volumeDescriptor.allocatedBlockCount;
+    INT24 returnValue = metaData->stfsVolumeDescriptor.allocatedBlockCount;
 
     // figure out how far away the next hash table set is
-    DWORD blocksUntilTable = GetBlocksUntilNextHashTable(metaData->volumeDescriptor.allocatedBlockCount);
+    DWORD blocksUntilTable = GetBlocksUntilNextHashTable(metaData->stfsVolumeDescriptor.allocatedBlockCount);
 
     // create a hash block of all statuses set to allocated, for fast writing
     BYTE allocatedHashBlock[0x1000];
@@ -1541,14 +1545,14 @@ INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
     io->write((BYTE)0);
 
     // set blocks to allocated in hash table
-    io->setPosition(BlockToAddress((metaData->volumeDescriptor.allocatedBlockCount - (0xAA - blocksUntilTable))) - (0x1000 << packageSex) + (metaData->volumeDescriptor.allocatedBlockCount * 0x18));
+    io->setPosition(BlockToAddress((metaData->stfsVolumeDescriptor.allocatedBlockCount - (0xAA - blocksUntilTable))) - (0x1000 << packageSex) + (metaData->stfsVolumeDescriptor.allocatedBlockCount * 0x18));
     io->write(allocatedHashBlock, blocksUntilTable * 0x18);
 
     // update the allocated block count
-    metaData->volumeDescriptor.allocatedBlockCount += ((blockCount <= blocksUntilTable) ? blockCount : blocksUntilTable);
+    metaData->stfsVolumeDescriptor.allocatedBlockCount += ((blockCount <= blocksUntilTable) ? blockCount : blocksUntilTable);
 
     // allocate memory the hash table
-    io->setPosition(GetHashTableSkipSize(metaData->volumeDescriptor.allocatedBlockCount) - 1, ios_base::end);
+    io->setPosition(GetHashTableSkipSize(metaData->stfsVolumeDescriptor.allocatedBlockCount) - 1, ios_base::end);
     io->write((BYTE)0);
 
     blockCount -= blocksUntilTable;
@@ -1557,26 +1561,26 @@ INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
     while (blockCount >= 0xAA)
     {
         // allocate the memory in the file
-        io->setPosition(0xAA000 + GetHashTableSkipSize(metaData->volumeDescriptor.allocatedBlockCount + 0xAA) - 1, ios_base::end);
+        io->setPosition(0xAA000 + GetHashTableSkipSize(metaData->stfsVolumeDescriptor.allocatedBlockCount + 0xAA) - 1, ios_base::end);
         io->write((BYTE)0);
 
         // set all the blocks to allocated
-        io->setPosition(BlockToAddress(metaData->volumeDescriptor.allocatedBlockCount) - (0x1000 << packageSex));
+        io->setPosition(BlockToAddress(metaData->stfsVolumeDescriptor.allocatedBlockCount) - (0x1000 << packageSex));
         io->write(allocatedHashBlock, 0x1000);
 
         // update the values
-        metaData->volumeDescriptor.allocatedBlockCount += 0xAA;
+        metaData->stfsVolumeDescriptor.allocatedBlockCount += 0xAA;
         blockCount -= 0xAA;
     }
 
     if (blockCount > 0)
     {
         // allocate the extra
-        io->setPosition(GetHashTableSkipSize(metaData->volumeDescriptor.allocatedBlockCount + 0xAA) + (blockCount << 0xC) - 1, ios_base::end);
+        io->setPosition(GetHashTableSkipSize(metaData->stfsVolumeDescriptor.allocatedBlockCount + 0xAA) + (blockCount << 0xC) - 1, ios_base::end);
         io->write((BYTE)0);
 
         // set all the blocks to allocated
-        io->setPosition(BlockToAddress(metaData->volumeDescriptor.allocatedBlockCount) - (0x1000 << packageSex));
+        io->setPosition(BlockToAddress(metaData->stfsVolumeDescriptor.allocatedBlockCount) - (0x1000 << packageSex));
         io->write(allocatedHashBlock, blockCount * 0x18);
     }
 
@@ -1589,8 +1593,8 @@ INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
         topLevel = newTop;
         topTable.level = topLevel;
 
-        DWORD blockOffset = metaData->volumeDescriptor.blockSeperation & 2;
-        metaData->volumeDescriptor.blockSeperation &= 0xFD;
+        DWORD blockOffset = metaData->stfsVolumeDescriptor.blockSeperation & 2;
+        metaData->stfsVolumeDescriptor.blockSeperation &= 0xFD;
         topTable.addressInFile = GetHashTableAddress(0, topLevel);
         topTable.entryCount = 2;
 
@@ -1602,7 +1606,7 @@ INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
         io->write((BYTE)topTable.entries[0].status);
 
         // clear the top hash offset
-        metaData->volumeDescriptor.blockSeperation &= 0xFD;
+        metaData->stfsVolumeDescriptor.blockSeperation &= 0xFD;
 
     }
 
@@ -1757,7 +1761,7 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injec
     {
         io->setPosition(topTable.addressInFile);
 
-        topTable.entryCount = metaData->volumeDescriptor.allocatedBlockCount;
+        topTable.entryCount = metaData->stfsVolumeDescriptor.allocatedBlockCount;
 
         for (DWORD i = 0; i < topTable.entryCount; i++)
         {
@@ -1866,7 +1870,7 @@ FileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPackage
     {
         io->setPosition(topTable.addressInFile);
 
-        topTable.entryCount = metaData->volumeDescriptor.allocatedBlockCount;
+        topTable.entryCount = metaData->stfsVolumeDescriptor.allocatedBlockCount;
 
         for (DWORD i = 0; i < topTable.entryCount; i++)
         {
