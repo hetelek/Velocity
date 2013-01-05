@@ -8,7 +8,6 @@
         <file>Images/Leaner.png</file>
         <file>Images/Leaner24.png</file>
         <file>Images/AccountFileIcon.png</file>
-        <file>Images/FolderFileIcon.png</file>
         <file>Images/GpdFileIcon.png</file>
         <file>Images/ImageFileIcon.png</file>
         <file>Images/PecFileIcon.png</file>
@@ -81,5 +80,10 @@
         <file>Images/updates.png</file>
         <file>Images/hammer.png</file>
         <file>Images/achievement creation.png</file>
+        <file>Images/svod.png</file>
+        <file>Images/hash.png</file>
+        <file>Images/sign.png</file>
+        <file>Images/XEXFileIcon.png</file>
+        <file>Images/FolderFileIcon.png</file>
     </qresource>
 </RCC>
