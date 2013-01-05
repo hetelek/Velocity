@@ -8,7 +8,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include "../FileIO.h"
-#include "StfsMetaData.h"
+#include "XContentHeader.h"
 
 #include <botan/botan.h>
 #include <botan/pubkey.h>
@@ -73,7 +73,7 @@ enum StfsPackageFlags
 class StfsPackage
 {
 public:
-    StfsMetaData *metaData;
+    XContentHeader *metaData;
 
     // Description: initialize a stfs package
     StfsPackage(string packgePath, DWORD flags = 0);
