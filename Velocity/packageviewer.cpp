@@ -208,6 +208,8 @@ void PackageViewer::SetIcon(string name, QTreeWidgetItem *item)
 
     if (extension == ".gpd" || extension == ".fit")
         item->setIcon(0, QIcon(":/Images/GpdFileIcon.png"));
+    else if (extension == ".xex")
+        item->setIcon(0, QIcon(":/Images/XEXFileIcon.png"));
     else if (name == "Account")
         item->setIcon(0, QIcon(":/Images/AccountFileIcon.png"));
     else if (name == "PEC")
@@ -282,7 +284,7 @@ void PackageViewer::on_btnFix_clicked()
 
 void PackageViewer::on_btnViewAll_clicked()
 {
-    Metadata meta(statusBar, package);
+    Metadata meta(statusBar, package->metaData, package->IsPEC(), this);
     meta.exec();
 
     if (package->metaData->magic == LIVE || package->metaData->magic == PIRS)
@@ -318,49 +320,7 @@ void PackageViewer::showSaveImageContextMenu(QPoint point)
 
 void PackageViewer::on_txtSearch_textChanged(const QString &arg1)
 {
-    QList<QTreeWidgetItem*> itemsMatched = ui->treeWidget->findItems(ui->txtSearch->text(), Qt::MatchContains | Qt::MatchRecursive);
-
-    for (int i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
-        hideAllItems(ui->treeWidget->topLevelItem(i));
-
-    if (itemsMatched.count() == 0 || arg1 == "")
-    {
-        ui->txtSearch->setStyleSheet("color: rgb(255, 1, 1);");
-        for (int i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
-        {
-            showAllItems(ui->treeWidget->topLevelItem(i));
-            collapseAllChildren(ui->treeWidget->topLevelItem(i));
-        }
-        return;
-    }
-
-    ui->txtSearch->setStyleSheet("");
-    // add all the matched ones to the list
-    for (int i = 0; i < itemsMatched.count(); i++)
-    {
-        // show all the item's parents
-        QTreeWidgetItem *parent = itemsMatched.at(i)->parent();
-        while (parent != NULL)
-        {
-            ui->treeWidget->setItemHidden(parent, false);
-            parent->setExpanded(true);
-            parent = parent->parent();
-        }
-
-        // show the item itself
-        ui->treeWidget->setItemHidden(itemsMatched.at(i), false);
-    }
-}
-
-void PackageViewer::hideAllItems(QTreeWidgetItem *parent)
-{
-    for (int i = 0; i < parent->childCount(); i++)
-    {
-        if (parent->child(i)->childCount() != 0)
-            hideAllItems(parent->child(i));
-        parent->child(i)->setHidden(true);
-    }
-    parent->setHidden(true);
+    QtHelpers::SearchTreeWidget(ui->treeWidget, ui->txtSearch, arg1);
 }
 
 void PackageViewer::onOpenInSelected(QAction *action)
@@ -842,25 +802,5 @@ void PackageViewer::on_btnShowAll_clicked()
 {
     ui->txtSearch->setText("");
     for (int i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
-        showAllItems(ui->treeWidget->topLevelItem(i));
-}
-
-void PackageViewer::showAllItems(QTreeWidgetItem *parent)
-{
-    for (int i = 0; i < parent->childCount(); i++)
-    {
-        if (parent->child(i)->childCount() != 0)
-            hideAllItems(parent->child(i));
-        parent->child(i)->setHidden(false);
-    }
-    parent->setHidden(false);
-}
-
-void PackageViewer::collapseAllChildren(QTreeWidgetItem *item)
-{
-    item->setExpanded(false);
-
-    // collapse all children
-    for (int i = 0; i < item->childCount(); i++)
-        collapseAllChildren(item->child(i));
+        QtHelpers::ShowAllItems(ui->treeWidget->topLevelItem(i));
 }
