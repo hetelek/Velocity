@@ -1,7 +1,7 @@
 #include "StfsDefinitions.h"
 
 
-void ReadVolumeDescriptorEx(VolumeDescriptor *descriptor, FileIO *io, DWORD address)
+void ReadStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, FileIO *io, DWORD address)
 {
     // seek to the volume descriptor
     io->setPosition(address);
@@ -21,6 +21,25 @@ void ReadVolumeDescriptorEx(VolumeDescriptor *descriptor, FileIO *io, DWORD addr
 
     descriptor->allocatedBlockCount = io->readDword();
     descriptor->unallocatedBlockCount = io->readDword();
+}
+
+void ReadSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, FileIO *io)
+{
+    // seek to the volume descriptor
+    io->setPosition(0x379);
+
+    descriptor->size = io->readByte();
+    descriptor->blockCacheElementCount = io->readByte();
+    descriptor->workerThreadProcessor = io->readByte();
+    descriptor->workerThreadPriority = io->readByte();
+
+    io->readBytes(descriptor->rootHash, 0x14);
+
+    descriptor->flags = io->readByte();
+    descriptor->dataBlockCount = io->readInt24(LittleEndian);
+    descriptor->dataBlockOffset = io->readInt24(LittleEndian);
+
+    io->readBytes(descriptor->reserved, 0x05);
 }
 
 string LicenseTypeToString(LicenseType type)
@@ -114,7 +133,7 @@ MSTime TimetToMSTime(time_t time)
     return toReturn;
 }
 
-void WriteVolumeDescriptorEx(VolumeDescriptor *descriptor, FileIO *io, DWORD address)
+void WriteStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, FileIO *io, DWORD address)
 {
     // volume descriptor position
     io->setPosition(address);
@@ -133,6 +152,26 @@ void WriteVolumeDescriptorEx(VolumeDescriptor *descriptor, FileIO *io, DWORD add
     io->write(descriptor->topHashTableHash, 0x14);
     io->write(descriptor->allocatedBlockCount);
     io->write(descriptor->unallocatedBlockCount);
+}
+
+void WriteSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, FileIO *io)
+{
+    // volume descriptor position
+    io->setPosition(0x379);
+    io->setEndian(LittleEndian);
+
+    io->write(descriptor->size);
+    io->write(descriptor->blockCacheElementCount);
+    io->write(descriptor->workerThreadProcessor);
+    io->write(descriptor->workerThreadPriority);
+
+    io->write(descriptor->rootHash, 0x14);
+
+    io->write(descriptor->flags);
+    io->write((INT24)descriptor->dataBlockCount);
+    io->write((INT24)descriptor->dataBlockOffset);
+
+    io->setEndian(BigEndian);
 }
 
 void ReadCertificateEx(Certificate *cert, FileIO *io, DWORD address)
@@ -214,12 +253,10 @@ string ContentTypeToString(ContentType type)
 {
     switch (type)
     {
-        case App:
-            return string("App");
         case ArcadeGame:
             return string("Arcade Game");
         case AvatarAssetPack:
-        return string("Avatar Asset Pack");
+            return string("Avatar Asset Pack");
         case AvatarItem:
             return string("AvatarItem");
         case CacheFile:
@@ -228,6 +265,8 @@ string ContentTypeToString(ContentType type)
             return string("Community Game");
         case GameDemo:
             return string("Game Demo");
+        case GameOnDemand:
+            return string("Game On Demand");
         case GamerPicture:
             return string("Gamer Picture");
         case GamerTitle:

@@ -31,7 +31,7 @@ struct LicenseEntry
     DWORD flags;
 };
 
-struct VolumeDescriptor
+struct StfsVolumeDescriptor
 {
     BYTE size;
     BYTE reserved;
@@ -41,6 +41,19 @@ struct VolumeDescriptor
     BYTE topHashTableHash[0x14];
     DWORD allocatedBlockCount;
     DWORD unallocatedBlockCount;
+};
+
+struct SvodVolumeDescriptor
+{
+    BYTE size;
+    BYTE blockCacheElementCount;
+    BYTE workerThreadProcessor;
+    BYTE workerThreadPriority;
+    BYTE rootHash[0x14];
+    BYTE flags;
+    INT24 dataBlockCount;
+    INT24 dataBlockOffset;
+    BYTE reserved[5];
 };
 
 struct Certificate
@@ -68,9 +81,13 @@ struct MSTime
     BYTE seconds;
 };
 
-void ReadVolumeDescriptorEx(VolumeDescriptor *descriptor, FileIO *io, DWORD address);
+void ReadStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, FileIO *io, DWORD address);
 
-void WriteVolumeDescriptorEx(VolumeDescriptor *descriptor, FileIO *io, DWORD address);
+void ReadSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, FileIO *io);
+
+void WriteStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, FileIO *io, DWORD address);
+
+void WriteSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, FileIO *io);
 
 void ReadCertificateEx(Certificate *cert, FileIO *io, DWORD address);
 
