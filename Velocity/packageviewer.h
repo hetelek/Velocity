@@ -83,11 +83,6 @@ private:
     QMenu *openInMenu;
     QList <QAction*> gpdActions, gameActions;
     QAction *profileEditor, *gameAdder;
-
-    void showAllItems(QTreeWidgetItem *parent);
-    void hideAllItems(QTreeWidgetItem *parent);
-
-    void collapseAllChildren(QTreeWidgetItem *item);
 };
 
 #endif // PACKAGEVIEWER_H
