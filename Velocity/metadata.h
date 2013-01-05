@@ -3,9 +3,10 @@
 
 // forms
 #include "certificatedialog.h"
-#include "volumedescriptordialog.h"
+#include "stfsvolumedescriptordialog.h"
 #include "licensingdatadialog.h"
 #include "transferflagsdialog.h"
+#include "svodvolumedescriptordialog.h"
 
 // qt
 #include <QDialog>
@@ -40,12 +41,13 @@ class Metadata : public QDialog
     Q_OBJECT
     
 public:
-    explicit Metadata(QStatusBar *statusBar, StfsPackage *package, QWidget *parent = 0);
+    explicit Metadata(QStatusBar *statusBar, XContentHeader *header, bool pec, QWidget *parent = 0);
     ~Metadata();
     
 private:
     Ui::Metadata *ui;
-    StfsPackage *package;
+    XContentHeader *header;
+    bool pec;
     QStatusBar *statusBar;
 
     QComboBox *cmbxMagic;
