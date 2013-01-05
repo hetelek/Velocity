@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>StfsVolumeDescriptorDialog</class>
+ <widget class="QDialog" name="StfsVolumeDescriptorDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>493</width>
+    <height>317</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Volume Descriptor</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="Resources.qrc">
+    <normaloff>:/Images/Leaner24.png</normaloff>:/Images/Leaner24.png</iconset>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTableWidget" name="tableWidget">
+     <attribute name="horizontalHeaderDefaultSectionSize">
+      <number>300</number>
+     </attribute>
+     <row>
+      <property name="text">
+       <string>Struct Size</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Hash Table</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Package Type</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>File Table Block Count</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>File Table Block Number</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Top Hash Table Hash</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Total Allocated Block Count</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toal Unallocated Block Count</string>
+      </property>
+     </row>
+     <column>
+      <property name="text">
+       <string>Value</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="text">
+        <string>Save Changes</string>
+       </property>
+       <property name="icon">
+        <iconset resource="Resources.qrc">
+         <normaloff>:/Images/save.png</normaloff>:/Images/save.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+       <property name="icon">
+        <iconset resource="Resources.qrc">
+         <normaloff>:/Images/cancel.png</normaloff>:/Images/cancel.png</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="Resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>
