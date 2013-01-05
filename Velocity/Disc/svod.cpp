@@ -1,0 +1,217 @@
+#include "svod.h"
+
+SVOD::SVOD(string rootFile)
+{
+    // make sure all of the slashes are the same
+    for (DWORD i = 0; i < rootFile.length(); i++)
+        if (rootFile.at(i) == '\\')
+            rootFile.at(i) = '/';
+
+    // get the content folder name, and make sure it exists
+    string fileName = rootFile.substr(rootFile.find_last_of("/") + 1);
+    contentDirectory = rootFile.substr(0, rootFile.find_last_of("/")) + "/" + fileName + ".data/";
+
+    // parse the XContentHeader
+    metadata = new XContentHeader(new FileIO(rootFile));
+
+    if (metadata->fileSystem != FileSystemSVOD)
+        throw string("SVOD: Invalid file system header.\n");
+
+    switch (metadata->contentType)
+    {
+        case GameOnDemand:;
+        case InstalledGame:
+            break;
+        default:
+            throw string("SVOD: Unrecognized content type.\n");
+    }
+
+    // open an IO on the content files
+    io = new MultiFileIO(contentDirectory);
+
+    // parse the header
+    io->SetPosition(0x2000, 0);
+    GdfxReadHeader(io, &header);
+
+    // read the file listing
+    ReadFileListing(&root, header.rootSector, header.rootSize, "/");
+}
+
+void SVOD::SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *dataFileIndex)
+{
+    DWORD trueSector = (sector - (metadata->svodVolumeDescriptor.dataBlockOffset * 2)) % 0x14388;
+    *addressInDataFile = trueSector * 0x800;
+    *dataFileIndex = (sector - (metadata->svodVolumeDescriptor.dataBlockOffset * 2)) / 0x14388;
+
+    // for the master hash table
+    *addressInDataFile += 0x1000;
+    // for the GdfxHeader
+    *addressInDataFile += 0x1000;
+    // for the data hash table(s)
+    *addressInDataFile += ((trueSector / 0x198) + ((trueSector % 0x198 == 0 && trueSector != 0) ? 0 : 1)) * 0x1000;
+}
+
+void SVOD::ReadFileListing(vector<GDFXFileEntry> *entryList, DWORD sector, DWORD size, string path)
+{
+    DWORD eAddr, eIndex;
+    SectorToAddress(sector, &eAddr, &eIndex);
+    io->SetPosition(eAddr, eIndex);
+
+    GDFXFileEntry current;
+
+    while (GdfxReadFileEntry(io, &current) && size != 0)
+    {
+        // if it's a folder, then seek to it and read it's contents
+        if (current.attributes & GdfxDirectory)
+        {
+            // seek to the folder's files
+            DWORD seekAddr, seekIndex;
+
+            // preserve the current positon
+            io->GetPosition(&seekAddr, &seekIndex);
+
+            ReadFileListing(&current.files, current.sector, current.size, path + current.name + "/");
+
+            // reset position to current listing
+            io->SetPosition(seekAddr, seekIndex);
+        }
+
+        current.filePath = path;
+        entryList->push_back(current);
+
+        // seek to the next entry
+        eAddr += (current.nameLen + 0x11) & 0xFFFFFFFC;
+        io->SetPosition(eAddr);
+
+        // check for end
+        if (io->ReadDword() == 0xFFFFFFFF)
+        {
+            if ((size - 0x800) == 0)
+            {
+                std::sort(entryList->begin(), entryList->end(), compareFileEntries);
+                return;
+            }
+            else
+            {
+                size -= 0x800;
+                SectorToAddress(++sector, &eAddr, &eIndex);
+                io->SetPosition(eAddr, eIndex);
+
+                // get position of next entry
+                io->GetPosition(&eAddr, &eIndex);
+            }
+        }
+
+        // back up to the entry
+        io->SetPosition(eAddr);
+
+        // reset the directory
+        current.files.clear();
+    }
+
+    std::sort(entryList->begin(), entryList->end(), compareFileEntries);
+}
+
+GDFXFileEntry SVOD::GetFileEntry(string path, vector<GDFXFileEntry> *listing)
+{
+    string entryName = path.substr(1, path.substr(1).find_first_of('/'));
+
+    // search for the entry
+    for (DWORD i = 0; i < listing->size(); i++)
+    {
+        if (listing->at(i).name == entryName)
+        {
+            // check to see if it's at the end
+            if (path.substr(1).find_first_of('/') == -1)
+                return listing->at(i);
+            else
+                return GetFileEntry(path.substr(entryName.length() + 1), &listing->at(i).files);
+        }
+    }
+}
+
+SvodIO SVOD::GetSvodIO(string path)
+{
+    return GetSvodIO(GetFileEntry(path, &root));
+}
+
+SvodIO SVOD::GetSvodIO(GDFXFileEntry entry)
+{
+    return SvodIO(metadata, entry, io);
+}
+
+void SVOD::Rehash()
+{
+    DWORD fileCount = io->FileCount();
+    BYTE master[0x1000] = {0};
+    BYTE level0[0x1000] = {0};
+    BYTE currentBlock[0x1000];
+    BYTE prevHash[0x14] = {0};
+
+    // iterate through all of the files
+    for (int i = fileCount - 1; i >= 0; i--)
+    {
+        io->SetPosition(0x2000, i);
+        DWORD hashTableCount = ((io->CurrentFileLength() - 0x2000) + 0xCCFFF) / 0xCD000;
+        DWORD totalBlockCount = (io->CurrentFileLength() - 0x1000 - (hashTableCount * 0x1000)) >> 0xC;
+
+        // iterate through all of the level0 hash tables
+        for (DWORD x = 0; x < hashTableCount; x++)
+        {
+            // seek to the next set of blocks
+            io->SetPosition(0x2000 + x * 0xCD000, i);
+
+            DWORD blockCount = (totalBlockCount >= 0xCC) ? 0xCC : totalBlockCount % 0xCC;
+            totalBlockCount -= 0xCC;
+
+            // iterate through all of the blocks
+            for (DWORD y = 0; y < blockCount; y++)
+            {
+                io->ReadBytes(currentBlock, 0x1000);
+                HashBlock(currentBlock, level0 + y * 0x14);
+            }
+
+            // write the table
+            io->SetPosition(0x1000 + x * 0xCD000, i);
+            io->WriteBytes(level0, 0x1000);
+
+            // hash the level0 table for the master hash table
+            HashBlock(level0, master + x * 0x14);
+
+            // clear out the table
+            memset(level0, 0, 0x1000);
+        }
+
+        // append the previous master hash to the table
+        memcpy(master + hashTableCount * 0x14, prevHash, 0x14);
+
+        // write the master hash table
+        io->SetPosition(0, i);
+        io->WriteBytes(master, 0x1000);
+
+        // hash the master table
+        HashBlock(master, prevHash);
+
+        // clear out the table
+        memset(master, 0, 0x1000);
+    }
+
+    // update the root hash
+    memcpy(metadata->svodVolumeDescriptor.rootHash, prevHash, 0x14);
+    metadata->WriteVolumeDescriptor();
+
+    // TODO: hash the XContentHeader
+}
+
+void SVOD::HashBlock(BYTE *block, BYTE *outHash)
+{
+    Botan::SHA_160 sha1;
+    sha1.clear();
+    sha1.update(block, 0x1000);
+    sha1.final(outHash);
+}
+
+int compareFileEntries(GDFXFileEntry a, GDFXFileEntry b)
+{
+    return !!(a.attributes & GdfxDirectory);
+}
