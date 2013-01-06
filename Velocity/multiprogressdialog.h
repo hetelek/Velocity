@@ -9,6 +9,7 @@
 #include "Stfs/XContentHeader.h"
 #include "Disc/svod.h"
 #include "IO/SvodIO.h"
+#include "Stfs/StfsPackage.h"
 
 namespace Ui {
 class MultiProgressDialog;
@@ -35,6 +36,7 @@ private:
     int fileIndex;
     DWORD overallProgress;
     DWORD overallProgressTotal;
+    DWORD prevProgress;
 
     void extractNextFile();
 
