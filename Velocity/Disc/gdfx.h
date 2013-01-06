@@ -30,6 +30,8 @@ struct GDFXFileEntry
     // extra stuff
     string filePath;
     vector<GDFXFileEntry> files;
+    DWORD address;
+    DWORD fileIndex;
 };
 
 enum DirentAttributes
@@ -50,5 +52,8 @@ void GdfxReadHeader(MultiFileIO *io, GDFXHeader *header);
 
 // read the next file entry in the listing, reeturns false on listing end
 bool GdfxReadFileEntry(MultiFileIO *io, GDFXFileEntry *entry);
+
+// write a file entry back to the listing
+void GdfxWriteFileEntry(MultiFileIO *io, GDFXFileEntry *entry);
 
 #endif // GDFX_H
