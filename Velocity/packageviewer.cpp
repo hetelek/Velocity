@@ -412,7 +412,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
         QString path;
         if (multiple)
-            path = QFileDialog::getExistingDirectory(this, "Save Location", QtHelpers::DesktopLocation());
+            path = QFileDialog::getExistingDirectory(this, "Save Location", QtHelpers::DesktopLocation()) + "/";
         else
             path = QFileDialog::getSaveFileName(this, "Save Location", QtHelpers::DesktopLocation() + "/" + ui->treeWidget->selectedItems()[0]->text(0));
 
@@ -420,26 +420,22 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             return;
 
 
-        QList<QString> packagePaths;
-        QList<QString> outPaths;
+        QList<void*> outFiles;
+        QList<FileEntry> sillyNess;
         for (int i = 0; i < totalCount; i++)
         {
             QString packagePath;
             GetPackagePath(items.at(i), &packagePath);
-            packagePaths.append(packagePath);
-
-            QString final = path;
-            if (multiple)
-                final += "\\" + items.at(i)->text(0);
-            outPaths.append(final);
+            sillyNess.append(package->GetFileEntry(packagePath.toStdString()));
+            outFiles.append(&sillyNess.at(i));
         }
 
         try
         {
-            ProgressDialog *dialog = new ProgressDialog(package, packagePaths, outPaths, this);
+            MultiProgressDialog *dialog = new MultiProgressDialog(FileSystemSTFS, package, path.replace("\\", "/"), outFiles, this);
             dialog->setModal(true);
             dialog->show();
-            dialog->startWorking();
+            dialog->start();
 
             successCount++;
         }
