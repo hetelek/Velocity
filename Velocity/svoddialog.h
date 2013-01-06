@@ -46,12 +46,19 @@ private slots:
 
     void on_pushButton_3_clicked();
 
+    void on_comboBox_currentIndexChanged(int index);
+
 private:
     Ui::SvodDialog *ui;
     SVOD *svod;
     QStatusBar *statusBar;
+    bool changing;
 
     void loadListing(QTreeWidgetItem *parent, vector<GDFXFileEntry> *files);
+
+    friend void UpdateProgress(DWORD cur, DWORD total, void *arg);
 };
+
+void UpdateProgress(DWORD cur, DWORD total, void *arg);
 
 #endif // SVODDIALOG_H

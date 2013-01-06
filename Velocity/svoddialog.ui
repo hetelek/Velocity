@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>495</width>
-    <height>544</height>
+    <height>571</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -203,7 +203,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="btnResign">
        <property name="text">
         <string>Resign</string>
        </property>
@@ -231,6 +231,9 @@
      </property>
      <property name="sortingEnabled">
       <bool>false</bool>
+     </property>
+     <property name="animated">
+      <bool>true</bool>
      </property>
      <attribute name="headerCascadingSectionResizes">
       <bool>true</bool>

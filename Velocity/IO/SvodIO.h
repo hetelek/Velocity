@@ -16,6 +16,8 @@ public:
 
     void SaveFile(string savePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
+    void OverwriteFile(string inPath, void (*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+
     void SetPosition(DWORD address);
 
     void Close();
