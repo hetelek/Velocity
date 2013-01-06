@@ -22,6 +22,8 @@ bool GdfxReadFileEntry(MultiFileIO *io, GDFXFileEntry *entry)
     // everything's little endian, so let's be safe
     io->SetEndian(LittleEndian);
 
+    io->GetPosition(&entry->address, &entry->fileIndex);
+
     // check to see if we're at the end
     DWORD nextBytes = io->ReadDword();
     if (nextBytes == 0xFFFFFFFF)
@@ -36,4 +38,21 @@ bool GdfxReadFileEntry(MultiFileIO *io, GDFXFileEntry *entry)
     entry->name = io->ReadString(entry->nameLen);
 
     return true;
+}
+
+void GdfxWriteFileEntry(MultiFileIO *io, GDFXFileEntry *entry)
+{
+    // everything's little endian, so let's be safe
+    io->SetEndian(LittleEndian);
+
+    // seek to the file entry
+    io->SetPosition(entry->address, entry->fileIndex);
+
+    // write the entry
+    io->Write(entry->unknown);
+    io->Write(entry->sector);
+    io->Write(entry->size);
+    io->Write(entry->attributes);
+    io->Write(entry->nameLen);
+    io->Write(entry->name);
 }

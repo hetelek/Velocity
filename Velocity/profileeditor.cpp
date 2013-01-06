@@ -927,7 +927,9 @@ void ProfileEditor::replyFinishedAwImg(QNetworkReply *aReply)
 
                         try
                         {
+                            gpd->StartWriting();
                             gpd->CreateImageEntry(&image, award->imageID);
+                            gpd->StopWriting();
                             games.at(i).updated = true;
                             break;
                         }
@@ -1107,6 +1109,8 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
 {
     try
     {
+        gpd->StartWriting();
+
         // make sure that the settings exist
         SettingEntry settingGamerscore, settingAchievements;
         settingGamerscore.int32 = settingAchievements.int32 = 0xFFFFFFFF;
@@ -1195,6 +1199,8 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
         ui->lblGamerscore->setText(QString::number(dashGPD->gamerscoreUnlocked.int32) + "G");
 
         statusBar->showMessage("Updated " + QString::fromStdWString(chiev->name), 3000);
+
+        gpd->StopWriting();
     }
     catch (string error)
     {
@@ -1547,10 +1553,14 @@ void ProfileEditor::on_dteAchTimestamp_dateTimeChanged(const QDateTime &date)
     if (date.toTime_t() == entry->unlockTime)
         return;
 
+    games.at(ui->gamesList->currentIndex().row()).gpd->StartWriting();
+
     entry->unlockTime = date.toTime_t();
     ui->dteAchTimestamp->setDateTime(QDateTime::fromTime_t(entry->unlockTime));
     games.at(ui->gamesList->currentIndex().row()).gpd->WriteAchievementEntry(entry);
     games.at(ui->gamesList->currentIndex().row()).updated = true;
+
+    games.at(ui->gamesList->currentIndex().row()).gpd->StopWriting();
 
     statusBar->showMessage("Updated " + QString::fromStdWString(entry->name), 3000);
 }
@@ -1678,6 +1688,7 @@ void ProfileEditor::unlockAllAchievements(int index)
         if ((games.at(index).gpd->achievements.at(i).flags & Unlocked) == 0)
             gamerscoreToAdd += games.at(index).gpd->achievements.at(i).gamerscore;
 
+    games.at(index).gpd->StartWriting();
     games.at(index).gpd->UnlockAllAchievementsOffline();
     games.at(index).updated = true;
 
@@ -1715,6 +1726,8 @@ void ProfileEditor::unlockAllAchievements(int index)
     games.at(index).titleEntry->achievementsUnlocked = games.at(index).titleEntry->achievementCount;
     games.at(index).titleEntry->gamerscoreUnlocked = games.at(index).titleEntry->totalGamerscore;
     games.at(index).titleEntry->flags |= (SyncAchievement | DownloadAchievementImage);
+
+    games.at(index).gpd->StopWriting();
 
     dashGPD->WriteTitleEntry(games.at(index).titleEntry);
 

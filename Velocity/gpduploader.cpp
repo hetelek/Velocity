@@ -49,6 +49,8 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
             return;
         }
 
+        gpd->StartWriting();
+
         // calculate total gamerscore
         int totalGamerscore = 0;
         for (DWORD x = 0; x < gpd->achievements.size(); x++)
@@ -116,6 +118,7 @@ void GPDUploader::uploadGPD(QString gamePath, QString awardPath, QString titleID
         qDebug() << "game name: " << QString::fromStdWString(gpd->gameName.ws);
 
         // clean the gpd
+        gpd->StopWriting();
         gpd->CleanGPD();
         gpd->Close();
 
