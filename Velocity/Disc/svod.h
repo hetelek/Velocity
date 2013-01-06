@@ -31,7 +31,10 @@ public:
     void SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *dataFileIndex);
 
     // fix all of the hashes in the system
-    void Rehash();
+    void Rehash(void (*progress)(DWORD, DWORD, void*) = NULL, void *arg = NULL);
+
+    // write a file entry back to the system
+    void WriteFileEntry(GDFXFileEntry *entry);
 
 private:
     string contentDirectory;
@@ -39,7 +42,7 @@ private:
     GDFXHeader header;
 
     // parse the file listing
-    void ReadFileListing(vector<GDFXFileEntry> *entryList, DWORD sector, DWORD size, string path);
+    void ReadFileListing(vector<GDFXFileEntry> *entryList, DWORD sector, int size, string path);
 
     // get a file entry from the path, must start with a /
     GDFXFileEntry GetFileEntry(string path, vector<GDFXFileEntry> *listing);

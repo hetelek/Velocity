@@ -51,7 +51,7 @@ void SVOD::SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *dataFi
     *addressInDataFile += ((trueSector / 0x198) + ((trueSector % 0x198 == 0 && trueSector != 0) ? 0 : 1)) * 0x1000;
 }
 
-void SVOD::ReadFileListing(vector<GDFXFileEntry> *entryList, DWORD sector, DWORD size, string path)
+void SVOD::ReadFileListing(vector<GDFXFileEntry> *entryList, DWORD sector, int size, string path)
 {
     DWORD eAddr, eIndex;
     SectorToAddress(sector, &eAddr, &eIndex);
@@ -86,7 +86,7 @@ void SVOD::ReadFileListing(vector<GDFXFileEntry> *entryList, DWORD sector, DWORD
         // check for end
         if (io->ReadDword() == 0xFFFFFFFF)
         {
-            if ((size - 0x800) == 0)
+            if ((size - 0x800) <= 0)
             {
                 std::sort(entryList->begin(), entryList->end(), compareFileEntries);
                 return;
@@ -140,7 +140,7 @@ SvodIO SVOD::GetSvodIO(GDFXFileEntry entry)
     return SvodIO(metadata, entry, io);
 }
 
-void SVOD::Rehash()
+void SVOD::Rehash(void (*progress)(DWORD, DWORD, void*), void *arg)
 {
     DWORD fileCount = io->FileCount();
     BYTE master[0x1000] = {0};
@@ -194,6 +194,10 @@ void SVOD::Rehash()
 
         // clear out the table
         memset(master, 0, 0x1000);
+
+        // update progress if needed
+        if (progress)
+            progress(fileCount - i, fileCount, arg);
     }
 
     // update the root hash
@@ -209,6 +213,11 @@ void SVOD::HashBlock(BYTE *block, BYTE *outHash)
     sha1.clear();
     sha1.update(block, 0x1000);
     sha1.final(outHash);
+}
+
+void SVOD::WriteFileEntry(GDFXFileEntry *entry)
+{
+    GdfxWriteFileEntry(io, entry);
 }
 
 int compareFileEntries(GDFXFileEntry a, GDFXFileEntry b)
