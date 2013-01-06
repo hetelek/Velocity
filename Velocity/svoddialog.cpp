@@ -2,7 +2,7 @@
 #include "ui_svoddialog.h"
 
 SvodDialog::SvodDialog(SVOD *svod, QStatusBar *statusBar, QWidget *parent) :
-    QDialog(parent), ui(new Ui::SvodDialog), svod(svod), statusBar(statusBar)
+    QDialog(parent), ui(new Ui::SvodDialog), svod(svod), statusBar(statusBar), changing(true)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -11,6 +11,8 @@ SvodDialog::SvodDialog(SVOD *svod, QStatusBar *statusBar, QWidget *parent) :
 
     ui->treeWidget->header()->setDefaultSectionSize(75);
     ui->treeWidget->header()->resizeSection(0, 200);
+
+    ui->btnResign->setEnabled(svod->metadata->magic == CON);
 
     // setup the context menu
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -85,8 +87,9 @@ void SvodDialog::showFileContextMenu(QPoint pos)
 
     QPoint globalPos = ui->treeWidget->mapToGlobal(pos);
     QMenu contextMenu;
-    contextMenu.addAction(QIcon(":/Images/properties.png"), "View Properties");
     contextMenu.addAction(QIcon(":/Images/extract.png"), "Extract");
+    contextMenu.addAction(QIcon(":/Images/replace.png"), "Replace");
+    contextMenu.addAction(QIcon(":/Images/properties.png"), "View Properties");
 
     QAction *selectedItem = contextMenu.exec(globalPos);
     if(selectedItem == NULL)
@@ -94,7 +97,7 @@ void SvodDialog::showFileContextMenu(QPoint pos)
 
     if (selectedItem->text() == "View Properties")
     {
-        SvodFileInfoDialog dialog(entry, this);
+        SvodFileInfoDialog dialog(svod, entry, this);
         dialog.exec();
     }
     else if (selectedItem->text() == "Extract")
@@ -116,9 +119,17 @@ void SvodDialog::showFileContextMenu(QPoint pos)
         dialog->setModal(true);
         dialog->show();
         dialog->start();
+    }
+    else if (selectedItem->text() == "Replace")
+    {
+        // open a file
+        QString filePath = QFileDialog::getOpenFileName(this, "Choose a modifed version to repalce...", QtHelpers::DesktopLocation());
+        if (filePath == "")
+            return;
 
-        //SvodIO io = svod->GetSvodIO(*entry);
-        //io.SaveFile(savePath.toStdString());
+        SvodIO io = svod->GetSvodIO(*entry);
+        io.OverwriteFile(filePath.toStdString());
+        io.Close();
     }
 }
 
@@ -150,11 +161,75 @@ void SvodDialog::on_pushButton_3_clicked()
 {
     try
     {
-        svod->Rehash();
+        svod->Rehash(UpdateProgress, this);
         QMessageBox::information(this, "Success", "Successfully rehashed the system.");
     }
     catch (string error)
     {
         QMessageBox::critical(this, "Error", "An error occurred while rehashing the system.\n\n" + QString::fromStdString(error));
+    }
+}
+
+void UpdateProgress(DWORD cur, DWORD total, void *arg)
+{
+    SvodDialog *dialog = reinterpret_cast<SvodDialog*>(arg);
+
+    if (cur < total)
+        dialog->statusBar->showMessage("Rehashing files " + QString::number(cur) + "/" + QString::number(total));
+    else
+        dialog->statusBar->showMessage("Successfully rehashed the system", 3000);
+
+    QApplication::processEvents();
+}
+
+void SvodDialog::on_comboBox_currentIndexChanged(int index)
+{
+    if (changing)
+    {
+        changing = false;
+        return;
+    }
+
+    // game on demand
+    if (index == 0)
+    {
+        QMessageBox::StandardButton button = QMessageBox::warning(this, "Warning",
+                             "Once converted, this will only work on consoles with signature checks removed such as JTAGs, RGHs or DevKits. Would you like to continue?",
+                             QMessageBox::Yes, QMessageBox::No);
+
+        if (button == QMessageBox::Yes)
+        {
+            ui->btnResign->setEnabled(false);
+            svod->metadata->magic = PIRS;
+            svod->metadata->contentType = GameOnDemand;
+            svod->metadata->displayDescription = L"";
+            svod->metadata->WriteMetaData();
+        }
+        else
+        {
+            changing = true;
+            ui->comboBox->setCurrentIndex(1);
+        }
+    }
+    // installed game
+    else
+    {
+        QMessageBox::StandardButton button = QMessageBox::warning(this, "Warning",
+                             "Once converted, this can only be used the KeyVault for the console is provided. Otherwise this can be played on consoles with signature checks removed such as JTAGs, RGHs or DevKits. Would you like to continue?",
+                             QMessageBox::Yes, QMessageBox::No);
+
+        if (button == QMessageBox::Yes)
+        {
+            ui->btnResign->setEnabled(true);
+            svod->metadata->magic = CON;
+            svod->metadata->contentType = InstalledGame;
+            svod->metadata->displayDescription = L"This is an installed game. To play, insert the original game disc.";
+            svod->metadata->WriteMetaData();
+        }
+        else
+        {
+            changing = true;
+            ui->comboBox->setCurrentIndex(0);
+        }
     }
 }

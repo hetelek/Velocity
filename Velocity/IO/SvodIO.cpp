@@ -27,8 +27,6 @@ void SvodIO::SetPosition(DWORD address)
 {
     DWORD baseAddress, baseIndex;
     SectorToAddress(fileEntry.sector, &baseAddress, &baseIndex);
-
-
 }
 
 void SvodIO::ReadBytes(BYTE *outBuffer, DWORD len)
@@ -153,6 +151,45 @@ void SvodIO::SaveFile(string savePath, void(*progress)(void*, DWORD, DWORD), voi
         progress(arg, total, total);
 
     outFile.close();
+    delete[] buffer;
+}
+
+void SvodIO::OverwriteFile(string inPath, void (*progress)(void *, DWORD, DWORD), void *arg)
+{
+    FileIO inFile(inPath);
+
+    // make sure that the files are the same size
+    inFile.setPosition(0, ios_base::end);
+    if (inFile.getPosition() != fileEntry.size)
+        throw string("SVOD: Cannot overwrite file of different length.\n");
+
+    BYTE *buffer = new BYTE[0x10000];
+    DWORD fileLen = fileEntry.size;
+    DWORD total = (fileLen + 0xFFFF) / 0x10000;
+    DWORD cur = 0;
+
+    inFile.setPosition(0);
+
+    while (fileLen >= 0x10000)
+    {
+        inFile.readBytes(buffer, 0x10000);
+        WriteBytes(buffer, 0x10000);
+        fileLen -= 0x10000;
+
+        if (progress)
+            progress(arg, cur++, total);
+    }
+
+    if (fileLen != 0)
+    {
+        inFile.readBytes(buffer, fileLen);
+        WriteBytes(buffer, fileLen);
+    }
+
+    if (progress)
+        progress(arg, total, total);
+
+    inFile.close();
     delete[] buffer;
 }
 
