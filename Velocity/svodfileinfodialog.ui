@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>302</width>
+    <width>320</width>
     <height>372</height>
    </rect>
   </property>
@@ -21,7 +21,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout" stretch="9,9,9,0,9,9,9,9,9,1,0">
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1,0,1,1,1,1,0,1,0,0">
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
@@ -50,7 +50,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="txtName"/>
+        <widget class="QLineEdit" name="txtName">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -97,6 +101,24 @@
        </item>
        <item>
         <widget class="QLabel" name="lblLocation">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_8">
+       <item>
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Sector: </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lblSector">
          <property name="text">
           <string/>
          </property>
@@ -218,7 +240,7 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>282</width>
+         <width>279</width>
          <height>13</height>
         </size>
        </property>
