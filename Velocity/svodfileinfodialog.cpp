@@ -1,8 +1,8 @@
 #include "svodfileinfodialog.h"
 #include "ui_svodfileinfodialog.h"
 
-SvodFileInfoDialog::SvodFileInfoDialog(GDFXFileEntry *entry, QWidget *parent) :
-    QDialog(parent), ui(new Ui::SvodFileInfoDialog), entry(entry)
+SvodFileInfoDialog::SvodFileInfoDialog(SVOD *svod, GDFXFileEntry *entry, QWidget *parent) :
+    QDialog(parent), ui(new Ui::SvodFileInfoDialog), entry(entry), svod(svod)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -11,6 +11,7 @@ SvodFileInfoDialog::SvodFileInfoDialog(GDFXFileEntry *entry, QWidget *parent) :
     ui->lblLocation->setText(QString::fromStdString(entry->filePath));
     ui->txtName->setText(QString::fromStdString(entry->name));
     ui->lblSize->setText(QString::fromStdString(ByteSizeToString(entry->size)) + " (" + QString::number(entry->size) + ")");
+    ui->lblSector->setText("0x" + QString::number(entry->sector, 16).toUpper());
 
     DWORD sizeOnDisk = (entry->size + 0x7FF) & 0xFFFFF800;
     ui->lblSizeOnDisk->setText(QString::fromStdString(ByteSizeToString(sizeOnDisk)) + " (" + QString::number(sizeOnDisk) + ")");
@@ -70,5 +71,17 @@ void SvodFileInfoDialog::on_pushButton_2_clicked()
 
 void SvodFileInfoDialog::on_pushButton_3_clicked()
 {
+    entry->name = ui->txtName->text().toStdString();
+    entry->attributes = 0;
+
+    entry->attributes |= ui->chReadOnly->isChecked();
+    entry->attributes |= ui->chHidden->isChecked() << 1;
+    entry->attributes |= ui->chSystem->isChecked() << 2;
+    entry->attributes |= ui->chDirectory->isChecked() << 4;
+    entry->attributes |= ui->chArchive->isChecked() << 5;
+    entry->attributes |= ui->chDevice->isChecked() << 6;
+    entry->attributes |= ui->chNormal->isChecked() << 7;
+
+    svod->WriteFileEntry(entry);
     close();
 }
