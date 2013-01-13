@@ -376,61 +376,72 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                 case LIVE:
                 case PIRS:
                 {
-                    StfsPackage *package = new StfsPackage(fileName);
-
-                    if (package->metaData->contentType != Profile)
+                    try
                     {
-                        if (settings->value("PackageDropAction").toInt() == OpenInPackageViewer)
+                        StfsPackage *package = new StfsPackage(fileName);
+
+                        if (package->metaData->contentType != Profile)
                         {
-                            PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gpdActions, gameActions, this);
-                            viewer->setAttribute(Qt::WA_DeleteOnClose);
-                            ui->mdiArea->addSubWindow(viewer);
-                            viewer->show();
-
-                            ui->statusBar->showMessage("STFS package loaded successfully.", 3000);
-                        }
-                        else
-                        {
-                            package->Rehash();
-                            package->Resign(QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType, this));
-
-                            delete package;
-
-                            ui->statusBar->showMessage("STFS package rehashed and resigned successfully.", 3000);
-                        }
-                    }
-                    else
-                    {
-                        if (settings->value("ProfileDropAction").toInt() == OpenInPackageViewer)
-                        {
-                            PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gpdActions, gameActions, this);
-                            viewer->setAttribute(Qt::WA_DeleteOnClose);
-                            ui->mdiArea->addSubWindow(viewer);
-                            viewer->show();
-
-                            ui->statusBar->showMessage("STFS package loaded successfully.", 3000);
-                        }
-                        else if (settings->value("ProfileDropAction").toInt() == RehashAndResign)
-                        {
-                            package->Rehash();
-                            package->Resign(QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType, this));
-
-                            delete package;
-
-                            ui->statusBar->showMessage("STFS package rehashed and resigned successfully.", 3000);
-                        }
-                        else
-                        {
-                            bool ok;
-                            ProfileEditor *editor = new ProfileEditor(ui->statusBar, package, true, &ok, this);
-                            editor->setAttribute(Qt::WA_DeleteOnClose);
-
-                            if (ok)
+                            if (settings->value("PackageDropAction").toInt() == OpenInPackageViewer)
                             {
-                                ui->mdiArea->addSubWindow(editor);
-                                editor->show();
+                                PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gpdActions, gameActions, this);
+                                viewer->setAttribute(Qt::WA_DeleteOnClose);
+                                ui->mdiArea->addSubWindow(viewer);
+                                viewer->show();
+
+                                ui->statusBar->showMessage("STFS package loaded successfully.", 3000);
+                            }
+                            else
+                            {
+                                package->Rehash();
+                                package->Resign(QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType, this));
+
+                                delete package;
+
+                                ui->statusBar->showMessage("STFS package rehashed and resigned successfully.", 3000);
                             }
                         }
+                        else
+                        {
+                            if (settings->value("ProfileDropAction").toInt() == OpenInPackageViewer)
+                            {
+                                PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gpdActions, gameActions, this);
+                                viewer->setAttribute(Qt::WA_DeleteOnClose);
+                                ui->mdiArea->addSubWindow(viewer);
+                                viewer->show();
+
+                                ui->statusBar->showMessage("STFS package loaded successfully.", 3000);
+                            }
+                            else if (settings->value("ProfileDropAction").toInt() == RehashAndResign)
+                            {
+                                package->Rehash();
+                                package->Resign(QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType, this));
+
+                                delete package;
+
+                                ui->statusBar->showMessage("STFS package rehashed and resigned successfully.", 3000);
+                            }
+                            else
+                            {
+                                bool ok;
+                                ProfileEditor *editor = new ProfileEditor(ui->statusBar, package, true, &ok, this);
+                                editor->setAttribute(Qt::WA_DeleteOnClose);
+
+                                if (ok)
+                                {
+                                    ui->mdiArea->addSubWindow(editor);
+                                    editor->show();
+                                }
+                            }
+                        }
+                    }
+                    catch(...)
+                    {
+                        SVOD *svod = new SVOD(fileName);
+                        SvodDialog *dialog = new SvodDialog(svod, ui->statusBar, this);
+                        ui->mdiArea->addSubWindow(dialog);
+                        dialog->setAttribute(Qt::WA_DeleteOnClose);
+                        dialog->exec();
                     }
 
                     break;
