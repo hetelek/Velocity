@@ -765,7 +765,7 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
 
             // add the sync to the queue
             sync.syncValue = group->syncData.nextSyncID++;
-            group->syncs.toSync.push_back(sync);
+            group->syncs.toSync.insert(group->syncs.toSync.begin(), sync);
         }
     }
 
