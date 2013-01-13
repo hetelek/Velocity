@@ -206,7 +206,7 @@
   <action name="actionSTRB_File">
    <property name="icon">
     <iconset resource="Resources.qrc">
-     <normaloff>:/Images/asset.png</normaloff>:/Images/asset.png</iconset>
+     <normaloff>:/Images/strb.png</normaloff>:/Images/strb.png</iconset>
    </property>
    <property name="text">
     <string>Avatar Asset</string>

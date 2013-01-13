@@ -65,6 +65,8 @@ public:
     static void ShowAllItems(QTreeWidgetItem *parent);
 
     static void CollapseAllChildren(QTreeWidgetItem *item);
+
+    static void GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWidgetItem &item);
 };
 
 #endif // QTHELPERS_H
