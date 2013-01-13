@@ -24,7 +24,6 @@
         <file>Images/add.png</file>
         <file>Images/delete.png</file>
         <file>Images/gpd.png</file>
-        <file>Images/asset.png</file>
         <file>Images/avatar-body.png</file>
         <file>Images/HiddenAchievement.png</file>
         <file>Images/unlock.png</file>
@@ -85,5 +84,8 @@
         <file>Images/sign.png</file>
         <file>Images/XEXFileIcon.png</file>
         <file>Images/FolderFileIcon.png</file>
+        <file>Images/PackageFileIcon.png</file>
+        <file>Images/StrbFileIcon.png</file>
+        <file>Images/strb.png</file>
     </qresource>
 </RCC>
