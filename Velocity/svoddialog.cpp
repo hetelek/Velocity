@@ -10,7 +10,8 @@ SvodDialog::SvodDialog(SVOD *svod, QStatusBar *statusBar, QWidget *parent) :
     loadListing(NULL, &svod->root);
 
     ui->treeWidget->header()->setDefaultSectionSize(75);
-    ui->treeWidget->header()->resizeSection(0, 200);
+    ui->treeWidget->header()->resizeSection(0, 250);
+    ui->treeWidget->header()->resizeSection(3, 20);
 
     ui->btnResign->setEnabled(svod->metadata->magic == CON);
 
@@ -84,6 +85,9 @@ void SvodDialog::showFileContextMenu(QPoint pos)
         return;
 
     GDFXFileEntry *entry = ui->treeWidget->currentItem()->data(0, Qt::UserRole).value<GDFXFileEntry*>();
+
+    if (entry->attributes & GdfxDirectory)
+        return;
 
     QPoint globalPos = ui->treeWidget->mapToGlobal(pos);
     QMenu contextMenu;
