@@ -160,7 +160,9 @@ void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *pare
         else
             fileEntry = new QTreeWidgetItem(ui->treeWidget);
 
-        SetIcon(entry->fileEntries.at(i).name, fileEntry);
+        QString path;
+        GetPackagePath(fileEntry, &path);
+        SetIcon(entry->fileEntries.at(i).name, &entry->fileEntries.at(i), fileEntry);
 
         QString name = QString::fromStdString(entry->fileEntries.at(i).name);
         fileEntry->setText(0, name);
@@ -199,27 +201,18 @@ void PackageViewer::GetPackagePath(QTreeWidgetItem *item, QString *out, bool fol
         GetPackagePath(item->parent(), out);
 }
 
-void PackageViewer::SetIcon(string name, QTreeWidgetItem *item)
+void PackageViewer::SetIcon(string name, FileEntry *entry, QTreeWidgetItem *item)
 {
-    DWORD index = name.rfind(".");
-    string extension = "";
-    if (index != string::npos)
-        extension = name.substr(index);
-
-    if (extension == ".gpd" || extension == ".fit")
-        item->setIcon(0, QIcon(":/Images/GpdFileIcon.png"));
-    else if (extension == ".xex")
-        item->setIcon(0, QIcon(":/Images/XEXFileIcon.png"));
-    else if (name == "Account")
-        item->setIcon(0, QIcon(":/Images/AccountFileIcon.png"));
-    else if (name == "PEC")
-        item->setIcon(0, QIcon(":/Images/PecFileIcon.png"));
-    else if (name == "Account")
-        item->setIcon(0, QIcon(":/Images/AccountFileIcon.png"));
-    else if (extension == ".png" || extension == ".jpg" || extension == ".jpeg")
-        item->setIcon(0, QIcon(":/Images/ImageFileIcon.png"));
-    else
-        item->setIcon(0, QIcon(":/Images/DefaultFileIcon.png"));
+    try
+    {
+    QIcon toSet;
+    QtHelpers::GetFileIcon(package->GetFileMagic(*entry), QString::fromStdString(name), toSet, *item);
+    item->setIcon(0, toSet);
+    }
+    catch (string error)
+    {
+        QMessageBox::critical(this, "", QString::fromStdString(error));
+    }
 }
 
 void PackageViewer::on_btnFix_clicked()
@@ -553,7 +546,9 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             else
                 fileEntry = new QTreeWidgetItem(ui->treeWidget);
 
-            SetIcon(injectedEntry->name, fileEntry);
+            QString filePath;
+            GetPackagePath(fileEntry, &filePath);
+            SetIcon(injectedEntry->name, injectedEntry, fileEntry);
 
             fileEntry->setText(0, QString::fromStdString(injectedEntry->name));
             fileEntry->setText(1, QString::fromStdString(ByteSizeToString(injectedEntry->fileSize)));
@@ -600,7 +595,9 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
                     }
                     else
                     {
-                        SetIcon(entry.name, items.at(0));
+                        QString filePath;
+                        GetPackagePath(items.at(0), &filePath);
+                        SetIcon(entry.name, &entry, items.at(0));
                         items.at(0)->setText(0, QString::fromStdString(entry.name));
                         items.at(0)->setText(1, "0x" + QString::number(entry.fileSize, 16).toUpper());
                         items.at(0)->setText(2, "0x" + QString::number(package->BlockToAddress(entry.startingBlockNum), 16).toUpper());
@@ -628,7 +625,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
     if (index != string::npos)
         extension = item->text(0).mid(index).toLower();
 
-    if (extension == ".gpd" || extension == ".fit")
+    if (item->data(0, Qt::UserRole).toString() == "XDBF")
     {
         try
         {
@@ -671,7 +668,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
             QMessageBox::critical(this, "Error", "Failed to open the GPD.\n\n" + QString::fromStdString(error));
         }
     }
-    else if (extension == ".bin")
+    else if (item->data(0, Qt::UserRole).toString() == "STRB")
     {
         // get the path of the file in the package
         QString packagePath;
@@ -697,7 +694,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
         // delete the temp file
         remove(tempName.c_str());
     }
-    else if (extension == ".png" || extension == ".jpg" || extension == ".jpeg")
+    else if (item->data(0, Qt::UserRole).toString() == "Image")
     {
         // get a temporary file name
         string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
@@ -719,7 +716,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
         // delete the temp file
         QFile::remove(QString::fromStdString(tempName));
     }
-    else if (item->text(0) == "PEC")
+    else if (item->data(0, Qt::UserRole).toString() == "PEC")
     {
         try
         {
@@ -749,41 +746,34 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
             QMessageBox::critical(this, "Error", "Failed to open PEC file.\n\n" + QString::fromStdString(error));
         }
     }
-    else
+    else if (item->data(0, Qt::UserRole).toString() == "STFS")
     {
         QString packagePath;
         GetPackagePath(item, &packagePath);
 
-        // get the file magic
-        DWORD magic = package->GetFileMagic(packagePath.toStdString());
-
-        // check and see if it's an STFS package
-        if (magic == CON || magic == LIVE || magic == PIRS)
+        try
         {
-            try
-            {
-                // get a temporary file name
-                string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+            // get a temporary file name
+            string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
 
-                // extract the file to a temporary location
-                package->ExtractFile(packagePath.toStdString(), tempName);
+            // extract the file to a temporary location
+            package->ExtractFile(packagePath.toStdString(), tempName);
 
-                StfsPackage pack(tempName);
-                PackageViewer dialog(statusBar, &pack, gpdActions, gameActions, this, false);
-                dialog.exec();
+            StfsPackage pack(tempName);
+            PackageViewer dialog(statusBar, &pack, gpdActions, gameActions, this, false);
+            dialog.exec();
 
-                pack.Close();
+            pack.Close();
 
-                // replace
-                package->ReplaceFile(tempName, packagePath.toStdString());
+            // replace
+            package->ReplaceFile(tempName, packagePath.toStdString());
 
-                // delete the temporary file
-                QFile::remove(QString::fromStdString(tempName));
-            }
-            catch(string error)
-            {
-                QMessageBox::critical(this, "Error", "Failed to open Stfs Package.\n\n" + QString::fromStdString(error));
-            }
+            // delete the temporary file
+            QFile::remove(QString::fromStdString(tempName));
+        }
+        catch(string error)
+        {
+            QMessageBox::critical(this, "Error", "Failed to open Stfs Package.\n\n" + QString::fromStdString(error));
         }
     }
 }
