@@ -382,7 +382,11 @@ FileListing StfsPackage::GetFileListing(bool forceUpdate)
 DWORD StfsPackage::GetFileMagic(string pathInPackage)
 {
     FileEntry entry = GetFileEntry(pathInPackage);
+    return GetFileMagic(entry);
+}
 
+DWORD StfsPackage::GetFileMagic(FileEntry entry)
+{
     // make sure the file is at least 4 bytes
     if (entry.fileSize < 4)
         return 0;
