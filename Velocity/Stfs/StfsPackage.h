@@ -93,6 +93,9 @@ public:
     // Description: get the first 4 bytes of a file
     DWORD GetFileMagic(string pathInPackage);
 
+    // Description: get the first 4 bytes of a file
+    DWORD GetFileMagic(FileEntry entry);
+
     // Description: check if the file exists
     bool FileExists(string pathInPackage);
 
