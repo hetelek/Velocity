@@ -26,6 +26,8 @@ SvodFileInfoDialog::SvodFileInfoDialog(SVOD *svod, GDFXFileEntry *entry, QWidget
     ui->chNormal->setChecked(entry->attributes & GdfxNormal);
     ui->chReadOnly->setChecked(entry->attributes & GdfxReadOnly);
     ui->chSystem->setChecked(entry->attributes & GdfxSystem);
+
+    setWindowTitle(QString::fromStdString(entry->name) + " Properties");
 }
 
 SvodFileInfoDialog::~SvodFileInfoDialog()
