@@ -19,6 +19,7 @@ class SVOD
 {
 public:
     SVOD(string rootFile);
+    ~SVOD();
 
     XContentHeader *metadata;
     vector<GDFXFileEntry> root;
@@ -36,9 +37,13 @@ public:
     // write a file entry back to the system
     void WriteFileEntry(GDFXFileEntry *entry);
 
+    // get the total number of sectors in the system
+    DWORD GetSectorCount();
+
 private:
     string contentDirectory;
     MultiFileIO *io;
+    FileIO *rootFile;
     GDFXHeader header;
 
     // parse the file listing

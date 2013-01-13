@@ -51,8 +51,8 @@ void SvodIO::ReadBytes(BYTE *outBuffer, DWORD len)
     {
         // check to see if we're at the end of a data file
         io->GetPosition(&addr, &index);
-        if (addr == 0xA290000)
-            io->SetPosition(0, index + 1);
+        if (addr == 0)
+            io->SetPosition(0x2000, index);
         else
             io->SetPosition(addr + 0x1000);
 
@@ -65,8 +65,8 @@ void SvodIO::ReadBytes(BYTE *outBuffer, DWORD len)
     {
         // check to see if we're at the end of a data file
         io->GetPosition(&addr, &index);
-        if (addr == 0xA290000)
-            io->SetPosition(0, index + 1);
+        if (addr == 0)
+            io->SetPosition(0x2000, index);
         else
             io->SetPosition(addr + 0x1000);
 
