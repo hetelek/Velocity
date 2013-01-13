@@ -1,18 +1,19 @@
 #include "svod.h"
 
-SVOD::SVOD(string rootFile)
+SVOD::SVOD(string rootPath)
 {
     // make sure all of the slashes are the same
-    for (DWORD i = 0; i < rootFile.length(); i++)
-        if (rootFile.at(i) == '\\')
-            rootFile.at(i) = '/';
+    for (DWORD i = 0; i < rootPath.length(); i++)
+        if (rootPath.at(i) == '\\')
+            rootPath.at(i) = '/';
 
     // get the content folder name, and make sure it exists
-    string fileName = rootFile.substr(rootFile.find_last_of("/") + 1);
-    contentDirectory = rootFile.substr(0, rootFile.find_last_of("/")) + "/" + fileName + ".data/";
+    string fileName = rootPath.substr(rootPath.find_last_of("/") + 1);
+    contentDirectory = rootPath.substr(0, rootPath.find_last_of("/")) + "/" + fileName + ".data/";
 
     // parse the XContentHeader
-    metadata = new XContentHeader(new FileIO(rootFile));
+    rootFile = new FileIO(rootPath);
+    metadata = new XContentHeader(rootFile);
 
     if (metadata->fileSystem != FileSystemSVOD)
         throw string("SVOD: Invalid file system header.\n");
@@ -35,6 +36,15 @@ SVOD::SVOD(string rootFile)
 
     // read the file listing
     ReadFileListing(&root, header.rootSector, header.rootSize, "/");
+}
+
+SVOD::~SVOD()
+{
+    io->Close();
+    delete io;
+
+    rootFile->close();
+    delete rootFile;
 }
 
 void SVOD::SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *dataFileIndex)
@@ -204,7 +214,18 @@ void SVOD::Rehash(void (*progress)(DWORD, DWORD, void*), void *arg)
     memcpy(metadata->svodVolumeDescriptor.rootHash, prevHash, 0x14);
     metadata->WriteVolumeDescriptor();
 
-    // TODO: hash the XContentHeader
+    DWORD dataLen = ((metadata->headerSize + 0xFFF) & 0xFFFFF000) - 0x344;
+    BYTE *buff = new BYTE[dataLen];
+
+    rootFile->setPosition(0x344);
+    rootFile->readBytes(buff, dataLen);
+
+    Botan::SHA_160 sha1;
+    sha1.clear();
+    sha1.update(buff, dataLen);
+    sha1.final(metadata->headerHash);
+
+    metadata->WriteMetaData();
 }
 
 void SVOD::HashBlock(BYTE *block, BYTE *outHash)
@@ -218,6 +239,14 @@ void SVOD::HashBlock(BYTE *block, BYTE *outHash)
 void SVOD::WriteFileEntry(GDFXFileEntry *entry)
 {
     GdfxWriteFileEntry(io, entry);
+}
+
+DWORD SVOD::GetSectorCount()
+{
+    io->SetPosition(0, io->FileCount() - 1);
+    DWORD fileLen = io->CurrentFileLength() - 0x2000;
+
+    return (io->FileCount() * 0x14388) + ((fileLen - (0x1000 * (fileLen / 0xCD000))) / 0x800);
 }
 
 int compareFileEntries(GDFXFileEntry a, GDFXFileEntry b)
