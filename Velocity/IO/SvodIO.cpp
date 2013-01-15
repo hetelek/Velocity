@@ -25,12 +25,40 @@ void SvodIO::SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *data
 
 void SvodIO::SetPosition(DWORD address)
 {
-    DWORD baseAddress, baseIndex;
-    SectorToAddress(fileEntry.sector, &baseAddress, &baseIndex);
+    /* DISCLAIMER: This function is not perfect and will not work for all SVOD systems. If the
+       system has more than 204 (0xCC) data files, then this function may not work. */
+
+    DWORD baseAddr, baseIndex, index, addr;
+    SectorToAddress(fileEntry.sector, &baseAddr, &baseIndex);
+
+    // the number of bytes between the file start and the end of the hash table before it
+    DWORD baseHashOff = (baseAddr - 0x2000) % 0xCD000;
+
+    // the amount of bytes taken up by level0 hash tables inbetween the file start and the seek address
+    DWORD totalHashOffset = ((baseHashOff + address) / 0xCC000) << 0xC;
+
+    index = ((baseAddr + address + totalHashOffset) / 0xA290000) + baseIndex;
+    addr = (baseAddr + address + totalHashOffset) % 0xA290000;
+
+    // account for level1 hash tables
+    addr += ((baseAddr + address + totalHashOffset) / 0xA290000) << 0xC;
+    if (addr >= 0xA290000)
+    {
+        index++;
+        addr = (addr % 0xA290000) + 0x2000;
+    }
+
+    // seek to the position
+    io->SetPosition(addr, index);
+    pos = address;
 }
 
 void SvodIO::ReadBytes(BYTE *outBuffer, DWORD len)
 {
+    // all the SvodIOs are using the same IO underneath, so we have to make sure we're at the correct pos
+    SetPosition(pos);
+    pos += len;
+
     // get the current position
     DWORD addr, index;
     io->GetPosition(&addr, &index);
@@ -72,12 +100,14 @@ void SvodIO::ReadBytes(BYTE *outBuffer, DWORD len)
 
         io->ReadBytes(outBuffer, len);
     }
-
-    pos += len;
 }
 
 void SvodIO::WriteBytes(BYTE *buffer, DWORD len)
 {
+    // all the SvodIOs are using the same IO underneath, so we have to make sure we're at the correct pos
+    SetPosition(pos);  
+    pos += len;
+
     // get the current position
     DWORD addr, index;
     io->GetPosition(&addr, &index);
@@ -119,8 +149,6 @@ void SvodIO::WriteBytes(BYTE *buffer, DWORD len)
 
         io->WriteBytes(buffer, len);
     }
-
-    pos += len;
 }
 
 void SvodIO::SaveFile(string savePath, void(*progress)(void*, DWORD, DWORD), void *arg)
@@ -169,6 +197,7 @@ void SvodIO::OverwriteFile(string inPath, void (*progress)(void *, DWORD, DWORD)
     DWORD cur = 0;
 
     inFile.setPosition(0);
+    SetPosition(0);
 
     while (fileLen >= 0x10000)
     {
