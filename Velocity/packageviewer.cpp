@@ -625,7 +625,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
     if (index != string::npos)
         extension = item->text(0).mid(index).toLower();
 
-    if (item->data(0, Qt::UserRole).toString() == "XDBF")
+    if (item->data(1, Qt::UserRole).toString() == "XDBF")
     {
         try
         {
@@ -668,7 +668,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
             QMessageBox::critical(this, "Error", "Failed to open the GPD.\n\n" + QString::fromStdString(error));
         }
     }
-    else if (item->data(0, Qt::UserRole).toString() == "STRB")
+    else if (item->data(1, Qt::UserRole).toString() == "STRB")
     {
         // get the path of the file in the package
         QString packagePath;
@@ -694,7 +694,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
         // delete the temp file
         remove(tempName.c_str());
     }
-    else if (item->data(0, Qt::UserRole).toString() == "Image")
+    else if (item->data(1, Qt::UserRole).toString() == "Image")
     {
         // get a temporary file name
         string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
@@ -716,7 +716,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
         // delete the temp file
         QFile::remove(QString::fromStdString(tempName));
     }
-    else if (item->data(0, Qt::UserRole).toString() == "PEC")
+    else if (item->data(1, Qt::UserRole).toString() == "PEC")
     {
         try
         {
@@ -746,7 +746,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
             QMessageBox::critical(this, "Error", "Failed to open PEC file.\n\n" + QString::fromStdString(error));
         }
     }
-    else if (item->data(0, Qt::UserRole).toString() == "STFS")
+    else if (item->data(1, Qt::UserRole).toString() == "STFS")
     {
         QString packagePath;
         GetPackagePath(item, &packagePath);

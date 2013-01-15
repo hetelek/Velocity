@@ -284,7 +284,7 @@ void QtHelpers::CollapseAllChildren(QTreeWidgetItem *item)
 
 void QtHelpers::GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWidgetItem &item)
 {
-    item.setData(0, Qt::UserRole, "");
+    item.setData(1, Qt::UserRole, "");
 
     switch (magic)
     {
@@ -292,23 +292,23 @@ void QtHelpers::GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWid
         case LIVE:
         case PIRS:
             icon = QIcon(":/Images/PackageFileIcon.png");
-            item.setData(0, Qt::UserRole, "STFS");
+            item.setData(1, Qt::UserRole, "STFS");
             break;
         case 0x58444246:    // XDBF
             icon = QIcon(":/Images/GpdFileIcon.png");
-            item.setData(0, Qt::UserRole, "XDBF");
+            item.setData(1, Qt::UserRole, "XDBF");
             break;
         case 0x53545242:    // STRB
             icon = QIcon(":/Images/StrbFileIcon.png");
-            item.setData(0, Qt::UserRole, "STRB");
+            item.setData(1, Qt::UserRole, "STRB");
             break;
         case 0x58455832:    // XEX2
             icon = QIcon(":/Images/XEXFileIcon.png");
-            item.setData(0, Qt::UserRole, "XEX");
+            item.setData(1, Qt::UserRole, "XEX");
             break;
         case 0x89504E47:    // ‰PNG
             icon = QIcon(":/Images/ImageFileIcon.png");
-            item.setData(0, Qt::UserRole, "Image");
+            item.setData(1, Qt::UserRole, "Image");
             break;
         default:
             int index = fileName.lastIndexOf(".");
@@ -321,12 +321,12 @@ void QtHelpers::GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWid
             else if (fileName == "PEC")
             {
                 icon = QIcon(":/Images/PecFileIcon.png");
-                item.setData(0, Qt::UserRole, "PEC");
+                item.setData(1, Qt::UserRole, "PEC");
             }
             else if (extension == ".jpg" || extension == ".jpeg")
             {
                 icon = QIcon(":/Images/ImageFileIcon.png");
-                item.setData(0, Qt::UserRole, "Image");
+                item.setData(1, Qt::UserRole, "Image");
             }
             else
                 icon = QIcon(":/Images/DefaultFileIcon.png");

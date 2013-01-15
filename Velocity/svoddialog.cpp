@@ -58,13 +58,12 @@ void SvodDialog::loadListing(QTreeWidgetItem *parent, vector<GDFXFileEntry> *fil
 
         svod->SectorToAddress(files->at(i).sector, &addr, &index);
 
-        QString extension = QString::fromStdString(files->at(i).name).mid(QString::fromStdString(files->at(i).name).lastIndexOf(".") + 1);
-        if (extension == "xex")
-            item->setIcon(0, QIcon(":/Images/XEXFileIcon.png"));
-        else if (extension == "png" || extension == "jpg" || extension == "jpeg" || extension == "bmp")
-            item->setIcon(0, QIcon(":/Images/ImageFileIcon.png"));
-        else
-            item->setIcon(0, QIcon(":/Images/DefaultFileIcon.png"));
+
+        QIcon icon;
+        SvodIO io = svod->GetSvodIO(files->at(i));
+        QtHelpers::GetFileIcon(io.ReadDword(), QString::fromStdString(files->at(i).name), icon, *item);
+
+        item->setIcon(0, icon);
         item->setText(0, QString::fromStdString(files->at(i).name));
         item->setText(1, QString::fromStdString(ByteSizeToString(files->at(i).size)));
         item->setText(2, "0x" + QString::number(addr, 16).toUpper());
@@ -235,5 +234,44 @@ void SvodDialog::on_comboBox_currentIndexChanged(int index)
             changing = true;
             ui->comboBox->setCurrentIndex(0);
         }
+    }
+}
+
+void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
+{
+    GDFXFileEntry *entry = ui->treeWidget->currentItem()->data(0, Qt::UserRole).value<GDFXFileEntry*>();
+    QString tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", ""));
+
+    if (item->data(1, Qt::UserRole).toString() == "Image")
+    {
+        svod->GetSvodIO(*entry).SaveFile(tempName.toStdString());
+
+        ImageDialog dialog(QImage(tempName), this);
+        dialog.exec();
+
+        QFile::remove(tempName);
+    }
+    else if (item->data(1, Qt::UserRole).toString() == "STFS")
+    {
+        SvodIO io = svod->GetSvodIO(*entry);
+        io.SaveFile(tempName.toStdString());
+
+        try
+        {
+            StfsPackage package(tempName.toStdString());
+
+            PackageViewer viewer(statusBar, &package, QList<QAction*>(), QList<QAction*>(), this, false);
+            viewer.exec();
+
+            package.Close();
+
+            io.OverwriteFile(tempName.toStdString());
+        }
+        catch (string error)
+        {
+            QMessageBox::critical(this, "Error", "An error occurred while loading the STFS package.\n\n" + QString::fromStdString(error));
+        }
+
+        QFile::remove(tempName);
     }
 }
