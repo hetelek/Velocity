@@ -74,6 +74,7 @@ void StfsPackage::Parse()
         metaData->stfsVolumeDescriptor.allocatedBlockCount = 1;
         metaData->stfsVolumeDescriptor.unallocatedBlockCount = 0;
 
+        metaData->fileSystem = FileSystemSTFS;
         metaData->dataFileCount = 0;
         metaData->dataFileCombinedSize = 0;
         metaData->seasonNumber = 0;
@@ -1688,10 +1689,6 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injec
     if (fileName.length() > 0x28)
         throw string("STFS: File entry name length cannot be greater than 40(0x28) characters.\n");
 
-    // update the progress if needed
-    if (injectProgress != NULL)
-        injectProgress(arg, 0, entry.blocksForFile);
-
     entry.fileSize = fileSize;
     entry.flags = ConsecutiveBlocks;
     entry.pathIndicator = folder->folder.entryIndex;
@@ -1699,6 +1696,10 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injec
     entry.blocksForFile = ((fileSize + 0xFFF) & 0xFFFFFFF000) >> 0xC;
     entry.createdTimeStamp = MSTimeToDWORD(TimetToMSTime(time(NULL)));
     entry.accessTimeStamp = entry.createdTimeStamp;
+
+    // update the progress if needed
+    if (injectProgress != NULL)
+        injectProgress(arg, 0, entry.blocksForFile);
 
     INT24 block = 0;
     INT24 prevBlock = INT24_MAX;
