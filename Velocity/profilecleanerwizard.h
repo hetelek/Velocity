@@ -13,7 +13,7 @@
 #include "GPD/DashboardGPD.h"
 #include "GPD/GameGPD.h"
 
-enum Operation
+enum CleanOperation
 {
     Dust,
     Sweep,
@@ -51,7 +51,7 @@ private:
     QString profilePath;
     DWORD initialSize;
 
-    Operation op;
+    CleanOperation op;
 
     void clean();
     void extractAll(FileListing *f, QString parentDirectory);
