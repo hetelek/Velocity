@@ -91,8 +91,11 @@ void SvodDialog::showFileContextMenu(QPoint pos)
     QPoint globalPos = ui->treeWidget->mapToGlobal(pos);
     QMenu contextMenu;
     contextMenu.addAction(QIcon(":/Images/extract.png"), "Extract");
-    contextMenu.addAction(QIcon(":/Images/replace.png"), "Replace");
-    contextMenu.addAction(QIcon(":/Images/properties.png"), "View Properties");
+    if (ui->treeWidget->selectedItems().count() == 1)
+    {
+        contextMenu.addAction(QIcon(":/Images/replace.png"), "Replace");
+        contextMenu.addAction(QIcon(":/Images/properties.png"), "View Properties");
+    }
 
     QAction *selectedItem = contextMenu.exec(globalPos);
     if(selectedItem == NULL)
@@ -130,9 +133,10 @@ void SvodDialog::showFileContextMenu(QPoint pos)
         if (filePath == "")
             return;
 
-        SvodIO io = svod->GetSvodIO(*entry);
-        io.OverwriteFile(filePath.toStdString());
-        io.Close();
+        SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSVOD, svod, OpReplace, QString::fromStdString(entry->filePath + entry->name), filePath, NULL, this);
+        dialog->setModal(true);
+        dialog->show();
+        dialog->startJob();
     }
 }
 
@@ -242,6 +246,7 @@ void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
     GDFXFileEntry *entry = ui->treeWidget->currentItem()->data(0, Qt::UserRole).value<GDFXFileEntry*>();
     QString tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", ""));
 
+    // the other file types that are supported have no buisness being in an SVOD system, so we'll just leave those out
     if (item->data(1, Qt::UserRole).toString() == "Image")
     {
         svod->GetSvodIO(*entry).SaveFile(tempName.toStdString());

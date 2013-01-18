@@ -3,12 +3,18 @@
 
 // qt
 #include <QDialog>
+#include "multiprogressdialog.h"
 
 // xbox360
 #include "Stfs/StfsPackage.h"
 
-// other
-#include "stfsworkerthread.h"
+enum Operation
+{
+    OpReplace,
+    OpInject
+};
+
+void UpdateProgress(void *arg, DWORD cur, DWORD total);
 
 namespace Ui {
 class SingleProgressDialog;
@@ -19,21 +25,19 @@ class SingleProgressDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit SingleProgressDialog(StfsPackage *package, QString externalFile, QString packageFilePath, StfsJob job, FileEntry *entry = NULL, QWidget *parent = 0);
+    explicit SingleProgressDialog(FileSystem system, void *device, Operation op, QString internalPath, QString externalPath, void *outEntry = NULL, QWidget *parent = 0);
     void startJob();
     ~SingleProgressDialog();
-
-private slots:
-    void onProgressUpdated(DWORD blocksReplaced, DWORD totalBlockCount);
     
 private:
     Ui::SingleProgressDialog *ui;
+    Operation op;
+    FileSystem system;
+    void *device;
+    void *outEntry;
+    QString internalPath, externalPath;
 
-    StfsPackage *package;
-    StfsJob job;
-    FileEntry *entry;
-    QString externalFile;
-    QString packageFilePath;
+    friend void UpdateProgress(void *arg, DWORD cur, DWORD total);
 };
 
 #endif // SINGLEPROGRESSDIALOG_H

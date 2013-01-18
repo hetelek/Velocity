@@ -22,6 +22,7 @@
 #include "imagedialog.h"
 #include "metadata.h"
 #include "packageviewer.h"
+#include "singleprogressdialog.h"
 
 namespace Ui {
 class SvodDialog;

@@ -498,7 +498,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
         try
         {
-            SingleProgressDialog *dialog = new SingleProgressDialog(package, path, packagePath, Replace, NULL, this);
+            SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSTFS, package, OpReplace, packagePath, path, NULL, this);
             dialog->setModal(true);
             dialog->show();
             dialog->startJob();
@@ -533,7 +533,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         try
         {
             FileEntry *injectedEntry = new FileEntry;
-            SingleProgressDialog *dialog = new SingleProgressDialog(package, path, packagePath, Inject, injectedEntry, this);
+            SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSTFS, package, OpInject, packagePath, path, injectedEntry, this);
             dialog->setModal(true);
             dialog->show();
             dialog->startJob();
