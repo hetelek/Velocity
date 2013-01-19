@@ -47,6 +47,13 @@ SVOD::~SVOD()
     delete rootFile;
 }
 
+void SVOD::Resign(string kvPath)
+{
+    if (metadata->magic != CON)
+        throw string("SVOD: Can only resign console systems.\n");
+    metadata->ResignHeader(kvPath);
+}
+
 void SVOD::SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *dataFileIndex)
 {
     DWORD trueSector = (sector - (metadata->svodVolumeDescriptor.dataBlockOffset * 2)) % 0x14388;
