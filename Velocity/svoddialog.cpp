@@ -103,7 +103,7 @@ void SvodDialog::showFileContextMenu(QPoint pos)
 
     if (selectedItem->text() == "View Properties")
     {
-        SvodFileInfoDialog dialog(svod, entry, this);
+        SvodFileInfoDialog dialog(svod, entry, ui->treeWidget->currentItem()->data(1, Qt::UserRole).toString(), this);
         dialog.exec();
     }
     else if (selectedItem->text() == "Extract")
@@ -278,5 +278,45 @@ void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
         }
 
         QFile::remove(tempName);
+    }
+}
+
+void SvodDialog::on_btnResign_clicked()
+{
+    QString kvPath = QFileDialog::getOpenFileName(this, "Choose a kv for resigning", QtHelpers::DesktopLocation());
+    if (kvPath == "")
+        return;
+
+    // open kv
+    FileIO kvIO(kvPath.toStdString());
+    kvIO.setPosition(0, ios_base::end);
+
+    // read in the console id of the certificate in the kv
+    DWORD adder = 0;
+    if (kvIO.getPosition() == 0x4000)
+        adder = 0x10;
+    kvIO.setPosition(0x9BA + adder);
+    BYTE consoleID[5];
+    kvIO.readBytes(consoleID, 5);
+    kvIO.close();
+
+    // make sure the console ids match
+    if (memcmp(consoleID, svod->metadata->certificate.ownerConsoleID, 5) != 0)
+    {
+        QMessageBox::StandardButton btn = QMessageBox::question(this, "Continue?",
+                                                                "The KeyVault provided is not from the console where this SVOD system was signed. This system will show up as corrupt on the original console. Unless you know what you're doing, choose no.\n\nAre you sure that you want to contiure?",
+                                                                QMessageBox::No, QMessageBox::Yes);
+        if (btn != QMessageBox::Yes)
+            return;
+    }
+
+    try
+    {
+        svod->Resign(kvPath.toStdString());
+        QMessageBox::information(this, "Success", "Successfuly resigned the system.");
+    }
+    catch (string error)
+    {
+        QMessageBox::critical(this, "Error", "An error occurred while resigning the system.\n\n" + QString::fromStdString(error));
     }
 }
