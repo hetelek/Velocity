@@ -34,6 +34,9 @@ public:
     // fix all of the hashes in the system
     void Rehash(void (*progress)(DWORD, DWORD, void*) = NULL, void *arg = NULL);
 
+    // fix the RSA signature in the root descriptor
+    void Resign(string kvPath);
+
     // write a file entry back to the system
     void WriteFileEntry(GDFXFileEntry *entry);
 
