@@ -55,6 +55,8 @@ private slots:
 
     void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
 
+    void on_btnResign_clicked();
+
 private:
     Ui::SvodDialog *ui;
     SVOD *svod;

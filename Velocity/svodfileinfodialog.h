@@ -18,7 +18,7 @@ class SvodFileInfoDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit SvodFileInfoDialog(SVOD *svod, GDFXFileEntry *entry, QWidget *parent = 0);
+    explicit SvodFileInfoDialog(SVOD *svod, GDFXFileEntry *entry, QString type, QWidget *parent = 0);
     ~SvodFileInfoDialog();
     
 private slots:
@@ -32,6 +32,7 @@ private:
     Ui::SvodFileInfoDialog *ui;
     GDFXFileEntry *entry;
     SVOD *svod;
+    QString type;
 
     QString getFileType(QString fileName);
 };

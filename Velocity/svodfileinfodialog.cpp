@@ -1,8 +1,8 @@
 #include "svodfileinfodialog.h"
 #include "ui_svodfileinfodialog.h"
 
-SvodFileInfoDialog::SvodFileInfoDialog(SVOD *svod, GDFXFileEntry *entry, QWidget *parent) :
-    QDialog(parent), ui(new Ui::SvodFileInfoDialog), entry(entry), svod(svod)
+SvodFileInfoDialog::SvodFileInfoDialog(SVOD *svod, GDFXFileEntry *entry, QString type, QWidget *parent) :
+    QDialog(parent), ui(new Ui::SvodFileInfoDialog), entry(entry), svod(svod), type(type)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -38,21 +38,36 @@ SvodFileInfoDialog::~SvodFileInfoDialog()
 QString SvodFileInfoDialog::getFileType(QString fileName)
 {
     QString extension = fileName.mid(fileName.lastIndexOf(".") + 1);
-    if (extension == fileName)
+    if (extension == fileName && (type == ""))
     {
         ui->imgIcon->setPixmap(QPixmap(":/Images/DefaultFileIcon.png"));
         return "FILE";
     }
 
-    if (extension == "png" || extension == "jpg" || extension == "jpeg" || extension == "bmp")
+    if (type == "Image")
     {
         ui->imgIcon->setPixmap(QPixmap(":/Images/ImageFileIcon.png"));
         return "Image (" + extension + ")";
     }
-    else if (extension == "xex")
+    else if (type == "XEX")
     {
         ui->imgIcon->setPixmap(QPixmap(":/Images/XEXFileIcon.png"));
         return "Xenon Executable (" + extension + ")";
+    }
+    else if (type == "STFS")
+    {
+        ui->imgIcon->setPixmap(QPixmap(":/Images/PackageFileIcon.png"));
+        return "STFS Package";
+    }
+    else if (type == "XDBF")
+    {
+        ui->imgIcon->setPixmap(QPixmap(":/Images/XdbfFileIcon.png"));
+        return "Xbox Database File";
+    }
+    else if (type == "STRB")
+    {
+        ui->imgIcon->setPixmap(QPixmap(":/Images/StrbFileIcon.png"));
+        return "Structured Binary";
     }
     else
     {
