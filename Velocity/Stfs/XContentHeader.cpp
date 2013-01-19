@@ -409,6 +409,147 @@ void XContentHeader::WriteVolumeDescriptor()
         WriteSvodVolumeDescriptorEx(&svodVolumeDescriptor, io);
 }
 
+void XContentHeader::ResignHeader(string kvPath)
+{
+    FileIO kvIo(kvPath);
+    kvIo.setPosition(0, ios_base::end);
+
+    DWORD adder = 0;
+    if (kvIo.getPosition() == 0x4000)
+        adder = 0x10;
+
+    DWORD headerStart, size, hashLoc, toSignLoc, consoleIDLoc;
+
+    // set the headerStart
+    if (flags & MetadataIsPEC)
+    {
+        headerStart = 0x23C;
+        hashLoc = 0x228;
+        size = 0xDC4;
+        toSignLoc = 0x23C;
+        consoleIDLoc = 0x275;
+    }
+    else
+    {
+        headerStart = 0x344;
+        hashLoc = 0x32C;
+        size = 0x118;
+        toSignLoc = 0x22C;
+        consoleIDLoc = 0x36C;
+    }
+
+    // calculate header size / first hash table address
+    DWORD calculated = ((headerSize + 0xFFF) & 0xF000);
+    DWORD headerSize = calculated - headerStart;
+
+    // read the certificate
+    kvIo.setPosition(0x9B8 + adder);
+    certificate.publicKeyCertificateSize = kvIo.readWord();
+    kvIo.readBytes(certificate.ownerConsoleID, 5);
+
+    char tempPartNum[0x15];
+    tempPartNum[0x14] = 0;
+    kvIo.readBytes((BYTE*)tempPartNum, 0x14);
+    certificate.ownerConsolePartNumber = string(tempPartNum);
+
+    certificate.ownerConsoleType = (ConsoleType)kvIo.readByte();
+
+    char tempGenDate[9] = {0};
+    kvIo.readBytes((BYTE*)tempGenDate, 8);
+    certificate.dateGeneration = string(tempGenDate);
+
+    certificate.publicExponent = kvIo.readDword();
+    kvIo.readBytes(certificate.publicModulus, 0x80);
+    kvIo.readBytes(certificate.certificateSignature, 0x100);
+
+    // read the keys for signing
+    BYTE nData[0x80];
+    BYTE pData[0x40];
+    BYTE qData[0x40];
+
+    kvIo.setPosition(0x298 + adder);
+    kvIo.readBytes(nData, 0x80);
+    kvIo.readBytes(pData, 0x40);
+    kvIo.readBytes(qData, 0x40);
+
+    // 8 byte swap all necessary keys
+    XeCryptBnQw_SwapDwQwLeBe(nData, 0x80);
+    XeCryptBnQw_SwapDwQwLeBe(pData, 0x40);
+    XeCryptBnQw_SwapDwQwLeBe(qData, 0x40);
+
+    // get the keys ready for signing
+    Botan::BigInt n = Botan::BigInt::decode(nData, 0x80);
+    Botan::BigInt p = Botan::BigInt::decode(pData, 0x40);
+    Botan::BigInt q = Botan::BigInt::decode(qData, 0x40);
+
+    Botan::AutoSeeded_RNG rng;
+    Botan::RSA_PrivateKey pkey(rng, p, q, 0x10001, 0, n);
+
+    // write the console id
+    io->setPosition(consoleIDLoc);
+    io->write(certificate.ownerConsoleID, 5);
+
+    // read the data to hash
+    BYTE *buffer = new BYTE[headerSize];
+    io->setPosition(headerStart);
+    io->readBytes(buffer, headerSize);
+
+    // hash the header
+    Botan::SHA_160 sha1;
+    sha1.clear();
+    sha1.update(buffer, headerSize);
+    sha1.final(headerHash);
+
+    delete[] buffer;
+
+    io->setPosition(hashLoc);
+    io->write(headerHash, 0x14);
+
+    io->setPosition(toSignLoc);
+
+    BYTE *dataToSign = new BYTE[size];
+    io->readBytes(dataToSign, size);
+
+#if defined __unix | defined __APPLE__
+    Botan::PK_Signer signer(pkey, "EMSA3(SHA-160)");
+#elif _WIN32
+    Botan::PK_Signer signer(pkey, Botan::get_emsa("EMSA3(SHA-160)"));
+#endif
+
+    Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToSign, size, rng);
+
+    // 8 byte swap the new signature
+    XeCryptBnQw_SwapDwQwLeBe(signature, 0x80);
+
+    // reverse the new signature every 8 bytes
+    for (int i = 0; i < 0x10; i++)
+        FileIO::swapEndian(&signature[i * 8], 1, 8);
+
+    // write the certficate
+    memcpy(certificate.signature, signature, 0x80);
+    WriteCertificate();
+
+    delete[] dataToSign;
+}
+
+void XContentHeader::XeCryptBnQw_SwapDwQwLeBe(BYTE *data, DWORD length)
+{
+    if (length % 8 != 0)
+        throw string("STFS: length is not divisible by 8.\n");
+
+    for (DWORD i = 0; i < length / 2; i += 8)
+    {
+        BYTE temp[8];
+        memcpy(temp, &data[i], 8);
+
+        BYTE temp2[8];
+        memcpy(temp2, &data[length - i - 8], 8);
+
+        memcpy(&data[i], temp2, 8);
+        memcpy(&data[length - i - 8], temp, 8);
+    }
+}
+
 XContentHeader::~XContentHeader()
 {
     if ((flags & MetadataIsPEC) == 0 && (flags & MetadataDontFreeThumbnails) == 0)

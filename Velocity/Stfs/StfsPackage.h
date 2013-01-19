@@ -247,9 +247,6 @@ private:
     // Description: update the entry at the given path
     void UpdateEntry(string pathInPackage, FileEntry entry);
 
-    // Description: swap bytes by chunks of 8
-    void XeCryptBnQw_SwapDwQwLeBe(BYTE *data, DWORD length);
-
     // Description: get the number of bytes to skip over the hash table
     DWORD GetHashTableSkipSize(DWORD tableAddress);
 
