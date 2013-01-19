@@ -8,6 +8,14 @@
 #include "winnames.h"
 #include <iostream>
 
+#include <botan/botan.h>
+#include <botan/pubkey.h>
+#include <botan/rsa.h>
+#include <botan/emsa.h>
+#include <botan/sha160.h>
+#include <botan/emsa3.h>
+#include <botan/look_pk.h>
+
 using std::string;
 
 enum XContentFlags
@@ -38,6 +46,9 @@ class XContentHeader
 public:
 	// Description: read in all of the metadata for the package
     XContentHeader(FileIO *io, DWORD flags = 0);
+
+    // fix the signature in the header
+    void ResignHeader(string kvPath);
 
     // Description: write the console certificate
     void WriteCertificate();
@@ -129,5 +140,8 @@ private:
     DWORD flags;
 
     void readMetadata();
+
+    // Description: swap bytes by chunks of 8
+    void XeCryptBnQw_SwapDwQwLeBe(BYTE *data, DWORD length);
 };
 
