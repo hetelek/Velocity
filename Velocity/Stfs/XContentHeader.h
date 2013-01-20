@@ -50,6 +50,9 @@ public:
     // fix the signature in the header
     void ResignHeader(string kvPath);
 
+    // fix the sha1 hash of the header data
+    void FixHeaderHash();
+
     // Description: write the console certificate
     void WriteCertificate();
 

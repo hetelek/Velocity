@@ -611,12 +611,12 @@ void Metadata::on_pushButton_clicked()
             header->bytesProcessed = ui->tableWidget->item(30 + offset, 0)->text().toULongLong();
             header->lastModified = lastModified->dateTime().toTime_t();
         }
-
     }
 
     try
     {
         header->WriteMetaData();
+        header->FixHeaderHash();
         statusBar->showMessage("Saved metadata successfully", 3000);
     }
     catch(string error)
