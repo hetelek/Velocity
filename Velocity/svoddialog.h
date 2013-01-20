@@ -51,8 +51,6 @@ private slots:
 
     void on_pushButton_3_clicked();
 
-    void on_comboBox_currentIndexChanged(int index);
-
     void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
 
     void on_btnResign_clicked();
@@ -61,7 +59,6 @@ private:
     Ui::SvodDialog *ui;
     SVOD *svod;
     QStatusBar *statusBar;
-    bool changing;
 
     void loadListing(QTreeWidgetItem *parent, vector<GDFXFileEntry> *files);
 

@@ -138,17 +138,10 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox">
-         <item>
-          <property name="text">
-           <string>Game on Demand</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Installed Game</string>
-          </property>
-         </item>
+        <widget class="QLabel" name="lblType">
+         <property name="text">
+          <string/>
+         </property>
         </widget>
        </item>
       </layout>

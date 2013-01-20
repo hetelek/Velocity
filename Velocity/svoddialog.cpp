@@ -2,7 +2,7 @@
 #include "ui_svoddialog.h"
 
 SvodDialog::SvodDialog(SVOD *svod, QStatusBar *statusBar, QWidget *parent) :
-    QDialog(parent), ui(new Ui::SvodDialog), svod(svod), statusBar(statusBar), changing(true)
+    QDialog(parent), ui(new Ui::SvodDialog), svod(svod), statusBar(statusBar)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -22,15 +22,7 @@ SvodDialog::SvodDialog(SVOD *svod, QStatusBar *statusBar, QWidget *parent) :
     ui->lblDisplayName->setText(QString::fromStdWString(svod->metadata->displayName));
     ui->lblTitleID->setText(QString::number(svod->metadata->titleID, 16).toUpper());
     ui->lblSectorOffset->setText("0x" + QString::number(svod->metadata->svodVolumeDescriptor.dataBlockOffset * 2, 16).toUpper());
-    switch (svod->metadata->contentType)
-    {
-        case GameOnDemand:
-            ui->comboBox->setCurrentIndex(0);
-            break;
-        case InstalledGame:
-            ui->comboBox->setCurrentIndex(1);
-            break;
-    }
+    ui->lblType->setText(QString::fromStdString(ContentTypeToString(svod->metadata->contentType)));
 
     QByteArray imageBuff((char*)svod->metadata->thumbnailImage, (size_t)svod->metadata->thumbnailImageSize);
     ui->imgThumbnail->setPixmap(QPixmap::fromImage(QImage::fromData(imageBuff)));
@@ -187,58 +179,6 @@ void UpdateProgress(DWORD cur, DWORD total, void *arg)
         dialog->statusBar->showMessage("Successfully rehashed the system", 3000);
 
     QApplication::processEvents();
-}
-
-void SvodDialog::on_comboBox_currentIndexChanged(int index)
-{
-    if (changing)
-    {
-        changing = false;
-        return;
-    }
-
-    // game on demand
-    if (index == 0)
-    {
-        QMessageBox::StandardButton button = QMessageBox::warning(this, "Warning",
-                             "Once converted, this will only work on consoles with signature checks removed such as JTAGs, RGHs or DevKits. Would you like to continue?",
-                             QMessageBox::Yes, QMessageBox::No);
-
-        if (button == QMessageBox::Yes)
-        {
-            ui->btnResign->setEnabled(false);
-            svod->metadata->magic = PIRS;
-            svod->metadata->contentType = GameOnDemand;
-            svod->metadata->displayDescription = L"";
-            svod->metadata->WriteMetaData();
-        }
-        else
-        {
-            changing = true;
-            ui->comboBox->setCurrentIndex(1);
-        }
-    }
-    // installed game
-    else
-    {
-        QMessageBox::StandardButton button = QMessageBox::warning(this, "Warning",
-                             "Once converted, this can only be used the KeyVault for the console is provided. Otherwise this can be played on consoles with signature checks removed such as JTAGs, RGHs or DevKits. Would you like to continue?",
-                             QMessageBox::Yes, QMessageBox::No);
-
-        if (button == QMessageBox::Yes)
-        {
-            ui->btnResign->setEnabled(true);
-            svod->metadata->magic = CON;
-            svod->metadata->contentType = InstalledGame;
-            svod->metadata->displayDescription = L"This is an installed game. To play, insert the original game disc.";
-            svod->metadata->WriteMetaData();
-        }
-        else
-        {
-            changing = true;
-            ui->comboBox->setCurrentIndex(0);
-        }
-    }
 }
 
 void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
