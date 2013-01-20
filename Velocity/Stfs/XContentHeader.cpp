@@ -99,7 +99,7 @@ void XContentHeader::readMetadata()
             ReadSvodVolumeDescriptorEx(&svodVolumeDescriptor, io);
 
         dataFileCount = io->readDword();
-        dataFileCombinedSize = io->readDword();
+        dataFileCombinedSize = io->readUInt64();
 
         // read the avatar metadata if needed
         if (contentType == AvatarItem)
@@ -232,6 +232,36 @@ void XContentHeader::WriteCertificate()
         throw string("XContentHeader: Error writing certificate. Package is strong signed and therefore doesn't have a certificate.\n");
 
     WriteCertificateEx(&certificate, io, (flags & MetadataIsPEC) ? 0 : 4);
+}
+
+void XContentHeader::FixHeaderHash()
+{
+    DWORD headerStart = ((flags & MetadataIsPEC) ? 0x23C : 0x344);
+
+    // calculate header size / first hash table address
+    DWORD calculated = ((headerSize + 0xFFF) & 0xFFFFF000);
+    io->setPosition(0, ios_base::end);
+    calculated = (io->getPosition() < calculated) ? (DWORD)io->getPosition() : calculated;
+    DWORD realHeaderSize = calculated - headerStart;
+
+    BYTE *data = new BYTE[realHeaderSize];
+
+    // seek to the position
+    io->setPosition(headerStart);
+    io->readBytes(data, realHeaderSize);
+
+    // hash the data
+    Botan::SHA_160 sha1;
+    sha1.clear();
+    sha1.update(data, realHeaderSize);
+    sha1.final(headerHash);
+
+    delete[] data;
+
+    // write the new hash to the file
+    io->setPosition(((flags & MetadataIsPEC) ? 0x228 : 0x32C));
+    io->write(headerHash, 0x14);
+    io->flush();
 }
 
 void XContentHeader::WriteMetaData()
@@ -439,8 +469,10 @@ void XContentHeader::ResignHeader(string kvPath)
     }
 
     // calculate header size / first hash table address
-    DWORD calculated = ((headerSize + 0xFFF) & 0xF000);
-    DWORD headerSize = calculated - headerStart;
+    DWORD calculated = ((headerSize + 0xFFF) & 0xFFFFF000);
+    io->setPosition(0, ios_base::end);
+    calculated = (io->getPosition() < calculated) ? (DWORD)io->getPosition() : calculated;
+    DWORD realHeaderSize = calculated - headerStart;
 
     // read the certificate
     kvIo.setPosition(0x9B8 + adder);
@@ -490,14 +522,14 @@ void XContentHeader::ResignHeader(string kvPath)
     io->write(certificate.ownerConsoleID, 5);
 
     // read the data to hash
-    BYTE *buffer = new BYTE[headerSize];
+    BYTE *buffer = new BYTE[realHeaderSize];
     io->setPosition(headerStart);
-    io->readBytes(buffer, headerSize);
+    io->readBytes(buffer, realHeaderSize);
 
     // hash the header
     Botan::SHA_160 sha1;
     sha1.clear();
-    sha1.update(buffer, headerSize);
+    sha1.update(buffer, realHeaderSize);
     sha1.final(headerHash);
 
     delete[] buffer;
