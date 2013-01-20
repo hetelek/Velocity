@@ -47,12 +47,12 @@ QString SvodFileInfoDialog::getFileType(QString fileName)
     if (type == "Image")
     {
         ui->imgIcon->setPixmap(QPixmap(":/Images/ImageFileIcon.png"));
-        return "Image (" + extension + ")";
+        return "Image (." + extension + ")";
     }
     else if (type == "XEX")
     {
         ui->imgIcon->setPixmap(QPixmap(":/Images/XEXFileIcon.png"));
-        return "Xenon Executable (" + extension + ")";
+        return "Xenon Executable (." + extension + ")";
     }
     else if (type == "STFS")
     {
@@ -72,7 +72,7 @@ QString SvodFileInfoDialog::getFileType(QString fileName)
     else
     {
         ui->imgIcon->setPixmap(QPixmap(":/Images/DefaultFileIcon.png"));
-        return extension.toUpper() + "(" + extension + ")";
+        return extension.toUpper() + " (." + extension + ")";
     }
 }
 
