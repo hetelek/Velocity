@@ -171,6 +171,8 @@ void WriteSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, FileIO *io)
     io->write((INT24)descriptor->dataBlockCount);
     io->write((INT24)descriptor->dataBlockOffset);
 
+    io->write(descriptor->reserved, 5);
+
     io->setEndian(BigEndian);
 }
 
