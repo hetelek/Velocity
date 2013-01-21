@@ -29,6 +29,7 @@ private:
     XContentHeader *metadata;
     GDFXFileEntry fileEntry;
     DWORD pos;
+    DWORD offset;
 };
 
 #endif // SVODIO_H

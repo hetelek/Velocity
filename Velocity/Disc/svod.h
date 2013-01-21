@@ -48,6 +48,8 @@ private:
     MultiFileIO *io;
     FileIO *rootFile;
     GDFXHeader header;
+    DWORD baseAddress;
+    DWORD offset;
 
     // parse the file listing
     void ReadFileListing(vector<GDFXFileEntry> *entryList, DWORD sector, int size, string path);
