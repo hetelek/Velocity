@@ -14,8 +14,7 @@ SvodFileInfoDialog::SvodFileInfoDialog(SVOD *svod, GDFXFileEntry *entry, QString
     ui->lblSector->setText("0x" + QString::number(entry->sector, 16).toUpper());
 
     DWORD sizeOnDisk = (entry->size + 0x7FF) & 0xFFFFF800;
-    ui->lblSizeOnDisk->setText(QString::fromStdString(ByteSizeToString(sizeOnDisk)) + " (" + QString::number(sizeOnDisk) + ")");
-
+    ui->lblSizeOnDisk->setText(QString::fromStdString(ByteSizeToString(sizeOnDisk)) + " (" + QString::number(sizeOnDisk) + " + bytes)");
     ui->lblTypeOfFile->setText(getFileType(QString::fromStdString(entry->name)));
 
     // load flags
