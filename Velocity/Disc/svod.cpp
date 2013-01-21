@@ -15,6 +15,9 @@ SVOD::SVOD(string rootPath)
     rootFile = new FileIO(rootPath);
     metadata = new XContentHeader(rootFile);
 
+    baseAddress = (metadata->svodVolumeDescriptor.flags & EnhancedGDFLayout) ? 0x2000 : 0x12000;
+    offset = (metadata->svodVolumeDescriptor.flags & EnhancedGDFLayout) ? 0x2000 : 0x1000;
+
     if (metadata->fileSystem != FileSystemSVOD)
         throw string("SVOD: Invalid file system header.\n");
 
@@ -31,7 +34,7 @@ SVOD::SVOD(string rootPath)
     io = new MultiFileIO(contentDirectory);
 
     // parse the header
-    io->SetPosition(0x2000, 0);
+    io->SetPosition(baseAddress, 0);
     GdfxReadHeader(io, &header);
 
     // read the file listing
@@ -60,10 +63,9 @@ void SVOD::SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *dataFi
     *addressInDataFile = trueSector * 0x800;
     *dataFileIndex = (sector - (metadata->svodVolumeDescriptor.dataBlockOffset * 2)) / 0x14388;
 
-    // for the master hash table
-    *addressInDataFile += 0x1000;
-    // for the GdfxHeader
-    *addressInDataFile += 0x1000;
+    // for the silly stuff at the beginning
+    *addressInDataFile += offset;
+
     // for the data hash table(s)
     *addressInDataFile += ((trueSector / 0x198) + ((trueSector % 0x198 == 0 && trueSector != 0) ? 0 : 1)) * 0x1000;
 }

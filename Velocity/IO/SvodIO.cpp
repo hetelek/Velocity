@@ -3,6 +3,8 @@
 SvodIO::SvodIO(XContentHeader *metadata, GDFXFileEntry entry, MultiFileIO *io) :
     BaseIO(), io(io), metadata(metadata), fileEntry(entry), pos(0)
 {
+    offset = ((metadata->svodVolumeDescriptor.flags & EnhancedGDFLayout) ? 0x2000 : 0x1000);
+
     // seek to the file's begining
     DWORD addr, index;
     SectorToAddress(entry.sector, &addr, &index);
@@ -15,10 +17,9 @@ void SvodIO::SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *data
     *addressInDataFile = trueSector * 0x800;
     *dataFileIndex = (sector - (metadata->svodVolumeDescriptor.dataBlockOffset * 2)) / 0x14388;
 
-    // for the master hash table
-    *addressInDataFile += 0x1000;
-    // for the GdfxHeader
-    *addressInDataFile += 0x1000;
+    // for the silly hash tables at the beginning
+    *addressInDataFile += offset;
+
     // for the data hash table(s)
     *addressInDataFile += ((trueSector / 0x198) + ((trueSector % 0x198 == 0 && trueSector != 0) ? 0 : 1)) * 0x1000;
 }
@@ -188,7 +189,7 @@ void SvodIO::OverwriteFile(string inPath, void (*progress)(void *, DWORD, DWORD)
 
     // make sure that the files are the same size
     inFile.setPosition(0, ios_base::end);
-    if (inFile.getPosition() != fileEntry.size)
+    if ((DWORD)inFile.getPosition() != fileEntry.size)
         throw string("SVOD: Cannot overwrite file of different length.\n");
 
     BYTE *buffer = new BYTE[0x10000];
