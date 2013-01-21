@@ -70,12 +70,12 @@ string LicenseTypeToString(LicenseType type)
 }
 
 
-string ByteSizeToString(int bytes)
+string ByteSizeToString(DWORD bytes)
 {
-    int B = 1; //byte
-    int KB = 1024 * B; //kilobyte
-    int MB = 1024 * KB; //megabyte
-    int GB = 1024 * MB; //gigabyte
+    DWORD B = 1; //byte
+    DWORD KB = 1024 * B; //kilobyte
+    DWORD MB = 1024 * KB; //megabyte
+    DWORD GB = 1024 * MB; //gigabyte
 
     // divide stuff
     std::stringstream result;
@@ -84,7 +84,7 @@ string ByteSizeToString(int bytes)
     else if (bytes > MB)
         result << (bytes / MB) << " MB";
     else if (bytes > KB)
-        result << ((int)(((bytes / (float)KB) + 0.005f) * 100) / 100.0f) << " KB";
+        result << ((DWORD)(((bytes / (float)KB) + 0.005f) * 100) / 100.0f) << " KB";
     else
         result << bytes << " bytes";
 

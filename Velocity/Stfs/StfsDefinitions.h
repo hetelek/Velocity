@@ -99,7 +99,7 @@ string ContentTypeToString(ContentType type);
 
 string ConsoleTypeToString(ConsoleType type);
 
-string ByteSizeToString(int bytes);
+string ByteSizeToString(DWORD bytes);
 
 string LicenseTypeToString(LicenseType type);
 
