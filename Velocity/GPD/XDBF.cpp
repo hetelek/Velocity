@@ -171,6 +171,13 @@ void XDBF::readHeader()
     header.entryCount = io->readDword();
     header.freeMemTableLength = io->readDword();
     header.freeMemTableEntryCount = io->readDword();
+
+    // make sure that there is at least free mem table 1 entry
+    if (header.freeMemTableEntryCount == 0)
+    {
+        header.freeMemTableEntryCount = 1;
+        writeHeader();
+    }
 }
 
 void XDBF::readEntryTable()
