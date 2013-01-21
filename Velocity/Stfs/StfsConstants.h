@@ -98,6 +98,13 @@ enum BlockStatusLevelZero
 	NewlyAllocated = 0xC0
 };
 
+// this is from eaton
+enum SVODFeatures
+{
+    EnhancedGDFLayout = 0x40,
+    houldBeZeroForDownLevelClients = 0x80
+};
+
 struct Version
 {
     WORD major, minor, build, revision;
