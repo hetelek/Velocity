@@ -116,7 +116,7 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
         item->setText(1, totalGamerscore);
         item->setText(2, totalAwardCount);
 
-        TitleEntry entry;
+        TitleEntry entry = {0};
         entry.gameName = gameName.toStdWString();
         entry.titleID = titleId;
         entry.achievementCount = achievementCount.toULong();
@@ -252,7 +252,7 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
                     else
                     {
                         FileEntry pecEntry = package->GetFileEntry("PEC");
-                        if (pecEntry.blocksForFile == 1)
+                        if (pecEntry.blocksForFile < 3)
                         {
                             flags |= StfsPackageCreate;
                             existed = true;
