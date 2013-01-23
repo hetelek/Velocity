@@ -13,6 +13,7 @@ mac | win32 {
 TARGET = Velocity
 TEMPLATE = app
 VERSION = 0.0.1.1
+QMAKE_CXXFLAGS += -fpermissive
 DEFINES += VERSION=\\\"$$VERSION\\\"
 
 win32 {
