@@ -1,8 +1,8 @@
 #include "stfsvolumedescriptordialog.h"
-#include "ui_volumedescriptordialog.h"
+#include "ui_stfsvolumedescriptordialog.h"
 
 StfsVolumeDescriptorDialog::StfsVolumeDescriptorDialog(QStatusBar *statusBar, StfsVolumeDescriptor *desc, QWidget *parent) :
-    QDialog(parent), ui(new Ui::VolumeDescriptorDialog), desc(desc), statusBar(statusBar)
+    QDialog(parent), ui(new Ui::StfsVolumeDescriptorDialog), desc(desc), statusBar(statusBar)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);

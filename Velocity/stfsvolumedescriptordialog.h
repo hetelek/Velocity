@@ -12,7 +12,7 @@
 #include "Stfs/StfsDefinitions.h"
 
 namespace Ui {
-class VolumeDescriptorDialog;
+class StfsVolumeDescriptorDialog;
 }
 
 class StfsVolumeDescriptorDialog : public QDialog
@@ -31,7 +31,7 @@ private slots:
     void packageTypeChanged(int index);
 
 private:
-    Ui::VolumeDescriptorDialog *ui;
+    Ui::StfsVolumeDescriptorDialog *ui;
     StfsVolumeDescriptor *desc;
     QStatusBar *statusBar;
 
