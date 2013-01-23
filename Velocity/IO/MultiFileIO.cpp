@@ -75,7 +75,7 @@ void MultiFileIO::SetPosition(DWORD addressInFile, int fileIndex)
     }
 }
 
-void MultiFileIO::GetPosition(DWORD *addressInFile, int *fileIndex)
+void MultiFileIO::GetPosition(DWORD *addressInFile, DWORD *fileIndex)
 {
     *addressInFile = this->addressInFile;
     *fileIndex = this->fileIndex;

@@ -22,7 +22,7 @@ public:
     void SetPosition(DWORD addressInFile, int fileIndex = -1);
 
     // get the current position of the io
-    void GetPosition(DWORD *addressInFile, int *fileIndex);
+    void GetPosition(DWORD *addressInFile, DWORD *fileIndex);
 
     // read len bytes from the current file at the current position into buffer
     void ReadBytes(BYTE *outBuffer, DWORD len);
