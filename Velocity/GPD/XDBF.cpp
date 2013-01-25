@@ -305,7 +305,7 @@ void XDBF::writeSyncList(SyncList *syncs)
     }
 
     // write the toSync ones
-    for (int i = (int)syncs->toSync.size() - 1; i >= 0; i--)
+    for (int i = 0; i < syncs->toSync.size(); i++)
     {
         io->write(syncs->toSync.at(i).entryID);
         io->write(syncs->toSync.at(i).syncValue);
@@ -772,7 +772,21 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
 
             // add the sync to the queue
             sync.syncValue = group->syncData.nextSyncID++;
-            group->syncs.toSync.insert(group->syncs.toSync.begin(), sync);
+            group->syncs.toSync.push_back(sync);
+        }
+    }
+
+    // if it is alread in the queue, then push it to the front
+    for (DWORD i = 0; i < (group->syncs.toSync.size() - 1); i++)
+    {
+        if (group->syncs.toSync.at(i).entryID == entry->id)
+        {
+            SyncEntry sync = group->syncs.toSync.at(i);
+
+            // move the entry to the end
+            group->syncs.toSync.erase(group->syncs.toSync.begin() + i);
+            sync.syncValue = group->syncData.nextSyncID++;
+            group->syncs.toSync.push_back(sync);
         }
     }
 
