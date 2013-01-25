@@ -49,7 +49,8 @@ enum ConsoleLanguage
     Portuguese,
     SChinese,
     Polish,
-    Russian
+    Russian,
+    Norwegian = 15
 };
 
 enum XboxLiveServiceProvider

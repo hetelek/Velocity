@@ -14,7 +14,7 @@ string AccountHelpers::SubscriptionTeirToString(SubscriptionTeir teir)
 		case Silver:
 			return string("Silver");
 		case Gold:
-			return string("Gold");
+            return string("Gold");
 		case FamilyGold:
 			return string("FamilyGold");
 		default:
@@ -68,9 +68,11 @@ string AccountHelpers::ConsoleLanguageToString(ConsoleLanguage language)
 			return string("SChinese");
 		case Polish:
 			return string("Polish");
-		case Russian:
-			return string("Russian");
+        case Russian:
+            return string("Russian");
+        case Norwegian:
+            return string("Norwegian");
 		default:
-			throw string("Account: Invalid 'ConsoleLanguage' value.\n");
+            return string("Unknown Language");
 	}
 }
