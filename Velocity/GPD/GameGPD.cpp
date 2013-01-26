@@ -75,14 +75,19 @@ void GameGPD::WriteAchievementEntry(AchievementEntry *entry)
 	io->write(entry->flags);
 
 	// write the unlocked time
-	if (entry->unlockTime == 0)
-		io->write((UINT64)0);
-	else
-	{
-		FILETIME time = XDBFHelpers::TimeTtoFILETIME(entry->unlockTime);
-		io->write(time.dwHighDateTime);
-		io->write(time.dwLowDateTime);
-	}
+    if (entry->flags & UnlockedOnline)
+    {
+        if (entry->unlockTime == 0)
+            io->write((UINT64)0);
+        else
+        {
+            FILETIME time = XDBFHelpers::TimeTtoFILETIME(entry->unlockTime);
+            io->write(time.dwHighDateTime);
+            io->write(time.dwLowDateTime);
+        }
+    }
+    else
+        io->setPosition(xdbf->GetRealAddress(entry->entry.addressSpecifier) + 0x1C);
 
 	// write the strings
 	io->write(entry->name);
