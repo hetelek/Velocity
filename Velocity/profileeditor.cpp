@@ -1190,7 +1190,7 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
         else if (toSet == StateUnlockedOnline)
             chiev->flags |= (Unlocked | UnlockedOnline | 0x100000);
 
-        chiev->flags |= (SyncAchievement | DownloadAchievementImage | 0x100000);
+        entry->flags |= (SyncAchievement | DownloadAchievementImage);
 
         gpd->WriteAchievementEntry(chiev);
 
