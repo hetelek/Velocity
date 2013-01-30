@@ -674,7 +674,7 @@ void ProfileEditor::loadGameInfo(int index)
 
     ui->lblGameName->setText("<span style=\"color:#4f4f4f;\">" + QString::fromStdWString(title->gameName) + "</span>");
     ui->lblGameTitleID->setText("<span style=\"color:#4f4f4f;\">" + QString::number(title->titleID, 16).toUpper() + "</span>");
-    if (title->lastPlayed == 0x67D6Ca80)
+    if (title->lastPlayed == 0)
         ui->lblGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">N/A</span>");
     else
         ui->lblGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">" + QDateTime::fromTime_t(title->lastPlayed).toString(Qt::SystemLocaleShortDate) + "</span>");
@@ -1092,6 +1092,7 @@ void ProfileEditor::updateAvatarAward(TitleEntry *entry, AvatarAwardGPD *gpd, st
         if (award->subcategory == 0)
             award->subcategory = (AssetSubcategory)0xFFFFFFFF;
         award->colorizable = 0;
+        entry->lastPlayed = QDateTime::currentDateTime().toTime_t();
     }
 
     // write the entry back to the gpd
@@ -1188,7 +1189,10 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
             chiev->flags |= Unlocked;
         }
         else if (toSet == StateUnlockedOnline)
+        {
             chiev->flags |= (Unlocked | UnlockedOnline | 0x100000);
+            entry->lastPlayed = QDateTime::currentDateTime().toTime_t();
+        }
 
         entry->flags |= (SyncAchievement | DownloadAchievementImage);
 
