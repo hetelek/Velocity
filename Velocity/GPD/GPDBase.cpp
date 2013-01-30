@@ -291,7 +291,8 @@ void GPDBase::WriteSettingEntry(SettingEntry setting)
             break;
     }
 
-    xdbf->UpdateEntry(&setting.entry);
+    if (setting.entry.id != GamercardTitleAchievementsEarned && setting.entry.id != GamercardTitleCredEarned && setting.entry.id != GamercardCred && setting.entry.id != GamercardAchievementsEarned)
+        xdbf->UpdateEntry(&setting.entry);
 
     io->flush();
 }
