@@ -1186,7 +1186,7 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
         if (toSet == StateUnlockedOffline)
         {
             chiev->flags &= 0xFFFCFFFF;
-            chiev->flags |= Unlocked;
+            chiev->flags |= (Unlocked | 0x100000);
         }
         else if (toSet == StateUnlockedOnline)
         {
