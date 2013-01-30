@@ -411,10 +411,17 @@ XDBFEntry XDBF::CreateEntry(EntryType type, UINT64 id, DWORD size)
         {
             // add the entry to the list
             settings.entries.push_back(entry);
+
             // create a sync for the entry
-            SyncEntry sync = { entry.id, settings.syncData.nextSyncID++ };
+            SyncEntry sync;
+            sync.entryID = entry.id;
+            if (entry.id != GamercardTitleAchievementsEarned && entry.id != GamercardTitleCredEarned && entry.id != GamercardCred && entry.id != GamercardAchievementsEarned)
+                sync.syncValue = settings.syncData.nextSyncID++;
+            else
+                sync.syncValue = 0;
             settings.syncs.toSync.push_back(sync);
             settings.syncs.lengthChanged = true;
+
             // re-write the sync list
             writeSyncList(&settings.syncs);
             writeSyncData(&settings.syncData);
