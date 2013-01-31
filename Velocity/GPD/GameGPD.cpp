@@ -194,7 +194,7 @@ void GameGPD::UnlockAllAchievementsOffline()
 	for (DWORD i = 0; i < achievements.size(); i++)
 	{
 		// unlock the achievement
-		achievements.at(i).flags |= Unlocked;
+        achievements.at(i).flags |= (Unlocked | 0x100000);
 
 		// write the updated flags to the entry
 		io->setPosition(xdbf->GetRealAddress(achievements.at(i).entry.addressSpecifier) + 0x10);
