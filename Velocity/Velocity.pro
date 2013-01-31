@@ -6,50 +6,57 @@
 
 QT       += core gui network xml
 
-mac | win32 {
-    QT += phonon
-}
-
+# application
 TARGET = Velocity
 TEMPLATE = app
+UI_DIR = ../Velocity
+
+# application version
 VERSION = 0.0.1.1
-QMAKE_CXXFLAGS += -fpermissive
 DEFINES += VERSION=\\\"$$VERSION\\\"
 
-win32 {
-    RC_FILE = velocity.rc
+# flags
+QMAKE_CXXFLAGS += -fpermissive
 
-    include(Stfs/Botan.pri)
-    INCLUDEPATH += "C:/botan/include"
-    LIBS += "C:/botan/libBotan.a"
+# header include path
+INCLUDEPATH += $$PWD/../XboxInternals
+
+# windows
+win32 {
+    QT += phonon
+
+    CONFIG(debug, debug|release) {
+        LIBS += -L$$PWD/../XboxInternals-Win/debug/ -lXboxInternals
+        INCLUDEPATH += $$PWD/../XboxInternals-Win/debug
+        RC_FILE = velocity.rc
+    }
+    CONFIG(release, debug|release) {
+        LIBS += -L$$PWD/../XboxInternals-Win/release/ -lXboxInternals
+        INCLUDEPATH += $$PWD/../XboxInternals-Win/release
+        RC_FILE = velocity.rc
+    }
 }
 
+# mac
 mac {
+    QT += phonon
+
     ICON = velocity.icns
     INCLUDEPATH += "/usr/local/include/botan-1.10"
     LIBS += "/usr/local/lib/libbotan-1.10.a"
 }
 
+# other unix (linux)
 unix:!mac {
     INCLUDEPATH += "/usr/local/include/botan-1.10"
     LIBS += "/usr/local/lib/libbotan-1.10.a"
 }
-
-UI_DIR = ../Velocity
 
 SOURCES += main.cpp \
     mainwindow.cpp \
     packageviewer.cpp \
     profileeditor.cpp \
     about.cpp \
-    FileIO.cpp \
-    GPD/XDBF.cpp \
-    GPD/GPDBase.cpp \
-    GPD/GameGPD.cpp \
-    GPD/AvatarAwardGPD.cpp \
-    AvatarAsset/AvatarAsset.cpp \
-    AvatarAsset/AssetHelpers.cpp \
-    Stfs/StfsDefinitions.cpp \
     metadata.cpp \
     certificatedialog.cpp \
     qthelpers.cpp \
@@ -58,11 +65,6 @@ SOURCES += main.cpp \
     xdbfdialog.cpp \
     strbdialog.cpp \
     imagedialog.cpp \
-    Account/AccountHelpers.cpp \
-    Account/Account.cpp \
-    GPD/XDBFHelpers.cpp \
-    GPD/DashboardGPD.cpp \
-    Stfs/StfsPackage.cpp \
     renamedialog.cpp \
     creationwizard.cpp \
     achievementcreationwizard.cpp \
@@ -87,14 +89,8 @@ SOURCES += main.cpp \
     fatxpathgendialog.cpp \
     MemoryStream.cpp \
     profilecleanerwizard.cpp \
-    Stfs/XContentHeader.cpp \
     svoddialog.cpp \
     svodfileinfodialog.cpp \
-    Disc/svod.cpp \
-    Disc/gdfx.cpp \
-    IO/BaseIO.cpp \
-    IO/MultiFileIO.cpp \
-    IO/SvodIO.cpp \
     stfsvolumedescriptordialog.cpp \
     svodtooldialog.cpp \
     svodvolumedescriptordialog.cpp \
@@ -104,19 +100,7 @@ HEADERS  += mainwindow.h \
     packageviewer.h \
     profileeditor.h \
     about.h \
-    Stfs/StfsConstants.h \
-    FileIO.h \
-    FileIO.h \
-    GPD/XDBFDefininitions.h \
-    GPD/XDBF.h \
-    GPD/GPDBase.h \
-    GPD/GameGPD.h \
-    GPD/AvatarAwardGPD.h \
     winnames.h \
-    AvatarAsset/AvatarAssetDefinintions.h \
-    AvatarAsset/AvatarAsset.h \
-    AvatarAsset/AssetHelpers.h \
-    Stfs/StfsDefinitions.h \
     metadata.h \
     certificatedialog.h \
     qthelpers.h \
@@ -125,12 +109,6 @@ HEADERS  += mainwindow.h \
     xdbfdialog.h \
     strbdialog.h \
     imagedialog.h \
-    Account/AccountHelpers.h \
-    Account/AccountDefinitions.h \
-    Account/Account.h \
-    GPD/XDBFHelpers.h \
-    GPD/DashboardGPD.h \
-    Stfs/StfsPackage.h \
     renamedialog.h \
     achievementcreationwizard.h \
     creationwizard.h \
@@ -140,7 +118,6 @@ HEADERS  += mainwindow.h \
     progressdialog.h \
     stfsworkerthread.h \
     singleprogressdialog.h \
-    PluginInterfaces/igamemodder.h \
     profilecreatorwizard.h \
     themecreationwizard.h \
     gameadderdialog.h \
@@ -149,8 +126,6 @@ HEADERS  += mainwindow.h \
     titleidfinder.h \
     titleidfinderdialog.h \
     gamerpicturepackdialog.h \
-    PluginInterfaces/igamemodder.h \
-    PluginInterfaces/igpdmodder.h \
     preferencesdialog.h \
     json.h \
     githubcommitsdialog.h \
@@ -158,14 +133,8 @@ HEADERS  += mainwindow.h \
     fatxpathgendialog.h \
     MemoryStream.h \
     profilecleanerwizard.h \
-    Stfs/XContentHeader.h \
     svoddialog.h \
     svodfileinfodialog.h \
-    Disc/svod.h \
-    Disc/gdfx.h \
-    IO/BaseIO.h \
-    IO/MultiFileIO.h \
-    IO/SvodIO.h \
     stfsvolumedescriptordialog.h \
     svodtooldialog.h \
     svodvolumedescriptordialog.h \
