@@ -4,16 +4,17 @@
 #
 #-------------------------------------------------
 
-QT       -= gui
+QT       -= gui core
 
 TARGET = XboxInternals
 TEMPLATE = lib
+DEFINES += XBOXINTERNALS_LIBRARY
 
 # flags
 QMAKE_CXXFLAGS += -fpermissive
 
 # library version
-DEFINES += XBOXINTERNALS_LIBRARY
+VERSION = 0.0.1.0
 DEFINES += VERSION=\\\"$$VERSION\\\"
 
 win32 {
