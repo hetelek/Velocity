@@ -22,7 +22,10 @@ QMAKE_CXXFLAGS += -fpermissive
 INCLUDEPATH += $$PWD/../XboxInternals
 
 # windows
-win32 {
+win32 {    
+    LIBS += -LC:/botan/ -lBotan
+    INCLUDEPATH += C:/botan/include
+
     QT += phonon
 
     CONFIG(debug, debug|release) {
@@ -100,7 +103,6 @@ HEADERS  += mainwindow.h \
     packageviewer.h \
     profileeditor.h \
     about.h \
-    winnames.h \
     metadata.h \
     certificatedialog.h \
     qthelpers.h \

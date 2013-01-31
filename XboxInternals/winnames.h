@@ -1,4 +1,5 @@
-#pragma once
+#ifndef WINNAMES_H
+#define WINNAMES_H
 
 typedef unsigned int INT24;
 typedef unsigned char BYTE;
@@ -15,3 +16,5 @@ typedef struct _FILETIME
     DWORD dwLowDateTime;
 
 } FILETIME;
+
+#endif
