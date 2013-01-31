@@ -140,7 +140,9 @@ HEADERS  += mainwindow.h \
     stfsvolumedescriptordialog.h \
     svodtooldialog.h \
     svodvolumedescriptordialog.h \
-    multiprogressdialog.h
+    multiprogressdialog.h \
+    PluginInterfaces/igpdmodder.h \
+    PluginInterfaces/igamemodder.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
