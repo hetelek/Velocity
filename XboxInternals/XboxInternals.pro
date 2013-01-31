@@ -14,8 +14,8 @@ DEFINES += XBOXINTERNALS_LIBRARY
 QMAKE_CXXFLAGS += -fpermissive
 
 # library version
-VERSION = 0.0.1.0
-DEFINES += VERSION=\\\"$$VERSION\\\"
+#VERSION = 0.1.0.0
+#DEFINES += VERSION=\\\"$$VERSION\\\"
 
 win32 {
     include(Stfs/Botan.pri)
