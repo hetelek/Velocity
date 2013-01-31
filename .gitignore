@@ -13,6 +13,7 @@ VelocityDebug/
 VelocityRelease/
 Velocity.app/
 Velocity-*/
+XboxInternals-*/
 
 # Compiled Object files
 *.slo
