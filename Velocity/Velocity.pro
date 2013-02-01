@@ -9,7 +9,7 @@ QT       += core gui network xml
 # application
 TARGET = Velocity
 TEMPLATE = app
-UI_DIR = ../Velocity
+win32:UI_DIR = ../Velocity
 
 # application version
 VERSION = 0.0.1.1
@@ -25,25 +25,26 @@ INCLUDEPATH += $$PWD/../XboxInternals
 win32 {    
     LIBS += -LC:/botan/ -lBotan
     INCLUDEPATH += C:/botan/include
+    RC_FILE = velocity.rc
+}
 
-    QT += phonon
+macx|win32:QT += phonon
 
-    CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../XboxInternals-Win/debug/ -lXboxInternals
-        INCLUDEPATH += $$PWD/../XboxInternals-Win/debug
-        RC_FILE = velocity.rc
-    }
-    CONFIG(release, debug|release) {
-        LIBS += -L$$PWD/../XboxInternals-Win/release/ -lXboxInternals
-        INCLUDEPATH += $$PWD/../XboxInternals-Win/release
-        RC_FILE = velocity.rc
-    }
+CONFIG(debug, debug|release) {
+    win32:LIBS += -L$$PWD/../XboxInternals-Win/debug/ -lXboxInternals
+    win32:INCLUDEPATH += $$PWD/../XboxInternals-Win/debug
+    #macx:LIBS += -L$$PWD/../XboxInternals-OSX/debug/ -lXboxInternals
+    #macx:INCLUDEPATH += $$PWD/../XboxInternals-OSX/debug
+}
+CONFIG(release, debug|release) {
+    win32:LIBS += -L$$PWD/../XboxInternals-Win/release/ -lXboxInternals
+    win32:INCLUDEPATH += $$PWD/../XboxInternals-Win/release
+    #macx:LIBS += -L$$PWD/../XboxInternals-OSX/release/ -lXboxInternals
+    #macx:INCLUDEPATH += $$PWD/../XboxInternals-OSX/release
 }
 
 # mac
 mac {
-    QT += phonon
-
     ICON = velocity.icns
     INCLUDEPATH += "/usr/local/include/botan-1.10"
     LIBS += "/usr/local/lib/libbotan-1.10.a"

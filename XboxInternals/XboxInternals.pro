@@ -21,6 +21,9 @@ win32 {
     include(Stfs/Botan.pri)
     LIBS += -LC:/botan/ -lBotan
     INCLUDEPATH += C:/botan/include
+} else macx|unix {
+    INCLUDEPATH += /usr/local/include/botan-1.10
+    LIBS += /usr/local/lib/libbotan-1.10.a
 }
 
 SOURCES += \
