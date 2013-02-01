@@ -35,3 +35,4 @@ Makefile
 *.Release
 *.dll
 *.exe
+*.DS_Store
