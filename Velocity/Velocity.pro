@@ -91,7 +91,6 @@ SOURCES += main.cpp \
     githubcommitsdialog.cpp \
     gpduploader.cpp \
     fatxpathgendialog.cpp \
-    MemoryStream.cpp \
     profilecleanerwizard.cpp \
     svoddialog.cpp \
     svodfileinfodialog.cpp \
@@ -134,7 +133,6 @@ HEADERS  += mainwindow.h \
     githubcommitsdialog.h \
     gpduploader.h \
     fatxpathgendialog.h \
-    MemoryStream.h \
     profilecleanerwizard.h \
     svoddialog.h \
     svodfileinfodialog.h \
