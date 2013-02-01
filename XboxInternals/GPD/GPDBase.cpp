@@ -323,6 +323,14 @@ void GPDBase::Clean()
     xdbf->Clean();
 }
 
+SettingEntry GPDBase::GetSettingEntry(UINT64 id)
+{
+    for (DWORD i = 0; i < settings.size(); i++)
+        if (settings.at(i).entry.id == id)
+            return settings.at(i);
+    return SettingEntry();
+}
+
 GPDBase::~GPDBase(void)
 {
     // deallocate all of the image memory
