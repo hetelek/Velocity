@@ -323,7 +323,7 @@ void GPDBase::Clean()
     xdbf->Clean();
 }
 
-SettingEntry GPDBase::GetSettingEntry(UINT64 id)
+SettingEntry GPDBase::GetSetting(UINT64 id)
 {
     for (DWORD i = 0; i < settings.size(); i++)
         if (settings.at(i).entry.id == id)

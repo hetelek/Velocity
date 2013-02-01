@@ -47,8 +47,8 @@ public:
     // Description: remove all of the unused memory
     void Clean();
 
-    // Descriptio: get a setting entry from its id
-    SettingEntry GetSettingEntry(UINT64 id);
+    // Description: get a setting entry from its id
+    SettingEntry GetSetting(UINT64 id);
 
 protected:
     bool ioPassedIn;
