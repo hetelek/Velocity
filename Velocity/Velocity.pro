@@ -32,19 +32,15 @@ macx|win32:QT += phonon
 
 CONFIG(debug, debug|release) {
     win32:LIBS += -L$$PWD/../XboxInternals-Win/debug/ -lXboxInternals
-    win32:INCLUDEPATH += $$PWD/../XboxInternals-Win/debug
-    #macx:LIBS += -L$$PWD/../XboxInternals-OSX/debug/ -lXboxInternals
-    #macx:INCLUDEPATH += $$PWD/../XboxInternals-OSX/debug
+    macx:LIBS += -L$$PWD/../XboxInternals-OSX/debug/ -lXboxInternals
 }
 CONFIG(release, debug|release) {
     win32:LIBS += -L$$PWD/../XboxInternals-Win/release/ -lXboxInternals
-    win32:INCLUDEPATH += $$PWD/../XboxInternals-Win/release
-    #macx:LIBS += -L$$PWD/../XboxInternals-OSX/release/ -lXboxInternals
-    #macx:INCLUDEPATH += $$PWD/../XboxInternals-OSX/release
+    macx:LIBS += -L$$PWD/../XboxInternals-OSX/release/ -lXboxInternals
 }
 
 # mac
-mac {
+macx {
     ICON = velocity.icns
     INCLUDEPATH += "/usr/local/include/botan-1.10"
     LIBS += "/usr/local/lib/libbotan-1.10.a"
