@@ -514,7 +514,6 @@ void ProfileEditor::onAssetsDoneDownloading()
         // set all the needed metadata
         newAsset.metaData->contentType = AvatarItem;
         newAsset.metaData->titleID = award->titleID;
-        newAsset.metaData->displayName = award->name;
         newAsset.metaData->subCategory = award->subcategory;
         newAsset.metaData->colorizable = award->colorizable;
         QtHelpers::ParseHexStringBuffer(downloader->GetGUID().replace("-", "").toUpper(), newAsset.metaData->guid, 0x10);
