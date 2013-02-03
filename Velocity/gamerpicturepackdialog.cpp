@@ -361,9 +361,8 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
         StfsPackage picturePack(savePath.toStdString(), StfsPackageCreate);
 
         picturePack.metaData->contentType = GamerPicture;
-        picturePack.metaData->displayName = ui->txtPackName->text().toStdWString();
+        memcpy(&picturePack.metaData->displayName, &ui->txtPackName->text().toStdWString(), sizeof(std::wstring));
         picturePack.metaData->titleID = 0xFFFE07D1;
-        picturePack.metaData->titleName = L"Xbox360 Dashboard";
         picturePack.metaData->transferFlags = 0x40;
 
         // set thumbnail image

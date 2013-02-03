@@ -514,6 +514,10 @@ void ProfileEditor::onAssetsDoneDownloading()
         // set all the needed metadata
         newAsset.metaData->contentType = AvatarItem;
         newAsset.metaData->titleID = award->titleID;
+
+        // not sure why i have to do this, but it triggors an 'Unknown Signal' from the OS if I don't
+        memcpy(&newAsset.metaData->displayName, &award->name, sizeof(std::wstring));
+
         newAsset.metaData->subCategory = award->subcategory;
         newAsset.metaData->colorizable = award->colorizable;
         QtHelpers::ParseHexStringBuffer(downloader->GetGUID().replace("-", "").toUpper(), newAsset.metaData->guid, 0x10);

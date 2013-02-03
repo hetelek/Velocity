@@ -15,6 +15,9 @@
 // xbox 360
 #include "Stfs/StfsPackage.h"
 
+// std
+#include <iostream>
+
 const QColor colors[] =
 {
     QColor(215, 215, 215),

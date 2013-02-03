@@ -41,45 +41,47 @@ void ThemeCreationWizard::onFinished(int status)
         return;
     try
     {
-        StfsPackage theme(ui->lblSavePath->text().toStdString(), StfsPackageCreate);
+        StfsPackage *theme = new StfsPackage(ui->lblSavePath->text().toStdString(), StfsPackageCreate);
 
         // create a new file
-        theme.metaData->magic = CON;
-        theme.metaData->certificate.ownerConsoleType = consoleType;
-        theme.metaData->certificate.consoleTypeFlags = (ConsoleTypeFlags)0;
+        theme->metaData->magic = CON;
+        theme->metaData->certificate.ownerConsoleType = consoleType;
+        theme->metaData->certificate.consoleTypeFlags = (ConsoleTypeFlags)0;
 
-        theme.metaData->contentType = Theme;
-        theme.metaData->metaDataVersion = 2;
-        theme.metaData->titleID = 0xFFFE07D1;
+        theme->metaData->contentType = Theme;
+        theme->metaData->metaDataVersion = 2;
+        theme->metaData->titleID = 0xFFFE07D1;
 
-        theme.metaData->displayName = ui->txtName->text().toStdWString();
-        theme.metaData->titleName = L"Xbox360 Dashboard";
-        theme.metaData->transferFlags = 0x40;
+        // had to do some glitch hacks in order to get this to work. If I don't do this, the OS gives an 'Unknown Signal'
+        std::wstring *w = new std::wstring(ui->txtName->text().toStdWString());
+        memcpy(&theme->metaData->displayName, w, sizeof(std::wstring));
+
+        theme->metaData->transferFlags = 0x40;
 
         // set gamerpicture
         QByteArray ba1;
         QBuffer buffer1(&ba1);
         buffer1.open(QIODevice::WriteOnly);
         ui->imgThumbnail->pixmap()->save(&buffer1, "PNG");
-        theme.metaData->thumbnailImage = (BYTE*)ba1.data();
-        theme.metaData->thumbnailImageSize = ba1.length();
+        theme->metaData->thumbnailImage = (BYTE*)ba1.data();
+        theme->metaData->thumbnailImageSize = ba1.length();
 
         // set title thumbnail image
         QByteArray ba2;
         QBuffer buffer2(&ba2);
         buffer2.open(QIODevice::WriteOnly);
         QPixmap(":/Images/defaultTitleImage.png").save(&buffer2, "PNG");
-        theme.metaData->titleThumbnailImage = (BYTE*)ba2.data();
-        theme.metaData->titleThumbnailImageSize = ba2.length();
+        theme->metaData->titleThumbnailImage = (BYTE*)ba2.data();
+        theme->metaData->titleThumbnailImageSize = ba2.length();
 
-        theme.metaData->WriteMetaData();
-        theme.Rehash();
+        theme->metaData->WriteMetaData();
+        theme->Rehash();
 
         // inject the wallpapers
-        injectImage(&theme, &wallpaper1, "Wallpaper1");
-        injectImage(&theme, &wallpaper2, "Wallpaper2");
-        injectImage(&theme, &wallpaper3, "Wallpaper3");
-        injectImage(&theme, &wallpaper4, "Wallpaper4");
+        injectImage(theme, &wallpaper1, "Wallpaper1");
+        injectImage(theme, &wallpaper2, "Wallpaper2");
+        injectImage(theme, &wallpaper3, "Wallpaper3");
+        injectImage(theme, &wallpaper4, "Wallpaper4");
 
         // create the parameters.ini file
         QString paramsFilePath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
@@ -95,7 +97,7 @@ void ThemeCreationWizard::onFinished(int status)
         params.close();
 
         // inject the params file to the theme package
-        theme.InjectFile(paramsFilePath.toStdString(), "parameters.ini");
+        theme->InjectFile(paramsFilePath.toStdString(), "parameters.ini");
 
         // create the dash style file
         QString dashStyleFilePath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
@@ -104,17 +106,19 @@ void ThemeCreationWizard::onFinished(int status)
         ioD.close();
 
         // inject the file
-        theme.InjectFile(dashStyleFilePath.toStdString(), "DashStyle");
+        theme->InjectFile(dashStyleFilePath.toStdString(), "DashStyle");
 
         // fix the package
-        theme.Rehash();
-        theme.Resign(QtHelpers::GetKVPath(theme.metaData->certificate.ownerConsoleType, this));
+        theme->Rehash();
+        theme->Resign(QtHelpers::GetKVPath(theme->metaData->certificate.ownerConsoleType, this));
 
         // delete the temp files
         QFile::remove(paramsFilePath);
         QFile::remove(dashStyleFilePath);
 
         statusBar->showMessage("Theme created successfully", 3000);
+
+        delete theme;
     }
     catch (string error)
     {
