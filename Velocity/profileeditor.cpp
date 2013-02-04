@@ -516,7 +516,8 @@ void ProfileEditor::onAssetsDoneDownloading()
         newAsset.metaData->titleID = award->titleID;
 
         // not sure why i have to do this, but it triggors an 'Unknown Signal' from the OS if I don't
-        memcpy(&newAsset.metaData->displayName, &award->name, sizeof(std::wstring));
+        std::wstring *w = new std::wstring(award->name);
+        memcpy(&newAsset.metaData->displayName, w, sizeof(std::wstring));
 
         newAsset.metaData->subCategory = award->subcategory;
         newAsset.metaData->colorizable = award->colorizable;

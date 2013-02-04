@@ -361,7 +361,8 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
         StfsPackage picturePack(savePath.toStdString(), StfsPackageCreate);
 
         picturePack.metaData->contentType = GamerPicture;
-        memcpy(&picturePack.metaData->displayName, &ui->txtPackName->text().toStdWString(), sizeof(std::wstring));
+        std::wstring *w = new std::wstring(ui->txtPackName->text().toStdWString());
+        memcpy(&picturePack.metaData->displayName, w, sizeof(std::wstring));
         picturePack.metaData->titleID = 0xFFFE07D1;
         picturePack.metaData->transferFlags = 0x40;
 
