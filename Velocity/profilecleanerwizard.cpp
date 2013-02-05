@@ -148,10 +148,16 @@ void ProfileCleanerWizard::clean()
 
     // copy all the metadata over to the new profile
     newProfile.metaData->certificate.publicKeyCertificateSize = profile->metaData->certificate.publicKeyCertificateSize;
-    newProfile.metaData->certificate.ownerConsolePartNumber = profile->metaData->certificate.ownerConsolePartNumber;
+
+    std::string *s = new std::string(profile->metaData->certificate.ownerConsolePartNumber);
+    memcpy(&newProfile.metaData->certificate.ownerConsolePartNumber, s, sizeof(std::string));
+
     newProfile.metaData->certificate.ownerConsoleType = profile->metaData->certificate.ownerConsoleType;
     newProfile.metaData->certificate.consoleTypeFlags = profile->metaData->certificate.consoleTypeFlags;
-    newProfile.metaData->certificate.dateGeneration = profile->metaData->certificate.dateGeneration;
+
+    s = new std::string(profile->metaData->certificate.dateGeneration);
+    memcpy(&newProfile.metaData->certificate.dateGeneration, s, sizeof(std::string));
+
     memcpy(newProfile.metaData->certificate.ownerConsoleID, profile->metaData->certificate.ownerConsoleID, 5);
 
     memcpy(newProfile.metaData->consoleID, profile->metaData->consoleID, 5);
@@ -159,14 +165,22 @@ void ProfileCleanerWizard::clean()
     newProfile.metaData->contentType = Profile;
     newProfile.metaData->titleID = profile->metaData->titleID;
     memcpy(newProfile.metaData->deviceID, profile->metaData->deviceID, 20);
-    newProfile.metaData->displayDescription = profile->metaData->displayDescription;
-    newProfile.metaData->displayName = profile->metaData->displayName;
+
+    std::wstring *w = new std::wstring(profile->metaData->displayDescription);
+    memcpy(&newProfile.metaData->displayDescription, w, sizeof(std::wstring));
+
+    w = new std::wstring(profile->metaData->displayName);
+    memcpy(&newProfile.metaData->displayName, w, sizeof(std::wstring));
+
     newProfile.metaData->executableType = profile->metaData->executableType;
     newProfile.metaData->headerSize = profile->metaData->headerSize;
     memcpy(newProfile.metaData->licenseData, profile->metaData->licenseData, sizeof(LicenseEntry) * 0x10);
     newProfile.metaData->metaDataVersion = profile->metaData->metaDataVersion;
     memcpy(newProfile.metaData->profileID, profile->metaData->profileID, 8);
-    newProfile.metaData->publisherName = profile->metaData->publisherName;
+
+    w = new std::wstring(profile->metaData->publisherName);
+    memcpy(&newProfile.metaData->publisherName, w, sizeof(std::wstring));
+
     newProfile.metaData->savegameID = profile->metaData->savegameID;
 
     newProfile.metaData->thumbnailImage = new BYTE[profile->metaData->thumbnailImageSize];
@@ -175,7 +189,10 @@ void ProfileCleanerWizard::clean()
     memcpy(newProfile.metaData->titleThumbnailImage, profile->metaData->titleThumbnailImage, profile->metaData->titleThumbnailImageSize);
     newProfile.metaData->thumbnailImageSize = profile->metaData->thumbnailImageSize;
     newProfile.metaData->titleThumbnailImageSize = profile->metaData->titleThumbnailImageSize;
-    newProfile.metaData->titleName = profile->metaData->titleName;
+
+    w = new std::wstring(profile->metaData->titleName);
+    memcpy(&newProfile.metaData->titleName, w, sizeof(std::wstring));
+
     newProfile.metaData->transferFlags = profile->metaData->transferFlags;
     newProfile.metaData->version = profile->metaData->version;
 
