@@ -775,6 +775,7 @@ void MainWindow::on_actionSVOD_System_triggered()
 
     try
     {
+        ui->statusBar->showMessage("Loading SVOD system...");
         SVOD *svod = new SVOD(filePath.toStdString());
         SvodDialog *dialog = new SvodDialog(svod, ui->statusBar, this);
         ui->mdiArea->addSubWindow(dialog);
@@ -782,6 +783,7 @@ void MainWindow::on_actionSVOD_System_triggered()
     }
     catch (string error)
     {
+        ui->statusBar->showMessage("");
         QMessageBox::critical(this, "SVOD Error", "An error has occurred while opening the SVOD system.\n\n" + QString::fromStdString(error));
     }
 }
