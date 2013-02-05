@@ -6,6 +6,7 @@ SvodFileInfoDialog::SvodFileInfoDialog(SVOD *svod, GDFXFileEntry *entry, QString
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+    QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
     // load the information
     ui->lblLocation->setText(QString::fromStdString(entry->filePath));

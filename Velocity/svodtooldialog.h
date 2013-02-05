@@ -3,6 +3,7 @@
 
 // qt
 #include <QDialog>
+#include "qthelpers.h"
 
 // xbox
 #include "Disc/svod.h"

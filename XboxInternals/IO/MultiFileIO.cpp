@@ -29,8 +29,10 @@ void MultiFileIO::loadDirectories(string path)
     if (dir != NULL)
     {
         // load the stuff that's always at the begining . ..
+#ifdef __win32
         readdir(dir);
         readdir(dir);
+#endif
 
         // load only the files, don't want the folders
         while ((ent = readdir(dir)) != NULL)

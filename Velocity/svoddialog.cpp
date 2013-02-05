@@ -6,6 +6,7 @@ SvodDialog::SvodDialog(SVOD *svod, QStatusBar *statusBar, QWidget *parent) :
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+    QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
     loadListing(NULL, &svod->root);
 

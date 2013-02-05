@@ -33,10 +33,12 @@ macx|win32:QT += phonon
 CONFIG(debug, debug|release) {
     win32:LIBS += -L$$PWD/../XboxInternals-Win/debug/ -lXboxInternals
     macx:LIBS += -L$$PWD/../XboxInternals-OSX/debug/ -lXboxInternals
+    unix:LIBS += -L$$PWD/../XboxInternals-Linux/debug/ -lXboxInternals
 }
 CONFIG(release, debug|release) {
     win32:LIBS += -L$$PWD/../XboxInternals-Win/release/ -lXboxInternals
     macx:LIBS += -L$$PWD/../XboxInternals-OSX/release/ -lXboxInternals
+    unix:LIBS += -L$$PWD/../XboxInternals-Linux/release/ -lXboxInternals
 }
 
 # mac
