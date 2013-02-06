@@ -29,6 +29,7 @@ win32 {
 }
 
 macx|win32:QT += phonon
+macx:ICON = velocity.icns
 
 CONFIG(debug, debug|release) {
     win32:LIBS += -L$$PWD/../XboxInternals-Win/debug/ -lXboxInternals
@@ -41,17 +42,10 @@ CONFIG(release, debug|release) {
     unix:LIBS += -L$$PWD/../XboxInternals-Linux/release/ -lXboxInternals
 }
 
-# mac
-macx {
-    ICON = velocity.icns
-    INCLUDEPATH += "/usr/local/include/botan-1.10"
-    LIBS += "/usr/local/lib/libbotan-1.10.a"
-}
-
-# other unix (linux)
-unix:!mac {
-    INCLUDEPATH += "/usr/local/include/botan-1.10"
-    LIBS += "/usr/local/lib/libbotan-1.10.a"
+# mac or unix
+macx|unix {
+    INCLUDEPATH += /usr/local/include/botan-1.10
+    LIBS += -L/usr/local/lib/ -llibbotan-1.10
 }
 
 SOURCES += main.cpp \
