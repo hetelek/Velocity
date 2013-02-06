@@ -5,7 +5,7 @@
 #include <string.h>
 #include "BaseIO.h"
 
-class MemoryIO : public BaseIO
+class XBOXINTERNALSSHARED_EXPORT MemoryIO : public BaseIO
 {
 public:
     MemoryIO(BYTE *data, size_t length);
