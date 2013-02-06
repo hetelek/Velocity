@@ -29,7 +29,7 @@ win32 {
 }
 macx|unix {
     INCLUDEPATH += /usr/local/include/botan-1.10
-    LIBS += "/usr/local/lib/libbotan-1.10.a"
+    LIBS += /usr/local/lib/libbotan-1.10.a
 }
 
 
