@@ -27,6 +27,11 @@ win32 {
     INCLUDEPATH += C:/botan/include
     RC_FILE = velocity.rc
 }
+macx|unix {
+    INCLUDEPATH += /usr/local/include/botan-1.10
+    LIBS += -L/usr/local/lib/ -llibbotan-1.10
+}
+
 
 macx|win32:QT += phonon
 macx:ICON = velocity.icns
@@ -40,12 +45,6 @@ CONFIG(release, debug|release) {
     win32:LIBS += -L$$PWD/../XboxInternals-Win/release/ -lXboxInternals
     macx:LIBS += -L$$PWD/../XboxInternals-OSX/release/ -lXboxInternals
     unix:LIBS += -L$$PWD/../XboxInternals-Linux/release/ -lXboxInternals
-}
-
-# mac or unix
-macx|unix {
-    INCLUDEPATH += /usr/local/include/botan-1.10
-    LIBS += -L/usr/local/lib/ -llibbotan-1.10
 }
 
 SOURCES += main.cpp \
