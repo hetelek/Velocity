@@ -96,7 +96,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Welcome to the profile cleaner. This tool will allow you to remove unnecessary files inisde your profile to make it smaller.</string>
+         <string>Welcome to the profile cleaner. This tool will allow you to remove unnecessary files inside your profile to make it smaller.</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
