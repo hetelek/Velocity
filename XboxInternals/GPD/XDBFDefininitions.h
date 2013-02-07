@@ -300,7 +300,7 @@ enum XboxLiveCountry
     UnitedArabEmirates = 1,
     UnitedKingdom = 0x23,
     UnitedStates = 0x67,
-	Unknown = 0,
+    UnknownCountry = 0,
     Uruguay = 0x68,
     Uzbekistan = 0x69,
     Venezuela = 0x6a,

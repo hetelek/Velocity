@@ -39,7 +39,7 @@ AchievementEntry GameGPD::readAchievementEntry(XDBFEntry entry)
 	toReturn.gamerscore = io->readDword();
 	toReturn.flags = io->readDword();
 	
-	FILETIME timeStamp = { io->readDword(), io->readDword() };
+	WINFILETIME timeStamp = { io->readDword(), io->readDword() };
 	toReturn.unlockTime = XDBFHelpers::FILETIMEtoTimeT(timeStamp);
 
 	toReturn.name = io->readWString();
@@ -81,7 +81,7 @@ void GameGPD::WriteAchievementEntry(AchievementEntry *entry)
             io->write((UINT64)0);
         else
         {
-            FILETIME time = XDBFHelpers::TimeTtoFILETIME(entry->unlockTime);
+            WINFILETIME time = XDBFHelpers::TimeTtoFILETIME(entry->unlockTime);
             io->write(time.dwHighDateTime);
             io->write(time.dwLowDateTime);
         }

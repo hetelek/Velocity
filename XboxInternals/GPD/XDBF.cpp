@@ -223,7 +223,7 @@ SyncData XDBF::readSyncData(XDBFEntry entry)
     data.nextSyncID = io->readUInt64();
     data.lastSyncID = io->readUInt64();
 
-    FILETIME time = { io->readDword(), io->readDword() };
+    WINFILETIME time = { io->readDword(), io->readDword() };
     data.lastSyncedTime = (tm*)XDBFHelpers::FILETIMEtoTimeT(time);
 
     io->setPosition(pos);
@@ -240,7 +240,7 @@ void XDBF::writeSyncData(SyncData *data)
     io->write(data->lastSyncID);
 
     // write the last time synced
-    FILETIME lastSynced = XDBFHelpers::TimeTtoFILETIME((time_t)data->lastSyncedTime);
+    WINFILETIME lastSynced = XDBFHelpers::TimeTtoFILETIME((time_t)data->lastSyncedTime);
     io->write(lastSynced.dwHighDateTime);
     io->write(lastSynced.dwLowDateTime);
 }

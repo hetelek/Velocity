@@ -126,7 +126,7 @@ TitleEntry DashboardGPD::readTitleEntry(XDBFEntry entry)
 	toReturn.flags = io->readDword();
 
 	// read the last time played
-	FILETIME time = { io->readDword(), io->readDword() };
+	WINFILETIME time = { io->readDword(), io->readDword() };
     if (time.dwHighDateTime == 0 && time.dwLowDateTime == 0)
         toReturn.lastPlayed = 0;
     else
@@ -197,7 +197,7 @@ void DashboardGPD::WriteTitleEntry(TitleEntry *entry)
         io->setPosition(xdbf->GetRealAddress(entry->entry.addressSpecifier) + 0x28);
     else
     {
-        FILETIME time = XDBFHelpers::TimeTtoFILETIME(entry->lastPlayed);
+        WINFILETIME time = XDBFHelpers::TimeTtoFILETIME(entry->lastPlayed);
         io->write(time.dwHighDateTime);
         io->write(time.dwLowDateTime);
     }

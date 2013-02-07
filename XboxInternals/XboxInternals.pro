@@ -46,7 +46,8 @@ SOURCES += \
     GPD/GPDBase.cpp \
     GPD/XDBF.cpp \
     GPD/GameGPD.cpp \
-    IO/MemoryIO.cpp
+    IO/MemoryIO.cpp \
+    IO/DeviceIO.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -74,4 +75,5 @@ HEADERS +=\
     Stfs/XContentHeader.h \
     IO/MultiFileIO.h \
     Account/AccountDefinitions.h \
-    IO/MemoryIO.h
+    IO/MemoryIO.h \
+    IO/DeviceIO.h

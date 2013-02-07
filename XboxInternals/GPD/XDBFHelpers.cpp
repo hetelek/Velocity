@@ -30,15 +30,15 @@ bool XDBFHelpers::CompareEntries(XDBFEntry a, XDBFEntry b)
 		return a.id < b.type;
 }
 
-time_t XDBFHelpers::FILETIMEtoTimeT(FILETIME time)
+time_t XDBFHelpers::FILETIMEtoTimeT(WINFILETIME time)
 {
     INT64 i64 = (((INT64)(time.dwHighDateTime)) << 32) + time.dwLowDateTime;
     return (time_t)((i64 - 116444736000000000) / 10000000);
 }
 
-FILETIME XDBFHelpers::TimeTtoFILETIME(time_t time)
+WINFILETIME XDBFHelpers::TimeTtoFILETIME(time_t time)
 {
-    FILETIME toReturn;
+    WINFILETIME toReturn;
 
     UINT64 ll = ((UINT64)(time * (UINT64)10000000)) + 116444736000000000;
     toReturn.dwLowDateTime = (DWORD)ll;
@@ -478,7 +478,7 @@ string XDBFHelpers::RegionIDtoString(XboxLiveCountry id)
 			return string("United Kingdom");
 		case UnitedStates:
 			return string("United States");
-		case Unknown:
+		case UnknownCountry:
 			return string("Unknown");
 		case Uruguay:
 			return string("Uruguay");

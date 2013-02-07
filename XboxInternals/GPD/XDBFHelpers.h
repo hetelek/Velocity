@@ -19,9 +19,9 @@ public:
 
 	static bool CompareEntries(XDBFEntry a, XDBFEntry b);
 
-    static time_t FILETIMEtoTimeT(FILETIME time);
+    static time_t FILETIMEtoTimeT(WINFILETIME time);
 
-    static FILETIME TimeTtoFILETIME(time_t time);
+    static WINFILETIME TimeTtoFILETIME(time_t time);
 
     static string AchievementTypeToString(AchievementFlags type);
 

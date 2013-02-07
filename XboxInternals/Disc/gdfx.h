@@ -14,7 +14,7 @@ struct GDFXHeader
     BYTE magic[0x14];   // MICROSOFT*XBOX*MEDIA
     DWORD rootSector;
     DWORD rootSize;
-    FILETIME creationTime;
+    WINFILETIME creationTime;
 };
 
 struct GDFXFileEntry

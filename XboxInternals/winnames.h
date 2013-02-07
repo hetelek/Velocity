@@ -10,11 +10,11 @@ typedef int INT32;
 typedef long long INT64;
 typedef unsigned long long UINT64;
 
-typedef struct _FILETIME
+typedef struct _WINFILETIME
 {
     DWORD dwHighDateTime;
     DWORD dwLowDateTime;
 
-} FILETIME;
+} WINFILETIME;
 
 #endif
