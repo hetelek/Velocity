@@ -321,6 +321,7 @@ void GPDBase::Close()
 void GPDBase::Clean()
 {
     xdbf->Clean();
+    io = xdbf->io;
 }
 
 SettingEntry GPDBase::GetSetting(UINT64 id)
