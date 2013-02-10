@@ -5,7 +5,9 @@
 #include <iostream>
 #include <string.h>
 
-class XeCrypt
+#include "XboxInternals_global.h"
+
+class XBOXINTERNALSSHARED_EXPORT XeCrypt
 {
 public:
     static void BnQw_SwapDwQwLeBe(BYTE *data, DWORD length);

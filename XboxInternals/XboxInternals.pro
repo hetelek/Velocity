@@ -19,7 +19,6 @@ QMAKE_CXXFLAGS += -fpermissive
 
 win32 {
     include(Stfs/Botan.pri)
-    #LIBS += -LC:/botan/ -lBotan
     LIBS += C:/botan/libbotan-1.10.a
     PRE_TARGETDEPS += C:/botan/libbotan-1.10.a
     INCLUDEPATH += C:/botan/include

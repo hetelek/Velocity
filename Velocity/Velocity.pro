@@ -21,14 +21,6 @@ QMAKE_CXXFLAGS += -fpermissive
 # header include path
 INCLUDEPATH += $$PWD/../XboxInternals
 
-# windows
-win32 {    
-    #LIBS += -LC:/botan/ -lBotan
-    LIBS += C:/botan/libbotan-1.10.a
-    PRE_TARGETDEPS += C:/botan/libbotan-1.10.a
-    INCLUDEPATH += C:/botan/include
-    RC_FILE = velocity.rc
-}
 macx|unix {
     INCLUDEPATH += /usr/local/include/botan-1.10
     LIBS += /usr/local/lib/libbotan-1.10.a
@@ -36,6 +28,7 @@ macx|unix {
 
 
 macx|win32:QT += phonon
+win32:RC_FILE = velocity.rc
 macx:ICON = velocity.icns
 
 CONFIG(debug, debug|release) {
