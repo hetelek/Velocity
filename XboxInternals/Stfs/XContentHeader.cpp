@@ -505,11 +505,12 @@ void XContentHeader::ResignHeader(string kvPath)
     kvIo.readBytes(qData, 0x40);
 
     // 8 byte swap all necessary keys
-    XeCryptBnQw_SwapDwQwLeBe(nData, 0x80);
-    XeCryptBnQw_SwapDwQwLeBe(pData, 0x40);
-    XeCryptBnQw_SwapDwQwLeBe(qData, 0x40);
+    XeCrypt::BnQw_SwapDwQwLeBe(nData, 0x80);
+    XeCrypt::BnQw_SwapDwQwLeBe(pData, 0x40);
+    XeCrypt::BnQw_SwapDwQwLeBe(qData, 0x40);
 
     // get the keys ready for signing
+
     Botan::BigInt n = Botan::BigInt::decode(nData, 0x80);
     Botan::BigInt p = Botan::BigInt::decode(pData, 0x40);
     Botan::BigInt q = Botan::BigInt::decode(qData, 0x40);
@@ -542,16 +543,12 @@ void XContentHeader::ResignHeader(string kvPath)
     BYTE *dataToSign = new BYTE[size];
     io->readBytes(dataToSign, size);
 
-#if defined __unix | defined __APPLE__
     Botan::PK_Signer signer(pkey, "EMSA3(SHA-160)");
-#elif _WIN32
-    Botan::PK_Signer signer(pkey, Botan::get_emsa("EMSA3(SHA-160)"));
-#endif
 
     Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToSign, size, rng);
 
     // 8 byte swap the new signature
-    XeCryptBnQw_SwapDwQwLeBe(signature, 0x80);
+    XeCrypt::BnQw_SwapDwQwLeBe(signature, 0x80);
 
     // reverse the new signature every 8 bytes
     for (int i = 0; i < 0x10; i++)
@@ -562,24 +559,6 @@ void XContentHeader::ResignHeader(string kvPath)
     WriteCertificate();
 
     delete[] dataToSign;
-}
-
-void XContentHeader::XeCryptBnQw_SwapDwQwLeBe(BYTE *data, DWORD length)
-{
-    if (length % 8 != 0)
-        throw string("STFS: length is not divisible by 8.\n");
-
-    for (DWORD i = 0; i < length / 2; i += 8)
-    {
-        BYTE temp[8];
-        memcpy(temp, &data[i], 8);
-
-        BYTE temp2[8];
-        memcpy(temp2, &data[length - i - 8], 8);
-
-        memcpy(&data[i], temp2, 8);
-        memcpy(&data[length - i - 8], temp, 8);
-    }
 }
 
 XContentHeader::~XContentHeader()

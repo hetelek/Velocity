@@ -23,7 +23,9 @@ INCLUDEPATH += $$PWD/../XboxInternals
 
 # windows
 win32 {    
-    LIBS += -LC:/botan/ -lBotan
+    #LIBS += -LC:/botan/ -lBotan
+    LIBS += C:/botan/libbotan-1.10.a
+    PRE_TARGETDEPS += C:/botan/libbotan-1.10.a
     INCLUDEPATH += C:/botan/include
     RC_FILE = velocity.rc
 }

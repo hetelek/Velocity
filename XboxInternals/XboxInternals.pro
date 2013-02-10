@@ -19,7 +19,9 @@ QMAKE_CXXFLAGS += -fpermissive
 
 win32 {
     include(Stfs/Botan.pri)
-    LIBS += -LC:/botan/ -lBotan
+    #LIBS += -LC:/botan/ -lBotan
+    LIBS += C:/botan/libbotan-1.10.a
+    PRE_TARGETDEPS += C:/botan/libbotan-1.10.a
     INCLUDEPATH += C:/botan/include
 } else macx|unix {
     INCLUDEPATH += /usr/local/include/botan-1.10
@@ -47,7 +49,9 @@ SOURCES += \
     GPD/XDBF.cpp \
     GPD/GameGPD.cpp \
     IO/MemoryIO.cpp \
-    IO/DeviceIO.cpp
+    IO/DeviceIO.cpp \
+    Cryptography/XeKeys.cpp \
+    Cryptography/XeCrypt.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -76,4 +80,6 @@ HEADERS +=\
     IO/MultiFileIO.h \
     Account/AccountDefinitions.h \
     IO/MemoryIO.h \
-    IO/DeviceIO.h
+    IO/DeviceIO.h \
+    Cryptography/XeKeys.h \
+    Cryptography/XeCrypt.h

@@ -6,6 +6,7 @@
 #include "../AvatarAsset/AvatarAssetDefinintions.h"
 #include "../GPD/XDBFHelpers.h"
 #include "winnames.h"
+#include "../Cryptography/XeCrypt.h"
 #include <iostream>
 
 #include <botan/botan.h>
@@ -145,8 +146,5 @@ private:
     DWORD flags;
 
     void readMetadata();
-
-    // Description: swap bytes by chunks of 8
-    void XeCryptBnQw_SwapDwQwLeBe(BYTE *data, DWORD length);
 };
 

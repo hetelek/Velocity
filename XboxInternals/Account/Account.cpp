@@ -228,11 +228,7 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
     Botan::ARC4 rc4;
     rc4.set_key(rc4Key, 0x10);
 
-#if defined __unix | defined __APPLE__
     rc4.cipher(restOfFile, restOfFile, 0x184);
-#elif _WIN32
-    rc4.encrypt(restOfFile, 0x184);
-#endif
 
     // copy the parts
     memcpy(confounder, restOfFile, 8);
@@ -300,11 +296,7 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
     Botan::ARC4 rc4;
     rc4.set_key(rc4Key, 0x10);
 
-#if defined __unix | defined __APPLE__
     rc4.cipher1(decryptedData, 0x184);
-#elif _WIN32
-    rc4.decrypt(decryptedData, 0x184);
-#endif
 
     // write the confounder and encrypted data
     encrypted.write(decryptedData, 0x184);
