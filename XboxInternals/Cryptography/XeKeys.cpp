@@ -1,5 +1,4 @@
 #include "XeKeys.h"
-#include <QDebug>
 
 bool XeKeys::VerifyRSASignature(XeKeysRsaKeys key, BYTE *pbMessage, DWORD cbMessage, BYTE *signature)
 {
