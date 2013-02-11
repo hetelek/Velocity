@@ -21,6 +21,11 @@ QMAKE_CXXFLAGS += -fpermissive
 # header include path
 INCLUDEPATH += $$PWD/../XboxInternals
 
+win32 {
+    LIBS += C:/botan/libbotan-1.10.a
+    PRE_TARGETDEPS += C:/botan/libbotan-1.10.a
+    INCLUDEPATH += C:/botan/include
+}
 macx|unix {
     INCLUDEPATH += /usr/local/include/botan-1.10
     LIBS += /usr/local/lib/libbotan-1.10.a
@@ -83,7 +88,8 @@ SOURCES += main.cpp \
     stfsvolumedescriptordialog.cpp \
     svodtooldialog.cpp \
     svodvolumedescriptordialog.cpp \
-    multiprogressdialog.cpp
+    multiprogressdialog.cpp \
+    ytgrdialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -127,7 +133,8 @@ HEADERS  += mainwindow.h \
     svodvolumedescriptordialog.h \
     multiprogressdialog.h \
     PluginInterfaces/igpdmodder.h \
-    PluginInterfaces/igamemodder.h
+    PluginInterfaces/igamemodder.h \
+    ytgrdialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -162,7 +169,8 @@ FORMS    += mainwindow.ui \
     svodtooldialog.ui \
     svodvolumedescriptordialog.ui \
     stfsvolumedescriptordialog.ui \
-    multiprogressdialog.ui
+    multiprogressdialog.ui \
+    ytgrdialog.ui
 
 RESOURCES += \
     Resources.qrc
