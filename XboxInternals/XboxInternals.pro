@@ -50,7 +50,8 @@ SOURCES += \
     IO/MemoryIO.cpp \
     IO/DeviceIO.cpp \
     Cryptography/XeKeys.cpp \
-    Cryptography/XeCrypt.cpp
+    Cryptography/XeCrypt.cpp \
+    AvatarAsset/YTGR.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -81,4 +82,5 @@ HEADERS +=\
     IO/MemoryIO.h \
     IO/DeviceIO.h \
     Cryptography/XeKeys.h \
-    Cryptography/XeCrypt.h
+    Cryptography/XeCrypt.h \
+    AvatarAsset/YTGR.h
