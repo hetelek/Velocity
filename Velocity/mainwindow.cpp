@@ -802,7 +802,7 @@ void MainWindow::on_actionSVOD_System_triggered()
 
 void MainWindow::on_actionYTGR_triggered()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, "Open an SVOD root descriptor...", QtHelpers::DesktopLocation());
+    QString filePath = QFileDialog::getOpenFileName(this, "Open a file with a YTGR security header...", QtHelpers::DesktopLocation());
 
     if (filePath.isEmpty())
         return;
