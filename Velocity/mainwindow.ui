@@ -83,6 +83,7 @@
      <addaction name="actionXDBF_File"/>
      <addaction name="actionPackage"/>
      <addaction name="actionSVOD_System"/>
+     <addaction name="actionYTGR"/>
     </widget>
     <addaction name="menuOpen"/>
     <addaction name="actionCreate_Package"/>
@@ -335,6 +336,15 @@
    </property>
    <property name="text">
     <string>SVOD System</string>
+   </property>
+  </action>
+  <action name="actionYTGR">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/ytgr.png</normaloff>:/Images/ytgr.png</iconset>
+   </property>
+   <property name="text">
+    <string>YTGR</string>
    </property>
   </action>
  </widget>

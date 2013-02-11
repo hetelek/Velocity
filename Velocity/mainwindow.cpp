@@ -446,7 +446,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 
                     break;
                 }
-                case 0x58444246:
+                case 0x58444246:    // XDBF
                 {
                     GPDBase *gpd = new GPDBase(fileName);
                     ui->statusBar->showMessage("GPD parsed successfully", 3000);
@@ -458,7 +458,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 
                     break;
                 }
-                case 0x53545242:
+                case 0x53545242:    // STRB
                 {
                     AvatarAsset *asset = new AvatarAsset(fileName);
 
@@ -470,8 +470,20 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                     ui->statusBar->showMessage("STRB file parsed successfully", 3000);
                     break;
                 }
+
+                case 0x59544752:    // YTGR
+                {
+                    YTGR *ytgr = new YTGR(fileName);
+
+                    YtgrDialog *dialog = new YtgrDialog(ytgr, ui->statusBar, this);
+                    dialog->setAttribute(Qt::WA_DeleteOnClose);
+                    ui->mdiArea->addSubWindow(dialog);
+                    dialog->show();
+
+                    break;
+                }
                 default:
-                    QMessageBox::warning(this, "Unknown File Format", "The following file is an unknown format. Velocity can only read STFS, XDBF, and STRB files.\n\n" + QString::fromStdString(fileName));
+                    QMessageBox::warning(this, "Unknown File Format", "The following file is an unknown format. Velocity can only read STFS, SVOD, XDBF, YTGR, and STRB files.\n\n" + QString::fromStdString(fileName));
                     break;
             }
         }
@@ -785,5 +797,26 @@ void MainWindow::on_actionSVOD_System_triggered()
     {
         ui->statusBar->showMessage("");
         QMessageBox::critical(this, "SVOD Error", "An error has occurred while opening the SVOD system.\n\n" + QString::fromStdString(error));
+    }
+}
+
+void MainWindow::on_actionYTGR_triggered()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, "Open an SVOD root descriptor...", QtHelpers::DesktopLocation());
+
+    if (filePath.isEmpty())
+        return;
+
+    try
+    {
+        YTGR *ytgr = new YTGR(filePath.toStdString());
+        YtgrDialog *dialog = new YtgrDialog(ytgr, ui->statusBar, this);
+        ui->mdiArea->addSubWindow(dialog);
+        dialog->show();
+    }
+    catch (string error)
+    {
+        ui->statusBar->showMessage("");
+        QMessageBox::critical(this, "YTGR Error", "An error has occurred while parsing a YTGR header.\n\n" + QString::fromStdString(error));
     }
 }

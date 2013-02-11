@@ -37,6 +37,7 @@
 #include "fatxpathgendialog.h"
 #include "profilecleanerwizard.h"
 #include "svoddialog.h"
+#include "ytgrdialog.h"
 
 // other
 #include "PluginInterfaces/igamemodder.h"
@@ -48,6 +49,7 @@
 #include "GPD/GPDBase.h"
 #include "IO/MultiFileIO.h"
 #include "Disc/svod.h"
+#include "AvatarAsset/YTGR.h"
 
 using namespace std;
 
@@ -122,6 +124,8 @@ private slots:
     void on_actionCheck_For_Updates_triggered();
 
     void on_actionSVOD_System_triggered();
+
+    void on_actionYTGR_triggered();
 
 private:
     Ui::MainWindow *ui;
