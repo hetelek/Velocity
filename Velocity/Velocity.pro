@@ -22,8 +22,7 @@ QMAKE_CXXFLAGS += -fpermissive
 INCLUDEPATH += $$PWD/../XboxInternals
 
 win32 {
-    LIBS += C:/botan/libbotan-1.10.a
-    PRE_TARGETDEPS += C:/botan/libbotan-1.10.a
+    LIBS += -LC:/botan/ -lbotan-1.10
     INCLUDEPATH += C:/botan/include
 }
 macx|unix {
@@ -40,6 +39,7 @@ CONFIG(debug, debug|release) {
     win32:LIBS += -L$$PWD/../XboxInternals-Win/debug/ -lXboxInternals
     macx:LIBS += -L$$PWD/../XboxInternals-OSX/debug/ -lXboxInternals
     unix:LIBS += -L$$PWD/../XboxInternals-Linux/debug/ -lXboxInternals
+    unix:PRE_TARGETDEPS += $$PWD/../XboxInternals-Linux/debug/libXboxInternals.a
 }
 CONFIG(release, debug|release) {
     win32:LIBS += -L$$PWD/../XboxInternals-Win/release/ -lXboxInternals
