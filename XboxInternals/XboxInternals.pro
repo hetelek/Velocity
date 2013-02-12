@@ -10,6 +10,10 @@ TARGET = XboxInternals
 TEMPLATE = lib
 DEFINES += XBOXINTERNALS_LIBRARY
 
+unix {
+    CONFIG += staticlib app_bundle
+}
+
 # flags
 QMAKE_CXXFLAGS += -fpermissive
 

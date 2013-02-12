@@ -45,6 +45,7 @@ CONFIG(release, debug|release) {
     win32:LIBS += -L$$PWD/../XboxInternals-Win/release/ -lXboxInternals
     macx:LIBS += -L$$PWD/../XboxInternals-OSX/release/ -lXboxInternals
     unix:LIBS += -L$$PWD/../XboxInternals-Linux/release/ -lXboxInternals
+    unix:PRE_TARGETDEPS += $$PWD/../XboxInternals-Linux/release/libXboxInternals.a
 }
 
 SOURCES += main.cpp \
