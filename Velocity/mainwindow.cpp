@@ -714,7 +714,7 @@ void MainWindow::versionReplyFinished(QNetworkReply *aReply)
 {
     QString jsonStr(aReply->readAll());
 
-    bool ok;
+    bool ok, ok1;
     QVariantMap result = QtJson::Json::parse(jsonStr, ok).toMap();
 
     if (!ok)
@@ -728,7 +728,13 @@ void MainWindow::versionReplyFinished(QNetworkReply *aReply)
     if (hasMessage)
         message += result["message"].toString();
 
-    if (!version.contains(VERSION))
+    int versionNum = version.replace('.', "").toInt(&ok);
+    int currentVerisonNum = QString(VERSION).replace('.', "").toInt(&ok1);
+
+    if (!ok || !ok1)
+        return;
+
+    if (versionNum > currentVerisonNum)
     {
         QMessageBox::StandardButton selection = (QMessageBox::StandardButton)QMessageBox::question(this, "Version " + version, "Version " + version + " of Velocity is available for download. Your current version is " + VERSION + ". Would you like to be brought to the download page?" + (hasMessage ? message : ""), QMessageBox::Yes, QMessageBox::No);
         if (selection == QMessageBox::Yes)
