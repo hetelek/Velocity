@@ -3,8 +3,14 @@
 #include "mainwindow.h"
 #include <botan/botan.h>
 
+#include "IO/DeviceIO.h"
+
 int main(int argc, char *argv[])
 {
+    DeviceIO diskDrive(L"\\\\.\\PHYSICALDRIVE1");
+    diskDrive.SetPosition(0);
+    qDebug() << diskDrive.ReadByte();
+
     QApplication a(argc, argv);
     a.addLibraryPath(":/plugins/imageformats");
 

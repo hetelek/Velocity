@@ -3,6 +3,7 @@
 DeviceIO::DeviceIO(std::wstring devicePath)
 {
     #ifdef _WIN32
+        pos = 0;
         memset(&offset, 0, sizeof(OVERLAPPED));
 
         // Attempt to get a handle to the device
@@ -40,9 +41,9 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
         if (len == 0)
             return;
 
-        BYTE maxSectors = (BYTE)(UpToNearestSector(len + (Position() - realPosition())) / 0x200); // This is the number of sectors we have to read
+        BYTE maxSectors = (BYTE)(UP_TO_NEAREST_SECTOR(len + (Position() - realPosition())) / 0x200); // This is the number of sectors we have to read
         int bytesToShaveOffBeginning = (int)(Position() - realPosition());	// Number of bytes to remove from the beginning of the buffer
-        int bytesToShaveOffEnd = (int)(UpToNearestSector(Position() + len) - (Position() + len));
+        int bytesToShaveOffEnd = (int)(UP_TO_NEAREST_SECTOR(Position() + len) - (Position() + len));
         int bytesThatAreInLastDataRead = 0x200 - bytesToShaveOffBeginning;
 
 
@@ -109,7 +110,7 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
 
 void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
 {
-    /*#ifdef _WIN32
+    #ifdef _WIN32
         if (deviceHandle == INVALID_HANDLE_VALUE)
             throw std::string("Error: INVALID_HANDLE_VALUE. At: xDeviceStream::Write");
     #endif
@@ -121,6 +122,12 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
     // nothing to do
     if (len == 0)
         return;
+
+    INT64 finalPos = pos + len;
+    INT64 startingSector = DOWN_TO_NEAREST_SECTOR();
+
+    BYTE sector[0x200];
+    ReadBytes(sector, 0x200);
 
     DWORD bytesWritten;
     #ifdef _WIN32
@@ -135,7 +142,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
     #endif
 
     DWORD lastError = GetLastError();
-    SetPosition(Position() + len);*/
+    SetPosition(Position() + len);
 }
 
 UINT64 DeviceIO::DriveLength()
@@ -189,7 +196,7 @@ INT64 DeviceIO::Position()
 void DeviceIO::SetPosition(INT64 address)
 {
     pos = address;
-    address = DownToNearestSector(address); // Round the position down to the nearest sector offset
+    address = DOWN_TO_NEAREST_SECTOR(address); // Round the position down to the nearest sector offset
 
     #ifdef _WIN32
         offset.Offset = (DWORD)address;
