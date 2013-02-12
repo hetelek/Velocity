@@ -8,6 +8,7 @@
 #define UpToNearestSector(x) ((x + 0x1FF) & 0x1FF)
 
 #include "../winnames.h"
+#include "XboxInternals_global.h"
 
 class XBOXINTERNALSSHARED_EXPORT FATXHelpers
 {

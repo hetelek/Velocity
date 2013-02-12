@@ -40,9 +40,9 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
         if (len == 0)
             return;
 
-        BYTE maxSectors = (BYTE)(FATXHelpers::UpToNearestSector(len + (Position() - realPosition())) / 0x200); // This is the number of sectors we have to read
+        BYTE maxSectors = (BYTE)(UpToNearestSector(len + (Position() - realPosition())) / 0x200); // This is the number of sectors we have to read
         int bytesToShaveOffBeginning = (int)(Position() - realPosition());	// Number of bytes to remove from the beginning of the buffer
-        int bytesToShaveOffEnd = (int)(FATXHelpers::UpToNearestSector(Position() + len) - (Position() + len));
+        int bytesToShaveOffEnd = (int)(UpToNearestSector(Position() + len) - (Position() + len));
         int bytesThatAreInLastDataRead = 0x200 - bytesToShaveOffBeginning;
 
 
@@ -189,7 +189,7 @@ INT64 DeviceIO::Position()
 void DeviceIO::SetPosition(INT64 address)
 {
     pos = address;
-    address = FATXHelpers::DownToNearestSector(address); // Round the position down to the nearest sector offset
+    address = DownToNearestSector(address); // Round the position down to the nearest sector offset
 
     #ifdef _WIN32
         offset.Offset = (DWORD)address;
