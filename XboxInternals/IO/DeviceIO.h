@@ -1,22 +1,22 @@
 /* Most parts of this class were originally developed by Lander Griffith (https://github.com/landr0id/).
-   Much of his code is used throughout this class */
+   Much of his code is used throughout this class or very slightly modified */
 
-#ifndef SVODIO_H
-#define SVODIO_H
+#ifndef DEVICEIO_H
+#define DEVICEIO_H
 
-#include "../Disc/gdfx.h"
 #include "BaseIO.h"
-#include "../Stfs/XContentHeader.h"
+#include "../FATX/fatxhelpers.h"
 #include "XboxInternals_global.h"
 
 #ifdef _WIN32
     #include <windows.h>
     #include <WinIoCtl.h>
 #else
-#define _FILE_OFFSET_BITS 64
+    #define _FILE_OFFSET_BITS 64
     #include <fcntl.h>
     #include <sys/types.h>
     #include <sys/ioctl.h>
+    #include <sys/disk.h>
     #include <unistd.h>
 #endif
 
@@ -28,19 +28,23 @@
 class XBOXINTERNALSSHARED_EXPORT DeviceIO : public BaseIO
 {
 public:
-    DeviceIO();
+    DeviceIO(std::wstring devicePath);
 
     void ReadBytes(BYTE *outBuffer, DWORD len);
 
     void WriteBytes(BYTE *buffer, DWORD len);
 
-    void SetPosition(DWORD address);
+    void SetPosition(INT64 address);
+
+    INT64 Position();
 
     UINT64 DriveLength();
 
     void Close();
 
 private:
+    INT64 realPosition();
+
     #ifdef _WIN32
         HANDLE deviceHandle;
         OVERLAPPED offset;
@@ -49,8 +53,9 @@ private:
         INT64 offset;
     #endif
 
-    INT64 userOffset;
-    INT64 realPosition();
+    INT64 pos;
+    BYTE lastReadData[0x200];
+    INT64 lastReadOffset;
 };
 
-#endif // SVODIO_H
+#endif // DEVICEIO_H

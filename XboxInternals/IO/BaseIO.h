@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BASEIO_H
+#define BASEIO_H
 
 #include <iostream>
 #include "winnames.h"
@@ -55,3 +56,5 @@ protected:
 private:
     void reverseByteArray(BYTE *array, DWORD len);
 };
+
+#endif //BASEIO_H
