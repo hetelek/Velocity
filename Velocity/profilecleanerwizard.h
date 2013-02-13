@@ -10,8 +10,8 @@
 
 // xbox360
 #include "Stfs/StfsPackage.h"
-#include "GPD/DashboardGPD.h"
-#include "GPD/GameGPD.h"
+#include "Gpd/DashboardGpd.h"
+#include "Gpd/GameGpd.h"
 
 enum CleanOperation
 {

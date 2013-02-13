@@ -20,6 +20,14 @@ struct SecurityInfo
     BYTE *msLogo;
 };
 
+struct PartitionHeader
+{
+    char magic[0x4];
+    DWORD partitionId;
+    DWORD sectorPerCluster;
+    DWORD rootDirectoryCluster;
+};
+
 class XBOXINTERNALSSHARED_EXPORT FatxDrive
 {
 public:

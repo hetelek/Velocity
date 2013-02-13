@@ -1,7 +1,7 @@
 #include "ytgrdialog.h"
 #include "ui_ytgrdialog.h"
 
-YtgrDialog::YtgrDialog(YTGR *ytgr, QStatusBar *statusBar, QWidget *parent) :
+YtgrDialog::YtgrDialog(Ytgr *ytgr, QStatusBar *statusBar, QWidget *parent) :
     QDialog(parent), ui(new Ui::YtgrDialog), ytgr(ytgr)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -9,7 +9,7 @@ YtgrDialog::YtgrDialog(YTGR *ytgr, QStatusBar *statusBar, QWidget *parent) :
     QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
     // load the ytgr information into the gui
-    ui->lblMagic->setText("0x" + QString::number(ytgr->magic, 16).toUpper() + " (YTGR)");
+    ui->lblMagic->setText("0x" + QString::number(ytgr->magic, 16).toUpper() + " (Ytgr)");
     ui->lblXSignerMinimumVersion->setText(QString::number(ytgr->XSignerMinimumVersion.major) + "." +
                                           QString::number(ytgr->XSignerMinimumVersion.minor) + "." +
                                           QString::number(ytgr->XSignerMinimumVersion.build) + "." +
@@ -20,7 +20,7 @@ YtgrDialog::YtgrDialog(YTGR *ytgr, QStatusBar *statusBar, QWidget *parent) :
     ui->txtContentHash->setText(QtHelpers::ByteArrayToString(ytgr->contentHash, 0x14, true));
     ui->txtSignature->setPlainText(QtHelpers::ByteArrayToString(ytgr->rsaSignature, 0x100, true));
 
-    statusBar->showMessage("YTGR header parsed successfully", 3000);
+    statusBar->showMessage("Ytgr header parsed successfully", 3000);
 }
 
 YtgrDialog::~YtgrDialog()

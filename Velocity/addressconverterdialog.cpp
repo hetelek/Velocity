@@ -1,7 +1,7 @@
 #include "addressconverterdialog.h"
 #include "ui_addressconverterdialog.h"
 
-AddressConverterDialog::AddressConverterDialog(XDBF *xdbf, QWidget *parent) : QDialog(parent), ui(new Ui::AddressConverterDialog), xdbf(xdbf)
+AddressConverterDialog::AddressConverterDialog(Xdbf *xdbf, QWidget *parent) : QDialog(parent), ui(new Ui::AddressConverterDialog), xdbf(xdbf)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);

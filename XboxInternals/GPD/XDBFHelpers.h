@@ -1,7 +1,7 @@
 #pragma once
 
 #include "winnames.h"
-#include "GPD/XDBFDefininitions.h"
+#include "Gpd/XdbfDefininitions.h"
 #include <iostream>
 #include <time.h>
 
@@ -9,7 +9,7 @@
 
 using std::string;
 
-class XBOXINTERNALSSHARED_EXPORT XDBFHelpers
+class XBOXINTERNALSSHARED_EXPORT XdbfHelpers
 {
 public:
 
@@ -17,7 +17,7 @@ public:
 
 	static string SettingEntryTypeToString(SettingEntryType type);
 
-	static bool CompareEntries(XDBFEntry a, XDBFEntry b);
+    static bool CompareEntries(XdbfEntry a, XdbfEntry b);
 
     static time_t FILETIMEtoTimeT(WINFILETIME time);
 

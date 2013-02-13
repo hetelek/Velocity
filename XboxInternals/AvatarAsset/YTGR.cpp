@@ -1,31 +1,31 @@
-#include "YTGR.h"
+#include "Ytgr.h"
 
-YTGR::YTGR(std::string filePath) : ioPassedIn(false)
+Ytgr::Ytgr(std::string filePath) : ioPassedIn(false)
 {
     io = new FileIO(filePath);
     Parse();
 }
 
-YTGR::YTGR(FileIO *io) : ioPassedIn(true)
+Ytgr::Ytgr(FileIO *io) : ioPassedIn(true)
 {
     this->io = io;
     Parse();
 }
 
-YTGR::~YTGR()
+Ytgr::~Ytgr()
 {
     if (!ioPassedIn)
         delete io;
 }
 
-void YTGR::Parse()
+void Ytgr::Parse()
 {
     io->setPosition(0);
 
     // verify the magic
     magic = io->readDword();
     if (magic != 0x59544752)
-        throw std::string("YTGR: Invalid magic.");
+        throw std::string("Ytgr: Invalid magic.");
 
     // read the version
     io->setEndian(LittleEndian);
@@ -37,13 +37,13 @@ void YTGR::Parse()
 
     structSize = io->readDword();
     if (structSize != 0x130)
-        throw std::string("YTGR: Invalid struct size.");
+        throw std::string("Ytgr: Invalid struct size.");
 
     // parse the timestamp
     WINFILETIME fileTime;
     fileTime.dwLowDateTime = io->readDword();
     fileTime.dwHighDateTime = io->readDword();
-    dateAddedToServer = XDBFHelpers::FILETIMEtoTimeT(fileTime);
+    dateAddedToServer = XdbfHelpers::FILETIMEtoTimeT(fileTime);
 
     contentLength = io->readDword();
     reserved = io->readDword();

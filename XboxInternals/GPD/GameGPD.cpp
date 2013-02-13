@@ -1,18 +1,18 @@
-#include "GameGPD.h"
+#include "GameGpd.h"
 
 
-GameGPD::GameGPD(string filePath) : GPDBase(filePath), filePath(filePath)
+GameGpd::GameGpd(string filePath) : GpdBase(filePath), filePath(filePath)
 {
 	init();
     StopWriting();
 }
 
-GameGPD::GameGPD(FileIO *io) : GPDBase(io)
+GameGpd::GameGpd(FileIO *io) : GpdBase(io)
 {
 	init();
 }
 
-void GameGPD::CleanGPD()
+void GameGpd::CleanGpd()
 {
     StartWriting();
 	xdbf->Clean();
@@ -20,11 +20,11 @@ void GameGPD::CleanGPD()
     StopWriting();
 }
 
-AchievementEntry GameGPD::readAchievementEntry(XDBFEntry entry)
+AchievementEntry GameGpd::readAchievementEntry(XdbfEntry entry)
 {
 	// ensure that the entry passed in is an achievement entry
 	if (entry.type != Achievement)
-		throw string("GPD: Error reading achievement entry. Specified entry isn't an achievement.\n");
+		throw string("Gpd: Error reading achievement entry. Specified entry isn't an achievement.\n");
 
 	// seek to the begining of the achievement entry
 	io->setPosition(xdbf->GetRealAddress(entry.addressSpecifier));
@@ -40,7 +40,7 @@ AchievementEntry GameGPD::readAchievementEntry(XDBFEntry entry)
 	toReturn.flags = io->readDword();
 	
 	WINFILETIME timeStamp = { io->readDword(), io->readDword() };
-	toReturn.unlockTime = XDBFHelpers::FILETIMEtoTimeT(timeStamp);
+	toReturn.unlockTime = XdbfHelpers::FILETIMEtoTimeT(timeStamp);
 
 	toReturn.name = io->readWString();
 	toReturn.unlockedDescription = io->readWString();
@@ -51,7 +51,7 @@ AchievementEntry GameGPD::readAchievementEntry(XDBFEntry entry)
 	return toReturn;
 }
 
-void GameGPD::WriteAchievementEntry(AchievementEntry *entry)
+void GameGpd::WriteAchievementEntry(AchievementEntry *entry)
 {
 	DWORD calculatedLength = 0x1C + ((entry->name.size() + entry->unlockedDescription.size() + entry->lockedDescription.size() + 3) * 2);
 	if (calculatedLength != entry->initialLength)
@@ -81,7 +81,7 @@ void GameGPD::WriteAchievementEntry(AchievementEntry *entry)
             io->write((UINT64)0);
         else
         {
-            WINFILETIME time = XDBFHelpers::TimeTtoFILETIME(entry->unlockTime);
+            WINFILETIME time = XdbfHelpers::TimeTtoFILETIME(entry->unlockTime);
             io->write(time.dwHighDateTime);
             io->write(time.dwLowDateTime);
         }
@@ -99,7 +99,7 @@ void GameGPD::WriteAchievementEntry(AchievementEntry *entry)
 	io->flush();
 }
 
-void GameGPD::CreateAchievement(AchievementEntry *entry, BYTE *thumbnail, DWORD thumbnailLen)
+void GameGpd::CreateAchievement(AchievementEntry *entry, BYTE *thumbnail, DWORD thumbnailLen)
 {
 	DWORD entryLen = 0x1C + ((entry->name.size() + entry->unlockedDescription.size() + entry->lockedDescription.size() + 3) * 2);
 	entry->initialLength = entryLen;
@@ -126,10 +126,10 @@ void GameGPD::CreateAchievement(AchievementEntry *entry, BYTE *thumbnail, DWORD 
 
 	// make sure that the image is a PNG
 	if (*(DWORD*)thumbnail != 0x474E5089)
-		throw string("GPD: Error creating image entry. Image must be a PNG.\n");
+		throw string("Gpd: Error creating image entry. Image must be a PNG.\n");
 
 	// create a new image entry for the thumbnail
-	XDBFEntry imageEntry = xdbf->CreateEntry(Image, entry->imageID, thumbnailLen);
+	XdbfEntry imageEntry = xdbf->CreateEntry(Image, entry->imageID, thumbnailLen);
 
 	// write the image to the file
 	io->setPosition(xdbf->GetRealAddress(imageEntry.addressSpecifier));
@@ -151,12 +151,12 @@ void GameGPD::CreateAchievement(AchievementEntry *entry, BYTE *thumbnail, DWORD 
     xdbf->UpdateEntry(&imageEntry);
 }
 
-string GameGPD::GetAchievementType(AchievementEntry *entry)
+string GameGpd::GetAchievementType(AchievementEntry *entry)
 {
-    return XDBFHelpers::AchievementTypeToString((AchievementFlags)(entry->flags & 7));
+    return XdbfHelpers::AchievementTypeToString((AchievementFlags)(entry->flags & 7));
 }
 
-void GameGPD::DeleteAchievement(AchievementEntry *entry)
+void GameGpd::DeleteAchievement(AchievementEntry *entry)
 {
 	// remove the entry from the list
 	DWORD i;
@@ -169,13 +169,13 @@ void GameGPD::DeleteAchievement(AchievementEntry *entry)
 		}
 	}
 	if (i == achievements.size())
-		throw string("GPD: Error deleting achievement. Achievement doesn't exist.\n");
+		throw string("Gpd: Error deleting achievement. Achievement doesn't exist.\n");
 
 	// delete the entry from the file
 	xdbf->DeleteEntry(entry->entry);
 }
 
-bool GameGPD::GetAchievementThumbnail(AchievementEntry *entry, ImageEntry *out)
+bool GameGpd::GetAchievementThumbnail(AchievementEntry *entry, ImageEntry *out)
 {
 	for (DWORD i = 0; i < images.size(); i++)
 	{
@@ -188,7 +188,7 @@ bool GameGPD::GetAchievementThumbnail(AchievementEntry *entry, ImageEntry *out)
 	return false;
 }
 
-void GameGPD::UnlockAllAchievementsOffline()
+void GameGpd::UnlockAllAchievementsOffline()
 {
 	// iterate through all of the achievements
 	for (DWORD i = 0; i < achievements.size(); i++)
@@ -205,7 +205,7 @@ void GameGPD::UnlockAllAchievementsOffline()
     }
 }
 
-void GameGPD::init()
+void GameGpd::init()
 {
 	// read all of the achievement entries
 	for (DWORD i = 0; i < xdbf->achievements.entries.size(); i++)
@@ -222,13 +222,13 @@ void GameGPD::init()
 			gameName = strings.at(i);
 }
 
-void GameGPD::StartWriting()
+void GameGpd::StartWriting()
 {
     io = new FileIO(filePath);
     xdbf->io = io;
 }
 
-void GameGPD::StopWriting()
+void GameGpd::StopWriting()
 {
     io->close();
     delete io;
@@ -236,7 +236,7 @@ void GameGPD::StopWriting()
     xdbf->io = NULL;
 }
 
-GameGPD::~GameGPD(void)
+GameGpd::~GameGpd(void)
 {
     if (!ioPassedIn && io)
        io->close();

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "AccountDefinitions.h"
-#include "GPD/XDBFHelpers.h"
-#include "GPD/XDBFDefininitions.h"
+#include "Gpd/XdbfHelpers.h"
+#include "Gpd/XdbfDefininitions.h"
 #include "FileIO.h"
 #include <iostream>
 

@@ -26,13 +26,13 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
     // make sure the dashboard gpd exists
     try
     {
-        dashGPDTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
-        package->ExtractFile("FFFE07D1.gpd", dashGPDTempPath.toStdString());
-        dashGPD = new DashboardGPD(dashGPDTempPath.toStdString());
+        dashGpdTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+        package->ExtractFile("FFFE07D1.gpd", dashGpdTempPath.toStdString());
+        dashGpd = new DashboardGpd(dashGpdTempPath.toStdString());
     }
     catch(string error)
     {
-        QMessageBox::critical(this, "File Error", "The dashboard GPD could not be extracted/opened.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "File Error", "The dashboard Gpd could not be extracted/opened.\n\n" + QString::fromStdString(error));
         this->close();
         return;
     }
@@ -75,7 +75,7 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
 {
     QString jsonStr(aReply->readAll());
 
-    vector<TitleEntry> gamesPlayed = dashGPD->gamesPlayed;
+    vector<TitleEntry> gamesPlayed = dashGpd->gamesPlayed;
 
     bool ok;
     QVariantMap result = QtJson::Json::parse(jsonStr, ok).toMap();
@@ -208,9 +208,9 @@ void GameAdderDialog::showRemoveContextMenu_AllGames(QPoint point)
     }
 }
 
-void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath, TitleEntry entry, bool error)
+void GameAdderDialog::finishedDownloadingGpd(QString gamePath, QString awardPath, TitleEntry entry, bool error)
 {
-    GPDDownloader *downloader = (GPDDownloader*)sender();
+    GpdDownloader *downloader = (GpdDownloader*)sender();
     int index = downloader->index();
     delete downloader;
 
@@ -278,9 +278,9 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
 
             // update the dash gpd
             m.lock();
-            dashGPD->CreateTitleEntry(&entry);
+            dashGpd->CreateTitleEntry(&entry);
             ui->treeWidgetQueue->topLevelItem(index)->setData(0, Qt::UserRole, QVariant::fromValue(entry));
-            dashGPD->gamePlayedCount.int32++;
+            dashGpd->gamePlayedCount.int32++;
             m.unlock();
 
             qDebug() << "Ended " << QString::fromStdWString(entry.gameName);
@@ -311,7 +311,7 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
         try
         {
             m.lock();
-            dashGPD->WriteSettingEntry(dashGPD->gamePlayedCount);
+            dashGpd->WriteSettingEntry(dashGpd->gamePlayedCount);
             m.unlock();
         }
         catch (std::string error)
@@ -329,7 +329,7 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
             if (!package->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
             {
                 exists = false;
-                try { dashGPD->DeleteTitleEntry(&entry); }
+                try { dashGpd->DeleteTitleEntry(&entry); }
                 catch (std::string error) { qDebug() << "Problem " << QString::fromStdString(error); }
                 catch(...) { qDebug() << "Problem unknown"; }
 
@@ -341,7 +341,7 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
             }
             if (entry.avatarAwardCount != 0 && !pecPackage->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
             {
-                try { dashGPD->DeleteTitleEntry(&entry); }
+                try { dashGpd->DeleteTitleEntry(&entry); }
                 catch (std::string error) { qDebug() << "Problem " << QString::fromStdString(error); }
                 catch(...) { qDebug() << "Problem unknown"; }
 
@@ -358,18 +358,18 @@ void GameAdderDialog::finishedDownloadingGPD(QString gamePath, QString awardPath
 
         try
         {
-            dashGPD->Close();
-            delete dashGPD;
+            dashGpd->Close();
+            delete dashGpd;
 
             m.lock();
-            package->ReplaceFile(dashGPDTempPath.toStdString(), "FFFE07D1.gpd");
+            package->ReplaceFile(dashGpdTempPath.toStdString(), "FFFE07D1.gpd");
             m.unlock();
 
-            QFile::remove(dashGPDTempPath);
+            QFile::remove(dashGpdTempPath);
         }
         catch (std::string error)
         {
-            QMessageBox::critical(this, "Error Replacing GPD", "The dashboard GPD could not be replaced.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error Replacing Gpd", "The dashboard Gpd could not be replaced.\n\n" + QString::fromStdString(error));
             close();
         }
 
@@ -508,8 +508,8 @@ void GameAdderDialog::on_pushButton_clicked()
         QFile::remove(pecTempPath);
     }
 
-    dashGPD->Close();
-    QFile::remove(dashGPDTempPath);
+    dashGpd->Close();
+    QFile::remove(dashGpdTempPath);
     this->close();
 }
 
@@ -526,11 +526,11 @@ void GameAdderDialog::on_pushButton_2_clicked()
     downloadedCount = 0;
 
     // create the setting entry if it doesn't exist
-    if (dashGPD->gamePlayedCount.entry.type == 0)
+    if (dashGpd->gamePlayedCount.entry.type == 0)
     {
-        dashGPD->gamePlayedCount.type = Int32;
-        dashGPD->gamePlayedCount.int32 = 0;
-        dashGPD->CreateSettingEntry(&dashGPD->gamePlayedCount, GamercardTitlesPlayed);
+        dashGpd->gamePlayedCount.type = Int32;
+        dashGpd->gamePlayedCount.int32 = 0;
+        dashGpd->CreateSettingEntry(&dashGpd->gamePlayedCount, GamercardTitlesPlayed);
     }
 
     for (int i = 0; i < totalCount; i++)
@@ -539,8 +539,8 @@ void GameAdderDialog::on_pushButton_2_clicked()
 
         if (!package->FileExists(QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd"))
         {
-            GPDDownloader *downloader = new GPDDownloader(entry, i, entry.avatarAwardCount != 0, this);
-            connect(downloader, SIGNAL(FinishedDownloading(QString, QString, TitleEntry, bool)), this, SLOT(finishedDownloadingGPD(QString, QString, TitleEntry, bool)));
+            GpdDownloader *downloader = new GpdDownloader(entry, i, entry.avatarAwardCount != 0, this);
+            connect(downloader, SIGNAL(FinishedDownloading(QString, QString, TitleEntry, bool)), this, SLOT(finishedDownloadingGpd(QString, QString, TitleEntry, bool)));
             downloader->BeginDownload();
         }
         else

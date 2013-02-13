@@ -2,7 +2,7 @@
 
 string AccountHelpers::CountryToString(XboxLiveCountry country)
 {
-	return XDBFHelpers::RegionIDtoString(country);
+	return XdbfHelpers::RegionIDtoString(country);
 }
 
 string AccountHelpers::SubscriptionTeirToString(SubscriptionTeir teir)

@@ -1,40 +1,40 @@
-#include "AvatarAwardGPD.h"
+#include "AvatarAwardGpd.h"
 #include <sstream>
 
 using std::stringstream;
 
-AvatarAwardGPD::AvatarAwardGPD(string gpdPath) : GPDBase(gpdPath)
+AvatarAwardGpd::AvatarAwardGpd(string gpdPath) : GpdBase(gpdPath)
 {
     init();
 }
 
-AvatarAwardGPD::AvatarAwardGPD(FileIO *io) : GPDBase(io)
+AvatarAwardGpd::AvatarAwardGpd(FileIO *io) : GpdBase(io)
 {
     init();
 }
 
-void AvatarAwardGPD::CleanGPD()
+void AvatarAwardGpd::CleanGpd()
 {
     xdbf->Clean();
 }
 
-void AvatarAwardGPD::init()
+void AvatarAwardGpd::init()
 {
     // read in all of the avatar award entries
     for (DWORD i = 0; i < xdbf->avatarAwards.entries.size(); i++)
         avatarAwards.push_back(readAvatarAwardEntry(xdbf->avatarAwards.entries.at(i)));
 }
 
-AssetGender AvatarAwardGPD::GetAssetGender(struct AvatarAward *award)
+AssetGender AvatarAwardGpd::GetAssetGender(struct AvatarAward *award)
 {
     return (AssetGender)((award->awardFlags & 0x0000000300000000) >> 32);
 }
 
-struct AvatarAward AvatarAwardGPD::readAvatarAwardEntry(XDBFEntry entry)
+struct AvatarAward AvatarAwardGpd::readAvatarAwardEntry(XdbfEntry entry)
 {
     // make sure the entry passed in is an avatar award
     if (entry.type != AvatarAward)
-        throw string("GPD: Error reading avatar award, specified entry isn't an award.\n");
+        throw string("Gpd: Error reading avatar award, specified entry isn't an award.\n");
 
     struct AvatarAward award;
     award.entry = entry;
@@ -52,7 +52,7 @@ struct AvatarAward AvatarAwardGPD::readAvatarAwardEntry(XDBFEntry entry)
 
     // read the unlock time
     WINFILETIME time = { io->readDword(), io->readDword() };
-    award.unlockTime = XDBFHelpers::FILETIMEtoTimeT(time);
+    award.unlockTime = XdbfHelpers::FILETIMEtoTimeT(time);
 
     // read the rest of the entry
     award.subcategory = (AssetSubcategory)io->readDword();
@@ -67,7 +67,7 @@ struct AvatarAward AvatarAwardGPD::readAvatarAwardEntry(XDBFEntry entry)
     return award;
 }
 
-void AvatarAwardGPD::UnlockAllAwards()
+void AvatarAwardGpd::UnlockAllAwards()
 {
     // iterate through all of the avtar awards
     for (DWORD i = 0; i < avatarAwards.size(); i++)
@@ -86,7 +86,7 @@ void AvatarAwardGPD::UnlockAllAwards()
     io->flush();
 }
 
-string AvatarAwardGPD::GetGUID(struct AvatarAward *award)
+string AvatarAwardGpd::GetGUID(struct AvatarAward *award)
 {
     char guid[38];
     WORD *seg = (WORD*)&award->awardFlags;
@@ -95,7 +95,7 @@ string AvatarAwardGPD::GetGUID(struct AvatarAward *award)
     return string(guid);
 }
 
-string AvatarAwardGPD::getAwardImageURL(struct AvatarAward *award, bool little)
+string AvatarAwardGpd::getAwardImageURL(struct AvatarAward *award, bool little)
 {
     stringstream url;
     url << "http://avatar.xboxlive.com/global/t.";
@@ -106,17 +106,17 @@ string AvatarAwardGPD::getAwardImageURL(struct AvatarAward *award, bool little)
     return url.str();
 }
 
-string AvatarAwardGPD::GetLittleAwardImageURL(struct AvatarAward *award)
+string AvatarAwardGpd::GetLittleAwardImageURL(struct AvatarAward *award)
 {
     return getAwardImageURL(award, true);
 }
 
-string AvatarAwardGPD::GetLargeAwardImageURL(struct AvatarAward *award)
+string AvatarAwardGpd::GetLargeAwardImageURL(struct AvatarAward *award)
 {
     return getAwardImageURL(award, false);
 }
 
-void AvatarAwardGPD::WriteAvatarAward(struct AvatarAward *award)
+void AvatarAwardGpd::WriteAvatarAward(struct AvatarAward *award)
 {
     DWORD calculatedLength = 0x2C + ((award->name.size() + award->unlockedDescription.size() + award->lockedDescription.size() + 3) * 2);
 
@@ -140,7 +140,7 @@ void AvatarAwardGPD::WriteAvatarAward(struct AvatarAward *award)
     io->write(award->flags);
 
     // write the unlock time
-    WINFILETIME time = XDBFHelpers::TimeTtoFILETIME(award->unlockTime);
+    WINFILETIME time = XdbfHelpers::TimeTtoFILETIME(award->unlockTime);
     io->write(time.dwHighDateTime);
     io->write(time.dwLowDateTime);
 
@@ -156,7 +156,7 @@ void AvatarAwardGPD::WriteAvatarAward(struct AvatarAward *award)
     io->flush();
 }
 
-void AvatarAwardGPD::CreateAvatarAward(struct AvatarAward *award)
+void AvatarAwardGpd::CreateAvatarAward(struct AvatarAward *award)
 {
     award->initialSize = 0x2C + ((award->name.size() + award->unlockedDescription.size() + award->lockedDescription.size() + 3) * 2);
 
@@ -170,7 +170,7 @@ void AvatarAwardGPD::CreateAvatarAward(struct AvatarAward *award)
     avatarAwards.push_back(*award);
 }
 
-void AvatarAwardGPD::DeleteAvatarAward(struct AvatarAward *award)
+void AvatarAwardGpd::DeleteAvatarAward(struct AvatarAward *award)
 {
     // remove the entry from the list
     DWORD i;
@@ -183,13 +183,13 @@ void AvatarAwardGPD::DeleteAvatarAward(struct AvatarAward *award)
         }
     }
     if (i == avatarAwards.size())
-        throw string("GPD: Error deleting avatar award. Award doesn't exist.\n");
+        throw string("Gpd: Error deleting avatar award. Award doesn't exist.\n");
 
     // delete the entry from the file
     xdbf->DeleteEntry(award->entry);
 }
 
-WORD AvatarAwardGPD::getNextAwardIndex()
+WORD AvatarAwardGpd::getNextAwardIndex()
 {
     // get the highest index
     WORD highest = 0;
@@ -203,7 +203,7 @@ WORD AvatarAwardGPD::getNextAwardIndex()
     return highest + 1;
 }
 
-AvatarAwardGPD::~AvatarAwardGPD(void)
+AvatarAwardGpd::~AvatarAwardGpd(void)
 {
     if (!ioPassedIn)
         io->close();

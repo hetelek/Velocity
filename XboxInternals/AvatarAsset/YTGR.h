@@ -1,21 +1,21 @@
-#ifndef YTGR_H
-#define YTGR_H
+#ifndef Ytgr_H
+#define Ytgr_H
 
 #include <iostream>
 
 #include "FileIO.h"
 #include "../Cryptography/XeKeys.h"
-#include "../GPD/XDBFHelpers.h"
+#include "../Gpd/XdbfHelpers.h"
 #include "../Stfs/StfsConstants.h"
 #include <botan/botan.h>
 #include <botan/sha160.h>
 
-class XBOXINTERNALSSHARED_EXPORT YTGR
+class XBOXINTERNALSSHARED_EXPORT Ytgr
 {
 public:
-    YTGR(std::string filePath);
-    YTGR(FileIO *io);
-    ~YTGR();
+    Ytgr(std::string filePath);
+    Ytgr(FileIO *io);
+    ~Ytgr();
 
     DWORD magic;
     Version XSignerMinimumVersion;
@@ -31,8 +31,8 @@ private:
     FileIO *io;
     bool ioPassedIn;
 
-    // parse YTGR header
+    // parse Ytgr header
     void Parse();
 };
 
-#endif // YTGR_H
+#endif // Ytgr_H

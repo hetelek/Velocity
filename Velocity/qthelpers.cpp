@@ -294,9 +294,9 @@ void QtHelpers::GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWid
             icon = QIcon(":/Images/PackageFileIcon.png");
             item.setData(1, Qt::UserRole, "STFS");
             break;
-        case 0x58444246:    // XDBF
+        case 0x58444246:    // Xdbf
             icon = QIcon(":/Images/GpdFileIcon.png");
-            item.setData(1, Qt::UserRole, "XDBF");
+            item.setData(1, Qt::UserRole, "Xdbf");
             break;
         case 0x53545242:    // STRB
             icon = QIcon(":/Images/StrbFileIcon.png");

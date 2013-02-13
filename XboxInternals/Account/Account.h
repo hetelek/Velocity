@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "FileIO.h"
 #include "Account/AccountDefinitions.h"
-#include "GPD/XDBFDefininitions.h"
+#include "Gpd/XdbfDefininitions.h"
 #include "Stfs/StfsConstants.h"
 
 // botan

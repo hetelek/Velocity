@@ -1,22 +1,22 @@
-#include "GPDBase.h"
+#include "GpdBase.h"
 
 
-GPDBase::GPDBase(string path) : ioPassedIn(false)
+GpdBase::GpdBase(string path) : ioPassedIn(false)
 {
     io = new FileIO(path);
-    xdbf = new XDBF(io);
+    xdbf = new Xdbf(io);
 
     init();
 }
 
-GPDBase::GPDBase(FileIO *io) : ioPassedIn(true), io(io)
+GpdBase::GpdBase(FileIO *io) : ioPassedIn(true), io(io)
 {
-    xdbf = new XDBF(io);
+    xdbf = new Xdbf(io);
 
     init();
 }
 
-void GPDBase::init()
+void GpdBase::init()
 {
     // read all the images
     for (DWORD i = 0; i < xdbf->images.size(); i++)
@@ -53,11 +53,11 @@ void GPDBase::init()
     }
 }
 
-wstring GPDBase::readStringEntry(XDBFEntry entry)
+wstring GpdBase::readStringEntry(XdbfEntry entry)
 {
     // ensure that the entry is a string entry
     if (entry.type != String)
-        throw string("XDBF: Error reading string entry. Specified entry isn't a string.\n");
+        throw string("Xdbf: Error reading string entry. Specified entry isn't a string.\n");
 
     // seek to the entry's position
     io->setPosition(xdbf->GetRealAddress(entry.addressSpecifier));
@@ -66,11 +66,11 @@ wstring GPDBase::readStringEntry(XDBFEntry entry)
     return io->readWString(entry.length / 2);
 }
 
-SettingEntry GPDBase::readSettingEntry(XDBFEntry entry)
+SettingEntry GpdBase::readSettingEntry(XdbfEntry entry)
 {
     // ensure the entry is a setting entry
     if (entry.type != Setting)
-        throw string("XDBF: Error reading setting entry. The entry specified isn't a setting.\n");
+        throw string("Xdbf: Error reading setting entry. The entry specified isn't a setting.\n");
 
     SettingEntry toReturn;
     toReturn.entry = entry;
@@ -84,7 +84,7 @@ SettingEntry GPDBase::readSettingEntry(XDBFEntry entry)
     if (toReturn.type <= 0 || toReturn.type > 7)
     {
         printf("%llX\n", entry.id);
-        throw string("XDBF: Error reading setting entry. Invalid setting entry type.\n");
+        throw string("Xdbf: Error reading setting entry. Invalid setting entry type.\n");
     }
 
     // skip past the nonsense
@@ -124,7 +124,7 @@ SettingEntry GPDBase::readSettingEntry(XDBFEntry entry)
         case TimeStamp:
         {
             WINFILETIME time = { io->readDword(), io->readDword() };
-            toReturn.timeStamp = XDBFHelpers::FILETIMEtoTimeT(time);
+            toReturn.timeStamp = XdbfHelpers::FILETIMEtoTimeT(time);
             break;
         }
     }
@@ -132,7 +132,7 @@ SettingEntry GPDBase::readSettingEntry(XDBFEntry entry)
     return toReturn;
 }
 
-void GPDBase::DeleteSettingEntry(SettingEntry setting)
+void GpdBase::DeleteSettingEntry(SettingEntry setting)
 {
     // remove the entry from the list
     DWORD i;
@@ -145,13 +145,13 @@ void GPDBase::DeleteSettingEntry(SettingEntry setting)
         }
     }
     if (i > settings.size())
-        throw string("GPD: Error deleting setting entry. Setting doesn't exist.\n");
+        throw string("Gpd: Error deleting setting entry. Setting doesn't exist.\n");
 
     // delete the entry from the file
     xdbf->DeleteEntry(setting.entry);
 }
 
-void GPDBase::DeleteImageEntry(ImageEntry image)
+void GpdBase::DeleteImageEntry(ImageEntry image)
 {
     // remove the entry from the list
     DWORD i;
@@ -164,13 +164,13 @@ void GPDBase::DeleteImageEntry(ImageEntry image)
         }
     }
     if (i > images.size())
-        throw string("GPD: Error deleting image entry. Image doesn't exist.\n");
+        throw string("Gpd: Error deleting image entry. Image doesn't exist.\n");
 
     // delete the entry from the file
     xdbf->DeleteEntry(image.entry);
 }
 
-void GPDBase::CreateSettingEntry(SettingEntry *setting, UINT64 entryID)
+void GpdBase::CreateSettingEntry(SettingEntry *setting, UINT64 entryID)
 {
     DWORD entryLen = 0;
     switch (setting->type)
@@ -189,7 +189,7 @@ void GPDBase::CreateSettingEntry(SettingEntry *setting, UINT64 entryID)
         entryLen = 0x18 + (setting->binaryData.length * 2);
         break;
     default:
-        throw string("GPD: Error creating setting entry. Invalid setting entry type.\n");
+        throw string("Gpd: Error creating setting entry. Invalid setting entry type.\n");
     }
 
     // create the xdbf entry
@@ -202,9 +202,9 @@ void GPDBase::CreateSettingEntry(SettingEntry *setting, UINT64 entryID)
     WriteSettingEntry(*setting);
 }
 
-void GPDBase::CreateImageEntry(ImageEntry *image, UINT64 entryID)
+void GpdBase::CreateImageEntry(ImageEntry *image, UINT64 entryID)
 {
-    // create XDBF entry
+    // create Xdbf entry
     image->initialLength = image->length;
     image->entry = xdbf->CreateEntry(Image, entryID, image->length);
 
@@ -215,7 +215,7 @@ void GPDBase::CreateImageEntry(ImageEntry *image, UINT64 entryID)
     WriteImageEntry(*image);
 }
 
-void GPDBase::WriteSettingEntry(SettingEntry setting)
+void GpdBase::WriteSettingEntry(SettingEntry setting)
 {
     // get the address of the entry in the file
     DWORD entryAddr = xdbf->GetRealAddress(setting.entry.addressSpecifier);
@@ -242,7 +242,7 @@ void GPDBase::WriteSettingEntry(SettingEntry setting)
             break;
         case TimeStamp:
         {
-            WINFILETIME time = XDBFHelpers::TimeTtoFILETIME(setting.timeStamp);
+            WINFILETIME time = XdbfHelpers::TimeTtoFILETIME(setting.timeStamp);
             io->write(time.dwHighDateTime);
             io->write(time.dwLowDateTime);
             break;
@@ -297,7 +297,7 @@ void GPDBase::WriteSettingEntry(SettingEntry setting)
     io->flush();
 }
 
-void GPDBase::WriteImageEntry(ImageEntry image)
+void GpdBase::WriteImageEntry(ImageEntry image)
 {
     // allocate memory if needed
     if (image.length != image.initialLength)
@@ -312,19 +312,19 @@ void GPDBase::WriteImageEntry(ImageEntry image)
     io->write(image.image, image.length);
 }
 
-void GPDBase::Close()
+void GpdBase::Close()
 {
     if (io)
         io->close();
 }
 
-void GPDBase::Clean()
+void GpdBase::Clean()
 {
     xdbf->Clean();
     io = xdbf->io;
 }
 
-SettingEntry GPDBase::GetSetting(UINT64 id)
+SettingEntry GpdBase::GetSetting(UINT64 id)
 {
     for (DWORD i = 0; i < settings.size(); i++)
         if (settings.at(i).entry.id == id)
@@ -332,7 +332,7 @@ SettingEntry GPDBase::GetSetting(UINT64 id)
     return SettingEntry();
 }
 
-GPDBase::~GPDBase(void)
+GpdBase::~GpdBase(void)
 {
     // deallocate all of the image memory
     for (DWORD i = 0; i < images.size(); i++)

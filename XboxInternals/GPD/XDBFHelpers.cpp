@@ -1,28 +1,28 @@
-#include "GPD/XDBFHelpers.h"
+#include "Gpd/XdbfHelpers.h"
 #include "AvatarAsset/AssetHelpers.h"
 #include <sstream>
 
 using std::stringstream;
 
-string XDBFHelpers::EntryTypeToString(EntryType type)
+string XdbfHelpers::EntryTypeToString(EntryType type)
 {
 	if (type < 1 || type > 6)
-		throw string("XDBF: Invalid entry type.\n");
+		throw string("Xdbf: Invalid entry type.\n");
 
 	string strings[6] = { "Achievement", "Image", "Setting", "Title", "String", "Avatar Award" };
 	return strings[type - 1];
 }
 
-string XDBFHelpers::SettingEntryTypeToString(SettingEntryType type)
+string XdbfHelpers::SettingEntryTypeToString(SettingEntryType type)
 {
 	if (type <= 0 || type > 7)
-		throw string("XDBF: Invalid setting entry type.\n");
+		throw string("Xdbf: Invalid setting entry type.\n");
 
 	string strings[7] = { "Int32", "Int64", "Double", "Unicode String", "Float", "Binary", "DataTime" };
 	return strings[type - 1];
 }
 
-bool XDBFHelpers::CompareEntries(XDBFEntry a, XDBFEntry b)
+bool XdbfHelpers::CompareEntries(XdbfEntry a, XdbfEntry b)
 {
 	if (a.type != b.type)
 		return a.type < b.type;
@@ -30,13 +30,13 @@ bool XDBFHelpers::CompareEntries(XDBFEntry a, XDBFEntry b)
 		return a.id < b.type;
 }
 
-time_t XDBFHelpers::FILETIMEtoTimeT(WINFILETIME time)
+time_t XdbfHelpers::FILETIMEtoTimeT(WINFILETIME time)
 {
     INT64 i64 = (((INT64)(time.dwHighDateTime)) << 32) + time.dwLowDateTime;
     return (time_t)((i64 - 116444736000000000) / 10000000);
 }
 
-WINFILETIME XDBFHelpers::TimeTtoFILETIME(time_t time)
+WINFILETIME XdbfHelpers::TimeTtoFILETIME(time_t time)
 {
     WINFILETIME toReturn;
 
@@ -46,7 +46,7 @@ WINFILETIME XDBFHelpers::TimeTtoFILETIME(time_t time)
 	return toReturn;
 }
 
-string XDBFHelpers::GetAchievementState(AchievementEntry *entry)
+string XdbfHelpers::GetAchievementState(AchievementEntry *entry)
 {
     if (entry->flags & UnlockedOnline)
         return "Unlocked Online";
@@ -56,7 +56,7 @@ string XDBFHelpers::GetAchievementState(AchievementEntry *entry)
         return "Locked";
 }
 
-string XDBFHelpers::AchievementTypeToString(AchievementFlags type)
+string XdbfHelpers::AchievementTypeToString(AchievementFlags type)
 {
 	switch (type)
 	{
@@ -75,21 +75,21 @@ string XDBFHelpers::AchievementTypeToString(AchievementFlags type)
         case Other:
             return string("Other");
         default:
-            throw string("GPD: Invalid achievement type.\n");
+            throw string("Gpd: Invalid achievement type.\n");
 	}
 }
 
-string XDBFHelpers::AssetSubcategoryToString(AssetSubcategory category)
+string XdbfHelpers::AssetSubcategoryToString(AssetSubcategory category)
 {
 	return AssetHelpers::AssetSubcategoryToString(category);
 }
 
-string XDBFHelpers::AssetGenderToString(AssetGender gender)
+string XdbfHelpers::AssetGenderToString(AssetGender gender)
 {
 	return AssetHelpers::AssetGenderToString(gender);
 }
 
-string XDBFHelpers::IDtoString(UINT64 id)
+string XdbfHelpers::IDtoString(UINT64 id)
 {
 	switch (id)
 	{
@@ -270,7 +270,7 @@ string XDBFHelpers::IDtoString(UINT64 id)
 	}
 }
 
-string XDBFHelpers::RegionIDtoString(XboxLiveCountry id)
+string XdbfHelpers::RegionIDtoString(XboxLiveCountry id)
 {
 	switch (id)
 	{
@@ -493,6 +493,6 @@ string XDBFHelpers::RegionIDtoString(XboxLiveCountry id)
 		case Zimbabwe:
 			return string("Zimbabwe");
 		default:
-			throw string("GPD: Error converting region ID to string, invalid region.\n");
+			throw string("Gpd: Error converting region ID to string, invalid region.\n");
 	}
 }

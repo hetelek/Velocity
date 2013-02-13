@@ -4,7 +4,7 @@
 #include "StfsConstants.h"
 #include "StfsDefinitions.h"
 #include "../AvatarAsset/AvatarAssetDefinintions.h"
-#include "../GPD/XDBFHelpers.h"
+#include "../Gpd/XdbfHelpers.h"
 #include "winnames.h"
 #include "../Cryptography/XeCrypt.h"
 #include <iostream>

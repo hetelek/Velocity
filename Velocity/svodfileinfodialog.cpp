@@ -59,7 +59,7 @@ QString SvodFileInfoDialog::getFileType(QString fileName)
         ui->imgIcon->setPixmap(QPixmap(":/Images/PackageFileIcon.png"));
         return "STFS Package";
     }
-    else if (type == "XDBF")
+    else if (type == "Xdbf")
     {
         ui->imgIcon->setPixmap(QPixmap(":/Images/XdbfFileIcon.png"));
         return "Xbox Database File";

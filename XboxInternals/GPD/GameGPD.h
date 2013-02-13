@@ -1,22 +1,22 @@
 #pragma once
 
-#include "XDBF.h"
-#include "XDBFDefininitions.h"
-#include "XDBFHelpers.h"
-#include "GPDBase.h"
+#include "Xdbf.h"
+#include "XdbfDefininitions.h"
+#include "XdbfHelpers.h"
+#include "GpdBase.h"
 #include <iostream>
 
 #include "XboxInternals_global.h"
 
 using std::string;
 
-class XBOXINTERNALSSHARED_EXPORT GameGPD : public GPDBase
+class XBOXINTERNALSSHARED_EXPORT GameGpd : public GpdBase
 {
 public:
-	GameGPD(string gpdPath);
-	GameGPD(FileIO *io);
+	GameGpd(string gpdPath);
+	GameGpd(FileIO *io);
 
-	~GameGPD(void);
+	~GameGpd(void);
 
 	// Description: all of the achievements in this gpd
 	vector<AchievementEntry> achievements;
@@ -42,11 +42,11 @@ public:
 	// Decription: retrieves the thumbnail image for the achievement passed in, returns true if found and false if not
 	bool GetAchievementThumbnail(AchievementEntry *entry, ImageEntry *out);
 
-	// Description: unlock all of the achievements in the GPD offline and write them to the file
+	// Description: unlock all of the achievements in the Gpd offline and write them to the file
 	void UnlockAllAchievementsOffline();
 
 	// Description: remove all of the unused memory from the gpd
-	void CleanGPD();
+	void CleanGpd();
 
     // Description: call before writing anything to init the io
     void StartWriting();
@@ -57,7 +57,7 @@ public:
 private:
 
 	// Descritpion: read the achievement entry passed in
-	AchievementEntry readAchievementEntry(XDBFEntry entry);
+    AchievementEntry readAchievementEntry(XdbfEntry entry);
 
 	// Description: read in all of the default stuff to be read in for a game gpd
 	void init();

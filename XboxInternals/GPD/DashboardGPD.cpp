@@ -1,25 +1,25 @@
-#include "DashboardGPD.h"
+#include "DashboardGpd.h"
 #include <sstream>
 
 using std::stringstream;
 
 
-DashboardGPD::DashboardGPD(string gpdPath) : GPDBase(gpdPath)
+DashboardGpd::DashboardGpd(string gpdPath) : GpdBase(gpdPath)
 {
 	init();
 }
 
-DashboardGPD::DashboardGPD(FileIO *io) : GPDBase(io)
+DashboardGpd::DashboardGpd(FileIO *io) : GpdBase(io)
 {
 	init();
 }
 
-void DashboardGPD::CleanGPD()
+void DashboardGpd::CleanGpd()
 {
 	xdbf->Clean();
 }
 
-void DashboardGPD::init()
+void DashboardGpd::init()
 {
 	// set all the settings defaultly to zero, so there is a way of checking whether or not
 	// the entries were actually read in
@@ -98,11 +98,11 @@ void DashboardGPD::init()
 	}
 }
 
-TitleEntry DashboardGPD::readTitleEntry(XDBFEntry entry)
+TitleEntry DashboardGpd::readTitleEntry(XdbfEntry entry)
 {
 	// ensure that the entry is a title entry
 	if (entry.type != Title)
-		throw string("GPD: Error reading title entry. Specified entry isn't a title.\n");
+		throw string("Gpd: Error reading title entry. Specified entry isn't a title.\n");
 
 	TitleEntry toReturn;
 	toReturn.entry = entry;
@@ -130,7 +130,7 @@ TitleEntry DashboardGPD::readTitleEntry(XDBFEntry entry)
     if (time.dwHighDateTime == 0 && time.dwLowDateTime == 0)
         toReturn.lastPlayed = 0;
     else
-        toReturn.lastPlayed = XDBFHelpers::FILETIMEtoTimeT(time);
+        toReturn.lastPlayed = XdbfHelpers::FILETIMEtoTimeT(time);
 
 	// read the game name
 	toReturn.gameName = io->readWString();
@@ -140,7 +140,7 @@ TitleEntry DashboardGPD::readTitleEntry(XDBFEntry entry)
 	return toReturn;
 }
 
-string DashboardGPD::GetSmallBoxArtURL(TitleEntry *entry)
+string DashboardGpd::GetSmallBoxArtURL(TitleEntry *entry)
 {
 	stringstream url;
 	url << "http://tiles.xbox.com/consoleAssets/";
@@ -150,7 +150,7 @@ string DashboardGPD::GetSmallBoxArtURL(TitleEntry *entry)
 	return url.str();
 }
 
-string DashboardGPD::GetLargeBoxArtURL(TitleEntry *entry)
+string DashboardGpd::GetLargeBoxArtURL(TitleEntry *entry)
 {
 	stringstream url;
 	url << "http://tiles.xbox.com/consoleAssets/";
@@ -160,7 +160,7 @@ string DashboardGPD::GetLargeBoxArtURL(TitleEntry *entry)
 	return url.str();
 }
 
-void DashboardGPD::WriteTitleEntry(TitleEntry *entry)
+void DashboardGpd::WriteTitleEntry(TitleEntry *entry)
 {
 	DWORD calculatedLength = 0x28 + ((entry->gameName.size() + 1) * 2);
 
@@ -197,7 +197,7 @@ void DashboardGPD::WriteTitleEntry(TitleEntry *entry)
         io->setPosition(xdbf->GetRealAddress(entry->entry.addressSpecifier) + 0x28);
     else
     {
-        WINFILETIME time = XDBFHelpers::TimeTtoFILETIME(entry->lastPlayed);
+        WINFILETIME time = XdbfHelpers::TimeTtoFILETIME(entry->lastPlayed);
         io->write(time.dwHighDateTime);
         io->write(time.dwLowDateTime);
     }
@@ -209,7 +209,7 @@ void DashboardGPD::WriteTitleEntry(TitleEntry *entry)
 	io->flush();
 }
 
-void DashboardGPD::DeleteTitleEntry(TitleEntry *entry)
+void DashboardGpd::DeleteTitleEntry(TitleEntry *entry)
 {
 	// remove the entry from the list
 	DWORD i;
@@ -222,13 +222,13 @@ void DashboardGPD::DeleteTitleEntry(TitleEntry *entry)
 		}
 	}
     if (i > gamesPlayed.size())
-		throw string("GPD: Error deleting title entry. Title doesn't exist.\n");
+		throw string("Gpd: Error deleting title entry. Title doesn't exist.\n");
 
 	// delete the entry from the file
 	xdbf->DeleteEntry(entry->entry);
 }
 
-void DashboardGPD::CreateTitleEntry(TitleEntry *entry)
+void DashboardGpd::CreateTitleEntry(TitleEntry *entry)
 {
 	entry->initialLength = 0x28 + ((entry->gameName.size() + 1) * 2);
 
@@ -242,6 +242,6 @@ void DashboardGPD::CreateTitleEntry(TitleEntry *entry)
 	WriteTitleEntry(entry);
 }
 
-DashboardGPD::~DashboardGPD(void)
+DashboardGpd::~DashboardGpd(void)
 {
 }

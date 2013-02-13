@@ -192,7 +192,7 @@ void XContentHeader::readMetadata()
                 WINFILETIME time;
                 time.dwHighDateTime = io->readDword();
                 time.dwLowDateTime = io->readDword();
-                lastModified = XDBFHelpers::FILETIMEtoTimeT(time);
+                lastModified = XdbfHelpers::FILETIMEtoTimeT(time);
 
                 io->readBytes(cabResumeData, 0x15D0);
                 break;
@@ -401,7 +401,7 @@ void XContentHeader::WriteMetaData()
                 io->write(currentFileOffset);
                 io->write(bytesProcessed);
 
-                WINFILETIME time = XDBFHelpers::TimeTtoFILETIME(lastModified);
+                WINFILETIME time = XdbfHelpers::TimeTtoFILETIME(lastModified);
                 io->write(time.dwHighDateTime);
                 io->write(time.dwLowDateTime);
 

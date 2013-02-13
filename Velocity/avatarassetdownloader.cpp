@@ -44,7 +44,7 @@ void AvatarAssetDownloader::onRequestFinished(int id, bool error)
     // verify that the file was downloaded
     DWORD fileSize = http->bytesAvailable();
 
-    // all assets have a YTGR header that's 0x140 bytes
+    // all assets have a Ytgr header that's 0x140 bytes
     if (fileSize < 0x140)
     {
         if (!v2Done)

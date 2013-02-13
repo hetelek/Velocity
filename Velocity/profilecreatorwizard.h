@@ -13,7 +13,7 @@
 // xbox360
 #include "Stfs/StfsPackage.h"
 #include "Stfs/XContentHeader.h"
-#include "GPD/DashboardGPD.h"
+#include "Gpd/DashboardGpd.h"
 #include "Account/Account.h"
 
 // other

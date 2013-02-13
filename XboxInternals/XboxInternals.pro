@@ -33,13 +33,13 @@ win32 {
 
 SOURCES += \
     AvatarAsset/AssetHelpers.cpp \
-    GPD/XDBFHelpers.cpp \
+    Gpd/XdbfHelpers.cpp \
     AvatarAsset/AvatarAsset.cpp \
     FileIO.cpp \
-    GPD/AvatarAwardGPD.cpp \
+    Gpd/AvatarAwardGpd.cpp \
     Account/Account.cpp \
-    Disc/gdfx.cpp \
-    Disc/svod.cpp \
+    Disc/Gdfx.cpp \
+    Disc/Svod.cpp \
     IO/BaseIO.cpp \
     IO/SvodIO.cpp \
     Stfs/StfsDefinitions.cpp \
@@ -47,17 +47,17 @@ SOURCES += \
     Stfs/XContentHeader.cpp \
     IO/MultiFileIO.cpp \
     Account/AccountHelpers.cpp \
-    GPD/DashboardGPD.cpp \
-    GPD/GPDBase.cpp \
-    GPD/XDBF.cpp \
-    GPD/GameGPD.cpp \
+    Gpd/DashboardGpd.cpp \
+    Gpd/GpdBase.cpp \
+    Gpd/Xdbf.cpp \
+    Gpd/GameGpd.cpp \
     IO/MemoryIO.cpp \
     IO/DeviceIO.cpp \
     Cryptography/XeKeys.cpp \
     Cryptography/XeCrypt.cpp \
-    AvatarAsset/YTGR.cpp \
-    FATX/fatxhelpers.cpp \
-    FATX/FatxDrive.cpp
+    AvatarAsset/Ytgr.cpp \
+    Fatx/FatxHelpers.cpp \
+    Fatx/FatxDrive.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -65,18 +65,18 @@ HEADERS +=\
     AvatarAsset/AssetHelpers.h \
     AvatarAsset/AvatarAssetDefinintions.h \
     AvatarAsset/AvatarAsset.h \
-    GPD/AvatarAwardGPD.h \
-    GPD/DashboardGPD.h \
-    GPD/XDBFHelpers.h \
-    GPD/XDBFDefininitions.h \
+    Gpd/AvatarAwardGpd.h \
+    Gpd/DashboardGpd.h \
+    Gpd/XdbfHelpers.h \
+    Gpd/XdbfDefininitions.h \
     Account/Account.h \
     winnames.h \
-    GPD/GPDBase.h \
-    GPD/XDBF.h \
-    Disc/gdfx.h \
-    Disc/svod.h \
+    Gpd/GpdBase.h \
+    Gpd/Xdbf.h \
+    Disc/Gdfx.h \
+    Disc/Svod.h \
     FileIO.h \
-    GPD/GameGPD.h \
+    Gpd/GameGpd.h \
     IO/BaseIO.h \
     IO/SvodIO.h \
     Stfs/StfsConstants.h \
@@ -89,6 +89,7 @@ HEADERS +=\
     IO/DeviceIO.h \
     Cryptography/XeKeys.h \
     Cryptography/XeCrypt.h \
-    AvatarAsset/YTGR.h \
-    FATX/fatxhelpers.h \
-    FATX/FatxDrive.h
+    AvatarAsset/Ytgr.h \
+    Fatx/FatxHelpers.h \
+    Fatx/FatxDrive.h \
+    Fatx/FatxConstants.h

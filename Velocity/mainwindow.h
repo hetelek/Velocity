@@ -46,10 +46,10 @@
 #include "FileIO.h"
 #include "json.h"
 #include "Stfs/StfsPackage.h"
-#include "GPD/GPDBase.h"
+#include "Gpd/GpdBase.h"
 #include "IO/MultiFileIO.h"
 #include "Disc/svod.h"
-#include "AvatarAsset/YTGR.h"
+#include "AvatarAsset/Ytgr.h"
 
 using namespace std;
 

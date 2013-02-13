@@ -1,7 +1,7 @@
 #include "xdbfdialog.h"
 #include "ui_xdbfdialog.h"
 
-XdbfDialog::XdbfDialog(QStatusBar *statusBar, GPDBase *gpd, bool *modified, QWidget *parent) :
+XdbfDialog::XdbfDialog(QStatusBar *statusBar, GpdBase *gpd, bool *modified, QWidget *parent) :
     QDialog(parent), ui(new Ui::XdbfDialog), gpd(gpd), modified(modified), statusBar(statusBar)
 {
     ui->setupUi(this);
@@ -15,7 +15,7 @@ XdbfDialog::XdbfDialog(QStatusBar *statusBar, GPDBase *gpd, bool *modified, QWid
         if (gpd->strings.at(i).entry.id == TitleInformation)
         {
             if (gpd->strings.at(i).ws != L"")
-                setWindowTitle("XDBF Viewer - " + QString::fromStdWString(gpd->strings.at(i).ws));
+                setWindowTitle("Xdbf Viewer - " + QString::fromStdWString(gpd->strings.at(i).ws));
             break;
         }
 
@@ -23,13 +23,13 @@ XdbfDialog::XdbfDialog(QStatusBar *statusBar, GPDBase *gpd, bool *modified, QWid
     connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
 }
 
-void XdbfDialog::addEntriesToTable(vector<XDBFEntry> entries, QString type)
+void XdbfDialog::addEntriesToTable(vector<XdbfEntry> entries, QString type)
 {
     for (DWORD i = 0; i < entries.size(); i++)
     {
         // create an item
         QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
-        item->setText(0, QString::fromStdString(XDBFHelpers::IDtoString(entries.at(i).id)));
+        item->setText(0, QString::fromStdString(XdbfHelpers::IDtoString(entries.at(i).id)));
         item->setText(1, "0x" + QString::number(gpd->xdbf->GetRealAddress(entries.at(i).addressSpecifier), 16).toUpper());
         item->setText(2, "0x" + QString::number(entries.at(i).length, 16).toUpper());
         item->setText(3, type);
@@ -97,7 +97,7 @@ void XdbfDialog::showContextMenu(QPoint p)
                     }
 
                 Entry e = indexToEntry(index);
-                XDBFEntry xentry;
+                XdbfEntry xentry;
 
                 // get the xdbf entry
                 if (e.type == Achievement)
@@ -147,7 +147,7 @@ void XdbfDialog::showContextMenu(QPoint p)
         try
         {
             Entry e = indexToEntry(ui->treeWidget->currentIndex().row());
-            XDBFEntry xentry;
+            XdbfEntry xentry;
 
             // get the xdbf entry
             if (e.type == Achievement)
@@ -197,19 +197,19 @@ void XdbfDialog::showContextMenu(QPoint p)
     }
     else if (selectedItem->text() == "Clean")
     {
-        int btn = QMessageBox::question(this, "Continue?", "Cleaning the GPD will remove all of the unused memory that is in the file. This could potentially reduce the size of the GPD.\n\nDo you want to continue?", QMessageBox::Yes, QMessageBox::No);
+        int btn = QMessageBox::question(this, "Continue?", "Cleaning the Gpd will remove all of the unused memory that is in the file. This could potentially reduce the size of the Gpd.\n\nDo you want to continue?", QMessageBox::Yes, QMessageBox::No);
 
         if (btn != QMessageBox::Yes)
           return;
 
-        // clean the GPD
+        // clean the Gpd
         try
         {
             gpd->xdbf->Clean();
         }
         catch (std::string error)
         {
-            QMessageBox::critical(this, "Clean Error", "An error occured while cleaning the GPD.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Clean Error", "An error occured while cleaning the Gpd.\n\n" + QString::fromStdString(error));
             return;
         }
 
@@ -220,7 +220,7 @@ void XdbfDialog::showContextMenu(QPoint p)
         if (modified != NULL)
             *modified = true;
 
-        statusBar->showMessage("Cleaned GPD successfully", 3000);
+        statusBar->showMessage("Cleaned Gpd successfully", 3000);
     }
 }
 

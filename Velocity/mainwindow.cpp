@@ -213,9 +213,9 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                     package->ExtractFile(QString("%1").arg(gpd->TitleID(), 8, 16, QChar('0')).toUpper().toStdString() + ".gpd", tempPath.toStdString());
 
                     // load the gpd in the modder
-                    GameGPD *gameGPD = new GameGPD(tempPath.toStdString());
+                    GameGpd *gameGpd = new GameGpd(tempPath.toStdString());
                     bool ok;
-                    gpd->LoadGPD(gameGPD, &ok, (void*)args);
+                    gpd->LoadGPD(gameGpd, &ok, (void*)args);
 
                     if (ok)
                     {
@@ -273,7 +273,7 @@ void MainWindow::PluginFinished()
         }
         catch (string error)
         {
-            QMessageBox::critical(NULL, "Couldn't Repalce GPD", "The GPD could not be replaced.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(NULL, "Couldn't Repalce Gpd", "The Gpd could not be replaced.\n\n" + QString::fromStdString(error));
             try
             {
                 if (!args->fromPackageViewer)
@@ -448,10 +448,10 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 
                     break;
                 }
-                case 0x58444246:    // XDBF
+                case 0x58444246:    // Xdbf
                 {
-                    GPDBase *gpd = new GPDBase(fileName);
-                    ui->statusBar->showMessage("GPD parsed successfully", 3000);
+                    GpdBase *gpd = new GpdBase(fileName);
+                    ui->statusBar->showMessage("Gpd parsed successfully", 3000);
 
                     XdbfDialog *dialog = new XdbfDialog(ui->statusBar, gpd, NULL, this);
                     dialog->setAttribute(Qt::WA_DeleteOnClose);
@@ -473,9 +473,9 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                     break;
                 }
 
-                case 0x59544752:    // YTGR
+                case 0x59544752:    // Ytgr
                 {
-                    YTGR *ytgr = new YTGR(fileName);
+                    Ytgr *ytgr = new Ytgr(fileName);
 
                     YtgrDialog *dialog = new YtgrDialog(ytgr, ui->statusBar, this);
                     dialog->setAttribute(Qt::WA_DeleteOnClose);
@@ -485,7 +485,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                     break;
                 }
                 default:
-                    QMessageBox::warning(this, "Unknown File Format", "The following file is an unknown format. Velocity can only read STFS, SVOD, XDBF, YTGR, and STRB files.\n\n" + QString::fromStdString(fileName));
+                    QMessageBox::warning(this, "Unknown File Format", "The following file is an unknown format. Velocity can only read STFS, SVOD, Xdbf, Ytgr, and STRB files.\n\n" + QString::fromStdString(fileName));
                     break;
             }
         }
@@ -554,15 +554,15 @@ void MainWindow::on_actionPackage_triggered()
 
 void MainWindow::on_actionXDBF_File_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open XDBF File"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "GPD File (*.gpd *.fit);;All Files (*)");
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Xdbf File"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "Gpd File (*.gpd *.fit);;All Files (*)");
 
     if (fileName.isEmpty())
         return;
 
     try
     {
-        GPDBase *gpd = new GPDBase(fileName.toStdString());
-        ui->statusBar->showMessage("GPD parsed successfully", 3000);
+        GpdBase *gpd = new GpdBase(fileName.toStdString());
+        ui->statusBar->showMessage("Gpd parsed successfully", 3000);
 
         XdbfDialog *dialog = new XdbfDialog(ui->statusBar, gpd, NULL, this);
         dialog->setAttribute(Qt::WA_DeleteOnClose);
@@ -571,7 +571,7 @@ void MainWindow::on_actionXDBF_File_triggered()
     }
     catch (string error)
     {
-        QMessageBox::critical(this, "GPD Error", "An error has occurred while opening the GPD.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Gpd Error", "An error has occurred while opening the Gpd.\n\n" + QString::fromStdString(error));
     }
 }
 
@@ -810,14 +810,14 @@ void MainWindow::on_actionSVOD_System_triggered()
 
 void MainWindow::on_actionYTGR_triggered()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, "Open a file with a YTGR security header...", QtHelpers::DesktopLocation());
+    QString filePath = QFileDialog::getOpenFileName(this, "Open a file with a Ytgr security header...", QtHelpers::DesktopLocation());
 
     if (filePath.isEmpty())
         return;
 
     try
     {
-        YTGR *ytgr = new YTGR(filePath.toStdString());
+        Ytgr *ytgr = new Ytgr(filePath.toStdString());
         YtgrDialog *dialog = new YtgrDialog(ytgr, ui->statusBar, this);
         ui->mdiArea->addSubWindow(dialog);
         dialog->show();
@@ -825,6 +825,6 @@ void MainWindow::on_actionYTGR_triggered()
     catch (string error)
     {
         ui->statusBar->showMessage("");
-        QMessageBox::critical(this, "YTGR Error", "An error has occurred while parsing a YTGR header.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Ytgr Error", "An error has occurred while parsing a Ytgr header.\n\n" + QString::fromStdString(error));
     }
 }

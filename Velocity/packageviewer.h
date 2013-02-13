@@ -28,7 +28,7 @@
 
 // xbox libs
 #include "Stfs/StfsPackage.h"
-#include "GPD/GPDBase.h"
+#include "Gpd/GpdBase.h"
 #include "AvatarAsset/AvatarAsset.h"
 
 // other

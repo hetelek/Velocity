@@ -1,5 +1,5 @@
-#ifndef XDBFDIALOG_H
-#define XDBFDIALOG_H
+#ifndef XdbfDIALOG_H
+#define XdbfDIALOG_H
 
 // qt
 #include <QDialog>
@@ -13,10 +13,10 @@
 #include "qthelpers.h"
 
 // xbox360
-#include "GPD/XDBF.h"
-#include "GPD/XDBFDefininitions.h"
-#include "GPD/XDBFHelpers.h"
-#include "GPD/GPDBase.h"
+#include "Gpd/Xdbf.h"
+#include "Gpd/XdbfDefininitions.h"
+#include "Gpd/XdbfHelpers.h"
+#include "Gpd/GpdBase.h"
 #include "FileIO.h"
 
 // forms
@@ -38,7 +38,7 @@ class XdbfDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit XdbfDialog(QStatusBar *statusBar, GPDBase *gpd, bool *modified = NULL, QWidget *parent = 0);
+    explicit XdbfDialog(QStatusBar *statusBar, GpdBase *gpd, bool *modified = NULL, QWidget *parent = 0);
     ~XdbfDialog();
     
 private slots:
@@ -48,15 +48,15 @@ private slots:
 
 private:
     Ui::XdbfDialog *ui;
-    GPDBase *gpd;
+    GpdBase *gpd;
     bool *modified;
     QStatusBar *statusBar;
 
-    void addEntriesToTable(vector<XDBFEntry> entries, QString type);
+    void addEntriesToTable(vector<XdbfEntry> entries, QString type);
 
     Entry indexToEntry(int index);
 
     void loadEntries();
 };
 
-#endif // XDBFDIALOG_H
+#endif // XdbfDIALOG_H

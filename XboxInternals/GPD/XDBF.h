@@ -1,35 +1,36 @@
 #pragma once
+
 #include <iostream>
 #include <vector>
-#include "../FileIO.h"
-#include "XDBFDefininitions.h"
-#include "XDBFHelpers.h"
 #include <algorithm>
+#include "../FileIO.h"
+#include "XdbfDefininitions.h"
+#include "XdbfHelpers.h"
 
 #include "XboxInternals_global.h"
 
 using std::string;
 using std::vector;
 
-class XBOXINTERNALSSHARED_EXPORT XDBF
+class XBOXINTERNALSSHARED_EXPORT Xdbf
 {
 public:
-    XDBF(string gpdPath);
-    XDBF(FileIO *io);
-    ~XDBF();
+    Xdbf(string gpdPath);
+    Xdbf(FileIO *io);
+    ~Xdbf();
 
-    XDBFEntryGroup achievements;
-    vector<XDBFEntry> images;
-    XDBFEntryGroup settings;
-    XDBFEntryGroup titlesPlayed;
-    vector<XDBFEntry> strings;
-    XDBFEntryGroup avatarAwards;
+    XdbfEntryGroup achievements;
+    vector<XdbfEntry> images;
+    XdbfEntryGroup settings;
+    XdbfEntryGroup titlesPlayed;
+    vector<XdbfEntry> strings;
+    XdbfEntryGroup avatarAwards;
 
     // Description: extract the bytes of a given entry to the out buffer
-    void ExtractEntry(XDBFEntry entry, BYTE *outBuffer);
+    void ExtractEntry(XdbfEntry entry, BYTE *outBuffer);
 
     // Description: delete an entry from the file
-    void DeleteEntry(XDBFEntry entry);
+    void DeleteEntry(XdbfEntry entry);
 
     // Description: convert a specifier address into a real address
     DWORD GetRealAddress(DWORD specifier);
@@ -38,7 +39,7 @@ public:
     DWORD GetSpecifier(DWORD address);
 
     // Description: create a new entry and new sync in the file and return the entry
-    XDBFEntry CreateEntry(EntryType type, UINT64 id, DWORD length);
+    XdbfEntry CreateEntry(EntryType type, UINT64 id, DWORD length);
 
     // Description: allocate memory in the file
     DWORD AllocateMemory(DWORD size);
@@ -47,21 +48,21 @@ public:
     void DeallocateMemory(DWORD addr, DWORD size);
 
     // Description: move the sync to the queue
-    void UpdateEntry(XDBFEntry *entry);
+    void UpdateEntry(XdbfEntry *entry);
 
     // Description: remove all the unused memory in the file
     void Clean();
 
     // Description: re-write an entry
-    void RewriteEntry(XDBFEntry entry, BYTE *entryBuffer);
+    void RewriteEntry(XdbfEntry entry, BYTE *entryBuffer);
     FileIO *io;
 
 private:
     bool ioPassedIn;
-    XDBFHeader header;
-    vector<XDBFFreeMemEntry> freeMemory;
+    XdbfHeader header;
+    vector<XdbfFreeMemEntry> freeMemory;
 
-    // Description: read in the XDBF header
+    // Description: read in the Xdbf header
     void readHeader();
 
     // Description: read in the file table
@@ -80,28 +81,28 @@ private:
     void writeHeader();
 
     // Description: read a sync list based off the entry passed in
-    SyncList readSyncList(XDBFEntry entry);
+    SyncList readSyncList(XdbfEntry entry);
 
     // Description: write the sync list back to the file
     void writeSyncList(SyncList *syncs);
 
     // Description: read sync data based off the entry passed in
-    SyncData readSyncData(XDBFEntry entry);
+    SyncData readSyncData(XdbfEntry entry);
 
     // Description: write the sync data
     void writeSyncData(SyncData *data);
 
     // Description: read an entry group from the table that has syncs
-    void readEntryGroup(XDBFEntryGroup *group, EntryType type);
+    void readEntryGroup(XdbfEntryGroup *group, EntryType type);
 
     // Description: read an entry group from the table that doesn't have syncs
-    void readEntryGroup(vector<XDBFEntry> *group, EntryType type);
+    void readEntryGroup(vector<XdbfEntry> *group, EntryType type);
 
     // Description: write an entry group to the table that has syncs
-    void writeEntryGroup(XDBFEntryGroup *group);
+    void writeEntryGroup(XdbfEntryGroup *group);
 
     // Description: write an entry group to the table that doesn't have syncs
-    void writeEntryGroup(vector<XDBFEntry> *group);
+    void writeEntryGroup(vector<XdbfEntry> *group);
 
     // Description: null out the structs that need it
     void init();
@@ -110,16 +111,16 @@ private:
     void updateFreeMemTable();
 
     // Description: write an entry to the entry table
-    void writeEntry(XDBFEntry *entry);
+    void writeEntry(XdbfEntry *entry);
 
     // Description: write an entry group to the file that has syncs, used when cleaning
-    void writeNewEntryGroup(XDBFEntryGroup *group, FileIO *newIO);
+    void writeNewEntryGroup(XdbfEntryGroup *group, FileIO *newIO);
 
     // Description: write an entry group that doesn't have syncs, used when cleaning
-    void writeNewEntryGroup(vector<XDBFEntry> *group, FileIO *newIO);
+    void writeNewEntryGroup(vector<XdbfEntry> *group, FileIO *newIO);
 
     // Description: write entry to the new file, used when cleaing
-    void writeNewEntry(XDBFEntry *entry, FileIO *newIO);
+    void writeNewEntry(XdbfEntry *entry, FileIO *newIO);
 };
 
-bool compareEntries(XDBFEntry a, XDBFEntry b);
+bool compareEntries(XdbfEntry a, XdbfEntry b);

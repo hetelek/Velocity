@@ -1,6 +1,6 @@
 #include "gpddownloader.h"
 
-GPDDownloader::GPDDownloader(TitleEntry entry, int index, bool hasAwards, QObject * /* parent */ ) : entry(entry), indexIn(index), hasAwards(hasAwards)
+GpdDownloader::GpdDownloader(TitleEntry entry, int index, bool hasAwards, QObject * /* parent */ ) : entry(entry), indexIn(index), hasAwards(hasAwards)
 {
     gpdDirectory = "/gameadder/";
     gpdWritten = false;
@@ -12,18 +12,18 @@ GPDDownloader::GPDDownloader(TitleEntry entry, int index, bool hasAwards, QObjec
     connect(http, SIGNAL(requestFinished(int, bool)), this, SLOT(onRequestFinished(int, bool)));
 }
 
-void GPDDownloader::BeginDownload()
+void GpdDownloader::BeginDownload()
 {
     QString url = gpdDirectory + "game/" + QString::number(entry.titleID, 16).toUpper() + ".gpd";
     http->get(url);
 }
 
-int GPDDownloader::index()
+int GpdDownloader::index()
 {
     return indexIn;
 }
 
-void GPDDownloader::onRequestFinished(int /* id */, bool error)
+void GpdDownloader::onRequestFinished(int /* id */, bool error)
 {
     if (error)
         qDebug() << http->errorString();
@@ -34,7 +34,7 @@ void GPDDownloader::onRequestFinished(int /* id */, bool error)
 
     if (!gpdWritten)
     {
-        gameGPD = tempPath;
+        gameGpd = tempPath;
 
         // create a new temporary file
         QFile v1File(tempPath);
@@ -51,7 +51,7 @@ void GPDDownloader::onRequestFinished(int /* id */, bool error)
     }
     else
     {
-        awardGPD = tempPath;
+        awardGpd = tempPath;
 
         // create a new temporary file
         QFile v1File(tempPath);
@@ -72,7 +72,7 @@ void GPDDownloader::onRequestFinished(int /* id */, bool error)
     }
 }
 
-void GPDDownloader::onDone(bool error)
+void GpdDownloader::onDone(bool error)
 {
-    emit FinishedDownloading(gameGPD, awardGPD, entry, error);
+    emit FinishedDownloading(gameGpd, awardGpd, entry, error);
 }
