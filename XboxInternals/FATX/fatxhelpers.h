@@ -5,7 +5,7 @@
 #define FATXHELPERS_H
 
 #define DOWN_TO_NEAREST_SECTOR(x) (0xFFFFFFFFFFFFFE00 & x)
-#define UP_TO_NEAREST_SECTOR(x) ((x + 0x1FF) & 0x1FF)
+#define UP_TO_NEAREST_SECTOR(x) ((x + 0x1FF) & 0xFFFFFFFFFFFFFE00)
 
 #include "../winnames.h"
 #include "XboxInternals_global.h"
