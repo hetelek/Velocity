@@ -47,8 +47,8 @@ public:
     void Write(WORD w);
     void Write(DWORD dw);
     void Write(UINT64 u64);
-    void Write(string s);
-    void Write(wstring ws);
+    void Write(string s, bool nullTerminating = true);
+    void Write(wstring ws, bool nullTerminating = true);
 
 protected:
     EndianType byteOrder;

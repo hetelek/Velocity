@@ -157,19 +157,19 @@ void BaseIO::Write(UINT64 u64)
     WriteBytes(reinterpret_cast<BYTE*>(&u64), 8);
 }
 
-void BaseIO::Write(string s)
+void BaseIO::Write(string s, bool nullTerminating)
 {
-    WriteBytes(s.c_str(), s.length() + 1);
+    WriteBytes(s.c_str(), s.length() + nullTerminating);
 }
 
-void BaseIO::Write(wstring ws)
+void BaseIO::Write(wstring ws, bool nullTerminating)
 {
     if (byteOrder == LittleEndian)
-        WriteBytes((BYTE*)ws.c_str(), (ws.length() + 1) * 2);
+        WriteBytes((BYTE*)ws.c_str(), (ws.length() + nullTerminating) * 2);
     else
     {
         WORD curChar;
-        for (DWORD i = 0; i < ws.length(); i++)
+        for (DWORD i = 0; i < ws.length() + nullTerminating; i++)
         {
             curChar = ws.at(i);
             reverseByteArray(reinterpret_cast<BYTE*>(&curChar), 2);
