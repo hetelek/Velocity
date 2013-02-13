@@ -3,15 +3,11 @@
 #include "mainwindow.h"
 #include <botan/botan.h>
 
-#include "IO/DeviceIO.h"
+#include "FATX/FatxDrive.h"
 
 int main(int argc, char *argv[])
 {
-    DeviceIO diskDrive(L"\\\\.\\PHYSICALDRIVE1");
-    diskDrive.SetPosition(0x515);
-
-    diskDrive.Write("hello world", false);
-    diskDrive.Close();
+    FatxDrive drive(L"\\\\.\\PHYSICALDRIVE5");
 
     QApplication a(argc, argv);
     a.addLibraryPath(":/plugins/imageformats");
