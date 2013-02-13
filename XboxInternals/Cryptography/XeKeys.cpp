@@ -1,4 +1,5 @@
 #include "XeKeys.h"
+#include <QDebug>
 
 bool XeKeys::VerifyRSASignature(XeKeysRsaKeys key, BYTE *pbMessage, DWORD cbMessage, BYTE *signature)
 {
@@ -33,10 +34,6 @@ bool XeKeys::VerifyRSASignature(XeKeysRsaKeys key, BYTE *pbMessage, DWORD cbMess
         default:
             throw std::string("XeKeys: Invalid key.\n");
     }
-
-    // format the keys
-    XeCrypt::BnQw_SwapDwQwLeBe(modulus1, 0x100);
-    XeCrypt::BnQw_SwapDwQwLeBe(modulus2, 0x100);
 
     // format the signature
     for (int i = 0; i < 0x20; i++)
