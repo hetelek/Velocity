@@ -8,8 +8,10 @@
 int main(int argc, char *argv[])
 {
     DeviceIO diskDrive(L"\\\\.\\PHYSICALDRIVE1");
-    diskDrive.SetPosition(0);
-    qDebug() << diskDrive.ReadByte();
+    diskDrive.SetPosition(0x515);
+
+    diskDrive.Write("hello world", false);
+    diskDrive.Close();
 
     QApplication a(argc, argv);
     a.addLibraryPath(":/plugins/imageformats");

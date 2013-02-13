@@ -33,79 +33,79 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
             throw std::string("Error: INVALID_HANDLE_VALUE. At: xDeviceStream::Read");
     #endif
 
-        // don't let the count exceed the drive length
-        if (Position() + len > DriveLength())
-            len = (int)((Position() >= DriveLength()) ? 0 : DriveLength() - Position());
+    // don't let the count exceed the drive length
+    if (Position() + len > DriveLength())
+        len = (int)((Position() >= DriveLength()) ? 0 : DriveLength() - Position());
 
-        // nothing to do
-        if (len == 0)
-            return;
+    // nothing to do
+    if (len == 0)
+        return;
 
-        BYTE maxSectors = (BYTE)(UP_TO_NEAREST_SECTOR(len + (Position() - realPosition())) / 0x200); // This is the number of sectors we have to read
-        int bytesToShaveOffBeginning = (int)(Position() - realPosition());	// Number of bytes to remove from the beginning of the buffer
-        int bytesToShaveOffEnd = (int)(UP_TO_NEAREST_SECTOR(Position() + len) - (Position() + len));
-        int bytesThatAreInLastDataRead = 0x200 - bytesToShaveOffBeginning;
+    BYTE maxSectors = (BYTE)(UP_TO_NEAREST_SECTOR(len + (Position() - realPosition())) / 0x200); // This is the number of sectors we have to read
+    int bytesToShaveOffBeginning = (int)(Position() - realPosition());	// Number of bytes to remove from the beginning of the buffer
+    int bytesToShaveOffEnd = (int)(UP_TO_NEAREST_SECTOR(Position() + len) - (Position() + len));
+    int bytesThatAreInLastDataRead = 0x200 - bytesToShaveOffBeginning;
 
 
-        int allDataLength = bytesToShaveOffBeginning + len + bytesToShaveOffEnd;
+    int allDataLength = bytesToShaveOffBeginning + len + bytesToShaveOffEnd;
 
-        if (maxSectors != allDataLength / 0x200)
-            throw std::string("Assertion fail: MaxSectors != AllDataLength / 0x200.\n");
+    if (maxSectors != allDataLength / 0x200)
+        throw std::string("Assertion fail: MaxSectors != AllDataLength / 0x200.\n");
 
-        BYTE *allData = 0;
-        DWORD bytesRead;
+    BYTE *allData = 0;
+    DWORD bytesRead;
 
-        // If the last time we cached data wasn't at this offset
-        if (lastReadOffset != realPosition())
-        {
-            // Cache
-            #ifdef _WIN32
-                    ReadFile(
-                        deviceHandle,	// Device to read from
-                        lastReadData,	// Output buffer
-                        0x200,			// Read the last sector
-                        &bytesRead,		// Pointer to the number of bytes read
-                        &offset);		// OVERLAPPED structure containing the offset to read from
-            #else
-                    read(device, lastReadData, 0x200);
-            #endif
-            lastReadOffset = realPosition();
-        }
+    // If the last time we cached data wasn't at this offset
+    if (lastReadOffset != realPosition())
+    {
+        // Cache
+        #ifdef _WIN32
+                ReadFile(
+                    deviceHandle,	// Device to read from
+                    lastReadData,	// Output buffer
+                    0x200,			// Read the last sector
+                    &bytesRead,		// Pointer to the number of bytes read
+                    &offset);		// OVERLAPPED structure containing the offset to read from
+        #else
+                read(device, lastReadData, 0x200);
+        #endif
+        lastReadOffset = realPosition();
+    }
 
-        if (bytesThatAreInLastDataRead <= len)
-            SetPosition(Position() + bytesThatAreInLastDataRead);
-        else
-            SetPosition(Position() + len);
+    if (bytesThatAreInLastDataRead <= len)
+        SetPosition(Position() + bytesThatAreInLastDataRead);
+    else
+        SetPosition(Position() + len);
 
-        if (maxSectors > 1)
-        {
-            allData = new BYTE[allDataLength - 0x200];
+    if (maxSectors > 1)
+    {
+        allData = new BYTE[allDataLength - 0x200];
 
-            // Read for all sectors EXCEPT the last one
-            #ifdef _WIN32
-                    ReadFile(
-                        deviceHandle,	// Device to read from
-                        allData,		// Output buffer
-                        allDataLength - 0x200,	// Read the last sector
-                        &bytesRead,		// Pointer to the number of bytes read
-                        &offset);		// OVERLAPPED structure containing the offset to read from
-            #else
-                    read(device, allData, allDataLength - 0x200);
-            #endif
+        // Read for all sectors EXCEPT the last one
+        #ifdef _WIN32
+                ReadFile(
+                    deviceHandle,	// Device to read from
+                    allData,		// Output buffer
+                    allDataLength - 0x200,	// Read the last sector
+                    &bytesRead,		// Pointer to the number of bytes read
+                    &offset);		// OVERLAPPED structure containing the offset to read from
+        #else
+                read(device, allData, allDataLength - 0x200);
+        #endif
 
-            SetPosition(Position() + (len - bytesThatAreInLastDataRead));
-        }
+        SetPosition(Position() + (len - bytesThatAreInLastDataRead));
+    }
 
-        int countRead = ((bytesThatAreInLastDataRead <= len) ? bytesThatAreInLastDataRead : len);
-        memcpy(outBuffer, lastReadData + bytesToShaveOffBeginning, countRead);
-        if (allData)
-        {
-            memcpy(outBuffer + bytesThatAreInLastDataRead, allData, len - bytesThatAreInLastDataRead);
+    int countRead = ((bytesThatAreInLastDataRead <= len) ? bytesThatAreInLastDataRead : len);
+    memcpy(outBuffer, lastReadData + bytesToShaveOffBeginning, countRead);
+    if (allData)
+    {
+        memcpy(outBuffer + bytesThatAreInLastDataRead, allData, len - bytesThatAreInLastDataRead);
 
-            // Cache
-            memcpy(&lastReadData, allData + allDataLength - ((0x200 * 2)), 0x200);
-            delete[] allData;
-        }
+        // Cache
+        memcpy(&lastReadData, allData + allDataLength - ((0x200 * 2)), 0x200);
+        delete[] allData;
+    }
 }
 
 void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
@@ -123,26 +123,66 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
     if (len == 0)
         return;
 
+    INT64 originalPos = pos;
     INT64 finalPos = pos + len;
-    INT64 startingSector = DOWN_TO_NEAREST_SECTOR();
+    INT64 currentSector = DOWN_TO_NEAREST_SECTOR(pos);
 
-    BYTE sector[0x200];
-    ReadBytes(sector, 0x200);
+    // write the bytes up to the next sector
+    SetPosition(currentSector);
+    ReadBytes(lastReadData, 0x200);
+    WORD bytesLeftInSector = 0x200 - (originalPos - currentSector);
+    WORD bytesToWrite = (len >= bytesLeftInSector) ? bytesLeftInSector : len;
+    memcpy(lastReadData + (originalPos - currentSector), buffer, bytesToWrite);
 
+    // write the actual data
     DWORD bytesWritten;
+    SetPosition(currentSector);
     #ifdef _WIN32
-        bool result = WriteFile(
+        WriteFile(
             deviceHandle,		// Device to read from
-            buffer,			// Data to write
-            len,	// Amount of data to write
-            &bytesWritten,			// Pointer to number of bytes written
+            lastReadData,       // Data to write
+            0x200,              // Amount of data to write
+            &bytesWritten,      // Pointer to number of bytes written
             &offset);			// OVERLAPPED structure containing the offset to write from
     #else
-        write(device, buffer, len);
+        write(device, lastReadData, len);
     #endif
 
-    DWORD lastError = GetLastError();
-    SetPosition(Position() + len);
+    // update the values
+    buffer += bytesToWrite;
+    currentSector += 0x200;
+    len -= bytesToWrite;
+
+    // write the rest of the data
+    while (len > 0)
+    {
+        SetPosition(currentSector);
+        ReadBytes(lastReadData, 0x200);
+        bytesToWrite = (len >= 0x200) ? 0x200 : len;
+        memcpy(lastReadData, buffer, bytesToWrite);
+
+        // go to the top of the sector
+        SetPosition(currentSector);
+
+        // update values
+        buffer += bytesToWrite;
+        currentSector += 0x200;
+        len -= bytesToWrite;
+
+        #ifdef _WIN32
+            WriteFile(
+                deviceHandle,		// Device to read from
+                lastReadData,       // Data to write
+                0x200,              // Amount of data to write
+                &bytesWritten,      // Pointer to number of bytes written
+                &offset);			// OVERLAPPED structure containing the offset to write from
+        #else
+            write(device, buffer, len);
+        #endif
+    }
+
+    // set the position
+    SetPosition(finalPos);
 }
 
 UINT64 DeviceIO::DriveLength()
