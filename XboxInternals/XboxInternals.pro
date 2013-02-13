@@ -56,7 +56,8 @@ SOURCES += \
     Cryptography/XeKeys.cpp \
     Cryptography/XeCrypt.cpp \
     AvatarAsset/YTGR.cpp \
-    FATX/fatxhelpers.cpp
+    FATX/fatxhelpers.cpp \
+    FATX/FatxDrive.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -89,4 +90,5 @@ HEADERS +=\
     Cryptography/XeKeys.h \
     Cryptography/XeCrypt.h \
     AvatarAsset/YTGR.h \
-    FATX/fatxhelpers.h
+    FATX/fatxhelpers.h \
+    FATX/FatxDrive.h
