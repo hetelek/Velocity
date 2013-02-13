@@ -17,12 +17,12 @@ DeviceIO::DeviceIO(std::wstring devicePath)
                 NULL);								// Ignored
 
         if (deviceHandle == INVALID_HANDLE_VALUE)
-            throw std::string("Could not open HANDLE for device");
+            throw std::string("DeviceIO: Could not open HANDLE for device.\n");
     #else
         // Open the device
         device = open(devicePath.c_str(), O_RDWR);
         if (device == -1)
-            throw std::string("Error opening device");
+            throw std::string("DeviceIO: Error opening device.\n");
     #endif
 }
 
@@ -30,7 +30,7 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
 {
     #ifdef _WIN32
         if (deviceHandle == INVALID_HANDLE_VALUE)
-            throw std::string("Error: INVALID_HANDLE_VALUE. At: xDeviceStream::Read");
+            throw std::string("DeviceIO: INVALID_HANDLE_VALUE.\n");
     #endif
 
     // don't let the count exceed the drive length
@@ -50,7 +50,7 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
     int allDataLength = bytesToShaveOffBeginning + len + bytesToShaveOffEnd;
 
     if (maxSectors != allDataLength / 0x200)
-        throw std::string("Assertion fail: MaxSectors != AllDataLength / 0x200.\n");
+        throw std::string("DeviceIO: MaxSectors != AllDataLength / 0x200.\n");
 
     BYTE *allData = 0;
     DWORD bytesRead;
@@ -112,7 +112,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
 {
     #ifdef _WIN32
         if (deviceHandle == INVALID_HANDLE_VALUE)
-            throw std::string("Error: INVALID_HANDLE_VALUE. At: xDeviceStream::Write");
+            throw std::string("DeviceIO: INVALID_HANDLE_VALUE.");
     #endif
 
     // We can't write beyond the end of the stream
