@@ -3,7 +3,11 @@
 
 #include "../winnames.h"
 
-static const int FatxMagic = 0x58544146;
+#define FAT32 4
+#define FAT16 2
+
+#define FATX_MAGIC 0x58544146
+#define FAT_CLUSTER16_RESERVED (WORD)0xfff0
 
 struct HddSizes
 {

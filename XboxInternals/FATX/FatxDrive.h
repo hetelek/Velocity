@@ -5,6 +5,7 @@
 
 #include "../IO/DeviceIO.h"
 #include "../Cryptography/XeKeys.h"
+#include "FatxConstants.h"
 
 struct SecurityInfo
 {
@@ -20,16 +21,30 @@ struct SecurityInfo
     BYTE *msLogo;
 };
 
-struct PartitionHeader
+struct Partition
 {
-    char magic[0x4];
+    std::string name;
+    INT64 address;
+    UINT64 size;
+
+    // header
+    DWORD magic;
     DWORD partitionId;
-    DWORD sectorPerCluster;
+    DWORD sectorsPerCluster;
     DWORD rootDirectoryCluster;
+
+    BYTE clusterEntrySize;
+    DWORD clusterCount;
+    DWORD clusterSize;
+    UINT64 clusterStartingAddress;
+
+    DWORD fatEntryShift;
+    UINT64 allocationTableSize;
 };
 
 class XBOXINTERNALSSHARED_EXPORT FatxDrive
 {
+
 public:
     FatxDrive(std::wstring drivePath);
     ~FatxDrive();
@@ -37,6 +52,8 @@ public:
     SecurityInfo securityBlob;
 
 private:
+    void processBootSector(Partition *part);
+    static BYTE cntlzw(DWORD x);
     DeviceIO *io;
 };
 
