@@ -186,7 +186,7 @@ void FatxDrive::readClusterChain(FatxFileEntry *entry)
 
 INT64 FatxDrive::clusterToOffset(Partition *part, DWORD cluster)
 {
-    return part->clusterStartingAddress + (part->clusterSize * (cluster - 1));
+    return part->clusterStartingAddress + (part->clusterSize * (INT64)(cluster - 1));
 }
 
 BYTE FatxDrive::cntlzw(DWORD x)
