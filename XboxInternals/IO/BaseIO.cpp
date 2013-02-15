@@ -69,17 +69,17 @@ UINT64 BaseIO::ReadUint64()
     return toReturn;
 }
 
-string BaseIO::ReadString(int len)
+string BaseIO::ReadString(int len, char nullTerminator)
 {
     string toReturn;
 
     // assume it's null terminating
     if (len == -1)
     {
-        toReturn = "";
+        toReturn = string();
         char nextChar;
-        while ((nextChar = ReadByte()) != 0)
-            toReturn.append(nextChar);
+        while ((nextChar = ReadByte()) != nullTerminator)
+            toReturn += (nextChar);
     }
     else
     {

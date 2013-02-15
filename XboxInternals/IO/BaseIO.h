@@ -39,7 +39,7 @@ public:
     WORD ReadWord();
     DWORD ReadDword();
     UINT64 ReadUint64();
-    string ReadString(int len = -1);
+    string ReadString(int len = -1, char nullTerminator = 0);
     wstring ReadWString(int len = -1);
 
     // write functions
