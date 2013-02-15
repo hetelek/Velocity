@@ -70,13 +70,13 @@ void SVOD::SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *dataFi
     *addressInDataFile += ((trueSector / 0x198) + ((trueSector % 0x198 == 0 && trueSector != 0) ? 0 : 1)) * 0x1000;
 }
 
-void SVOD::ReadFileListing(vector<GDFXFileEntry> *entryList, DWORD sector, int size, string path)
+void SVOD::ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int size, string path)
 {
     DWORD eAddr, eIndex;
     SectorToAddress(sector, &eAddr, &eIndex);
     io->SetPosition(eAddr, eIndex);
 
-    GDFXFileEntry current;
+    GdfxFileEntry current;
 
     while (GdfxReadFileEntry(io, &current) && size != 0)
     {
@@ -131,7 +131,7 @@ void SVOD::ReadFileListing(vector<GDFXFileEntry> *entryList, DWORD sector, int s
     std::sort(entryList->begin(), entryList->end(), compareFileEntries);
 }
 
-GDFXFileEntry SVOD::GetFileEntry(string path, vector<GDFXFileEntry> *listing)
+GdfxFileEntry SVOD::GetFileEntry(string path, vector<GdfxFileEntry> *listing)
 {
     string entryName = path.substr(1, path.substr(1).find_first_of('/'));
 
@@ -154,7 +154,7 @@ SvodIO SVOD::GetSvodIO(string path)
     return GetSvodIO(GetFileEntry(path, &root));
 }
 
-SvodIO SVOD::GetSvodIO(GDFXFileEntry entry)
+SvodIO SVOD::GetSvodIO(GdfxFileEntry entry)
 {
     return SvodIO(metadata, entry, io);
 }
@@ -245,7 +245,7 @@ void SVOD::HashBlock(BYTE *block, BYTE *outHash)
     sha1.final(outHash);
 }
 
-void SVOD::WriteFileEntry(GDFXFileEntry *entry)
+void SVOD::WriteFileEntry(GdfxFileEntry *entry)
 {
     GdfxWriteFileEntry(io, entry);
 }
@@ -258,7 +258,7 @@ DWORD SVOD::GetSectorCount()
     return (io->FileCount() * 0x14388) + ((fileLen - (0x1000 * (fileLen / 0xCD000))) / 0x800);
 }
 
-int compareFileEntries(GDFXFileEntry a, GDFXFileEntry b)
+int compareFileEntries(GdfxFileEntry a, GdfxFileEntry b)
 {
     return !!(a.attributes & GdfxDirectory);
 }

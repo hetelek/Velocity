@@ -24,9 +24,9 @@ public:
     ~SVOD();
 
     XContentHeader *metadata;
-    vector<GDFXFileEntry> root;
+    vector<GdfxFileEntry> root;
 
-    SvodIO GetSvodIO(GDFXFileEntry entry);
+    SvodIO GetSvodIO(GdfxFileEntry entry);
 
     SvodIO GetSvodIO(string path);
 
@@ -40,7 +40,7 @@ public:
     void Resign(string kvPath);
 
     // write a file entry back to the system
-    void WriteFileEntry(GDFXFileEntry *entry);
+    void WriteFileEntry(GdfxFileEntry *entry);
 
     // get the total number of sectors in the system
     DWORD GetSectorCount();
@@ -49,20 +49,20 @@ private:
     string contentDirectory;
     MultiFileIO *io;
     FileIO *rootFile;
-    GDFXHeader header;
+    GdfxHeader header;
     DWORD baseAddress;
     DWORD offset;
 
     // parse the file listing
-    void ReadFileListing(vector<GDFXFileEntry> *entryList, DWORD sector, int size, string path);
+    void ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int size, string path);
 
     // get a file entry from the path, must start with a /
-    GDFXFileEntry GetFileEntry(string path, vector<GDFXFileEntry> *listing);
+    GdfxFileEntry GetFileEntry(string path, vector<GdfxFileEntry> *listing);
 
     // hash a 0x1000 byte block
     void HashBlock(BYTE *block, BYTE *outHash);
 };
 
-int compareFileEntries(GDFXFileEntry a, GDFXFileEntry b);
+int compareFileEntries(GdfxFileEntry a, GdfxFileEntry b);
 
 #endif // SVOD_H

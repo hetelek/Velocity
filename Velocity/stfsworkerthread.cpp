@@ -1,7 +1,7 @@
 #include "stfsworkerthread.h"
 #include "Stfs/StfsPackage.h"
 
-StfsWorkerThread::StfsWorkerThread(StfsPackage *package, StfsJob job, FileEntry *packageFile, QString externalPath, QObject *parent, QString packageFilePath) :
+StfsWorkerThread::StfsWorkerThread(StfsPackage *package, StfsJob job, StfsFileEntry *packageFile, QString externalPath, QObject *parent, QString packageFilePath) :
     QThread(parent), package(package), job(job), packageFile(packageFile), externalPath(externalPath), packageFilePath(packageFilePath)
 {
 
@@ -18,7 +18,7 @@ void StfsWorkerThread::run()
             package->ReplaceFile(externalPath.toStdString(), packageFilePath.toStdString(), progessUpdatedExternal, this);
             break;
         case Inject:
-            FileEntry temp = package->InjectFile(externalPath.toStdString(), packageFilePath.toStdString(), progessUpdatedExternal, this);
+            StfsFileEntry temp = package->InjectFile(externalPath.toStdString(), packageFilePath.toStdString(), progessUpdatedExternal, this);
             *packageFile = temp;
             break;
     }

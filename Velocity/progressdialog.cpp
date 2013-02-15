@@ -32,7 +32,7 @@ void ProgressDialog::startExtracting()
     // get all the stfs file entries
     for (int i = 0; i < filesToExtract.size(); i++)
     {
-        FileEntry temp = package->GetFileEntry(filesToExtract.at(i).toStdString());
+        StfsFileEntry temp = package->GetFileEntry(filesToExtract.at(i).toStdString());
         if (temp.blocksForFile == 0)
             totalBlocksToExtract++;
         else
@@ -52,7 +52,7 @@ void ProgressDialog::startInjecting()
 void ProgressDialog::extractNextFile()
 {
     // create a new thread
-    StfsWorkerThread thread(package, Extract, const_cast<FileEntry*>(&fileEntries.at(filesExtracted)), outPaths.at(filesExtracted), this, "");
+    StfsWorkerThread thread(package, Extract, const_cast<StfsFileEntry*>(&fileEntries.at(filesExtracted)), outPaths.at(filesExtracted), this, "");
     ui->groupBox->setTitle(filesToExtract.at(filesExtracted));
     ui->groupBox_2->setTitle("Overall Progress, File " + QString::number(filesExtracted + 1) + " of " + QString::number(filesToExtract.size()));
     prevPrgress = 0;

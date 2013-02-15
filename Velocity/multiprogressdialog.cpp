@@ -23,7 +23,7 @@ void MultiProgressDialog::start()
         case FileSystemSTFS:
             for (DWORD i = 0; i < filesToExtract.size(); i++)
             {
-                FileEntry *entry = reinterpret_cast<FileEntry*>(filesToExtract.at(i));
+                StfsFileEntry *entry = reinterpret_cast<StfsFileEntry*>(filesToExtract.at(i));
                 if (entry->blocksForFile == 0)
                     overallProgressTotal++;
                 else
@@ -33,7 +33,7 @@ void MultiProgressDialog::start()
         case FileSystemSVOD:
             for (DWORD i = 0; i < filesToExtract.size(); i++)
             {
-                GDFXFileEntry *entry = reinterpret_cast<GDFXFileEntry*>(filesToExtract.at(i));
+                GdfxFileEntry *entry = reinterpret_cast<GdfxFileEntry*>(filesToExtract.at(i));
                 overallProgressTotal += (entry->size + 0xFFFF) / 0x10000;
             } 
             break;
@@ -59,7 +59,7 @@ void MultiProgressDialog::extractNextFile()
         {
 
             // get the file entry
-            FileEntry *entry = reinterpret_cast<FileEntry*>(filesToExtract.at(fileIndex++));
+            StfsFileEntry *entry = reinterpret_cast<StfsFileEntry*>(filesToExtract.at(fileIndex++));
 
             setWindowTitle("Extracting " + QString::fromStdString(entry->name));
 
@@ -79,7 +79,7 @@ void MultiProgressDialog::extractNextFile()
         {
 
             // get the file entry
-            GDFXFileEntry *entry = reinterpret_cast<GDFXFileEntry*>(filesToExtract.at(fileIndex++));
+            GdfxFileEntry *entry = reinterpret_cast<GdfxFileEntry*>(filesToExtract.at(fileIndex++));
 
             setWindowTitle("Extracting " + QString::fromStdString(entry->name));
 

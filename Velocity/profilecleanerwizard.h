@@ -54,7 +54,7 @@ private:
     CleanOperation op;
 
     void clean();
-    void extractAll(FileListing *f, QString parentDirectory);
+    void extractAll(StfsFileListing *f, QString parentDirectory);
     void deleteAllRecursive(QDir directory);
     void injectAll(StfsPackage *profile, QDir currentDirectory, QString currentStfsDir);
 };

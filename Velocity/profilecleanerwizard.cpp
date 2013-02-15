@@ -84,7 +84,7 @@ void ProfileCleanerWizard::clean()
     directory = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "") + "/";
     QDir d(directory);
     d.mkdir(directory);
-    FileListing f = profile->GetFileListing();
+    StfsFileListing f = profile->GetFileListing();
     extractAll(&f, directory);
     qDebug() << "Extraction complete";
 
@@ -231,7 +231,7 @@ void ProfileCleanerWizard::clean()
     button(QWizard::FinishButton)->setEnabled(true);
 }
 
-void ProfileCleanerWizard::extractAll(FileListing *f, QString parentDirectory)
+void ProfileCleanerWizard::extractAll(StfsFileListing *f, QString parentDirectory)
 {
     // extract all files
     for (DWORD i = 0; i < f->fileEntries.size(); i++)

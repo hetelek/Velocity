@@ -15,7 +15,7 @@ class PropertiesDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit PropertiesDialog(FileEntry *entry, QString location, bool *changed, QIcon icon, bool hasChildren, QWidget *parent = 0);
+    explicit PropertiesDialog(StfsFileEntry *entry, QString location, bool *changed, QIcon icon, bool hasChildren, QWidget *parent = 0);
     ~PropertiesDialog();
     
 private slots:
@@ -36,7 +36,7 @@ private:
 
     Ui::PropertiesDialog *ui;
     bool *changed;
-    FileEntry *entry;
+    StfsFileEntry *entry;
 };
 
 #endif // PROPERTIESDIALOG_H

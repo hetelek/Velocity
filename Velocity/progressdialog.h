@@ -33,7 +33,7 @@ private:
     StfsPackage *package;
     QList<QString> filesToExtract;
     QList<QString> outPaths;
-    QList<FileEntry> fileEntries;
+    QList<StfsFileEntry> fileEntries;
     DWORD overallProgress;
     DWORD totalBlocksToExtract;
     DWORD filesExtracted;

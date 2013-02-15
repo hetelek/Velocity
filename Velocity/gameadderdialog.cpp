@@ -251,7 +251,7 @@ void GameAdderDialog::finishedDownloadingGpd(QString gamePath, QString awardPath
                     }
                     else
                     {
-                        FileEntry pecEntry = package->GetFileEntry("PEC");
+                        StfsFileEntry pecEntry = package->GetFileEntry("PEC");
                         if (pecEntry.blocksForFile < 3)
                         {
                             flags |= StfsPackageCreate;

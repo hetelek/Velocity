@@ -152,7 +152,7 @@ void StfsPackage::Parse()
     }
 
     // set default values for the root of the file listing
-    FileEntry fe;
+    StfsFileEntry fe;
     fe.pathIndicator = 0xFFFF;
     fe.name = "Root";
     fe.entryIndex = 0xFFFF;
@@ -306,14 +306,14 @@ void StfsPackage::ReadFileListing()
     fileListing.folderEntries.clear();
 
     // setup the entry for the block chain
-    FileEntry entry;
+    StfsFileEntry entry;
     entry.startingBlockNum = metaData->stfsVolumeDescriptor.fileTableBlockNum;
     entry.fileSize = (metaData->stfsVolumeDescriptor.fileTableBlockCount * 0x1000);
 
     // generate a block chain for the full file listing
     DWORD block = entry.startingBlockNum;
 
-    FileListing fl;
+    StfsFileListing fl;
     DWORD currentAddr;
     for(DWORD x = 0; x < metaData->stfsVolumeDescriptor.fileTableBlockCount; x++)
     {
@@ -322,7 +322,7 @@ void StfsPackage::ReadFileListing()
 
         for(DWORD i = 0; i < 0x40; i++)
         {
-            FileEntry fe;
+            StfsFileEntry fe;
 
             // set the current position
             fe.fileEntryAddress = currentAddr + (i * 0x40);
@@ -371,7 +371,7 @@ void StfsPackage::ReadFileListing()
     writtenToFile = fileListing;
 }
 
-FileListing StfsPackage::GetFileListing(bool forceUpdate)
+StfsFileListing StfsPackage::GetFileListing(bool forceUpdate)
 {
     // update the file listing from file if requested
     if(forceUpdate)
@@ -382,11 +382,11 @@ FileListing StfsPackage::GetFileListing(bool forceUpdate)
 
 DWORD StfsPackage::GetFileMagic(string pathInPackage)
 {
-    FileEntry entry = GetFileEntry(pathInPackage);
+    StfsFileEntry entry = GetFileEntry(pathInPackage);
     return GetFileMagic(entry);
 }
 
-DWORD StfsPackage::GetFileMagic(FileEntry entry)
+DWORD StfsPackage::GetFileMagic(StfsFileEntry entry)
 {
     // make sure the file is at least 4 bytes
     if (entry.fileSize < 4)
@@ -402,13 +402,13 @@ DWORD StfsPackage::GetFileMagic(FileEntry entry)
 void StfsPackage::ExtractFile(string pathInPackage, string outPath, void (*extractProgress)(void*, DWORD, DWORD), void *arg)
 {
     // get the given path's file entry
-    FileEntry entry = GetFileEntry(pathInPackage);
+    StfsFileEntry entry = GetFileEntry(pathInPackage);
 
     // extract the file
     ExtractFile(&entry, outPath, extractProgress, arg);
 }
 
-void StfsPackage::ExtractFile(FileEntry *entry, string outPath, void (*extractProgress)(void*, DWORD, DWORD), void *arg)
+void StfsPackage::ExtractFile(StfsFileEntry *entry, string outPath, void (*extractProgress)(void*, DWORD, DWORD), void *arg)
 {
     if (entry->nameLen == 0)
     {
@@ -581,9 +581,9 @@ DWORD StfsPackage::GetHashTableSkipSize(DWORD tableAddress)
     return (0x1000 << packageSex);
 }
 
-FileEntry StfsPackage::GetFileEntry(string pathInPackage, bool checkFolders, FileEntry *newEntry)
+StfsFileEntry StfsPackage::GetFileEntry(string pathInPackage, bool checkFolders, StfsFileEntry *newEntry)
 {
-    FileEntry entry;
+    StfsFileEntry entry;
     GetFileEntry(SplitString(pathInPackage, "\\"), &fileListing, &entry, newEntry, (newEntry != NULL), checkFolders);
 
     if (entry.nameLen == 0)
@@ -598,12 +598,12 @@ FileEntry StfsPackage::GetFileEntry(string pathInPackage, bool checkFolders, Fil
 
 bool StfsPackage::FileExists(string pathInPackage)
 {
-    FileEntry entry;
+    StfsFileEntry entry;
     GetFileEntry(SplitString(pathInPackage, "\\"), &fileListing, &entry);
     return (entry.nameLen != 0);
 }
 
-void StfsPackage::GetFileEntry(vector<string> locationOfFile, FileListing *start, FileEntry *out, FileEntry *newEntry, bool updateEntry, bool checkFolders)
+void StfsPackage::GetFileEntry(vector<string> locationOfFile, StfsFileListing *start, StfsFileEntry *out, StfsFileEntry *newEntry, bool updateEntry, bool checkFolders)
 {
     bool found = false;
 
@@ -696,7 +696,7 @@ vector<string> StfsPackage::SplitString(string str, string delimeter)
     return splits;
 }
 
-void StfsPackage::AddToListing(FileListing *fullListing, FileListing *out)
+void StfsPackage::AddToListing(StfsFileListing *fullListing, StfsFileListing *out)
 {
     for (DWORD i = 0; i < fullListing->fileEntries.size(); i++)
     {
@@ -712,7 +712,7 @@ void StfsPackage::AddToListing(FileListing *fullListing, FileListing *out)
             // if it's a directory and not the current directory, then add it
             else if (isDirectory && fullListing->fileEntries.at(i).entryIndex != out->folder.entryIndex)
             {
-                FileListing fl;
+                StfsFileListing fl;
                 fl.folder = fullListing->fileEntries.at(i);
                 out->folderEntries.push_back(fl);
             }
@@ -1101,11 +1101,11 @@ void StfsPackage::BuildTableInMemory(HashTable *table, BYTE *outBuffer)
     }
 }
 
-void StfsPackage::RemoveFile(FileEntry entry)
+void StfsPackage::RemoveFile(StfsFileEntry entry)
 {
     bool found = false;
 
-    vector<FileEntry> files, folders;
+    vector<StfsFileEntry> files, folders;
     GenerateRawFileListing(&fileListing, &files, &folders);
 
     // remove the file from the listing
@@ -1133,10 +1133,10 @@ void StfsPackage::RemoveFile(FileEntry entry)
     WriteFileListing(true, &files, &folders);
 }
 
-void StfsPackage::WriteFileListing(bool usePassed, vector<FileEntry> *outFis, vector<FileEntry> *outFos)
+void StfsPackage::WriteFileListing(bool usePassed, vector<StfsFileEntry> *outFis, vector<StfsFileEntry> *outFos)
 {
     // get the raw file listing
-    vector<FileEntry> outFiles, outFolders;
+    vector<StfsFileEntry> outFiles, outFolders;
 
     if (!usePassed)
         GenerateRawFileListing(&fileListing, &outFiles, &outFolders);
@@ -1274,7 +1274,7 @@ void StfsPackage::SetNextBlock(DWORD blockNum, INT24 nextBlockNum)
     io->flush();
 }
 
-void StfsPackage::WriteFileEntry(FileEntry *entry)
+void StfsPackage::WriteFileEntry(StfsFileEntry *entry)
 {
     // update the name length so it matches the string
     entry->nameLen = entry->name.length();
@@ -1482,7 +1482,7 @@ INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
     return returnValue;
 }
 
-void StfsPackage::FindDirectoryListing(vector<string> locationOfDirectory, FileListing *start, FileListing **out)
+void StfsPackage::FindDirectoryListing(vector<string> locationOfDirectory, StfsFileListing *start, StfsFileListing **out)
 {
     if(locationOfDirectory.size() == 0)
         *out = start;
@@ -1507,19 +1507,19 @@ void StfsPackage::FindDirectoryListing(vector<string> locationOfDirectory, FileL
     }
 }
 
-void StfsPackage::UpdateEntry(string pathInPackage, FileEntry entry)
+void StfsPackage::UpdateEntry(string pathInPackage, StfsFileEntry entry)
 {
     GetFileEntry(SplitString(pathInPackage, "\\"), &fileListing, NULL, &entry, true);
 }
 
-FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injectProgress)(void*, DWORD, DWORD), void *arg)
+StfsFileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injectProgress)(void*, DWORD, DWORD), void *arg)
 {
     if(FileExists(pathInPackage))
         throw string("STFS: File already exists in the package.\n");
 
     // split the string and open a io
     vector<string> split = SplitString(pathInPackage, "\\");
-    FileListing *folder = NULL;
+    StfsFileListing *folder = NULL;
 
     int size = split.size();
     string fileName;
@@ -1547,7 +1547,7 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injec
     fileIn.setPosition(0);
 
     // set up the entry
-    FileEntry entry;
+    StfsFileEntry entry;
     entry.name = fileName;
 
     if (fileName.length() > 0x28)
@@ -1642,14 +1642,14 @@ FileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*injec
     return entry;
 }
 
-FileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPackage, void (*injectProgress)(void *, DWORD, DWORD), void *arg)
+StfsFileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPackage, void (*injectProgress)(void *, DWORD, DWORD), void *arg)
 {
     if(FileExists(pathInPackage))
         throw string("STFS: File already exists in the package.\n");
 
     // split the string and open a io
     vector<string> split = SplitString(pathInPackage, "\\");
-    FileListing *folder = NULL;
+    StfsFileListing *folder = NULL;
 
     int size = split.size();
     string fileName;
@@ -1673,7 +1673,7 @@ FileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPackage
     DWORD fileSize = length;
 
     // set up the entry
-    FileEntry entry;
+    StfsFileEntry entry;
     entry.name = fileName;
     entry.fileSize = fileSize;
     entry.flags = ConsecutiveBlocks;
@@ -1752,7 +1752,7 @@ FileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPackage
     return entry;
 }
 
-void StfsPackage::ReplaceFile(string path, FileEntry *entry, string pathInPackage, void (*replaceProgress)(void *, DWORD, DWORD), void *arg)
+void StfsPackage::ReplaceFile(string path, StfsFileEntry *entry, string pathInPackage, void (*replaceProgress)(void *, DWORD, DWORD), void *arg)
 {
     if (entry->nameLen == 0)
        throw string("STFS: File doesn't exists in the package.\n");
@@ -1893,13 +1893,13 @@ void StfsPackage::ReplaceFile(string path, FileEntry *entry, string pathInPackag
 
 void StfsPackage::ReplaceFile(string path, string pathInPackage, void (*replaceProgress)(void *, DWORD, DWORD), void *arg)
 {
-    FileEntry entry = GetFileEntry(pathInPackage);
+    StfsFileEntry entry = GetFileEntry(pathInPackage);
     ReplaceFile(path, &entry, pathInPackage, replaceProgress, arg);
 }
 
 void StfsPackage::RenameFile(string newName, string pathInPackage)
 {
-    FileEntry entry = GetFileEntry(pathInPackage, true);
+    StfsFileEntry entry = GetFileEntry(pathInPackage, true);
     entry.name = newName;
 
     // update the entry in memory
@@ -1919,7 +1919,7 @@ void StfsPackage::CreateFolder(string pathInPackage)
     // split the string and open a io
     vector<string> split = SplitString(pathInPackage, "\\");
 
-    FileListing *folder = NULL;
+    StfsFileListing *folder = NULL;
     FindDirectoryListing(split, &fileListing, &folder);
     if (folder != NULL)
         throw string("STFS: Directory already exists in the package.\n");
@@ -1944,7 +1944,7 @@ void StfsPackage::CreateFolder(string pathInPackage)
     }
 
     // set up the entry
-    FileEntry entry;
+    StfsFileEntry entry;
     entry.name = fileName;
 
     if (fileName.length() > 0x28)
@@ -1959,7 +1959,7 @@ void StfsPackage::CreateFolder(string pathInPackage)
     entry.createdTimeStamp = MSTimeToDWORD(TimetToMSTime(time(NULL)));
     entry.accessTimeStamp = entry.createdTimeStamp;
 
-    FileListing newFolder;
+    StfsFileListing newFolder;
     newFolder.folder = entry;
 
     // add the entry to the listing
@@ -1967,7 +1967,7 @@ void StfsPackage::CreateFolder(string pathInPackage)
     WriteFileListing();
 }
 
-void StfsPackage::GenerateRawFileListing(FileListing *in, vector<FileEntry> *outFiles, vector<FileEntry> *outFolders)
+void StfsPackage::GenerateRawFileListing(StfsFileListing *in, vector<StfsFileEntry> *outFiles, vector<StfsFileEntry> *outFolders)
 {
     int fiEntries = in->fileEntries.size();
     int foEntries = in->folderEntries.size();
