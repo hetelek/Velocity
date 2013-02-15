@@ -1,31 +1,23 @@
 #include "FatxDrive.h"
 
+FatxDrive::FatxDrive(std::string drivePath)
+{
+    // convert it to a wstring
+    std::wstring wsDrivePath;
+    wsDrivePath.assign(drivePath.begin(), drivePath.end());
+
+    // load the device
+    loadFatxDrive(wsDrivePath);
+}
+
 FatxDrive::FatxDrive(std::wstring drivePath)
 {
-    io = new DeviceIO(drivePath);
+    loadFatxDrive(drivePath);
+}
 
-    // parse the security blob
-    io->SetPosition(0x2000);
-    securityBlob.serialNumber = io->ReadString(0x14);
-    securityBlob.firmwareRevision = io->ReadString(8);
-    securityBlob.modelNumber = io->ReadString(0x28);
-    io->ReadBytes(securityBlob.msLogoHash, 0x14);
-    securityBlob.userAddressableSectors = io->ReadDword();
-    io->ReadBytes(securityBlob.rsaSignature, 0x100);
-
-    // TODO: verify the signature
-
-    // seek to the next sector
-    io->SetPosition(0x2200);
-    securityBlob.msLogoSize = io->ReadDword();
-    securityBlob.msLogo = new BYTE[securityBlob.msLogoSize];
-    io->ReadBytes(securityBlob.msLogo, securityBlob.msLogoSize);
-
-    Partition *data = new Partition();
-    data->address = HddOffsets::Data;
-    data->size = io->DriveLength() - data->address;
-    data->name = "Data";
-    processBootSector(data);
+std::vector<Partition*> FatxDrive::GetPartitions()
+{
+    return partitions;
 }
 
 void FatxDrive::processBootSector(Partition *part)
@@ -92,6 +84,109 @@ void FatxDrive::processBootSector(Partition *part)
     part->allocationTableSize = partitionSize;
     part->clusterEntrySize = (clusters < FAT_CLUSTER16_RESERVED) ? FAT16 : FAT32;
     part->clusterStartingAddress = part->address + partitionSize + 0x1000;
+
+    // setup the root
+    part->root.startingCluster = part->rootDirectoryCluster;
+    part->root.readDirectories = false;
+    part->root.name = "Root";
+    part->root.partition = part;
+}
+
+void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
+{
+    // if all entries have been read, skip this
+    if (entry->readDirectories || !(entry->fileAttributes & FatxDirectory))
+        return;
+
+    // if the cluster chain has already been read, skip this
+    if (entry->clusterChain.size() == 0)
+        readClusterChain(entry);
+
+    // find out how many entries are in a single cluster
+    DWORD entriesInCluster = entry->partition->clusterSize / FATX_ENTRY_SIZE;
+
+    // read all entries
+    for (int i = 0; i < entry->clusterChain.size(); i++)
+    {
+        // go to the cluster offset
+        io->SetPosition(clusterToOffset(entry->partition, entry->clusterChain.at(i)));
+
+        for (int i = 0; i < entriesInCluster; i++)
+        {
+            // read the name length
+            FatxFileEntry newEntry;
+            newEntry.nameLen = io->ReadByte();
+
+            // check if there are no more entries
+            if (newEntry.nameLen == 0xFF || newEntry.nameLen == 0)
+                break;
+
+            // read the attributes
+            newEntry.fileAttributes = io->ReadByte();
+
+            // read the name (0xFF is the null terminator)
+            bool subtract = true;
+            if (newEntry.nameLen == FATX_ENTRY_DELETED)
+                newEntry.name = io->ReadString(-1, 0xFF);
+            else
+            {
+                newEntry.name = io->ReadString(newEntry.nameLen);
+                subtract = false;
+            }
+
+            // seek past the name
+            io->SetPosition(io->Position() + (FATX_ENTRY_MAX_NAME_LENGTH - newEntry.name.length() - subtract));
+
+            // read the rest of the entry information
+            newEntry.startingCluster = io->ReadDword();
+            newEntry.fileSize = io->ReadDword();
+            newEntry.creationDate = io->ReadDword();
+            newEntry.lastWriteDate = io->ReadDword();
+            newEntry.lastAccessDate = io->ReadDword();
+            newEntry.partition = entry->partition;
+            newEntry.readDirectories = false;
+
+            // add it to the file cache
+            entry->cachedFiles.push_back(newEntry);
+        }
+    }
+
+    entry->readDirectories = true;
+}
+
+void FatxDrive::readClusterChain(FatxFileEntry *entry)
+{
+    // clear the current chain
+    entry->clusterChain.clear();
+
+    // calculate values
+    bool clusterSizeIs2 = (entry->partition->clusterEntrySize == FAT16);
+    DWORD lastCluster =  (clusterSizeIs2) ? FAT_CLUSTER16_LAST : FAT_CLUSTER_LAST;
+    DWORD availableCluster = (clusterSizeIs2) ? FAT_CLUSTER16_AVAILABLE : FAT_CLUSTER_AVAILABLE;
+    INT64 clusterMapAddress = entry->partition->address + 0x1000;
+
+    // start with the starting cluster
+    DWORD previousCluster = entry->startingCluster;
+
+    while (previousCluster != lastCluster && previousCluster != availableCluster)
+    {
+        // add it to the cluster chain
+        entry->clusterChain.push_back(previousCluster);
+
+        // seek to the next cluster
+        io->SetPosition(clusterMapAddress + (previousCluster * entry->partition->clusterEntrySize));
+
+        // read the cluster
+        if (clusterSizeIs2)
+            previousCluster = io->ReadWord();
+        else
+            previousCluster = io->ReadDword();
+    }
+}
+
+INT64 FatxDrive::clusterToOffset(Partition *part, DWORD cluster)
+{
+    return part->clusterStartingAddress + (part->clusterSize * (cluster - 1));
 }
 
 BYTE FatxDrive::cntlzw(DWORD x)
@@ -131,4 +226,61 @@ FatxDrive::~FatxDrive()
 
     io->Close();
     delete io;
+}
+
+void FatxDrive::loadFatxDrive(std::wstring drivePath)
+{
+    // open the device io
+    io = new DeviceIO(drivePath);
+
+    // parse the security blob
+    io->SetPosition(HddOffsets::SecuritySector);
+    securityBlob.serialNumber = io->ReadString(0x14);
+    securityBlob.firmwareRevision = io->ReadString(8);
+    securityBlob.modelNumber = io->ReadString(0x28);
+    io->ReadBytes(securityBlob.msLogoHash, 0x14);
+    securityBlob.userAddressableSectors = io->ReadDword();
+    io->ReadBytes(securityBlob.rsaSignature, 0x100);
+
+    // TODO: verify the signature
+
+    // seek to the next sector
+    io->SetPosition(0x2200);
+    securityBlob.msLogoSize = io->ReadDword();
+    securityBlob.msLogo = new BYTE[securityBlob.msLogoSize];
+    io->ReadBytes(securityBlob.msLogo, securityBlob.msLogoSize);
+
+    // system extended partition initialization
+    Partition *systemExtended = new Partition;
+    systemExtended->address = HddOffsets::SystemExtended;
+    systemExtended->size = HddSizes::SystemExtended;
+    systemExtended->name = "System Extended";
+
+    // system auxiliary partition initialization
+    Partition *systemAuxiliary = new Partition;
+    systemAuxiliary->address = HddOffsets::SystemAuxiliary;
+    systemAuxiliary->size = HddSizes::SystemAuxiliary;
+    systemAuxiliary->name = "System Auxiliary";
+
+    // system partition initialization
+    Partition *systemPartition = new Partition;
+    systemPartition->address = HddOffsets::SystemPartition;
+    systemPartition->size = HddSizes::SystemPartition;
+    systemPartition->name = "System Partition";
+
+    // content partition initialization
+    Partition *content = new Partition;
+    content->address = HddOffsets::Data;
+    content->size = io->DriveLength() - content->address;
+    content->name = "Content";
+
+    // add the partitions to the vector
+    this->partitions.push_back(systemExtended);
+    this->partitions.push_back(systemAuxiliary);
+    this->partitions.push_back(systemPartition);
+    this->partitions.push_back(content);
+
+    // process all bootsectors
+    for (int i = 0; i < this->partitions.size(); i++)
+        processBootSector(this->partitions.at(i));
 }
