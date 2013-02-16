@@ -20,6 +20,12 @@ std::vector<Partition*> FatxDrive::GetPartitions()
     return partitions;
 }
 
+FatxIO FatxDrive::GetFatxIO(FatxFileEntry *entry)
+{
+    readClusterChain(entry);
+    return FatxIO(io, entry);
+}
+
 void FatxDrive::processBootSector(Partition *part)
 {
     UINT64 partitionSize = part->size;
@@ -109,7 +115,7 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
     for (int i = 0; i < entry->clusterChain.size(); i++)
     {
         // go to the cluster offset
-        io->SetPosition(clusterToOffset(entry->partition, entry->clusterChain.at(i)));
+        io->SetPosition(ClusterToOffset(entry->partition, entry->clusterChain.at(i)));
 
         for (int i = 0; i < entriesInCluster; i++)
         {
@@ -184,7 +190,7 @@ void FatxDrive::readClusterChain(FatxFileEntry *entry)
     }
 }
 
-INT64 FatxDrive::clusterToOffset(Partition *part, DWORD cluster)
+INT64 FatxDrive::ClusterToOffset(Partition *part, DWORD cluster)
 {
     return part->clusterStartingAddress + (part->clusterSize * (INT64)(cluster - 1));
 }
