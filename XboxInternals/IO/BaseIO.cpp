@@ -143,7 +143,7 @@ string BaseIO::ReadString(int len, char nullTerminator)
         toReturn = "";
         char nextChar;
         while ((nextChar = ReadByte()) != nullTerminator)
-            toReturn.append(nextChar);
+            toReturn += nextChar;
     }
     else
     {
