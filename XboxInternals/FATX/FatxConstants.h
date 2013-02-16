@@ -75,6 +75,7 @@ struct Partition
     FatxFileEntry root;
 
     // calculated information
+    DWORD lastFreeClusterFound;
     BYTE clusterEntrySize;
     DWORD clusterCount;
     DWORD clusterSize;

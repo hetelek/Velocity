@@ -90,12 +90,49 @@ void FatxDrive::processBootSector(Partition *part)
     part->allocationTableSize = partitionSize;
     part->clusterEntrySize = (clusters < FAT_CLUSTER16_RESERVED) ? FAT16 : FAT32;
     part->clusterStartingAddress = part->address + partitionSize + 0x1000;
+    part->lastFreeClusterFound = 1;
 
     // setup the root
     part->root.startingCluster = part->rootDirectoryCluster;
     part->root.readDirectories = false;
     part->root.name = "Root";
     part->root.partition = part;
+}
+
+std::vector<DWORD> FatxDrive::getFreeClusters(Partition *part, DWORD count)
+{
+    io->SetPosition(part->address + 0x1000 + (part->clusterEntrySize * part->lastFreeClusterFound));
+
+    std::vector<DWORD> freeClusters;
+
+    DWORD currentCluster = 1;
+    DWORD cluster;
+
+    while (count != 0 && currentCluster != part->clusterCount)
+    {
+        currentCluster++;
+        switch (part->clusterEntrySize)
+        {
+            case FAT32:
+                if (io->ReadDword() == FAT_CLUSTER_AVAILABLE)
+                {
+                    freeClusters.push_back(currentCluster);
+                    part->lastFreeClusterFound = currentCluster + 1;
+                    count--;
+                }
+                break;
+            case FAT16:
+                if (io->ReadWord() == FAT_CLUSTER16_AVAILABLE)
+                {
+                    freeClusters.push_back(currentCluster);
+                    part->lastFreeClusterFound = currentCluster + 1;
+                    count--;
+                }
+                break;
+        }
+    }
+
+    return freeClusters;
 }
 
 void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)

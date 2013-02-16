@@ -26,9 +26,13 @@ public:
     // convert a cluster to an offset
     static INT64 ClusterToOffset(Partition *part, DWORD cluster);
 
-private:
     // populate entry's clusterChain with its cluster chain
     void readClusterChain(FatxFileEntry *entry);
+
+    // find count amount of free custers
+    std::vector<DWORD> getFreeClusters(Partition *part, DWORD count);
+
+private:
 
     // open up a physical drive
     void loadFatxDrive(std::wstring drivePath);
