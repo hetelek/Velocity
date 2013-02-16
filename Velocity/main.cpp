@@ -10,30 +10,26 @@ int main(int argc, char *argv[])
     FatxDrive drive(L"\\\\.\\PHYSICALDRIVE1");
     Partition *part = drive.GetPartitions().at(0);
 
+    qDebug() << "1";
+
     drive.GetChildFileEntries(&part->root);
+    qDebug() << QString::number(part->root.cachedFiles.size());
     FatxFileEntry entry = part->root.cachedFiles.at(0);
+
+    qDebug() << "2";
 
     drive.GetChildFileEntries(&entry);
     FatxFileEntry folder = entry.cachedFiles.at(0);
 
+    qDebug() << "3";
+
     drive.GetChildFileEntries(&folder);
 
+    qDebug() << "4";
     FatxIO io = drive.GetFatxIO(&folder.cachedFiles.at(0));
-
-    io.SetPosition(0);
-    FileIO newFile("C:/Users/Stevie/Desktop/extracted.dat", true);
-
-    BYTE buffer[0x10000];
-    DWORD size = io.GetFatxFileEntry().fileSize;
-    while (size > 0)
-    {
-        DWORD amount = (size < 0x10000) ? size : 0x10000;
-        io.ReadBytes(buffer, amount);
-        newFile.write(buffer, amount);
-        size -= amount;
-    }
-
-    newFile.close();
+    qDebug() << "5";
+    io.SaveFile("C:/Users/Stevie/Desktop/save.dat");
+    qDebug() << "6";
 
     QApplication a(argc, argv);
     a.addLibraryPath(":/plugins/imageformats");

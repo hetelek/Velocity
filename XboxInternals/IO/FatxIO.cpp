@@ -35,10 +35,12 @@ FatxFileEntry FatxIO::GetFatxFileEntry()
 
 void FatxIO::ReadBytes(BYTE *outBuffer, DWORD len)
 {
+    // get the length
     DWORD origLen = len;
 
     while (len > 0)
     {
+        // calculate how many bytes to read
         DWORD bytesToRead = (len <= maxReadConsecutive) ? len : maxReadConsecutive;
         device->ReadBytes(outBuffer + (origLen - len), bytesToRead);
 
@@ -50,4 +52,51 @@ void FatxIO::ReadBytes(BYTE *outBuffer, DWORD len)
 
 void FatxIO::WriteBytes(BYTE *buffer, DWORD len)
 {
+}
+
+void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL)
+{
+    // get the current position
+    INT64 pos = device->Position();
+
+    // seek to the beggining of the file
+    SetPosition(0);
+
+    // open the new file
+    FileIO outFile(savePath, true);
+
+    // initialization
+    BYTE *buffer = new BYTE[0x10000];
+    DWORD fileLen = entry->fileSize;
+    DWORD total = (fileLen + 0xFFFF) / 0x10000;
+    DWORD cur = 0;
+
+    // extract by 0x10000 byte buffers
+    while (fileLen >= 0x10000)
+    {
+        ReadBytes(buffer, 0x10000);
+        outFile.write(buffer, 0x10000);
+        fileLen -= 0x10000;
+
+        // update progress
+        if (progress)
+            progress(arg, cur++, total);
+    }
+
+    // pick up any slack
+    if (fileLen != 0)
+    {
+        ReadBytes(buffer, fileLen);
+        outFile.write(buffer, fileLen);
+    }
+
+    // update progress
+    if (progress)
+        progress(arg, total, total);
+
+    // cleanup
+    outFile.close();
+
+    // set the original position
+    device->SetPosition(pos);
 }
