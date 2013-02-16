@@ -26,8 +26,10 @@ public:
     XContentHeader *metadata;
     vector<GdfxFileEntry> root;
 
+    // get a SvodIO for the given entry
     SvodIO GetSvodIO(GdfxFileEntry entry);
 
+    // get a SvodIO for the given entry
     SvodIO GetSvodIO(string path);
 
     // get the address and file index for a sector
