@@ -112,9 +112,9 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
     if (len == 0)
         return;
 
-    INT64 originalPos = pos;
-    INT64 finalPos = pos + len;
-    INT64 currentSector = DOWN_TO_NEAREST_SECTOR(pos);
+    UINT64 originalPos = pos;
+    UINT64 finalPos = pos + len;
+    UINT64 currentSector = DOWN_TO_NEAREST_SECTOR(pos);
 
     // write the bytes up to the next sector
     SetPosition(currentSector);
@@ -176,7 +176,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
 
 UINT64 DeviceIO::DriveLength()
 {
-    INT64 length;
+    UINT64 length;
     #ifdef _WIN32
         DISK_GEOMETRY geometry;
         DWORD bytesReturned;
@@ -192,8 +192,8 @@ UINT64 DeviceIO::DriveLength()
             &bytesReturned,					// Number of bytes returned
             NULL);							// Not used
 
-        INT64 cylinders = (INT64)((INT64)geometry.Cylinders.HighPart << 32) | geometry.Cylinders.LowPart; // Convert the BIG_INTEGER to INT64
-        length = cylinders * (INT64)geometry.TracksPerCylinder	* (INT64)geometry.SectorsPerTrack * (INT64)geometry.BytesPerSector;
+        UINT64 cylinders = (UINT64)((UINT64)geometry.Cylinders.HighPart << 32) | geometry.Cylinders.LowPart; // Convert the BIG_INTEGER to UINT64
+        length = cylinders * (UINT64)geometry.TracksPerCylinder	* (UINT64)geometry.SectorsPerTrack * (UINT64)geometry.BytesPerSector;
     #else
         DWORD *numberOfSectors = new DWORD;
         *numberOfSectors = 0;
@@ -217,11 +217,6 @@ UINT64 DeviceIO::DriveLength()
         return length;
 }
 
-INT64 DeviceIO::Position()
-{
-    return pos;
-}
-
 void DeviceIO::SetPosition(UINT64 address, std::ios_base::seek_dir dir)
 {
     if (dir != std::ios_base::beg)
@@ -239,10 +234,10 @@ void DeviceIO::SetPosition(UINT64 address, std::ios_base::seek_dir dir)
     #endif
 }
 
-INT64 DeviceIO::realPosition()
+UINT64 DeviceIO::realPosition()
 {
     #ifdef _WIN32
-        return (INT64)(((INT64)offset.OffsetHigh << 32) | offset.Offset);
+        return (UINT64)(((UINT64)offset.OffsetHigh << 32) | offset.Offset);
     #else
         return offset;
     #endif
@@ -261,7 +256,7 @@ void DeviceIO::Close()
     #else
         close(device);
         device = NULL;
-#endif
+    #endif
 }
 
 void DeviceIO::loadDevice(std::wstring devicePath)
@@ -292,7 +287,7 @@ void DeviceIO::loadDevice(std::wstring devicePath)
 
 void DeviceIO::Flush()
 {
-#ifdef __WIN32
-    FlushFileBuffers(deviceHandle);
-#endif
+    #ifdef __WIN32
+        FlushFileBuffers(deviceHandle);
+    #endif
 }

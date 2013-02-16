@@ -39,8 +39,6 @@ public:
 
     UINT64 GetPosition();
 
-    INT64 Position();
-
     UINT64 DriveLength();
 
     void Close();
@@ -50,7 +48,7 @@ public:
 private:
     void loadDevice(std::wstring devicePath);
 
-    INT64 realPosition();
+    UINT64 realPosition();
 
     #ifdef _WIN32
         HANDLE deviceHandle;
@@ -60,9 +58,9 @@ private:
         INT64 offset;
     #endif
 
-    INT64 pos;
+    UINT64 pos;
     BYTE lastReadData[0x200];
-    INT64 lastReadOffset;
+    UINT64 lastReadOffset;
 };
 
 #endif // DEVICEIO_H

@@ -2,7 +2,7 @@
 #define FATXIO_H
 
 #include "DeviceIO.h"
-#include "../FileIO.h"
+#include "FileIO.h"
 #include "../Fatx/FatxConstants.h"
 
 class XBOXINTERNALSSHARED_EXPORT FatxIO : public BaseIO
@@ -12,7 +12,13 @@ public:
 
     FatxFileEntry GetFatxFileEntry();
 
-    void SetPosition(DWORD position);
+    void SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios_base::beg);
+
+    void Flush();
+
+    void Close();
+
+    UINT64 GetPosition();
 
     void ReadBytes(BYTE *outBuffer, DWORD len);
 
@@ -23,7 +29,7 @@ public:
 private:
     DeviceIO *device;
     FatxFileEntry *entry;
-    DWORD pos;
+    UINT64 pos;
     DWORD maxReadConsecutive;
 };
 

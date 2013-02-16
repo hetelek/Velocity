@@ -5,11 +5,17 @@ FatxIO::FatxIO(DeviceIO *device, FatxFileEntry *entry) : device(device), entry(e
     pos = 0;
 }
 
-void FatxIO::SetPosition(DWORD position)
+void FatxIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios_base::beg)
 {
     // we can't seek past the file
     if (position > entry->fileSize && !(entry->fileAttributes & FatxDirectory))
         throw std::string("FATX: Cannot seek past the file size.\n");
+
+
+    if (dir == std::ios_base::cur)
+        position += pos;
+    else if (dir == std::ios_base::end)
+        position = (device->DriveLength() - position);
 
     pos = position;
 
@@ -26,6 +32,21 @@ void FatxIO::SetPosition(DWORD position)
 
     // set the position
     device->SetPosition(driveOff);
+}
+
+void FatxIO::Flush()
+{
+    // nothing to flush since it's a physical drive
+}
+
+void FatxIO::Close()
+{
+    // nothing to close since this doesn't actually have a file open
+}
+
+UINT64 FatxIO::GetPosition()
+{
+    return pos;
 }
 
 FatxFileEntry FatxIO::GetFatxFileEntry()
@@ -57,7 +78,7 @@ void FatxIO::WriteBytes(BYTE *buffer, DWORD len)
 void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL)
 {
     // get the current position
-    INT64 pos = device->Position();
+    INT64 pos = device->GetPosition();
 
     // seek to the beggining of the file
     SetPosition(0);
@@ -75,7 +96,7 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
     while (fileLen >= 0x10000)
     {
         ReadBytes(buffer, 0x10000);
-        outFile.write(buffer, 0x10000);
+        outFile.Write(buffer, 0x10000);
         fileLen -= 0x10000;
 
         // update progress
@@ -87,7 +108,7 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
     if (fileLen != 0)
     {
         ReadBytes(buffer, fileLen);
-        outFile.write(buffer, fileLen);
+        outFile.Write(buffer, fileLen);
     }
 
     // update progress
@@ -95,7 +116,7 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
         progress(arg, total, total);
 
     // cleanup
-    outFile.close();
+    outFile.Close();
 
     // set the original position
     device->SetPosition(pos);

@@ -178,7 +178,7 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
             }
 
             // seek past the name
-            io->SetPosition(io->Position() + (FATX_ENTRY_MAX_NAME_LENGTH - newEntry.name.length() - subtract));
+            io->SetPosition(io->GetPosition() + (FATX_ENTRY_MAX_NAME_LENGTH - newEntry.name.length() - subtract));
 
             // read the rest of the entry information
             newEntry.startingCluster = io->ReadDword();
