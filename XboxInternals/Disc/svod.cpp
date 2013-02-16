@@ -46,7 +46,7 @@ SVOD::~SVOD()
     io->Close();
     delete io;
 
-    rootFile->close();
+    rootFile->Close();
     delete rootFile;
 }
 
@@ -170,7 +170,7 @@ void SVOD::Rehash(void (*progress)(DWORD, DWORD, void*), void *arg)
     // iterate through all of the files
     for (int i = fileCount - 1; i >= 0; i--)
     {
-        io->SetPosition(0x2000, i);
+        io->SetPosition((DWORD)0x2000, i);
         DWORD hashTableCount = ((io->CurrentFileLength() - 0x2000) + 0xCCFFF) / 0xCD000;
         DWORD totalBlockCount = (io->CurrentFileLength() - 0x1000 - (hashTableCount * 0x1000)) >> 0xC;
 
@@ -205,7 +205,7 @@ void SVOD::Rehash(void (*progress)(DWORD, DWORD, void*), void *arg)
         memcpy(master + hashTableCount * 0x14, prevHash, 0x14);
 
         // write the master hash table
-        io->SetPosition(0, i);
+        io->SetPosition((DWORD)0, i);
         io->WriteBytes(master, 0x1000);
 
         // hash the master table
@@ -226,8 +226,8 @@ void SVOD::Rehash(void (*progress)(DWORD, DWORD, void*), void *arg)
     DWORD dataLen = ((metadata->headerSize + 0xFFF) & 0xFFFFF000) - 0x344;
     BYTE *buff = new BYTE[dataLen];
 
-    rootFile->setPosition(0x344);
-    rootFile->readBytes(buff, dataLen);
+    rootFile->SetPosition(0x344);
+    rootFile->ReadBytes(buff, dataLen);
 
     Botan::SHA_160 sha1;
     sha1.clear();
@@ -252,7 +252,7 @@ void SVOD::WriteFileEntry(GDFXFileEntry *entry)
 
 DWORD SVOD::GetSectorCount()
 {
-    io->SetPosition(0, io->FileCount() - 1);
+    io->SetPosition((DWORD)0, io->FileCount() - 1);
     DWORD fileLen = io->CurrentFileLength() - 0x2000;
 
     return (io->FileCount() * 0x14388) + ((fileLen - (0x1000 * (fileLen / 0xCD000))) / 0x800);

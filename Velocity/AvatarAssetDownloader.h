@@ -10,7 +10,7 @@
 
 // other
 #include "winnames.h"
-#include "FileIO.h"
+#include "IO/FileIO.h"
 
 class AvatarAssetDownloader : public QObject
 {

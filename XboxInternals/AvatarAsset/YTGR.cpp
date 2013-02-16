@@ -20,40 +20,40 @@ Ytgr::~Ytgr()
 
 void Ytgr::Parse()
 {
-    io->setPosition(0);
+    io->SetPosition(0);
 
     // verify the magic
-    magic = io->readDword();
+    magic = io->ReadDword();
     if (magic != 0x59544752)
         throw std::string("Ytgr: Invalid magic.");
 
     // read the version
-    io->setEndian(LittleEndian);
-    DWORD tempV = io->readDword();
+    io->SetEndian(LittleEndian);
+    DWORD tempV = io->ReadDword();
     XSignerMinimumVersion.major = tempV >> 28;
     XSignerMinimumVersion.minor = (tempV >> 24) & 0xF;
     XSignerMinimumVersion.build = (tempV >> 8) & 0xFFFF;
     XSignerMinimumVersion.revision = tempV & 0xFF;
 
-    structSize = io->readDword();
+    structSize = io->ReadDword();
     if (structSize != 0x130)
         throw std::string("Ytgr: Invalid struct size.");
 
     // parse the timestamp
     WINFILETIME fileTime;
-    fileTime.dwLowDateTime = io->readDword();
-    fileTime.dwHighDateTime = io->readDword();
+    fileTime.dwLowDateTime = io->ReadDword();
+    fileTime.dwHighDateTime = io->ReadDword();
     dateAddedToServer = XdbfHelpers::FILETIMEtoTimeT(fileTime);
 
-    contentLength = io->readDword();
-    reserved = io->readDword();
-    io->readBytes(contentHash, 0x14);
-    io->readBytes(rsaSignature, 0x100);
+    contentLength = io->ReadDword();
+    reserved = io->ReadDword();
+    io->ReadBytes(contentHash, 0x14);
+    io->ReadBytes(rsaSignature, 0x100);
 
     // verify the signature
     BYTE message[0x30];
-    io->setPosition(0);
-    io->readBytes(message, 0x30);
+    io->SetPosition(0);
+    io->ReadBytes(message, 0x30);
     valid = XeKeys::VerifyRSASignature(LIVEKey, message, 0x30, rsaSignature) || XeKeys::VerifyRSASignature(UnknownKey, message, 0x30, rsaSignature);
 
     // verify the hash
@@ -62,18 +62,18 @@ void Ytgr::Parse()
     Botan::SHA_160 sha1;
     sha1.clear();
 
-    io->setPosition(0x130);
+    io->SetPosition(0x130);
     DWORD tempLen = contentLength;
 
     while (tempLen >= 0x1000)
     {
-        io->readBytes(block, 0x1000);
+        io->ReadBytes(block, 0x1000);
         sha1.update(block, 0x1000);
         tempLen -= 0x1000;
     }
     if (tempLen != 0)
     {
-        io->readBytes(block, tempLen);
+        io->ReadBytes(block, tempLen);
         sha1.update(block, tempLen);
     }
 

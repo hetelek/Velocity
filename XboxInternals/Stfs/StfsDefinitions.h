@@ -3,7 +3,7 @@
 
 #include "winnames.h"
 #include "StfsConstants.h"
-#include "FileIO.h"
+#include "IO/FileIO.h"
 #include <iostream>
 #include <sstream>
 #include <time.h>

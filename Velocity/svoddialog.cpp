@@ -230,16 +230,16 @@ void SvodDialog::on_btnResign_clicked()
 
     // open kv
     FileIO kvIO(kvPath.toStdString());
-    kvIO.setPosition(0, ios_base::end);
+    kvIO.SetPosition(0, ios_base::end);
 
     // read in the console id of the certificate in the kv
     DWORD adder = 0;
-    if (kvIO.getPosition() == 0x4000)
+    if (kvIO.GetPosition() == 0x4000)
         adder = 0x10;
-    kvIO.setPosition(0x9BA + adder);
+    kvIO.SetPosition(0x9BA + adder);
     BYTE consoleID[5];
-    kvIO.readBytes(consoleID, 5);
-    kvIO.close();
+    kvIO.ReadBytes(consoleID, 5);
+    kvIO.Close();
 
     // make sure the console ids match
     if (memcmp(consoleID, svod->metadata->certificate.ownerConsoleID, 5) != 0)

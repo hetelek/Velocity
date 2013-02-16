@@ -233,8 +233,11 @@ INT64 DeviceIO::Position()
     return pos;
 }
 
-void DeviceIO::SetPosition(INT64 address)
+void DeviceIO::SetPosition(UINT64 address, std::ios_base::seek_dir dir)
 {
+    if (dir != std::ios_base::beg)
+        throw std::string("DeviceIO: Unsupported seek direction\n");
+
     pos = address;
     address = DOWN_TO_NEAREST_SECTOR(address); // Round the position down to the nearest sector offset
 
@@ -256,6 +259,11 @@ INT64 DeviceIO::realPosition()
     #endif
 }
 
+UINT64 DeviceIO::GetPosition()
+{
+    return pos;
+}
+
 void DeviceIO::Close()
 {
     #if defined _WIN32
@@ -265,4 +273,11 @@ void DeviceIO::Close()
         close(device);
         device = NULL;
     #endif
+}
+
+void DeviceIO::Flush()
+{
+#ifdef __WIN32
+    FlushFileBuffers(deviceHandle);
+#endif
 }

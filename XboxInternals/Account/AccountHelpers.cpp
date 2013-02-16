@@ -35,7 +35,7 @@ string AccountHelpers::XboxLiveServiceProviderToString(XboxLiveServiceProvider p
 		default:
 			char temp[5] = {0};
 			memcpy(temp, &provider, 4);
-			FileIO::swapEndian(temp, 1, 4);
+            FileIO::ReverseGenericArray(temp, 1, 4);
 			return string(temp);
 	}
 }

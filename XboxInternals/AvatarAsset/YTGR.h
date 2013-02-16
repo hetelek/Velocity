@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include "FileIO.h"
+#include "IO/FileIO.h"
 #include "../Cryptography/XeKeys.h"
 #include "../Gpd/XdbfHelpers.h"
 #include "../Stfs/StfsConstants.h"

@@ -3,7 +3,7 @@
 
 #include "winnames.h"
 #include "XeCrypt.h"
-#include "FileIO.h"
+#include "IO/FileIO.h"
 
 #include <botan/botan.h>
 #include <botan/pubkey.h>

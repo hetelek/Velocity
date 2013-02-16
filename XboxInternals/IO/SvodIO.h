@@ -19,7 +19,11 @@ public:
 
     void OverwriteFile(string inPath, void (*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
-    void SetPosition(DWORD address);
+    void SetPosition(UINT64 address, std::ios_base::seek_dir dir = std::ios_base::beg);
+
+    UINT64 GetPosition();
+
+    void Flush();
 
     void Close();
 

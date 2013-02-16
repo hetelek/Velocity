@@ -35,7 +35,6 @@ SOURCES += \
     AvatarAsset/AssetHelpers.cpp \
     Gpd/XdbfHelpers.cpp \
     AvatarAsset/AvatarAsset.cpp \
-    FileIO.cpp \
     Gpd/AvatarAwardGpd.cpp \
     Account/Account.cpp \
     Disc/Gdfx.cpp \
@@ -57,7 +56,9 @@ SOURCES += \
     Cryptography/XeCrypt.cpp \
     AvatarAsset/Ytgr.cpp \
     Fatx/FatxHelpers.cpp \
-    Fatx/FatxDrive.cpp
+    Fatx/FatxDrive.cpp \
+    IO/FileIO.cpp \
+    IO/FatxIO.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -75,7 +76,6 @@ HEADERS +=\
     Gpd/Xdbf.h \
     Disc/Gdfx.h \
     Disc/Svod.h \
-    FileIO.h \
     Gpd/GameGpd.h \
     IO/BaseIO.h \
     IO/SvodIO.h \
@@ -92,4 +92,6 @@ HEADERS +=\
     AvatarAsset/Ytgr.h \
     Fatx/FatxHelpers.h \
     Fatx/FatxDrive.h \
-    Fatx/FatxConstants.h
+    Fatx/FatxConstants.h \
+    IO/FileIO.h \
+    IO/FatxIO.h

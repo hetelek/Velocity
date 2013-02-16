@@ -108,32 +108,32 @@ TitleEntry DashboardGpd::readTitleEntry(XdbfEntry entry)
 	toReturn.entry = entry;
 
 	// seek to title entry position
-	io->setPosition(xdbf->GetRealAddress(entry.addressSpecifier));
+    io->SetPosition(xdbf->GetRealAddress(entry.addressSpecifier));
 
 	// read the entry
-	toReturn.titleID = io->readDword();
-	toReturn.achievementCount = io->readDword();
-	toReturn.achievementsUnlocked = io->readDword();
-	toReturn.totalGamerscore = io->readDword();
-	toReturn.gamerscoreUnlocked = io->readDword();
-	toReturn.achievementsUnlockedOnline = io->readWord();
-	toReturn.avatarAwardsEarned = io->readByte();
-	toReturn.avatarAwardCount = io->readByte();
-	toReturn.maleAvatarAwardsEarned = io->readByte();
-	toReturn.maleAvatarAwardCount = io->readByte();
-	toReturn.femaleAvatarAwardsEarned = io->readByte();
-	toReturn.femaleAvatarAwardCount = io->readByte();
-	toReturn.flags = io->readDword();
+    toReturn.titleID = io->ReadDword();
+    toReturn.achievementCount = io->ReadDword();
+    toReturn.achievementsUnlocked = io->ReadDword();
+    toReturn.totalGamerscore = io->ReadDword();
+    toReturn.gamerscoreUnlocked = io->ReadDword();
+    toReturn.achievementsUnlockedOnline = io->ReadWord();
+    toReturn.avatarAwardsEarned = io->ReadByte();
+    toReturn.avatarAwardCount = io->ReadByte();
+    toReturn.maleAvatarAwardsEarned = io->ReadByte();
+    toReturn.maleAvatarAwardCount = io->ReadByte();
+    toReturn.femaleAvatarAwardsEarned = io->ReadByte();
+    toReturn.femaleAvatarAwardCount = io->ReadByte();
+    toReturn.flags = io->ReadDword();
 
 	// read the last time played
-	WINFILETIME time = { io->readDword(), io->readDword() };
+    WINFILETIME time = { io->ReadDword(), io->ReadDword() };
     if (time.dwHighDateTime == 0 && time.dwLowDateTime == 0)
         toReturn.lastPlayed = 0;
     else
         toReturn.lastPlayed = XdbfHelpers::FILETIMEtoTimeT(time);
 
 	// read the game name
-	toReturn.gameName = io->readWString();
+    toReturn.gameName = io->ReadWString();
 
 	toReturn.initialLength = entry.length;
 
@@ -173,40 +173,40 @@ void DashboardGpd::WriteTitleEntry(TitleEntry *entry)
 	}
 
 	// seek to the position of the title entry
-	io->setPosition(xdbf->GetRealAddress(entry->entry.addressSpecifier));
+    io->SetPosition(xdbf->GetRealAddress(entry->entry.addressSpecifier));
 
-	io->flush();
+    io->Flush();
 
 	// write the title entry
-	io->write(entry->titleID);
-	io->write(entry->achievementCount);
-	io->write(entry->achievementsUnlocked);
-	io->write(entry->totalGamerscore);
-	io->write(entry->gamerscoreUnlocked);
-	io->write(entry->achievementsUnlockedOnline);
-	io->write(entry->avatarAwardsEarned);
-	io->write(entry->avatarAwardCount);
-	io->write(entry->maleAvatarAwardsEarned);
-	io->write(entry->maleAvatarAwardCount);
-	io->write(entry->femaleAvatarAwardsEarned);
-	io->write(entry->femaleAvatarAwardCount);
-	io->write(entry->flags);
+    io->Write(entry->titleID);
+    io->Write(entry->achievementCount);
+    io->Write(entry->achievementsUnlocked);
+    io->Write(entry->totalGamerscore);
+    io->Write(entry->gamerscoreUnlocked);
+    io->Write(entry->achievementsUnlockedOnline);
+    io->Write(entry->avatarAwardsEarned);
+    io->Write(entry->avatarAwardCount);
+    io->Write(entry->maleAvatarAwardsEarned);
+    io->Write(entry->maleAvatarAwardCount);
+    io->Write(entry->femaleAvatarAwardsEarned);
+    io->Write(entry->femaleAvatarAwardCount);
+    io->Write(entry->flags);
 
 	// write the time last played
     if (entry->lastPlayed == 0)
-        io->setPosition(xdbf->GetRealAddress(entry->entry.addressSpecifier) + 0x28);
+        io->SetPosition(xdbf->GetRealAddress(entry->entry.addressSpecifier) + 0x28);
     else
     {
         WINFILETIME time = XdbfHelpers::TimeTtoFILETIME(entry->lastPlayed);
-        io->write(time.dwHighDateTime);
-        io->write(time.dwLowDateTime);
+        io->Write(time.dwHighDateTime);
+        io->Write(time.dwLowDateTime);
     }
 
-	io->write(entry->gameName);
+    io->Write(entry->gameName);
 
     xdbf->UpdateEntry(&entry->entry);
 
-	io->flush();
+    io->Flush();
 }
 
 void DashboardGpd::DeleteTitleEntry(TitleEntry *entry)

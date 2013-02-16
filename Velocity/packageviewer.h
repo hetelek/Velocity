@@ -33,7 +33,7 @@
 
 // other
 #include <stdio.h>
-#include "FileIO.h"
+#include "IO/FileIO.h"
 
 Q_DECLARE_METATYPE( FileEntry* )
 

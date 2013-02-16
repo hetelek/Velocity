@@ -17,7 +17,7 @@ MultiFileIO::MultiFileIO(string fileDirectory) :
 
 MultiFileIO::~MultiFileIO()
 {
-    currentIO->close();
+    currentIO->Close();
     delete currentIO;
 }
 
@@ -55,7 +55,7 @@ void MultiFileIO::SetPosition(DWORD addressInFile, int fileIndex)
         if (addressInFile >= CurrentFileLength())
             throw string("MultiFileIO: Cannot seek beyond the end of the file\n");
 
-        currentIO->setPosition(addressInFile);
+        currentIO->SetPosition(addressInFile);
 
         this->addressInFile = addressInFile;
     }
@@ -65,7 +65,7 @@ void MultiFileIO::SetPosition(DWORD addressInFile, int fileIndex)
             throw string("MultiFileIO: Specified file index is out of range\n");
 
         // open a new IO on the file
-        currentIO->close();
+        currentIO->Close();
         delete currentIO;
         currentIO = new FileIO(files.at(fileIndex));
 
@@ -85,9 +85,9 @@ void MultiFileIO::GetPosition(DWORD *addressInFile, DWORD *fileIndex)
 
 DWORD MultiFileIO::CurrentFileLength()
 {
-    currentIO->setPosition(0, ios_base::end);
-    DWORD fileLen = currentIO->getPosition();
-    currentIO->setPosition(addressInFile);
+    currentIO->SetPosition(0, ios_base::end);
+    DWORD fileLen = currentIO->GetPosition();
+    currentIO->SetPosition(addressInFile);
 
     return fileLen;
 }
@@ -100,13 +100,13 @@ void MultiFileIO::ReadBytes(BYTE *outBuffer, DWORD len)
         DWORD bytesLeft = CurrentFileLength() - addressInFile;
         DWORD amountToRead = (bytesLeft > len) ? len : bytesLeft;
 
-        currentIO->readBytes(outBuffer, amountToRead);
+        currentIO->ReadBytes(outBuffer, amountToRead);
 
         // seek to the next file if there's more to read
         if (len >= bytesLeft && (fileIndex + 1) < FileCount())
-            SetPosition(0, fileIndex + 1);
+            SetPosition((DWORD)0, fileIndex + 1);
         else if (len < bytesLeft)
-            SetPosition(this->addressInFile + len);
+            SetPosition((DWORD)(this->addressInFile + len));
 
         // update values for next iteration
         len -= amountToRead;
@@ -122,13 +122,13 @@ void MultiFileIO::WriteBytes(BYTE *buffer, DWORD len)
         DWORD bytesLeft = CurrentFileLength() - addressInFile;
         DWORD amountToRead = (bytesLeft > len) ? len : bytesLeft;
 
-        currentIO->write(buffer, amountToRead);
+        currentIO->Write(buffer, amountToRead);
 
         // seek to the next file if there's more to read
         if (len >= bytesLeft)
-            SetPosition(0, fileIndex + 1);
+            SetPosition((DWORD)0, fileIndex + 1);
         else
-            SetPosition(this->addressInFile + len);
+            SetPosition((DWORD)(this->addressInFile + len));
 
         // update values for next iteration
         len -= amountToRead;
@@ -138,10 +138,25 @@ void MultiFileIO::WriteBytes(BYTE *buffer, DWORD len)
 
 void MultiFileIO::Close()
 {
-    currentIO->close();
+    currentIO->Close();
 }
 
 DWORD MultiFileIO::FileCount()
 {
     return files.size();
+}
+
+void MultiFileIO::SetPosition(UINT64 position, ios_base::seek_dir dir)
+{
+    throw string("MultiFileIO: Unused function has been called.\n");
+}
+
+UINT64 MultiFileIO::GetPosition()
+{
+    throw string("MultiFileIO: Unused function has been called.\n");
+}
+
+void MultiFileIO::Flush()
+{
+    currentIO->Flush();
 }

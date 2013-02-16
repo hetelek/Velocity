@@ -1,7 +1,7 @@
 #ifndef SVOD_H
 #define SVOD_H
 
-#include "FileIO.h"
+#include "IO/FileIO.h"
 #include "IO/MultiFileIO.h"
 #include "gdfx.h"
 #include "Stfs/XContentHeader.h"

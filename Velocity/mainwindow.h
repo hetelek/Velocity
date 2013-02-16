@@ -43,7 +43,7 @@
 #include "PluginInterfaces/igamemodder.h"
 #include "PluginInterfaces/igpdmodder.h"
 #include "qthelpers.h"
-#include "FileIO.h"
+#include "IO/FileIO.h"
 #include "json.h"
 #include "Stfs/StfsPackage.h"
 #include "Gpd/GpdBase.h"

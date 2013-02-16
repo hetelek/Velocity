@@ -102,8 +102,8 @@ void ThemeCreationWizard::onFinished(int status)
         // create the dash style file
         QString dashStyleFilePath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
         FileIO ioD(dashStyleFilePath.toStdString(), true);
-        ioD.write((DWORD)0);
-        ioD.close();
+        ioD.Write((DWORD)0);
+        ioD.Close();
 
         // inject the file
         theme->InjectFile(dashStyleFilePath.toStdString(), "DashStyle");

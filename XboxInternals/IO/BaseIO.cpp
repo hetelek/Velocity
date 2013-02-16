@@ -36,6 +36,11 @@ BYTE BaseIO::ReadByte()
     return toReturn;
 }
 
+INT16 BaseIO::ReadInt16()
+{
+    return (INT16)ReadWord();
+}
+
 WORD BaseIO::ReadWord()
 {
     WORD toReturn;
@@ -45,6 +50,31 @@ WORD BaseIO::ReadWord()
         reverseByteArray(reinterpret_cast<BYTE*>(&toReturn), 2);
 
     return toReturn;
+}
+
+INT24 BaseIO::ReadInt24(EndianType et)
+{
+    EndianType orig = byteOrder;
+
+    if(et != Default)
+        byteOrder = et;
+
+    INT24 returnVal = ReadDword();
+
+    if(byteOrder == BigEndian)
+        returnVal = (returnVal & 0xFFFFFF00) >> 8;
+    else
+        returnVal = returnVal & 0x00FFFFFF;
+
+    SetPosition(GetPosition() - 1);
+    byteOrder = orig;
+
+    return returnVal;
+}
+
+INT32 BaseIO::ReadInt32()
+{
+    return (INT32)ReadDword();
 }
 
 DWORD BaseIO::ReadDword()
@@ -58,7 +88,12 @@ DWORD BaseIO::ReadDword()
     return toReturn;
 }
 
-UINT64 BaseIO::ReadUint64()
+INT64 BaseIO::ReadInt64()
+{
+    return (INT64)ReadUInt64();
+}
+
+UINT64 BaseIO::ReadUInt64()
 {
     UINT64 toReturn;
     ReadBytes(reinterpret_cast<BYTE*>(&toReturn), 8);
@@ -69,7 +104,36 @@ UINT64 BaseIO::ReadUint64()
     return toReturn;
 }
 
-string BaseIO::ReadString(int len)
+UINT64 BaseIO::ReadMultiByte(size_t size)
+{
+    switch (size)
+    {
+    case 1:
+        return ReadByte();
+    case 2:
+        return ReadWord();
+    case 4:
+        return ReadDword();
+    case 8:
+        return ReadUInt64();
+    default:
+        throw string("BaseIO: Invalid multi-byte size.\n");
+    }
+}
+
+float BaseIO::ReadFloat()
+{
+    DWORD temp = ReadDword();
+    return *(float*)&temp;
+}
+
+double BaseIO::ReadDouble()
+{
+    UINT64 temp = ReadUInt64();
+    return *(double*)&temp;
+}
+
+string BaseIO::ReadString(int len, char nullTerminator)
 {
     string toReturn;
 
@@ -78,7 +142,7 @@ string BaseIO::ReadString(int len)
     {
         toReturn = "";
         char nextChar;
-        while ((nextChar = ReadByte()) != 0)
+        while ((nextChar = ReadByte()) != nullTerminator)
             toReturn.append(nextChar);
     }
     else
@@ -103,7 +167,7 @@ wstring BaseIO::ReadWString(int len)
         toReturn = L"";
         wchar_t nextChar;
         while ((nextChar = ReadWord()) != 0)
-            toReturn.append(&nextChar);
+            toReturn += nextChar;
     }
     else
     {
@@ -143,6 +207,22 @@ void BaseIO::Write(WORD w)
     WriteBytes(reinterpret_cast<BYTE*>(&w), 2);
 }
 
+void BaseIO::Write(INT24 i24, EndianType et)
+{
+    EndianType orig = byteOrder;
+    if(et != Default)
+        byteOrder = et;
+
+    if(byteOrder == BigEndian)
+    {
+        i24 <<= 8;
+        reverseByteArray(reinterpret_cast<BYTE*>(&i24), 4);
+    }
+    WriteBytes(reinterpret_cast<BYTE*>(&i24), 3);
+
+    byteOrder = orig;
+}
+
 void BaseIO::Write(DWORD dw)
 {
     if (byteOrder == BigEndian)
@@ -157,9 +237,17 @@ void BaseIO::Write(UINT64 u64)
     WriteBytes(reinterpret_cast<BYTE*>(&u64), 8);
 }
 
-void BaseIO::Write(string s, bool nullTerminating)
+void BaseIO::Write(string s, int forceLen, bool nullTerminating)
 {
     WriteBytes(s.c_str(), s.length() + nullTerminating);
+
+    if (forceLen > 0)
+    {
+        forceLen -= s.size();
+
+        for (int i = 0; i < forceLen; i++)
+            Write((BYTE)0);
+    }
 }
 
 void BaseIO::Write(wstring ws, bool nullTerminating)
@@ -169,11 +257,26 @@ void BaseIO::Write(wstring ws, bool nullTerminating)
     else
     {
         WORD curChar;
-        for (DWORD i = 0; i < ws.length() + nullTerminating; i++)
+        for (DWORD i = 0; i < ws.length(); i++)
         {
             curChar = ws.at(i);
             reverseByteArray(reinterpret_cast<BYTE*>(&curChar), 2);
-            WriteBytes(reinterpret_cast<BYTE*>(curChar), 2);
+            Write(curChar);
         }
+        if (nullTerminating)
+            Write((WORD)0);
     }
+}
+
+void BaseIO::Write(BYTE *buffer, DWORD len)
+{
+    WriteBytes(buffer, len);
+}
+
+void BaseIO::SwapEndian()
+{
+    if (byteOrder == LittleEndian)
+        byteOrder = BigEndian;
+    else
+        byteOrder = LittleEndian;
 }

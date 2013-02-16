@@ -36,7 +36,7 @@ bool XeKeys::VerifyRSASignature(XeKeysRsaKeys key, BYTE *pbMessage, DWORD cbMess
 
     // format the signature
     for (int i = 0; i < 0x20; i++)
-        FileIO::swapEndian(&signature[i * 8], 1, 8);
+        FileIO::ReverseGenericArray(&signature[i * 8], 1, 8);
     XeCrypt::BnQw_SwapDwQwLeBe(signature, 0x100);
 
     // check with the first key

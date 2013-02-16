@@ -16,7 +16,6 @@ enum EndianType
     Default
 };
 
-
 class XBOXINTERNALSSHARED_EXPORT BaseIO
 {
 public:
@@ -24,6 +23,15 @@ public:
 
     // set the byte order in which to read the bytes
     void SetEndian(EndianType byteOrder);
+
+    // swap the endianess
+    void SwapEndian();
+
+    // seek to a position in a file
+    virtual void SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios_base::beg) = 0;
+
+    // get current address in the file
+    virtual UINT64 GetPosition() = 0;
 
     // get the byte order in which to read the bytes
     EndianType GetEndian();
@@ -36,19 +44,34 @@ public:
 
     // all the read functions
     BYTE ReadByte();
+    INT16 ReadInt16();
     WORD ReadWord();
+    INT24 ReadInt24(EndianType et = Default);
+    INT32 ReadInt32();
     DWORD ReadDword();
-    UINT64 ReadUint64();
-    string ReadString(int len = -1);
+    INT64 ReadInt64();
+    UINT64 ReadUInt64();
+    UINT64 ReadMultiByte(size_t size);
+    float ReadFloat();
+    double ReadDouble();
+    string ReadString(int len = -1, char nullTerminator = 0);
     wstring ReadWString(int len = -1);
 
     // write functions
     void Write(BYTE b);
     void Write(WORD w);
+    void Write(INT24 i24, EndianType et = Default);
     void Write(DWORD dw);
     void Write(UINT64 u64);
-    void Write(string s, bool nullTerminating = true);
+    void Write(string s, int forceLen = -1, bool nullTerminating = true);
     void Write(wstring ws, bool nullTerminating = true);
+    void Write(BYTE *buffer, DWORD len);
+
+    // flush the io's buffer
+    virtual void Flush() = 0;
+
+    // close the io
+    virtual void Close() = 0;
 
 protected:
     EndianType byteOrder;

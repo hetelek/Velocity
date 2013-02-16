@@ -34,13 +34,17 @@ public:
 
     void WriteBytes(BYTE *buffer, DWORD len);
 
-    void SetPosition(INT64 address);
+    void SetPosition(UINT64 address, std::ios_base::seek_dir dir = std::ios_base::beg);
+
+    UINT64 GetPosition();
 
     INT64 Position();
 
     UINT64 DriveLength();
 
     void Close();
+
+    void Flush();
 
 private:
     INT64 realPosition();

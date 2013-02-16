@@ -27,24 +27,24 @@ AchievementEntry GameGpd::readAchievementEntry(XdbfEntry entry)
 		throw string("Gpd: Error reading achievement entry. Specified entry isn't an achievement.\n");
 
 	// seek to the begining of the achievement entry
-	io->setPosition(xdbf->GetRealAddress(entry.addressSpecifier));
+    io->SetPosition(xdbf->GetRealAddress(entry.addressSpecifier));
 
 	// read the entry
 	AchievementEntry toReturn;
 	toReturn.entry = entry;
 
-	toReturn.structSize = io->readDword();
-	toReturn.achievementID = io->readDword();
-	toReturn.imageID = io->readDword();
-	toReturn.gamerscore = io->readDword();
-	toReturn.flags = io->readDword();
+    toReturn.structSize = io->ReadDword();
+    toReturn.achievementID = io->ReadDword();
+    toReturn.imageID = io->ReadDword();
+    toReturn.gamerscore = io->ReadDword();
+    toReturn.flags = io->ReadDword();
 	
-	WINFILETIME timeStamp = { io->readDword(), io->readDword() };
+    WINFILETIME timeStamp = { io->ReadDword(), io->ReadDword() };
 	toReturn.unlockTime = XdbfHelpers::FILETIMEtoTimeT(timeStamp);
 
-	toReturn.name = io->readWString();
-	toReturn.unlockedDescription = io->readWString();
-	toReturn.lockedDescription = io->readWString();
+    toReturn.name = io->ReadWString();
+    toReturn.unlockedDescription = io->ReadWString();
+    toReturn.lockedDescription = io->ReadWString();
 
 	toReturn.initialLength = 0x1C + ((toReturn.name.size() + toReturn.unlockedDescription.size() + toReturn.lockedDescription.size() + 3) * 2);
 
@@ -62,41 +62,41 @@ void GameGpd::WriteAchievementEntry(AchievementEntry *entry)
 		entry->entry.addressSpecifier = xdbf->GetSpecifier(xdbf->AllocateMemory(entry->entry.length));
 	}
 
-	io->flush();
+    io->Flush();
 
 	// seek to the begining of the entry
-	io->setPosition(xdbf->GetRealAddress(entry->entry.addressSpecifier));
+    io->SetPosition(xdbf->GetRealAddress(entry->entry.addressSpecifier));
 
 	// write the entry 
-	io->write(entry->structSize);
-	io->write(entry->achievementID);
-	io->write(entry->imageID);
-	io->write(entry->gamerscore);
-	io->write(entry->flags);
+    io->Write(entry->structSize);
+    io->Write(entry->achievementID);
+    io->Write(entry->imageID);
+    io->Write(entry->gamerscore);
+    io->Write(entry->flags);
 
 	// write the unlocked time
     if (entry->flags & UnlockedOnline)
     {
         if (entry->unlockTime == 0)
-            io->write((UINT64)0);
+            io->Write((UINT64)0);
         else
         {
             WINFILETIME time = XdbfHelpers::TimeTtoFILETIME(entry->unlockTime);
-            io->write(time.dwHighDateTime);
-            io->write(time.dwLowDateTime);
+            io->Write(time.dwHighDateTime);
+            io->Write(time.dwLowDateTime);
         }
     }
     else
-        io->setPosition(xdbf->GetRealAddress(entry->entry.addressSpecifier) + 0x1C);
+        io->SetPosition(xdbf->GetRealAddress(entry->entry.addressSpecifier) + 0x1C);
 
 	// write the strings
-	io->write(entry->name);
-	io->write(entry->unlockedDescription);
-	io->write(entry->lockedDescription);
+    io->Write(entry->name);
+    io->Write(entry->unlockedDescription);
+    io->Write(entry->lockedDescription);
 
 	xdbf->UpdateEntry(&entry->entry);
 
-	io->flush();
+    io->Flush();
 }
 
 void GameGpd::CreateAchievement(AchievementEntry *entry, BYTE *thumbnail, DWORD thumbnailLen)
@@ -132,8 +132,8 @@ void GameGpd::CreateAchievement(AchievementEntry *entry, BYTE *thumbnail, DWORD 
 	XdbfEntry imageEntry = xdbf->CreateEntry(Image, entry->imageID, thumbnailLen);
 
 	// write the image to the file
-	io->setPosition(xdbf->GetRealAddress(imageEntry.addressSpecifier));
-	io->write(thumbnail, thumbnailLen);
+    io->SetPosition(xdbf->GetRealAddress(imageEntry.addressSpecifier));
+    io->Write(thumbnail, thumbnailLen);
 
     // make a copy of the image
     BYTE *imageCopy = new BYTE[thumbnailLen];
@@ -197,8 +197,8 @@ void GameGpd::UnlockAllAchievementsOffline()
         achievements.at(i).flags |= (Unlocked | 0x100000);
 
 		// write the updated flags to the entry
-		io->setPosition(xdbf->GetRealAddress(achievements.at(i).entry.addressSpecifier) + 0x10);
-		io->write(achievements.at(i).flags);
+        io->SetPosition(xdbf->GetRealAddress(achievements.at(i).entry.addressSpecifier) + 0x10);
+        io->Write(achievements.at(i).flags);
 
 		// update the sync stuff
 		xdbf->UpdateEntry(&achievements.at(i).entry);
@@ -230,7 +230,7 @@ void GameGpd::StartWriting()
 
 void GameGpd::StopWriting()
 {
-    io->close();
+    io->Close();
     delete io;
     io = NULL;
     xdbf->io = NULL;
@@ -239,5 +239,5 @@ void GameGpd::StopWriting()
 GameGpd::~GameGpd(void)
 {
     if (!ioPassedIn && io)
-       io->close();
+       io->Close();
 }

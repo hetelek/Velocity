@@ -3,8 +3,9 @@
 #include "AccountDefinitions.h"
 #include "Gpd/XdbfHelpers.h"
 #include "Gpd/XdbfDefininitions.h"
-#include "FileIO.h"
+#include "IO/FileIO.h"
 #include <iostream>
+#include <stdlib.h>
 
 #include "XboxInternals_global.h"
 

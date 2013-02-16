@@ -1,7 +1,7 @@
 #ifndef MULTIFILEIO_H
 #define MULTIFILEIO_H
 
-#include "FileIO.h"
+#include "IO/FileIO.h"
 #include <iostream>
 #include <vector>
 #include "dirent.h"
@@ -32,11 +32,17 @@ public:
 
     void Close();
 
+    void Flush();
+
     // get the number of files in the directory
     DWORD FileCount();
 
     // get the number of bytes in the current file
     DWORD CurrentFileLength();
+
+    // unused
+    void SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios_base::beg);
+    UINT64 GetPosition();
 
 private:
     DWORD addressInFile;

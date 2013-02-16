@@ -94,8 +94,8 @@ void ProfileCreatorWizard::onFinished(int status)
         FileIO accountIo(accountTempPath.toStdString(), true);
 
         BYTE tempBuffer[380] = {0};
-        accountIo.write(tempBuffer, 380);
-        accountIo.close();
+        accountIo.Write(tempBuffer, 380);
+        accountIo.Close();
 
         // write the gamertag, and encrypt the file
         Account account(accountTempPath.toStdString(), false, newProfile.metaData->certificate.ownerConsoleType);
@@ -123,7 +123,7 @@ void ProfileCreatorWizard::onFinished(int status)
             // read in the setting
             FileIO io((QtHelpers::ExecutingDirectory() + "/femaleAvatar.bin").toStdString());
             BYTE settingBuffer[0x3E8];
-            io.readBytes(settingBuffer, 0x3E8);
+            io.ReadBytes(settingBuffer, 0x3E8);
 
             dashGpd.avatarInformation.binaryData.data = settingBuffer;
             dashGpd.avatarInformation.binaryData.length = 0x3E8;
@@ -139,13 +139,13 @@ void ProfileCreatorWizard::onFinished(int status)
 
         FileIO io(imagePath.toStdString());
 
-        io.setPosition(0, ios_base::end);
-        DWORD fileLen = io.getPosition();
+        io.SetPosition(0, ios_base::end);
+        DWORD fileLen = io.GetPosition();
         BYTE *imageBuff = new BYTE[fileLen];
 
-        io.setPosition(0);
-        io.readBytes(imageBuff, fileLen);
-        io.close();
+        io.SetPosition(0);
+        io.ReadBytes(imageBuff, fileLen);
+        io.Close();
 
         // inject the image
         ImageEntry image;

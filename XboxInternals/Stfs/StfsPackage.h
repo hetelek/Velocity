@@ -7,7 +7,7 @@
 #include <map>
 #include <time.h>
 #include <stdlib.h>
-#include "../FileIO.h"
+#include "IO/FileIO.h"
 #include "XContentHeader.h"
 
 #include <botan/botan.h>

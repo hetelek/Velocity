@@ -5,42 +5,42 @@
 void ReadStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, FileIO *io, DWORD address)
 {
     // seek to the volume descriptor
-    io->setPosition(address);
+    io->SetPosition(address);
 
     // read the descriptor
-    descriptor->size = io->readByte();
-    descriptor->reserved = io->readByte();
-    descriptor->blockSeperation = io->readByte();
+    descriptor->size = io->ReadByte();
+    descriptor->reserved = io->ReadByte();
+    descriptor->blockSeperation = io->ReadByte();
 
-    io->setEndian(LittleEndian);
+    io->SetEndian(LittleEndian);
 
-    descriptor->fileTableBlockCount = io->readWord();
-    descriptor->fileTableBlockNum = io->readInt24();
-    io->readBytes(descriptor->topHashTableHash, 0x14);
+    descriptor->fileTableBlockCount = io->ReadWord();
+    descriptor->fileTableBlockNum = io->ReadInt24();
+    io->ReadBytes(descriptor->topHashTableHash, 0x14);
 
-    io->setEndian(BigEndian);
+    io->SetEndian(BigEndian);
 
-    descriptor->allocatedBlockCount = io->readDword();
-    descriptor->unallocatedBlockCount = io->readDword();
+    descriptor->allocatedBlockCount = io->ReadDword();
+    descriptor->unallocatedBlockCount = io->ReadDword();
 }
 
 void ReadSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, FileIO *io)
 {
     // seek to the volume descriptor
-    io->setPosition(0x379);
+    io->SetPosition(0x379);
 
-    descriptor->size = io->readByte();
-    descriptor->blockCacheElementCount = io->readByte();
-    descriptor->workerThreadProcessor = io->readByte();
-    descriptor->workerThreadPriority = io->readByte();
+    descriptor->size = io->ReadByte();
+    descriptor->blockCacheElementCount = io->ReadByte();
+    descriptor->workerThreadProcessor = io->ReadByte();
+    descriptor->workerThreadPriority = io->ReadByte();
 
-    io->readBytes(descriptor->rootHash, 0x14);
+    io->ReadBytes(descriptor->rootHash, 0x14);
 
-    descriptor->flags = io->readByte();
-    descriptor->dataBlockCount = io->readInt24(LittleEndian);
-    descriptor->dataBlockOffset = io->readInt24(LittleEndian);
+    descriptor->flags = io->ReadByte();
+    descriptor->dataBlockCount = io->ReadInt24(LittleEndian);
+    descriptor->dataBlockOffset = io->ReadInt24(LittleEndian);
 
-    io->readBytes(descriptor->reserved, 0x05);
+    io->ReadBytes(descriptor->reserved, 0x05);
 }
 
 string LicenseTypeToString(LicenseType type)
@@ -137,91 +137,92 @@ MSTime TimetToMSTime(time_t time)
 void WriteStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, FileIO *io, DWORD address)
 {
     // volume descriptor position
-    io->setPosition(address);
+    io->SetPosition(address);
 
     // write size, padding and block seperation
     INT24 start = 0x240000;
     start |= descriptor->blockSeperation;
-    io->write(start);
+    io->Write(start);
 
     // write the rest of the descriptor
-    io->swapEndian();
-    io->write(descriptor->fileTableBlockCount);
-    io->swapEndian();
+    io->SwapEndian();
+    io->Write(descriptor->fileTableBlockCount);
+    io->SwapEndian();
+    io->ReverseGenericArray(0, 0, 0);
 
-    io->write(descriptor->fileTableBlockNum, LittleEndian);
-    io->write(descriptor->topHashTableHash, 0x14);
-    io->write(descriptor->allocatedBlockCount);
-    io->write(descriptor->unallocatedBlockCount);
+    io->Write(descriptor->fileTableBlockNum, LittleEndian);
+    io->Write(descriptor->topHashTableHash, 0x14);
+    io->Write(descriptor->allocatedBlockCount);
+    io->Write(descriptor->unallocatedBlockCount);
 }
 
 void WriteSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, FileIO *io)
 {
     // volume descriptor position
-    io->setPosition(0x379);
-    io->setEndian(LittleEndian);
+    io->SetPosition(0x379);
+    io->SetEndian(LittleEndian);
 
-    io->write(descriptor->size);
-    io->write(descriptor->blockCacheElementCount);
-    io->write(descriptor->workerThreadProcessor);
-    io->write(descriptor->workerThreadPriority);
+    io->Write(descriptor->size);
+    io->Write(descriptor->blockCacheElementCount);
+    io->Write(descriptor->workerThreadProcessor);
+    io->Write(descriptor->workerThreadPriority);
 
-    io->write(descriptor->rootHash, 0x14);
+    io->Write(descriptor->rootHash, 0x14);
 
-    io->write(descriptor->flags);
-    io->write((INT24)descriptor->dataBlockCount);
-    io->write((INT24)descriptor->dataBlockOffset);
+    io->Write(descriptor->flags);
+    io->Write((INT24)descriptor->dataBlockCount);
+    io->Write((INT24)descriptor->dataBlockOffset);
 
-    io->write(descriptor->reserved, 5);
+    io->Write(descriptor->reserved, 5);
 
-    io->setEndian(BigEndian);
+    io->SetEndian(BigEndian);
 }
 
 void ReadCertificateEx(Certificate *cert, FileIO *io, DWORD address)
 {
     // seek to the address of the certificate
-    io->setPosition(address);
+    io->SetPosition(address);
 
-    cert->publicKeyCertificateSize = io->readWord();
-    io->readBytes(cert->ownerConsoleID, 5);
+    cert->publicKeyCertificateSize = io->ReadWord();
+    io->ReadBytes(cert->ownerConsoleID, 5);
 
     char tempPartNum[0x15];
     tempPartNum[0x14] = 0;
-    io->readBytes((BYTE*)tempPartNum, 0x11);
+    io->ReadBytes((BYTE*)tempPartNum, 0x11);
     cert->ownerConsolePartNumber = string(tempPartNum);
 
-    DWORD temp = io->readDword();
+    DWORD temp = io->ReadDword();
     cert->ownerConsoleType = (ConsoleType)(temp & 3);
     cert->consoleTypeFlags = (ConsoleTypeFlags)(temp & 0xFFFFFFFC);
     if (cert->ownerConsoleType != DevKit && cert->ownerConsoleType != Retail)
         throw string("STFS: Invalid console type.\n");
 
     char tempGenDate[9] = {0};
-    io->readBytes((BYTE*)tempGenDate, 8);
+    io->ReadBytes((BYTE*)tempGenDate, 8);
     cert->dateGeneration = string(tempGenDate);
 
-    cert->publicExponent = io->readDword();
-    io->readBytes(cert->publicModulus, 0x80);
-    io->readBytes(cert->certificateSignature, 0x100);
-    io->readBytes(cert->signature, 0x80);
+    cert->publicExponent = io->ReadDword();
+    io->ReadBytes(cert->publicModulus, 0x80);
+    io->ReadBytes(cert->certificateSignature, 0x100);
+    io->ReadBytes(cert->signature, 0x80);
 }
 
 void WriteCertificateEx(Certificate *cert, FileIO *io, DWORD address)
 {
     // seek to the position of the certificate
-    io->setPosition(address);
+    io->SetPosition(address);
 
     // write the certificate
-    io->write(cert->publicKeyCertificateSize);
-    io->write(cert->ownerConsoleID, 5);
-    io->write(cert->ownerConsolePartNumber.c_str(), 0x11);
+    io->Write(cert->publicKeyCertificateSize);
+    io->Write(cert->ownerConsoleID, 5);
+    io->Write(cert->ownerConsolePartNumber.c_str(), 0x11);
     DWORD temp = cert->consoleTypeFlags | cert->ownerConsoleType;
-    io->write(temp);
-    io->write(cert->dateGeneration.c_str(), 8);
-    io->write(cert->publicExponent);
-    io->write(cert->publicModulus, 0x80);
-    io->write(cert->certificateSignature, 0x100);
-    io->write(cert->signature, 0x80);
+    io->Write(temp);
+    io->Write(cert->dateGeneration.c_str(), 8);
+    io->Write(cert->publicExponent);
+    io->Write(cert->publicModulus, 0x80);
+    io->Write(cert->certificateSignature, 0x100);
+    io->Write(cert->signature, 0x80);
 }
 
 XBOXINTERNALSSHARED_EXPORT string MagicToString(Magic magic)

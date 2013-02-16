@@ -10,8 +10,8 @@ class XBOXINTERNALSSHARED_EXPORT MemoryIO : public BaseIO
 public:
     MemoryIO(BYTE *data, size_t length);
 
-    void SetPosition(DWORD pos);
-    DWORD GetPosition();
+    void SetPosition(UINT64 pos, std::ios_base::seek_dir dir = std::ios_base::beg);
+    UINT64 GetPosition();
 
     void ReadBytes(BYTE *outBuffer, DWORD len);
     void WriteBytes(BYTE *buffer, DWORD len);

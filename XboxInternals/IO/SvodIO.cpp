@@ -24,8 +24,11 @@ void SvodIO::SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *data
     *addressInDataFile += ((trueSector / 0x198) + ((trueSector % 0x198 == 0 && trueSector != 0) ? 0 : 1)) * 0x1000;
 }
 
-void SvodIO::SetPosition(DWORD address)
+void SvodIO::SetPosition(UINT64 address, ios_base::seek_dir dir)
 {
+    if (dir != std::ios_base::beg)
+        throw std::string("SvodIO: Unsupported seek direction\n");
+
     /* DISCLAIMER: This function is not perfect and will not work for all SVOD systems. If the
        system has more than 204 (0xCC) data files, then this function may not work. */
 
@@ -52,6 +55,11 @@ void SvodIO::SetPosition(DWORD address)
     // seek to the position
     io->SetPosition(addr, index);
     pos = address;
+}
+
+UINT64 SvodIO::GetPosition()
+{
+    return pos;
 }
 
 void SvodIO::ReadBytes(BYTE *outBuffer, DWORD len)
@@ -81,9 +89,9 @@ void SvodIO::ReadBytes(BYTE *outBuffer, DWORD len)
         // check to see if we're at the end of a data file
         io->GetPosition(&addr, &index);
         if (addr == 0)
-            io->SetPosition(0x2000, index);
+            io->SetPosition((DWORD)0x2000, index);
         else
-            io->SetPosition(addr + 0x1000);
+            io->SetPosition((DWORD)addr + 0x1000);
 
         io->ReadBytes(outBuffer, 0xCC000);
         outBuffer += 0xCC000;
@@ -95,9 +103,9 @@ void SvodIO::ReadBytes(BYTE *outBuffer, DWORD len)
         // check to see if we're at the end of a data file
         io->GetPosition(&addr, &index);
         if (addr == 0)
-            io->SetPosition(0x2000, index);
+            io->SetPosition((DWORD)0x2000, index);
         else
-            io->SetPosition(addr + 0x1000);
+            io->SetPosition((DWORD)(addr + 0x1000));
 
         io->ReadBytes(outBuffer, len);
     }
@@ -130,7 +138,7 @@ void SvodIO::WriteBytes(BYTE *buffer, DWORD len)
         // check to see if we're at the end of a data file
         io->GetPosition(&addr, &index);
         if (addr == 0xA290000)
-            io->SetPosition(0, index + 1);
+            io->SetPosition((DWORD)0, index + 1);
         else
             io->SetPosition(addr + 0x1000);
 
@@ -144,9 +152,9 @@ void SvodIO::WriteBytes(BYTE *buffer, DWORD len)
         // check to see if we're at the end of a data file
         io->GetPosition(&addr, &index);
         if (addr == 0xA290000)
-            io->SetPosition(0, index + 1);
+            io->SetPosition((DWORD)0, index + 1);
         else
-            io->SetPosition(addr + 0x1000);
+            io->SetPosition((DWORD)(addr + 0x1000));
 
         io->WriteBytes(buffer, len);
     }
@@ -163,7 +171,7 @@ void SvodIO::SaveFile(string savePath, void(*progress)(void*, DWORD, DWORD), voi
     while (fileLen >= 0x10000)
     {
         ReadBytes(buffer, 0x10000);
-        outFile.write(buffer, 0x10000);
+        outFile.Write(buffer, 0x10000);
         fileLen -= 0x10000;
 
         if (progress)
@@ -173,13 +181,13 @@ void SvodIO::SaveFile(string savePath, void(*progress)(void*, DWORD, DWORD), voi
     if (fileLen != 0)
     {
         ReadBytes(buffer, fileLen);
-        outFile.write(buffer, fileLen);
+        outFile.Write(buffer, fileLen);
     }
 
     if (progress)
         progress(arg, total, total);
 
-    outFile.close();
+    outFile.Close();
     delete[] buffer;
 }
 
@@ -188,8 +196,8 @@ void SvodIO::OverwriteFile(string inPath, void (*progress)(void *, DWORD, DWORD)
     FileIO inFile(inPath);
 
     // make sure that the files are the same size
-    inFile.setPosition(0, ios_base::end);
-    if ((DWORD)inFile.getPosition() != fileEntry.size)
+    inFile.SetPosition(0, ios_base::end);
+    if ((DWORD)inFile.GetPosition() != fileEntry.size)
         throw string("SVOD: Cannot overwrite file of different length.\n");
 
     BYTE *buffer = new BYTE[0x10000];
@@ -197,12 +205,12 @@ void SvodIO::OverwriteFile(string inPath, void (*progress)(void *, DWORD, DWORD)
     DWORD total = (fileLen + 0xFFFF) / 0x10000;
     DWORD cur = 0;
 
-    inFile.setPosition(0);
+    inFile.SetPosition(0);
     SetPosition(0);
 
     while (fileLen >= 0x10000)
     {
-        inFile.readBytes(buffer, 0x10000);
+        inFile.ReadBytes(buffer, 0x10000);
         WriteBytes(buffer, 0x10000);
         fileLen -= 0x10000;
 
@@ -212,18 +220,23 @@ void SvodIO::OverwriteFile(string inPath, void (*progress)(void *, DWORD, DWORD)
 
     if (fileLen != 0)
     {
-        inFile.readBytes(buffer, fileLen);
+        inFile.ReadBytes(buffer, fileLen);
         WriteBytes(buffer, fileLen);
     }
 
     if (progress)
         progress(arg, total, total);
 
-    inFile.close();
+    inFile.Close();
     delete[] buffer;
 }
 
 void SvodIO::Close()
 {
-    //io->Close();
+    // all SvodIOs use the same internal io, so we can't close it
+}
+
+void SvodIO::Flush()
+{
+    io->Flush();
 }

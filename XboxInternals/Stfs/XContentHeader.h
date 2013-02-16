@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FileIO.h"
+#include "IO/FileIO.h"
 #include "StfsConstants.h"
 #include "StfsDefinitions.h"
 #include "../AvatarAsset/AvatarAssetDefinintions.h"

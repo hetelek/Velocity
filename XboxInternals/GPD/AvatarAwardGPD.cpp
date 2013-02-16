@@ -40,26 +40,26 @@ struct AvatarAward AvatarAwardGpd::readAvatarAwardEntry(XdbfEntry entry)
     award.entry = entry;
 
     // seek to the address of the award
-    io->setPosition(xdbf->GetRealAddress(entry.addressSpecifier));
+    io->SetPosition(xdbf->GetRealAddress(entry.addressSpecifier));
 
     // read the award
-    award.structSize = io->readDword();
-    award.clothingType = io->readDword();
-    award.awardFlags = io->readUInt64();
-    award.titleID = io->readDword();
-    award.imageID = io->readDword();
-    award.flags = io->readDword();
+    award.structSize = io->ReadDword();
+    award.clothingType = io->ReadDword();
+    award.awardFlags = io->ReadUInt64();
+    award.titleID = io->ReadDword();
+    award.imageID = io->ReadDword();
+    award.flags = io->ReadDword();
 
     // read the unlock time
-    WINFILETIME time = { io->readDword(), io->readDword() };
+    WINFILETIME time = { io->ReadDword(), io->ReadDword() };
     award.unlockTime = XdbfHelpers::FILETIMEtoTimeT(time);
 
     // read the rest of the entry
-    award.subcategory = (AssetSubcategory)io->readDword();
-    award.colorizable = io->readDword();
-    award.name = io->readWString();
-    award.unlockedDescription = io->readWString();
-    award.lockedDescription = io->readWString();
+    award.subcategory = (AssetSubcategory)io->ReadDword();
+    award.colorizable = io->ReadDword();
+    award.name = io->ReadWString();
+    award.unlockedDescription = io->ReadWString();
+    award.lockedDescription = io->ReadWString();
 
     // calculate the initial size of the entry
     award.initialSize = 0x2C + ((award.name.size() + award.unlockedDescription.size() + award.lockedDescription.size() + 3) * 2);
@@ -76,14 +76,14 @@ void AvatarAwardGpd::UnlockAllAwards()
         avatarAwards.at(i).flags |= (Unlocked | 0x100000);
 
         // write the flags back to the file
-        io->setPosition(xdbf->GetRealAddress(avatarAwards.at(i).entry.addressSpecifier) + 0x18);
-        io->write(avatarAwards.at(i).flags);
+        io->SetPosition(xdbf->GetRealAddress(avatarAwards.at(i).entry.addressSpecifier) + 0x18);
+        io->Write(avatarAwards.at(i).flags);
 
         // update the sync crap
         xdbf->UpdateEntry(&avatarAwards.at(i).entry);
     }
 
-    io->flush();
+    io->Flush();
 }
 
 string AvatarAwardGpd::GetGUID(struct AvatarAward *award)
@@ -129,31 +129,31 @@ void AvatarAwardGpd::WriteAvatarAward(struct AvatarAward *award)
     }
 
     // seek to the position of the award
-    io->setPosition(xdbf->GetRealAddress(award->entry.addressSpecifier));
+    io->SetPosition(xdbf->GetRealAddress(award->entry.addressSpecifier));
 
     // write the entry
-    io->write(award->structSize);
-    io->write(award->clothingType);
-    io->write(award->awardFlags);
-    io->write(award->titleID);
-    io->write(award->imageID);
-    io->write(award->flags);
+    io->Write(award->structSize);
+    io->Write(award->clothingType);
+    io->Write(award->awardFlags);
+    io->Write(award->titleID);
+    io->Write(award->imageID);
+    io->Write(award->flags);
 
     // write the unlock time
     WINFILETIME time = XdbfHelpers::TimeTtoFILETIME(award->unlockTime);
-    io->write(time.dwHighDateTime);
-    io->write(time.dwLowDateTime);
+    io->Write(time.dwHighDateTime);
+    io->Write(time.dwLowDateTime);
 
     // write the rest of the entry
-    io->write(award->subcategory);
-    io->write(award->colorizable);
-    io->write(award->name);
-    io->write(award->unlockedDescription);
-    io->write(award->lockedDescription);
+    io->Write((DWORD)award->subcategory);
+    io->Write((DWORD)award->colorizable);
+    io->Write(award->name);
+    io->Write(award->unlockedDescription);
+    io->Write(award->lockedDescription);
 
     xdbf->UpdateEntry(&award->entry);
 
-    io->flush();
+    io->Flush();
 }
 
 void AvatarAwardGpd::CreateAvatarAward(struct AvatarAward *award)
@@ -206,5 +206,5 @@ WORD AvatarAwardGpd::getNextAwardIndex()
 AvatarAwardGpd::~AvatarAwardGpd(void)
 {
     if (!ioPassedIn)
-        io->close();
+        io->Close();
 }

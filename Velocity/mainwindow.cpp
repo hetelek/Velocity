@@ -369,8 +369,8 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
         {
             // read in the file magic
             FileIO io(fileName);
-            DWORD fileMagic = io.readDword();
-            io.close();
+            DWORD fileMagic = io.ReadDword();
+            io.Close();
 
             switch (fileMagic)
             {

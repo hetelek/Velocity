@@ -123,8 +123,8 @@ void XdbfDialog::showContextMenu(QPoint p)
 
                 // write the data to a file
                 FileIO io(outPath.toStdString(), true);
-                io.write(entryBuff, xentry.length);
-                io.close();
+                io.Write(entryBuff, xentry.length);
+                io.Close();
 
                 // free the temporary memory
                 delete[] entryBuff;
@@ -165,21 +165,21 @@ void XdbfDialog::showContextMenu(QPoint p)
 
             // open the file and get the length
             FileIO io(entryPath.toStdString());
-            io.setPosition(0, ios_base::end);
-            DWORD fileLen = io.getPosition();
+            io.SetPosition(0, ios_base::end);
+            DWORD fileLen = io.GetPosition();
 
             // allocate enough memory for the buffer
             BYTE *entryBuff = new BYTE[fileLen];
 
             // read in the file
-            io.setPosition(0);
-            io.readBytes(entryBuff, fileLen);
+            io.SetPosition(0);
+            io.ReadBytes(entryBuff, fileLen);
 
             gpd->xdbf->RewriteEntry(xentry, entryBuff);
 
             // cleanup
             delete[] entryBuff;
-            io.close();
+            io.Close();
             if (modified != NULL)
                 *modified = true;
 

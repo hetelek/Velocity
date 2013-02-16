@@ -6,12 +6,30 @@ MemoryIO::MemoryIO(BYTE *data, size_t length) :
 
 }
 
-void MemoryIO::SetPosition(DWORD pos)
+void MemoryIO::SetPosition(UINT64 pos, std::ios_base::seek_dir dir)
 {
+    DWORD newPos;
+    switch (dir)
+    {
+        case std::ios_base::beg:
+            newPos = pos;
+            break;
+        case std::ios_base::cur:
+            newPos = this->pos + pos;
+            break;
+        case std::ios_base::end:
+            newPos = length + pos;
+            break;
+        default:
+            throw std::string("MemoryIO: Unsupported seek direction\n");
+    }
+
+    if (newPos > length)
+        throw std::string("MemoryIO: Cannot seek beyond the end of the stream\n");
     this->pos = pos;
 }
 
-DWORD MemoryIO::GetPosition()
+UINT64 MemoryIO::GetPosition()
 {
     return pos;
 }

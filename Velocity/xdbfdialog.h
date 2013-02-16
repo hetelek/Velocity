@@ -17,7 +17,7 @@
 #include "Gpd/XdbfDefininitions.h"
 #include "Gpd/XdbfHelpers.h"
 #include "Gpd/GpdBase.h"
-#include "FileIO.h"
+#include "IO/FileIO.h"
 
 // forms
 #include "imagedialog.h"
