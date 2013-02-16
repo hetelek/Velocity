@@ -2,6 +2,8 @@
 #define FATXCONSTANTS_H
 
 #include "../winnames.h"
+#include <vector>
+#include <iostream>
 
 #define FAT32 4
 #define FAT16 2
@@ -19,6 +21,67 @@
 #define FAT_CLUSTER16_AVAILABLE (WORD)0x0000
 #define FAT_CLUSTER16_RESERVED (WORD)0xfff0
 #define FAT_CLUSTER16_LAST (WORD)0xffff
+
+struct Partition;
+
+struct SecurityInfo
+{
+    std::string serialNumber;
+    std::string firmwareRevision;
+    std::string modelNumber;
+    BYTE msLogoHash[0x14];
+    DWORD userAddressableSectors;
+    BYTE rsaSignature[0x100];
+    bool validSignature;
+
+    DWORD msLogoSize;
+    BYTE *msLogo;
+};
+
+struct FatxFileEntry
+{
+    Partition *partition;
+
+    BYTE nameLen;
+    BYTE fileAttributes;
+
+    std::string name;
+    DWORD startingCluster;
+    DWORD fileSize;
+
+    // times
+    DWORD creationDate;
+    DWORD lastWriteDate;
+    DWORD lastAccessDate;
+
+    bool readDirectories;
+    std::vector<FatxFileEntry> cachedFiles;
+    std::vector<DWORD> clusterChain;
+};
+
+struct Partition
+{
+    std::string name;
+    INT64 address;
+    UINT64 size;
+
+    // header
+    DWORD magic;
+    DWORD partitionId;
+    DWORD sectorsPerCluster;
+    DWORD rootDirectoryCluster;
+
+    // partition entries
+    FatxFileEntry root;
+
+    // calculated information
+    BYTE clusterEntrySize;
+    DWORD clusterCount;
+    DWORD clusterSize;
+    UINT64 clusterStartingAddress;
+    DWORD fatEntryShift;
+    UINT64 allocationTableSize;
+};
 
 enum FatxDirentAttributes
 {
