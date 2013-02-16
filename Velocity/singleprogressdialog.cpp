@@ -32,7 +32,7 @@ void SingleProgressDialog::startJob()
                     package->ReplaceFile(externalPath.toStdString(), internalPath.toStdString(), UpdateProgress, this);
                 else if (op == OpInject)
                 {
-                    FileEntry *entry = reinterpret_cast<FileEntry*>(outEntry);
+                    StfsFileEntry *entry = reinterpret_cast<StfsFileEntry*>(outEntry);
                     *entry = package->InjectFile(externalPath.toStdString(), internalPath.toStdString(), UpdateProgress, this);
                 }
                 break;

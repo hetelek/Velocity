@@ -1,29 +1,19 @@
 #include "DeviceIO.h"
 
+DeviceIO::DeviceIO(std::string devicePath)
+{
+    // convert it to a wstring
+    std::wstring wsDevicePath;
+    wsDevicePath.assign(devicePath.begin(), devicePath.end());
+
+    // load the device
+    loadDevice(wsDevicePath);
+}
+
 DeviceIO::DeviceIO(std::wstring devicePath)
 {
-    #ifdef _WIN32
-        pos = 0;
-        memset(&offset, 0, sizeof(OVERLAPPED));
-
-        // Attempt to get a handle to the device
-        deviceHandle = CreateFile(
-                devicePath.c_str(),// File name (device path)
-                GENERIC_READ | GENERIC_WRITE,		// Read/write access
-                FILE_SHARE_READ | FILE_SHARE_WRITE,	// Read/write share
-                NULL,								// Not used
-                OPEN_EXISTING,						// Open the existing device -- fails if it's fucked
-                FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH | FILE_ATTRIBUTE_DEVICE,	// Flags and attributes
-                NULL);								// Ignored
-
-        if (deviceHandle == INVALID_HANDLE_VALUE)
-            throw std::string("DeviceIO: Could not open HANDLE for device.\n");
-    #else
-        // Open the device
-        device = open(devicePath.c_str(), O_RDWR);
-        if (device == -1)
-            throw std::string("DeviceIO: Error opening device.\n");
-    #endif
+    // load the device
+    loadDevice(devicePath);
 }
 
 void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
@@ -34,18 +24,17 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
     #endif
 
     // don't let the count exceed the drive length
-    if (Position() + len > DriveLength())
-        len = (int)((Position() >= DriveLength()) ? 0 : DriveLength() - Position());
+    if (pos + len > DriveLength())
+        len = (int)((pos >= DriveLength()) ? 0 : DriveLength() - pos);
 
     // nothing to do
     if (len == 0)
         return;
 
-    BYTE maxSectors = (BYTE)(UP_TO_NEAREST_SECTOR(len + (Position() - realPosition())) / 0x200); // This is the number of sectors we have to read
-    int bytesToShaveOffBeginning = (int)(Position() - realPosition());	// Number of bytes to remove from the beginning of the buffer
-    int bytesToShaveOffEnd = (int)(UP_TO_NEAREST_SECTOR(Position() + len) - (Position() + len));
+    BYTE maxSectors = (BYTE)(UP_TO_NEAREST_SECTOR(len + (pos - realPosition())) / 0x200); // This is the number of sectors we have to read
+    int bytesToShaveOffBeginning = (int)(pos - realPosition());	// Number of bytes to remove from the beginning of the buffer
+    int bytesToShaveOffEnd = (int)(UP_TO_NEAREST_SECTOR(pos + len) - (pos + len));
     int bytesThatAreInLastDataRead = 0x200 - bytesToShaveOffBeginning;
-
 
     int allDataLength = bytesToShaveOffBeginning + len + bytesToShaveOffEnd;
 
@@ -73,9 +62,9 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
     }
 
     if (bytesThatAreInLastDataRead <= len)
-        SetPosition(Position() + bytesThatAreInLastDataRead);
+        SetPosition(pos + bytesThatAreInLastDataRead);
     else
-        SetPosition(Position() + len);
+        SetPosition(pos + len);
 
     if (maxSectors > 1)
     {
@@ -93,7 +82,7 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
                 read(device, allData, allDataLength - 0x200);
         #endif
 
-        SetPosition(Position() + (len - bytesThatAreInLastDataRead));
+        SetPosition(pos + (len - bytesThatAreInLastDataRead));
     }
 
     int countRead = ((bytesThatAreInLastDataRead <= len) ? bytesThatAreInLastDataRead : len);
@@ -116,7 +105,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
     #endif
 
     // We can't write beyond the end of the stream
-    if (Position() + len > DriveLength())
+    if (pos + len > DriveLength())
         throw std::string("Can not write beyond end of stream! At xDeviceStream::Write");
 
     // nothing to do
@@ -272,6 +261,32 @@ void DeviceIO::Close()
     #else
         close(device);
         device = NULL;
+#endif
+}
+
+void DeviceIO::loadDevice(std::wstring devicePath)
+{
+    #ifdef _WIN32
+        pos = 0;
+        memset(&offset, 0, sizeof(OVERLAPPED));
+
+        // Attempt to get a handle to the device
+        deviceHandle = CreateFile(
+                devicePath.c_str(),// File name (device path)
+                GENERIC_READ | GENERIC_WRITE,		// Read/write access
+                FILE_SHARE_READ | FILE_SHARE_WRITE,	// Read/write share
+                NULL,								// Not used
+                OPEN_EXISTING,						// Open the existing device -- fails if it's fucked
+                FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH | FILE_ATTRIBUTE_DEVICE,	// Flags and attributes
+                NULL);								// Ignored
+
+        if (deviceHandle == INVALID_HANDLE_VALUE)
+            throw std::string("DeviceIO: Could not open HANDLE for device.\n");
+    #else
+        // Open the device
+        device = open(devicePath.c_str(), O_RDWR);
+        if (device == -1)
+            throw std::string("DeviceIO: Error opening device.\n");
     #endif
 }
 

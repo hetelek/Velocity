@@ -25,7 +25,7 @@ using std::stringstream;
 using std::hex;
 using std::vector;
 
-struct FileEntry
+struct StfsFileEntry
 {
     DWORD entryIndex;
     string name;
@@ -40,11 +40,11 @@ struct FileEntry
     DWORD fileEntryAddress;
 };
 
-struct FileListing
+struct StfsFileListing
 {
-    vector<FileEntry> fileEntries;
-    vector<FileListing> folderEntries;
-    FileEntry folder;
+    vector<StfsFileEntry> fileEntries;
+    vector<StfsFileListing> folderEntries;
+    StfsFileEntry folder;
 };
 
 #pragma pack(push, 1)
@@ -81,22 +81,22 @@ public:
     StfsPackage(string packgePath, DWORD flags = 0);
 
     // Description: get the file listing of the package, forceUpdate reads from the package regardless
-    FileListing GetFileListing(bool forceUpdate = false);
+    StfsFileListing GetFileListing(bool forceUpdate = false);
 
     // Description: extract a file to designated file path
     void ExtractFile(string pathInPackage, string outPath, void(*extractProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
     // Description: extract a file (by FileEntry) to a designated file path
-    void ExtractFile(FileEntry *entry, string outPath, void(*extractProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    void ExtractFile(StfsFileEntry *entry, string outPath, void(*extractProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
     // Description: get the file entry of a file's path, sets nameLen to '0' if not found
-    FileEntry GetFileEntry(string pathInPackage, bool checkFolders = false, FileEntry *newEntry = NULL);
+    StfsFileEntry GetFileEntry(string pathInPackage, bool checkFolders = false, StfsFileEntry *newEntry = NULL);
 
     // Description: get the first 4 bytes of a file
     DWORD GetFileMagic(string pathInPackage);
 
     // Description: get the first 4 bytes of a file
-    DWORD GetFileMagic(FileEntry entry);
+    DWORD GetFileMagic(StfsFileEntry entry);
 
     // Description: check if the file exists
     bool FileExists(string pathInPackage);
@@ -108,22 +108,22 @@ public:
     void Resign(string kvPath);
 
     // Description: remove a file entry from the file listing
-    void RemoveFile(FileEntry entry);
+    void RemoveFile(StfsFileEntry entry);
 
     // Description: remove a file entry from the file listing
     void RemoveFile(string pathInPackage);
 
     // Description: inject a file into the package
-    FileEntry InjectFile(string path, string pathInPackage, void(*injectProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    StfsFileEntry InjectFile(string path, string pathInPackage, void(*injectProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
     // Description: inject raw data into the package
-    FileEntry InjectData(BYTE *data, DWORD length, string pathInPackage, void(*injectProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    StfsFileEntry InjectData(BYTE *data, DWORD length, string pathInPackage, void(*injectProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
     // Description: replace an existing file into the package
     void ReplaceFile(string path, string pathInPackage, void(*replaceProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
     // Description: replace an existing file into the package
-    void ReplaceFile(string path, FileEntry *entry, string pathInPackage, void(*replaceProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    void ReplaceFile(string path, StfsFileEntry *entry, string pathInPackage, void(*replaceProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
     // Description: rename an existing file in the package
     void RenameFile(string newName, string pathInPackage);
@@ -145,8 +145,8 @@ public:
 
     ~StfsPackage(void);
 private:
-    FileListing fileListing;
-    FileListing writtenToFile;
+    StfsFileListing fileListing;
+    StfsFileListing writtenToFile;
 
     FileIO *io;
     stringstream except;
@@ -208,13 +208,13 @@ private:
     void BuildTableInMemory(HashTable *table, BYTE *outBuffer);
 
     // Description: add the file entry to the file listing
-    void AddToListing(FileListing *fullListing, FileListing *out);
+    void AddToListing(StfsFileListing *fullListing, StfsFileListing *out);
 
     // Description: get the file entry from a file's path
-    void GetFileEntry(vector<string> locationOfFile, FileListing *start, FileEntry *out, FileEntry *newEntry = NULL, bool updateEntry = false, bool checkFolders = false);
+    void GetFileEntry(vector<string> locationOfFile, StfsFileListing *start, StfsFileEntry *out, StfsFileEntry *newEntry = NULL, bool updateEntry = false, bool checkFolders = false);
 
     // Description: get the raw file listing
-    void GenerateRawFileListing(FileListing *in, vector<FileEntry> *outFiles, vector<FileEntry> *outFolders);
+    void GenerateRawFileListing(StfsFileListing *in, vector<StfsFileEntry> *outFiles, vector<StfsFileEntry> *outFolders);
 
     // Description: split a string into multiple substrings
     vector<string> SplitString(string str, string delimeter);
@@ -229,10 +229,10 @@ private:
     void SetNextBlock(DWORD blockNum, INT24 nextBlockNum);
 
     // Description: discard the current file listing and rewrite it
-    void WriteFileListing(bool usePassed = false, vector<FileEntry> *outFis = NULL, vector<FileEntry> *outFos = NULL);
+    void WriteFileListing(bool usePassed = false, vector<StfsFileEntry> *outFis = NULL, vector<StfsFileEntry> *outFos = NULL);
 
     // Description: write a file entry at the io's current position
-    void WriteFileEntry(FileEntry *entry);
+    void WriteFileEntry(StfsFileEntry *entry);
 
     // Description: allocate a data block in the package, and return a block number
     INT24 AllocateBlock();
@@ -244,10 +244,10 @@ private:
     Level CalcualateTopLevel();
 
     // Description: get the file listing that matches the directory path
-    void FindDirectoryListing(vector<string> locationOfDirectory, FileListing *start, FileListing **out);
+    void FindDirectoryListing(vector<string> locationOfDirectory, StfsFileListing *start, StfsFileListing **out);
 
     // Description: update the entry at the given path
-    void UpdateEntry(string pathInPackage, FileEntry entry);
+    void UpdateEntry(string pathInPackage, StfsFileEntry entry);
 
     // Description: get the number of bytes to skip over the hash table
     DWORD GetHashTableSkipSize(DWORD tableAddress);

@@ -37,7 +37,7 @@ SvodDialog::~SvodDialog()
     delete ui;
 }
 
-void SvodDialog::loadListing(QTreeWidgetItem *parent, vector<GDFXFileEntry> *files)
+void SvodDialog::loadListing(QTreeWidgetItem *parent, vector<GdfxFileEntry> *files)
 {
     DWORD addr, index;
 
@@ -76,7 +76,7 @@ void SvodDialog::showFileContextMenu(QPoint pos)
     if (ui->treeWidget->currentIndex().row() == -1)
         return;
 
-    GDFXFileEntry *entry = ui->treeWidget->currentItem()->data(0, Qt::UserRole).value<GDFXFileEntry*>();
+    GdfxFileEntry *entry = ui->treeWidget->currentItem()->data(0, Qt::UserRole).value<GdfxFileEntry*>();
 
     if (entry->attributes & GdfxDirectory)
         return;
@@ -110,7 +110,7 @@ void SvodDialog::showFileContextMenu(QPoint pos)
         QList<void*> list;
         foreach (QTreeWidgetItem *item, ui->treeWidget->selectedItems())
         {
-            GDFXFileEntry *entry = item->data(0, Qt::UserRole).value<GDFXFileEntry*>();
+            GdfxFileEntry *entry = item->data(0, Qt::UserRole).value<GdfxFileEntry*>();
             list.push_back(entry);
         }
 
@@ -184,7 +184,7 @@ void UpdateProgress(DWORD cur, DWORD total, void *arg)
 
 void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    GDFXFileEntry *entry = ui->treeWidget->currentItem()->data(0, Qt::UserRole).value<GDFXFileEntry*>();
+    GdfxFileEntry *entry = ui->treeWidget->currentItem()->data(0, Qt::UserRole).value<GdfxFileEntry*>();
     QString tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", ""));
 
     // the other file types that are supported have no buisness being in an SVOD system, so we'll just leave those out

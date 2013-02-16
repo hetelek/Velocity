@@ -2,21 +2,23 @@
 #define FATXIO_H
 
 #include "DeviceIO.h"
+#include "../FileIO.h"
 #include "../Fatx/FatxConstants.h"
 
 class XBOXINTERNALSSHARED_EXPORT FatxIO : public BaseIO
 {
 public:
     FatxIO(DeviceIO *device, FatxFileEntry *entry);
+
     FatxFileEntry GetFatxFileEntry();
 
-    void ReadBytes(BYTE *outBuffer, DWORD len);
-    void WriteBytes(BYTE *buffer, DWORD len);
-    void SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios_base::beg);
-    UINT64 GetPosition();
+    void SetPosition(DWORD position);
 
-    void Close();
-    void Flush();
+    void ReadBytes(BYTE *outBuffer, DWORD len);
+
+    void WriteBytes(BYTE *buffer, DWORD len);
+
+    void SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
 private:
     DeviceIO *device;

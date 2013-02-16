@@ -130,7 +130,7 @@ PackageViewer::~PackageViewer()
     delete ui;
 }
 
-void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *parent)
+void PackageViewer::PopulateTreeWidget(StfsFileListing *entry, QTreeWidgetItem *parent)
 {
     bool isRootEntry = entry->folder.entryIndex == 0xFFFF;
 
@@ -201,7 +201,7 @@ void PackageViewer::GetPackagePath(QTreeWidgetItem *item, QString *out, bool fol
         GetPackagePath(item->parent(), out);
 }
 
-void PackageViewer::SetIcon(string name, FileEntry *entry, QTreeWidgetItem *item)
+void PackageViewer::SetIcon(string name, StfsFileEntry *entry, QTreeWidgetItem *item)
 {
     try
     {
@@ -414,7 +414,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
 
         QList<void*> outFiles;
-        QList<FileEntry> sillyNess;
+        QList<StfsFileEntry> sillyNess;
         for (int i = 0; i < totalCount; i++)
         {
             QString packagePath;
@@ -532,7 +532,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
         try
         {
-            FileEntry *injectedEntry = new FileEntry;
+            StfsFileEntry *injectedEntry = new StfsFileEntry;
             SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSTFS, package, OpInject, packagePath, path, injectedEntry, this);
             dialog->setModal(true);
             dialog->show();
@@ -569,7 +569,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             QString packagePath;
             GetPackagePath(items.at(0), &packagePath);
 
-            FileEntry entry = package->GetFileEntry(packagePath.toStdString(), true);
+            StfsFileEntry entry = package->GetFileEntry(packagePath.toStdString(), true);
             bool folder = entry.flags & 2;
 
             bool changed = false;

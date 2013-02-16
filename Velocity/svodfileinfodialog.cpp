@@ -1,7 +1,7 @@
 #include "svodfileinfodialog.h"
 #include "ui_svodfileinfodialog.h"
 
-SvodFileInfoDialog::SvodFileInfoDialog(SVOD *svod, GDFXFileEntry *entry, QString type, QWidget *parent) :
+SvodFileInfoDialog::SvodFileInfoDialog(SVOD *svod, GdfxFileEntry *entry, QString type, QWidget *parent) :
     QDialog(parent), ui(new Ui::SvodFileInfoDialog), entry(entry), svod(svod), type(type)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);

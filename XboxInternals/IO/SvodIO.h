@@ -9,7 +9,7 @@
 class XBOXINTERNALSSHARED_EXPORT SvodIO : public BaseIO
 {
 public:
-    SvodIO(XContentHeader *metadata, GDFXFileEntry entry, MultiFileIO *io);
+    SvodIO(XContentHeader *metadata, GdfxFileEntry entry, MultiFileIO *io);
 
     void ReadBytes(BYTE *outBuffer, DWORD len);
 
@@ -32,7 +32,7 @@ private:
 
     MultiFileIO *io;
     XContentHeader *metadata;
-    GDFXFileEntry fileEntry;
+    GdfxFileEntry fileEntry;
     DWORD pos;
     DWORD offset;
 };

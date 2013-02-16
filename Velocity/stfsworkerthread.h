@@ -23,7 +23,7 @@ class StfsWorkerThread : public QThread
 {
     Q_OBJECT
 public:
-    explicit StfsWorkerThread(StfsPackage *package, StfsJob job, FileEntry *packageFile, QString externalPath, QObject *parent = 0, QString packageFilePath = "");
+    explicit StfsWorkerThread(StfsPackage *package, StfsJob job, StfsFileEntry *packageFile, QString externalPath, QObject *parent = 0, QString packageFilePath = "");
 
     void run();
     
@@ -33,7 +33,7 @@ signals:
 private:
     StfsPackage *package;
     StfsJob job;
-    FileEntry *packageFile;
+    StfsFileEntry *packageFile;
     QString externalPath;
     QString packageFilePath;
 

@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include "IO/FileIO.h"
 
-Q_DECLARE_METATYPE( FileEntry* )
+Q_DECLARE_METATYPE( StfsFileEntry* )
 
 namespace Ui {
 class PackageViewer;
@@ -72,12 +72,12 @@ private slots:
 
 private:
     Ui::PackageViewer *ui;
-    void PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *parent = NULL);
+    void PopulateTreeWidget(StfsFileListing *entry, QTreeWidgetItem *parent = NULL);
     void GetPackagePath(QTreeWidgetItem *item, QString *out, bool folderOnly = false);
-    void SetIcon(string name, FileEntry *entry, QTreeWidgetItem *item);
+    void SetIcon(string name, StfsFileEntry *entry, QTreeWidgetItem *item);
     StfsPackage *package;
     bool disposePackage;
-    FileListing listing;
+    StfsFileListing listing;
     QWidget *parent;
     QStatusBar *statusBar;
     QMenu *openInMenu;

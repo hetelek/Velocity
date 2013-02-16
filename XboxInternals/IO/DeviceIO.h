@@ -28,6 +28,7 @@
 class XBOXINTERNALSSHARED_EXPORT DeviceIO : public BaseIO
 {
 public:
+    DeviceIO(std::string devicePath);
     DeviceIO(std::wstring devicePath);
 
     void ReadBytes(BYTE *outBuffer, DWORD len);
@@ -47,6 +48,8 @@ public:
     void Flush();
 
 private:
+    void loadDevice(std::wstring devicePath);
+
     INT64 realPosition();
 
     #ifdef _WIN32

@@ -28,7 +28,7 @@ namespace Ui {
 class SvodDialog;
 }
 
-Q_DECLARE_METATYPE( GDFXFileEntry* )
+Q_DECLARE_METATYPE( GdfxFileEntry* )
 
 class SvodDialog : public QDialog
 {
@@ -60,7 +60,7 @@ private:
     SVOD *svod;
     QStatusBar *statusBar;
 
-    void loadListing(QTreeWidgetItem *parent, vector<GDFXFileEntry> *files);
+    void loadListing(QTreeWidgetItem *parent, vector<GdfxFileEntry> *files);
 
     friend void UpdateProgress(DWORD cur, DWORD total, void *arg);
 };
