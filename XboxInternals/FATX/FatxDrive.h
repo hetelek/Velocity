@@ -12,23 +12,35 @@ class XBOXINTERNALSSHARED_EXPORT FatxDrive
 public:
     FatxDrive(std::string drivePath);
     FatxDrive(std::wstring drivePath);
-    std::vector<Partition*> GetPartitions();
-    FatxIO GetFatxIO(FatxFileEntry *entry);
-
-    void GetChildFileEntries(FatxFileEntry *entry);
-
-    static INT64 ClusterToOffset(Partition *part, DWORD cluster);
     ~FatxDrive();
 
-    SecurityInfo securityBlob;
+    // get the drives partitions
+    std::vector<Partition*> GetPartitions();
+
+    // get a FatxIO for the given entry
+    FatxIO GetFatxIO(FatxFileEntry *entry);
+
+    // populate entry's cachedFiles vector (only if it's a directory)
+    void GetChildFileEntries(FatxFileEntry *entry);
+
+    // convert a cluster to an offset
+    static INT64 ClusterToOffset(Partition *part, DWORD cluster);
 
 private:
+    // populate entry's clusterChain with its cluster chain
     void readClusterChain(FatxFileEntry *entry);
+
+    // open up a physical drive
     void loadFatxDrive(std::wstring drivePath);
+
+    // process a partition and load it with calulated information
     void processBootSector(Partition *part);
+
+    // counts the largest amount of consecutive unset bits
     static BYTE cntlzw(DWORD x);
 
     DeviceIO *io;
+    SecurityInfo securityBlob;
     std::vector<Partition*> partitions;
 };
 
