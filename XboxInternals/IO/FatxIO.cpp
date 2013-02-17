@@ -21,6 +21,10 @@ void FatxIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios
 
     // calculate the actual offset on disk
     DWORD clusterIndex = position / entry->partition->clusterSize;
+
+    if (clusterIndex >= entry->clusterChain.size())
+        throw std::string("FATX: Cluster chain not sufficient enough for file size.\n");
+
     DWORD cluster = entry->clusterChain.at(clusterIndex);
 
     // calculate the read position
@@ -117,6 +121,7 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
 
     // cleanup
     outFile.Close();
+    delete[] buffer;
 
     // set the original position
     device->SetPosition(pos);
