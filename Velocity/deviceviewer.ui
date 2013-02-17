@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>562</width>
-    <height>345</height>
+    <width>701</width>
+    <height>432</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -42,6 +42,12 @@
      </property>
      <property name="selectionMode">
       <enum>QAbstractItemView::ExtendedSelection</enum>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
      </property>
      <property name="columnCount">
       <number>4</number>

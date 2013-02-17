@@ -26,6 +26,7 @@ void DeviceViewer::on_pushButton_clicked()
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
         item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+        item->setIcon(0, QIcon(":/Images/partition.png"));
 
         item->setText(0, QString::fromStdString(parts.at(i)->name));
         item->setData(0, Qt::UserRole, QVariant::fromValue(parts.at(i)));
@@ -57,14 +58,19 @@ void DeviceViewer::on_treeWidget_expanded(const QModelIndex &index)
     {
         FatxFileEntry *entry = &currentParent->cachedFiles.at(i);
 
-        if (entry->nameLen == 0xE5)
+        if (entry->nameLen == FATX_ENTRY_DELETED)
             continue;
 
         QTreeWidgetItem *entryItem = new QTreeWidgetItem(item);
         entryItem->setData(0, Qt::UserRole, QVariant::fromValue(entry));
 
         if (entry->fileAttributes & FatxDirectory)
+        {
+            entryItem->setIcon(0, QIcon(":/Images/FolderFileIcon.png"));
             entryItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+        }
+        else
+            entryItem->setIcon(0, QIcon(":/Images/DefaultFileIcon.png"));
 
         entryItem->setText(0, QString::fromStdString(entry->name));
         entryItem->setText(1, QString::fromStdString(ByteSizeToString(entry->fileSize)));
