@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QMenu>
+#include "qthelpers.h"
 
 // xbox
 #include "Fatx/FatxDrive.h"

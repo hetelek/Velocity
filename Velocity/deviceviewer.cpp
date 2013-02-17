@@ -83,7 +83,14 @@ void DeviceViewer::on_treeWidget_expanded(const QModelIndex &index)
             entryItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
         }
         else
-            entryItem->setIcon(0, QIcon(":/Images/DefaultFileIcon.png"));
+        {
+            QIcon fileIcon;
+            FatxIO io = currentDrive->GetFatxIO(entry);
+            io.SetPosition(0);
+            QtHelpers::GetFileIcon(io.ReadDword(), QString::fromStdString(entry->name), fileIcon, *entryItem);
+
+            entryItem->setIcon(0, fileIcon);
+        }
 
         // setup the text
         entryItem->setText(0, QString::fromStdString(entry->name));
