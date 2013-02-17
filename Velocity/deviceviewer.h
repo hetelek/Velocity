@@ -31,12 +31,20 @@ public:
     
 private slots:
     void on_pushButton_clicked();
-    void on_treeWidget_expanded(const QModelIndex &index);
     void showRemoveContextMenu(QPoint point);
+    void on_treeWidget_doubleClicked(const QModelIndex &index);
+    void on_btnBack_clicked();
+    void on_btnForward_clicked();
 
 private:
     Ui::DeviceViewer *ui;
     FatxDrive *currentDrive;
+    QList<FatxFileEntry*> directoryChain;
+    int currentIndex;
+
+    void LoadFolder(FatxFileEntry *folder);
+
+    void LoadPartitions();
 };
 
 #endif // DEVICEVIEWER_H
