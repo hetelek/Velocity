@@ -36,6 +36,7 @@ void DeviceViewer::on_pushButton_clicked()
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
         item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+        item->setIcon(0, QIcon(":/Images/partition.png"));
 
         item->setText(0, QString::fromStdString(parts.at(i)->name));
         item->setData(0, Qt::UserRole, QVariant::fromValue(parts.at(i)));
@@ -77,7 +78,12 @@ void DeviceViewer::on_treeWidget_expanded(const QModelIndex &index)
 
         // show the indicator if it's a directory
         if (entry->fileAttributes & FatxDirectory)
+        {
+            entryItem->setIcon(0, QIcon(":/Images/FolderFileIcon.png"));
             entryItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+        }
+        else
+            entryItem->setIcon(0, QIcon(":/Images/DefaultFileIcon.png"));
 
         // setup the text
         entryItem->setText(0, QString::fromStdString(entry->name));

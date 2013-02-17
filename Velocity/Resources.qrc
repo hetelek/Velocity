@@ -88,5 +88,6 @@
         <file>Images/StrbFileIcon.png</file>
         <file>Images/strb.png</file>
         <file>Images/ytgr.png</file>
+        <file>Images/partition.png</file>
     </qresource>
 </RCC>
