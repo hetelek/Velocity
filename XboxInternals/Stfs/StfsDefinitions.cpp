@@ -213,12 +213,12 @@ void WriteCertificateEx(Certificate *cert, FileIO *io, DWORD address)
     io->SetPosition(address);
 
     // write the certificate
-    io->Write(cert->publicKeyCertificateSize);
+    io->Write((WORD)cert->publicKeyCertificateSize);
     io->Write(cert->ownerConsoleID, 5);
-    io->Write(cert->ownerConsolePartNumber.c_str(), 0x11);
+    io->Write(cert->ownerConsolePartNumber, 0x11, false);
     DWORD temp = cert->consoleTypeFlags | cert->ownerConsoleType;
     io->Write(temp);
-    io->Write(cert->dateGeneration.c_str(), 8);
+    io->Write(cert->dateGeneration, 0x8, false);
     io->Write(cert->publicExponent);
     io->Write(cert->publicModulus, 0x80);
     io->Write(cert->certificateSignature, 0x100);

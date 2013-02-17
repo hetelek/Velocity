@@ -1286,7 +1286,7 @@ void StfsPackage::WriteFileEntry(StfsFileEntry *entry)
     BYTE nameLengthAndFlags = entry->nameLen | (entry->flags << 6);
 
     // write the entry
-    io->Write(entry->name, 0x28);
+    io->Write(entry->name, 0x28, false);
     io->Write(nameLengthAndFlags);
     io->Write(entry->blocksForFile, LittleEndian);
     io->Write(entry->blocksForFile, LittleEndian);

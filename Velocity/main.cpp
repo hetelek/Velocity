@@ -9,7 +9,6 @@ int main(int argc, char *argv[])
 {
     //FatxDrive drive(L"\\\\.\\PHYSICALDRIVE1");
 
-
     QApplication a(argc, argv);
     a.addLibraryPath(":/plugins/imageformats");
 

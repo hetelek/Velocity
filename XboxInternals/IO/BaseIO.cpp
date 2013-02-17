@@ -260,7 +260,6 @@ void BaseIO::Write(wstring ws, bool nullTerminating)
         for (DWORD i = 0; i < ws.length(); i++)
         {
             curChar = ws.at(i);
-            reverseByteArray(reinterpret_cast<BYTE*>(&curChar), 2);
             Write(curChar);
         }
         if (nullTerminating)
