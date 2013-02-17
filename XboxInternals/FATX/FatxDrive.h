@@ -26,6 +26,9 @@ public:
     // populate entry's clusterChain with its cluster chain
     void ReadClusterChain(FatxFileEntry *entry);
 
+    // close the underlying io
+    void Close();
+
     // convert a cluster to an offset
     static INT64 ClusterToOffset(Partition *part, DWORD cluster);
 
