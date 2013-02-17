@@ -32,6 +32,8 @@ public:
     // convert a cluster to an offset
     static INT64 ClusterToOffset(Partition *part, DWORD cluster);
 
+    SecurityInfo securityBlob;
+
 private:
     // find count amount of free custers
     std::vector<DWORD> getFreeClusters(Partition *part, DWORD count);
@@ -46,7 +48,6 @@ private:
     static BYTE cntlzw(DWORD x);
 
     DeviceIO *io;
-    SecurityInfo securityBlob;
     std::vector<Partition*> partitions;
 };
 
