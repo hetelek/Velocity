@@ -89,5 +89,7 @@
         <file>Images/strb.png</file>
         <file>Images/ytgr.png</file>
         <file>Images/partition.png</file>
+        <file>Images/back.png</file>
+        <file>Images/forward.png</file>
     </qresource>
 </RCC>

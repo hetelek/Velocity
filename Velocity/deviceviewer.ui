@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>708</width>
-    <height>427</height>
+    <width>715</width>
+    <height>431</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Device Viewer</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -22,7 +22,11 @@
         <bool>false</bool>
        </property>
        <property name="text">
-        <string>Back</string>
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="Resources.qrc">
+         <normaloff>:/Images/back.png</normaloff>:/Images/back.png</iconset>
        </property>
       </widget>
      </item>
@@ -32,7 +36,11 @@
         <bool>false</bool>
        </property>
        <property name="text">
-        <string>Forward</string>
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="Resources.qrc">
+         <normaloff>:/Images/forward.png</normaloff>:/Images/forward.png</iconset>
        </property>
       </widget>
      </item>
@@ -99,6 +107,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="Resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
