@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QMenu>
+#include <QMessageBox>
 #include "qthelpers.h"
 
 // xbox
