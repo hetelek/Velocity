@@ -205,9 +205,9 @@ void PackageViewer::SetIcon(string name, StfsFileEntry *entry, QTreeWidgetItem *
 {
     try
     {
-    QIcon toSet;
-    QtHelpers::GetFileIcon(package->GetFileMagic(*entry), QString::fromStdString(name), toSet, *item);
-    item->setIcon(0, toSet);
+        QIcon toSet;
+        QtHelpers::GetFileIcon(package->GetFileMagic(*entry), QString::fromStdString(name), toSet, *item);
+        item->setIcon(0, toSet);
     }
     catch (string error)
     {

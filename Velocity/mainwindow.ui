@@ -110,6 +110,7 @@
     <addaction name="actionGamer_Picture_Pack_Creator"/>
     <addaction name="actionTitle_ID_Finder"/>
     <addaction name="actionTheme_Creator"/>
+    <addaction name="actionDevice_Viewer"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -345,6 +346,11 @@
    </property>
    <property name="text">
     <string>YTGR</string>
+   </property>
+  </action>
+  <action name="actionDevice_Viewer">
+   <property name="text">
+    <string>Device Viewer</string>
    </property>
   </action>
  </widget>

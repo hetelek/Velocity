@@ -38,6 +38,7 @@
 #include "profilecleanerwizard.h"
 #include "svoddialog.h"
 #include "ytgrdialog.h"
+#include "deviceviewer.h"
 
 // other
 #include "PluginInterfaces/igamemodder.h"
@@ -126,6 +127,8 @@ private slots:
     void on_actionSVOD_System_triggered();
 
     void on_actionYTGR_triggered();
+
+    void on_actionDevice_Viewer_triggered();
 
 private:
     Ui::MainWindow *ui;

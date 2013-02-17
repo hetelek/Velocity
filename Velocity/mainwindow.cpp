@@ -244,6 +244,14 @@ void MainWindow::on_actionDonate_triggered()
     QDesktopServices::openUrl(QUrl("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GW3CMHU8F9DT2"));
 }
 
+void MainWindow::on_actionDevice_Viewer_triggered()
+{
+    DeviceViewer *viewer = new DeviceViewer(this);
+    viewer->setAttribute(Qt::WA_DeleteOnClose);
+    ui->mdiArea->addSubWindow(viewer);
+    viewer->show();
+}
+
 void MainWindow::on_actionView_Wiki_triggered()
 {
     QDesktopServices::openUrl(QUrl("https://github.com/hetelek/Velocity/wiki"));
