@@ -171,10 +171,10 @@ wstring BaseIO::ReadWString(int len)
     }
     else
     {
-        wchar_t str[len + 1];
+        wchar_t *str = new wchar_t[len + 1];
         str[len] = 0;
 
-        ReadBytes((BYTE*)str, (len + 1) * 2);
+        ReadBytes((BYTE*)str, len * 2);
 
         // swap the byte order if needed
         if (byteOrder == BigEndian)
@@ -190,6 +190,7 @@ wstring BaseIO::ReadWString(int len)
         }
 
         toReturn = wstring(str);
+        delete[] str;
     }
 
     return toReturn;
