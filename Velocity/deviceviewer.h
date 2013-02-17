@@ -4,8 +4,9 @@
 // qt
 #include <QDialog>
 #include <QTreeWidget>
-
-#include <QDebug>
+#include <QFileDialog>
+#include <QDesktopServices>
+#include <QMenu>
 
 // xbox
 #include "Fatx/FatxDrive.h"
@@ -29,6 +30,7 @@ public:
 private slots:
     void on_pushButton_clicked();
     void on_treeWidget_expanded(const QModelIndex &index);
+    void showRemoveContextMenu(QPoint point);
 
 private:
     Ui::DeviceViewer *ui;
