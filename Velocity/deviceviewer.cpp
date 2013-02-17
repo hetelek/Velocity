@@ -7,6 +7,9 @@ DeviceViewer::DeviceViewer(QWidget *parent) :
     ui->setupUi(this);
     currentDrive = NULL;
 
+    ui->treeWidget->header()->setDefaultSectionSize(100);
+    ui->treeWidget->header()->resizeSection(0, 250);
+
     // setup the context menus
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showRemoveContextMenu(QPoint)));
@@ -32,6 +35,13 @@ void DeviceViewer::on_pushButton_clicked()
     {
         // open the drive
         currentDrive = new FatxDrive(ui->lineEdit->text().toStdWString());
+
+        // load the device information
+        ui->lblFirmwareRevision->setText(QString::fromStdString(currentDrive->securityBlob.firmwareRevision).trimmed());
+        ui->lblModelNumber->setText(QString::fromStdString(currentDrive->securityBlob.modelNumber).trimmed());
+        ui->lblSerialNumber->setText(QString::fromStdString(currentDrive->securityBlob.serialNumber).trimmed());
+        ui->lblSectors->setText("0x" + QString::number(currentDrive->securityBlob.userAddressableSectors, 16).toUpper());
+        ui->lblValidSignature->setText(((currentDrive->securityBlob.validSignature) ? "Yes" : "No"));
     }
     catch (std::string error)
     {
@@ -151,7 +161,14 @@ void DeviceViewer::LoadFolder(FatxFileEntry *folder)
             // setup the text
             entryItem->setText(0, QString::fromStdString(entry->name));
             entryItem->setText(1, QString::fromStdString(ByteSizeToString(entry->fileSize)));
-            entryItem->setText(2, "0x" + QString::number(entry->startingCluster, 16));
+            entryItem->setText(2, "0x" + QString::number(entry->startingCluster, 16).toUpper());
+
+            MSTime createdtime = DWORDToMSTime(entry->creationDate);
+
+            QDate date;
+            date.setDate(createdtime.year, createdtime.month, createdtime.monthDay);
+
+            entryItem->setText(3, date.toString(Qt::DefaultLocaleShortDate));
         }
 
         if (currentIndex == directoryChain.size())
@@ -172,15 +189,6 @@ void DeviceViewer::on_btnBack_clicked()
         LoadFolder(directoryChain.at(--currentIndex));
 
     ui->btnBack->setEnabled(currentIndex >= 0);
-    ui->btnForward->setEnabled(currentIndex < directoryChain.size() - 1);
-}
-
-void DeviceViewer::on_btnForward_clicked()
-{
-    LoadFolder(directoryChain.at(++currentIndex));
-
-    ui->btnBack->setEnabled(currentIndex >= 0);
-    ui->btnForward->setEnabled(currentIndex < directoryChain.size() - 1);
 }
 
 void DeviceViewer::LoadPartitions()

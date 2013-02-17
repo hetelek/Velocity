@@ -8,6 +8,7 @@
 #include <QDesktopServices>
 #include <QMenu>
 #include <QMessageBox>
+#include <QDateTime>
 #include "qthelpers.h"
 
 // xbox
@@ -34,7 +35,6 @@ private slots:
     void showRemoveContextMenu(QPoint point);
     void on_treeWidget_doubleClicked(const QModelIndex &index);
     void on_btnBack_clicked();
-    void on_btnForward_clicked();
 
 private:
     Ui::DeviceViewer *ui;
