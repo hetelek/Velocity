@@ -290,6 +290,7 @@ void FatxDrive::loadFatxDrive(std::wstring drivePath)
     io->ReadBytes(securityBlob.msLogoHash, 0x14);
     securityBlob.userAddressableSectors = io->ReadDword();
     io->ReadBytes(securityBlob.rsaSignature, 0x100);
+    securityBlob.validSignature = false;
 
     // TODO: verify the signature
 
