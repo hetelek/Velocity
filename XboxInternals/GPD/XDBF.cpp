@@ -11,10 +11,8 @@ Xdbf::Xdbf(string gpdPath) : ioPassedIn(false)
     readFreeMemoryTable();
 }
 
-Xdbf::Xdbf(FileIO *io) : ioPassedIn(true)
+Xdbf::Xdbf(FileIO *io) : ioPassedIn(true), io(io)
 {
-    this->io = io;
-
     init();
     readHeader();
     readEntryTable();
@@ -949,7 +947,7 @@ void Xdbf::DeleteEntry(XdbfEntry entry)
 void Xdbf::ExtractEntry(XdbfEntry entry, BYTE *outBuffer)
 {
     // seek to the begining of the entry
-    io->SetPosition(GetRealAddress(entry.addressSpecifier));
+    io->SetPosition((UINT64)GetRealAddress(entry.addressSpecifier));
 
     // read the bytes of the entry
     io->ReadBytes(outBuffer, entry.length);
