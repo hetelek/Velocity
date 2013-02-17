@@ -23,16 +23,15 @@ public:
     // populate entry's cachedFiles vector (only if it's a directory)
     void GetChildFileEntries(FatxFileEntry *entry);
 
+    // populate entry's clusterChain with its cluster chain
+    void ReadClusterChain(FatxFileEntry *entry);
+
     // convert a cluster to an offset
     static INT64 ClusterToOffset(Partition *part, DWORD cluster);
 
-    // populate entry's clusterChain with its cluster chain
-    void readClusterChain(FatxFileEntry *entry);
-
+private:
     // find count amount of free custers
     std::vector<DWORD> getFreeClusters(Partition *part, DWORD count);
-
-private:
 
     // open up a physical drive
     void loadFatxDrive(std::wstring drivePath);

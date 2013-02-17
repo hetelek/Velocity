@@ -22,7 +22,7 @@ std::vector<Partition*> FatxDrive::GetPartitions()
 
 FatxIO FatxDrive::GetFatxIO(FatxFileEntry *entry)
 {
-    readClusterChain(entry);
+    ReadClusterChain(entry);
     return FatxIO(io, entry);
 }
 
@@ -143,7 +143,7 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
 
     // if the cluster chain has already been read, skip this
     if (entry->clusterChain.size() == 0)
-        readClusterChain(entry);
+        ReadClusterChain(entry);
 
     // find out how many entries are in a single cluster
     DWORD entriesInCluster = entry->partition->clusterSize / FATX_ENTRY_SIZE;
@@ -197,7 +197,7 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
     entry->readDirectories = true;
 }
 
-void FatxDrive::readClusterChain(FatxFileEntry *entry)
+void FatxDrive::ReadClusterChain(FatxFileEntry *entry)
 {
     // clear the current chain
     entry->clusterChain.clear();
