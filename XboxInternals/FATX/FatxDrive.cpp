@@ -97,6 +97,7 @@ void FatxDrive::processBootSector(Partition *part)
     part->root.readDirectories = false;
     part->root.name = "Root";
     part->root.partition = part;
+    part->root.fileAttributes = FatxDirectory;
 }
 
 std::vector<DWORD> FatxDrive::getFreeClusters(Partition *part, DWORD count)
@@ -225,6 +226,11 @@ void FatxDrive::ReadClusterChain(FatxFileEntry *entry)
         else
             previousCluster = io->ReadDword();
     }
+}
+
+void FatxDrive::Close()
+{
+    io->Close();
 }
 
 INT64 FatxDrive::ClusterToOffset(Partition *part, DWORD cluster)
