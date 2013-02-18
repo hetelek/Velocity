@@ -109,7 +109,7 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
     FileIO outFile(savePath, true);
 
     std::vector<Range> readRanges;
-    BYTE *buffer = new BYTE[0x50000];
+    BYTE *buffer = new BYTE[0x100000];
 
     // generate the read ranges
     for (DWORD i = 0; i < entry->clusterChain.size() - 1; i++)
@@ -122,7 +122,7 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
         {
             range.len += entry->partition->clusterSize;
         }
-        while ((entry->clusterChain.at(i) + 1) == entry->clusterChain.at(++i) && i < (entry->clusterChain.size() - 2) && range.len < 0x50000);
+        while ((entry->clusterChain.at(i) + 1) == entry->clusterChain.at(++i) && i < (entry->clusterChain.size() - 2) && range.len < 0x100000);
         i--;
 
         readRanges.push_back(range);
@@ -132,6 +132,12 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
     INT64 finalClusterOffset = ClusterToOffset(entry->partition, entry->clusterChain.at(entry->clusterChain.size() - 1));
     Range lastRange = { finalClusterOffset , (finalClusterSize == 0) ? entry->partition->clusterSize : finalClusterSize};
     readRanges.push_back(lastRange);
+
+    DWORD modulus = readRanges.size() / 100;
+    if (modulus == 0)
+        modulus = 1;
+    else if (modulus > 3)
+        modulus = 3;
 
     // read all the data in
     for (DWORD i = 0; i < readRanges.size(); i++)
@@ -144,9 +150,12 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
         outFile.WriteBytes(buffer, readRanges.at(i).len);
 
         // update progress if needed
-        if (progress)
+        if (progress && i % modulus == 0)
             progress(arg, i + 1, readRanges.size());
     }
+
+    // make sure it hits the end
+    progress(arg, readRanges.size(), readRanges.size());
 
     outFile.Flush();
     outFile.Close();
