@@ -11,13 +11,15 @@ void FatxIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios
     if (position > entry->fileSize && !(entry->fileAttributes & FatxDirectory))
         throw std::string("FATX: Cannot seek past the file size.\n");
 
-
     if (dir == std::ios_base::cur)
         position += pos;
     else if (dir == std::ios_base::end)
         position = (device->DriveLength() - position);
 
     pos = position;
+
+    if (pos == entry->fileSize)
+        return;
 
     // calculate the actual offset on disk
     DWORD clusterIndex = position / entry->partition->clusterSize;
@@ -66,12 +68,12 @@ void FatxIO::ReadBytes(BYTE *outBuffer, DWORD len)
 
     while (len > 0)
     {
-        // update the position
-        SetPosition(pos + bytesToRead);
-
         // calculate how many bytes to read
         bytesToRead = (len <= maxReadConsecutive) ? len : maxReadConsecutive;
         device->ReadBytes(outBuffer + (origLen - len), bytesToRead);
+
+        // update the position
+        SetPosition(pos + bytesToRead);
 
         // update the length
         len -= bytesToRead;
