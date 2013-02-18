@@ -83,13 +83,135 @@ void FatxIO::ReadBytes(BYTE *outBuffer, DWORD len)
     }
 
     if (len > 0)
-    {
         device->ReadBytes(outBuffer + (origLen - len), len);
-    }
 }
 
 void FatxIO::WriteBytes(BYTE *buffer, DWORD len)
 {
+    // get the length
+    DWORD origLen = len;
+
+    DWORD bytesToWrite = (len <= maxReadConsecutive) ? len : maxReadConsecutive;
+    device->WriteBytes(buffer, bytesToWrite);
+    len -= bytesToWrite;
+    SetPosition(pos + bytesToWrite);
+
+    while (len >= entry->partition->clusterSize)
+    {
+        // calculate how many bytes to read
+        device->WriteBytes(buffer + (origLen - len), maxReadConsecutive);
+
+        // update the position
+        SetPosition(pos + maxReadConsecutive);
+
+        // update the length
+        len -= maxReadConsecutive;
+    }
+
+    if (len > 0)
+        device->WriteBytes(buffer + (origLen - len), len);
+}
+
+std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
+{
+    device->SetPosition(part->address + 0x1000 + (part->clusterEntrySize * part->lastFreeClusterFound));
+
+    std::vector<DWORD> freeClusters;
+
+    DWORD currentCluster = 1;
+    while (count != 0 && currentCluster != part->clusterCount)
+    {
+        currentCluster++;
+        switch (part->clusterEntrySize)
+        {
+            case FAT32:
+                if (device->ReadDword() == FAT_CLUSTER_AVAILABLE)
+                {
+                    freeClusters.push_back(currentCluster);
+                    part->lastFreeClusterFound = currentCluster + 1;
+                    count--;
+                }
+                break;
+            case FAT16:
+                if (device->ReadWord() == FAT_CLUSTER16_AVAILABLE)
+                {
+                    freeClusters.push_back(currentCluster);
+                    part->lastFreeClusterFound = currentCluster + 1;
+                    count--;
+                }
+                break;
+        }
+    }
+
+    return freeClusters;
+}
+
+void FatxIO::rewriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> clusterChain)
+{
+    BYTE nameLen = (entry->nameLen != FATX_ENTRY_DELETED) ? entry->name.length() : FATX_ENTRY_DELETED;
+    bool wantsToWriteClusterChain = (clusterChain.size() > 0);
+
+    if (wantsToWriteClusterChain && entry->startingCluster != clusterChain.at(0))
+        throw std::string("FATX: Entry starting cluster does not match with cluster chain.");
+
+    device->SetPosition(entry->address);
+    device->Write(nameLen);
+    device->Write(entry->fileAttributes);
+    device->Write(entry->name, FATX_ENTRY_MAX_NAME_LENGTH, false, 0xFF);
+    device->Write(entry->startingCluster);
+    device->Write(entry->fileSize);
+    device->Write(entry->creationDate);
+    device->Write(entry->lastWriteDate);
+    device->Write(entry->lastAccessDate);
+
+    if (wantsToWriteClusterChain)
+    {
+        setAllClusters(entry->partition, entry->clusterChain, FAT_CLUSTER_AVAILABLE);
+        writeClusterChain(entry->partition, entry->startingCluster, clusterChain);
+    }
+}
+
+void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vector<DWORD> clusterChain)
+{
+    if (startingCluster == 0 || clusterChain.size() == 0)
+        return;
+    else if (startingCluster > part->clusterCount)
+        throw std::string("FATX: Cluster is greater than cluster count.");
+
+    bool clusterSizeIs16 = part->clusterEntrySize == FAT16;
+    DWORD previousCluster = startingCluster;
+
+    clusterChain.push_back(FAT_CLUSTER_LAST);
+
+    for (int i = 0; i < clusterChain.size(); i++)
+    {
+        device->SetPosition(part->address + 0x1000 + (previousCluster * part->clusterEntrySize));
+
+        if (clusterSizeIs16)
+            device->Write((WORD)clusterChain.at(i));
+        else
+            device->Write((DWORD)clusterChain.at(i));
+
+        previousCluster = clusterChain.at(i);
+    }
+
+    device->SetPosition(part->address + 0x1000 + (previousCluster * part->clusterEntrySize));
+}
+
+void FatxIO::setAllClusters(Partition *part, std::vector<DWORD> clusters, DWORD value)
+{
+    bool clusterSizeIs16 = part->clusterEntrySize == FAT16;
+
+    for (int i = 0; i < clusters.size(); i++)
+    {
+        device->SetPosition(part->address + 0x1000 + (clusters.at(i) * part->clusterEntrySize));
+
+        if (clusterSizeIs16)
+            device->Write((WORD)value);
+        else
+            device->Write((DWORD)value);
+
+    }
 }
 
 void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL)
@@ -101,9 +223,7 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
     // seek to the beggining of the file
     SetPosition(0);
 
-    // open the new file
-    FileIO outFile(savePath, true);
-
+    // calculate stuff
     DWORD bufferSize = (entry->fileSize / 0x10);
     if (bufferSize < 0x10000)
         bufferSize = 0x10000;
@@ -140,6 +260,9 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
         modulus = 1;
     else if (modulus > 3)
         modulus = 3;
+
+    // open the new file
+    FileIO outFile(savePath, true);
 
     // read all the data in
     for (DWORD i = 0; i < readRanges.size(); i++)
