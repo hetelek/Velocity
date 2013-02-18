@@ -37,11 +37,8 @@ void MultiProgressDialog::start()
             } 
             break;
         case FileSystemFATX:
-            for (DWORD i = 0; i < filesToExtract.size(); i++)
-            {
-                FatxFileEntry *entry = reinterpret_cast<FatxFileEntry*>(filesToExtract.at(i));
-                overallProgressTotal += (entry->fileSize + 0xFFFF) / 0x10000;
-            }
+            overallProgressTotal = 0;
+            ui->progressBar_2->setTextVisible(false);
             break;
     }
 
@@ -108,6 +105,9 @@ void MultiProgressDialog::extractNextFile()
         }
         case FileSystemFATX:
         {
+            // update groupbox text
+            ui->groupBox_2->setTitle("Overall Progress - " + QString::number(fileIndex + 1) + " of " + QString::number(filesToExtract.size()));
+
             // get the file entry
             FatxFileEntry *entry = reinterpret_cast<FatxFileEntry*>(filesToExtract.at(fileIndex++));
 
@@ -140,9 +140,12 @@ void updateProgress(void *form, DWORD curProgress, DWORD total)
     dialog->ui->progressBar->setValue(curProgress);
     dialog->ui->progressBar->setMaximum(total);
 
-    dialog->overallProgress += (curProgress - dialog->prevProgress);
-    dialog->ui->progressBar_2->setValue(dialog->overallProgress);
-    dialog->prevProgress = curProgress;
+    if (dialog->system != FileSystemFATX)
+    {
+        dialog->overallProgress += (curProgress - dialog->prevProgress);
+        dialog->ui->progressBar_2->setValue(dialog->overallProgress);
+        dialog->prevProgress = curProgress;
+    }
 
     if (curProgress == total)
         dialog->extractNextFile();
