@@ -71,20 +71,23 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
             if (items.size() < 1)
                 return;
 
-            // get the entry
-            FatxFileEntry *entry = items.at(0)->data(0, Qt::UserRole).value<FatxFileEntry*>();
+            QList<void*> filesToExtract;
+
+            // get the entries
+            for (int i = 0; i < items.size(); i++)
+                filesToExtract.push_back(items.at(0)->data(0, Qt::UserRole).value<FatxFileEntry*>());
 
             // get the save path
-            QString path = QFileDialog::getSaveFileName(this, "Save Location", QDesktopServices::storageLocation(QDesktopServices::DesktopLocation) + "/" + QString::fromStdString(entry->name));
+            QString path = QFileDialog::getExistingDirectory(this, "Save Location", QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
 
             if (path.isEmpty())
                 return;
 
-            // save the entry to disk
-            FatxIO io = currentDrive->GetFatxIO(entry);
-            io.SaveFile(path.toStdString());
-
-            QMessageBox::information(this, "Success", "Successfully copied the file(s).\n");
+            // save the file to the local disk
+            MultiProgressDialog *dialog = new MultiProgressDialog(FileSystemFATX, currentDrive, path + "/", filesToExtract, this);
+            dialog->setModal(true);
+            dialog->show();
+            dialog->start();
         }
     }
     catch (std::string error)

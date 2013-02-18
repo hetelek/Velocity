@@ -17,7 +17,6 @@ MultiProgressDialog::~MultiProgressDialog()
 void MultiProgressDialog::start()
 {
     // calculate the total overall progress
-
     switch(system)
     {
         case FileSystemSTFS:
@@ -36,6 +35,13 @@ void MultiProgressDialog::start()
                 GdfxFileEntry *entry = reinterpret_cast<GdfxFileEntry*>(filesToExtract.at(i));
                 overallProgressTotal += (entry->size + 0xFFFF) / 0x10000;
             } 
+            break;
+        case FileSystemFATX:
+            for (DWORD i = 0; i < filesToExtract.size(); i++)
+            {
+                FatxFileEntry *entry = reinterpret_cast<FatxFileEntry*>(filesToExtract.at(i));
+                overallProgressTotal += (entry->fileSize + 0xFFFF) / 0x10000;
+            }
             break;
     }
 
@@ -98,6 +104,28 @@ void MultiProgressDialog::extractNextFile()
                 QMessageBox::critical(this, "", "An error occurred while extracting files.\n\n" + QString::fromStdString(error));
             }
 
+            break;
+        }
+        case FileSystemFATX:
+        {
+            // get the file entry
+            FatxFileEntry *entry = reinterpret_cast<FatxFileEntry*>(filesToExtract.at(fileIndex++));
+
+            setWindowTitle("Extracting " + QString::fromStdString(entry->name));
+
+            // get the file from the device
+            FatxDrive *drive = reinterpret_cast<FatxDrive*>(device);
+            FatxIO io = drive->GetFatxIO(entry);
+
+            try
+            {
+                // extract the file
+                io.SaveFile(outDir.toStdString() + entry->name, updateProgress, this);
+            }
+            catch (string error)
+            {
+                QMessageBox::critical(this, "", "An error occurred while extracting files.\n\n" + QString::fromStdString(error));
+            }
             break;
         }
     }

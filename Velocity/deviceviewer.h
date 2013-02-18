@@ -11,6 +11,9 @@
 #include <QDateTime>
 #include "qthelpers.h"
 
+// forms
+#include "multiprogressdialog.h"
+
 // xbox
 #include "Fatx/FatxDrive.h"
 #include "Stfs/StfsDefinitions.h"

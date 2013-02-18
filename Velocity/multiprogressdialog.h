@@ -10,6 +10,8 @@
 #include "Disc/svod.h"
 #include "IO/SvodIO.h"
 #include "Stfs/StfsPackage.h"
+#include "Fatx/FatxConstants.h"
+#include "Fatx/FatxDrive.h"
 
 namespace Ui {
 class MultiProgressDialog;
