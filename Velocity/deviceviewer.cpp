@@ -56,7 +56,7 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
     QPoint globalPos = ui->treeWidget->mapToGlobal(point);
     QMenu contextMenu;
 
-    contextMenu.addAction(QPixmap(":/Images/extract.png"), "Extract Selected");
+    contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
 
     QAction *selectedItem = contextMenu.exec(globalPos);
     if(selectedItem == NULL)
@@ -66,7 +66,7 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
 
     try
     {
-        if (selectedItem->text() == "Extract Selected")
+        if (selectedItem->text() == "Copy Selected to Local Disk")
         {
             if (items.size() < 1)
                 return;
@@ -83,6 +83,8 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
             // save the entry to disk
             FatxIO io = currentDrive->GetFatxIO(entry);
             io.SaveFile(path.toStdString());
+
+            QMessageBox::information(this, "Success", "Successfully copied the file(s).\n");
         }
     }
     catch (std::string error)
