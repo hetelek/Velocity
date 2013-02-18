@@ -67,8 +67,6 @@ SOURCES += main.cpp \
     propertiesdialog.cpp \
     addressconverterdialog.cpp \
     stfstoolsdialog.cpp \
-    progressdialog.cpp \
-    stfsworkerthread.cpp \
     singleprogressdialog.cpp \
     profilecreatorwizard.cpp \
     themecreationwizard.cpp \
@@ -111,8 +109,6 @@ HEADERS  += mainwindow.h \
     propertiesdialog.h \
     addressconverterdialog.h \
     stfstoolsdialog.h \
-    progressdialog.h \
-    stfsworkerthread.h \
     singleprogressdialog.h \
     profilecreatorwizard.h \
     themecreationwizard.h \
@@ -156,7 +152,6 @@ FORMS    += mainwindow.ui \
     propertiesdialog.ui \
     addressconverterdialog.ui \
     stfstoolsdialog.ui \
-    progressdialog.ui \
     singleprogressdialog.ui \
     profilecreatorwizard.ui \
     themecreationwizard.ui \
