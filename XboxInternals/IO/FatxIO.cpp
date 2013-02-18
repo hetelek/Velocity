@@ -62,15 +62,18 @@ void FatxIO::ReadBytes(BYTE *outBuffer, DWORD len)
 {
     // get the length
     DWORD origLen = len;
+    DWORD bytesToRead = 0;
 
     while (len > 0)
     {
+        // update the position
+        SetPosition(pos + bytesToRead);
+
         // calculate how many bytes to read
-        DWORD bytesToRead = (len <= maxReadConsecutive) ? len : maxReadConsecutive;
+        bytesToRead = (len <= maxReadConsecutive) ? len : maxReadConsecutive;
         device->ReadBytes(outBuffer + (origLen - len), bytesToRead);
 
-        // update the position and length
-        SetPosition(pos + bytesToRead);
+        // update the length
         len -= bytesToRead;
     }
 }
