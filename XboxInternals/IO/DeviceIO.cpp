@@ -18,83 +18,101 @@ DeviceIO::DeviceIO(std::wstring devicePath)
 
 void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
 {
-    #ifdef _WIN32
-        if (deviceHandle == INVALID_HANDLE_VALUE)
-            throw std::string("DeviceIO: INVALID_HANDLE_VALUE.\n");
-    #endif
-
-    // don't let the count exceed the drive length
-    if (pos + len > DriveLength())
-        len = (int)((pos >= DriveLength()) ? 0 : DriveLength() - pos);
-
-    // nothing to do
-    if (len == 0)
-        return;
-
-    BYTE maxSectors = (BYTE)(UP_TO_NEAREST_SECTOR(len + (pos - realPosition())) / 0x200); // This is the number of sectors we have to read
-    int bytesToShaveOffBeginning = (int)(pos - realPosition());	// Number of bytes to remove from the beginning of the buffer
-    int bytesToShaveOffEnd = (int)(UP_TO_NEAREST_SECTOR(pos + len) - (pos + len));
-    int bytesThatAreInLastDataRead = 0x200 - bytesToShaveOffBeginning;
-
-    int allDataLength = bytesToShaveOffBeginning + len + bytesToShaveOffEnd;
-
-    if (maxSectors != allDataLength / 0x200)
-        throw std::string("DeviceIO: MaxSectors != AllDataLength / 0x200.\n");
-
-    BYTE *allData = 0;
-    DWORD bytesRead;
-
-    // If the last time we cached data wasn't at this offset
-    if (lastReadOffset != realPosition())
+    UINT64 endingPos = pos + len;
+    if ((pos & 0x1FF) == 0 && (len & 0x1FF) == 0)
     {
-        // Cache
+        #ifdef _WIN32
+            ReadFile(
+                deviceHandle,	// Device to read from
+                outBuffer,      // Output buffer
+                len,			// Length to read
+                NULL,           // Pointer to the number of bytes read
+                &offset);		// OVERLAPPED structure containing the offset to read from
+        #else
+            read(device, lastReadData, 0x200);
+        #endif
+
+        SetPosition(endingPos);
+
+        return;
+    }
+
+    UINT64 originalPos = pos;
+    SetPosition(DOWN_TO_NEAREST_SECTOR(pos));
+
+    if (lastReadOffset != pos)
+    {
         #ifdef _WIN32
                 ReadFile(
                     deviceHandle,	// Device to read from
                     lastReadData,	// Output buffer
-                    0x200,			// Read the last sector
-                    &bytesRead,		// Pointer to the number of bytes read
+                    0x200,			// Length to read
+                    NULL,           // Pointer to the number of bytes read
                     &offset);		// OVERLAPPED structure containing the offset to read from
         #else
                 read(device, lastReadData, 0x200);
         #endif
-        lastReadOffset = realPosition();
     }
+    lastReadOffset = pos;
 
-    if (bytesThatAreInLastDataRead <= len)
-        SetPosition(pos + bytesThatAreInLastDataRead);
-    else
-        SetPosition(pos + len);
+    // copy over the data requested
+    WORD bytesLeftInSector = 0x200 - (originalPos & 0x1FF);
+    WORD neededBytes = (len > bytesLeftInSector) ? bytesLeftInSector : len;
+    memcpy(outBuffer, lastReadData + (originalPos & 0x1FF), neededBytes);
 
-    if (maxSectors > 1)
+    len -= neededBytes;
+    outBuffer += neededBytes;
+
+    if (len == 0)
     {
-        allData = new BYTE[allDataLength - 0x200];
-
-        // Read for all sectors EXCEPT the last one
-        #ifdef _WIN32
-                ReadFile(
-                    deviceHandle,	// Device to read from
-                    allData,		// Output buffer
-                    allDataLength - 0x200,	// Read the last sector
-                    &bytesRead,		// Pointer to the number of bytes read
-                    &offset);		// OVERLAPPED structure containing the offset to read from
-        #else
-                read(device, allData, allDataLength - 0x200);
-        #endif
-
-        SetPosition(pos + (len - bytesThatAreInLastDataRead));
+        SetPosition(endingPos);
+        return;
     }
 
-    int countRead = ((bytesThatAreInLastDataRead <= len) ? bytesThatAreInLastDataRead : len);
-    memcpy(outBuffer, lastReadData + bytesToShaveOffBeginning, countRead);
-    if (allData)
+    // seek to the next sector
+    SetPosition(pos + 0x200); // 0x200
+
+    INT64 downTo = DOWN_TO_NEAREST_SECTOR(len);
+
+    // read the consecutive sectors
+    #ifdef _WIN32
+            ReadFile(
+                deviceHandle,                       // Device to read from
+                outBuffer,                          // Output buffer
+                downTo,                             // Length to read
+                NULL,                               // Pointer to the number of bytes read
+                &offset);                           // OVERLAPPED structure containing the offset to read from
+    #else
+            read(device, lastReadData, 0x200);
+    #endif
+
+    // update all our values
+    SetPosition(DOWN_TO_NEAREST_SECTOR(endingPos));
+    outBuffer += downTo;
+    len &= 0x1FF;
+
+    if (len == 0)
     {
-        memcpy(outBuffer + bytesThatAreInLastDataRead, allData, len - bytesThatAreInLastDataRead);
-
-        // Cache
-        memcpy(&lastReadData, allData + allDataLength - ((0x200 * 2)), 0x200);
-        delete[] allData;
+        SetPosition(endingPos);
+        return;
     }
+
+    // read the stragglers
+    #ifdef _WIN32
+            ReadFile(
+                deviceHandle,                       // Device to read from
+                lastReadData,                       // Output buffer
+                0x200,                              // Length to read
+                NULL,                               // Pointer to the number of bytes read
+                &offset);                           // OVERLAPPED structure containing the offset to read from
+    #else
+            read(device, lastReadData, 0x200);
+    #endif
+
+    // copy over the requested data
+    memcpy(outBuffer, lastReadData, len);
+
+    SetPosition(endingPos);
 }
 
 void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
@@ -219,8 +237,8 @@ UINT64 DeviceIO::DriveLength()
 
 void DeviceIO::SetPosition(UINT64 address, std::ios_base::seek_dir dir)
 {
-    if (dir != std::ios_base::beg)
-        throw std::string("DeviceIO: Unsupported seek direction\n");
+    //if (dir != std::ios_base::beg)
+        //throw std::string("DeviceIO: Unsupported seek direction\n");
 
     pos = address;
     address = DOWN_TO_NEAREST_SECTOR(address); // Round the position down to the nearest sector offset
