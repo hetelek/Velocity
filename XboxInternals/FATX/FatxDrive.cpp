@@ -155,7 +155,7 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
         // go to the cluster offset
         io->SetPosition(ClusterToOffset(entry->partition, entry->clusterChain.at(i)));
 
-        for (int i = 0; i < entriesInCluster; i++)
+        for (int x = 0; x < entriesInCluster; x++)
         {
             // read the name length
             FatxFileEntry newEntry;

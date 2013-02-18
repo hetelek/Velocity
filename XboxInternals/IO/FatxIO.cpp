@@ -64,19 +64,27 @@ void FatxIO::ReadBytes(BYTE *outBuffer, DWORD len)
 {
     // get the length
     DWORD origLen = len;
-    DWORD bytesToRead = 0;
 
-    while (len > 0)
+    DWORD bytesToRead = (len <= maxReadConsecutive) ? len : maxReadConsecutive;
+    device->ReadBytes(outBuffer, bytesToRead);
+    len -= bytesToRead;
+    SetPosition(pos + bytesToRead);
+
+    while (len >= entry->partition->clusterSize)
     {
         // calculate how many bytes to read
-        bytesToRead = (len <= maxReadConsecutive) ? len : maxReadConsecutive;
-        device->ReadBytes(outBuffer + (origLen - len), bytesToRead);
+        device->ReadBytes(outBuffer + (origLen - len), maxReadConsecutive);
 
         // update the position
-        SetPosition(pos + bytesToRead);
+        SetPosition(pos + maxReadConsecutive);
 
         // update the length
-        len -= bytesToRead;
+        len -= maxReadConsecutive;
+    }
+
+    if (len > 0)
+    {
+        device->ReadBytes(outBuffer + (origLen - len), len);
     }
 }
 
