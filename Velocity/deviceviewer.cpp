@@ -36,12 +36,19 @@ void DeviceViewer::on_pushButton_clicked()
         // open the drive
         currentDrive = new FatxDrive(ui->lineEdit->text().toStdWString());
 
-        // load the device information
+        // load the security blob
         ui->lblFirmwareRevision->setText(QString::fromStdString(currentDrive->securityBlob.firmwareRevision).trimmed());
         ui->lblModelNumber->setText(QString::fromStdString(currentDrive->securityBlob.modelNumber).trimmed());
         ui->lblSerialNumber->setText(QString::fromStdString(currentDrive->securityBlob.serialNumber).trimmed());
         ui->lblSectors->setText("0x" + QString::number(currentDrive->securityBlob.userAddressableSectors, 16).toUpper());
         ui->lblValidSignature->setText(((currentDrive->securityBlob.validSignature) ? "Yes" : "No"));
+
+        // load the partion information
+        std::vector<Partition*> parts = currentDrive->GetPartitions();
+        for (DWORD i = 0; i < parts.size(); i++)
+            ui->comboBox->addItem(QString::fromStdString(parts.at(i)->name));
+        ui->comboBox->setCurrentIndex(0);
+        ui->comboBox->setEnabled(true);
     }
     catch (std::string error)
     {
@@ -168,11 +175,11 @@ void DeviceViewer::LoadFolder(FatxFileEntry *folder)
                 QtHelpers::GetFileIcon(magic, QString::fromStdString(entry->name), fileIcon, *entryItem);
 
                 entryItem->setIcon(0, fileIcon);
+                entryItem->setText(1, QString::fromStdString(ByteSizeToString(entry->fileSize)));
             }
 
             // setup the text
             entryItem->setText(0, QString::fromStdString(entry->name));
-            entryItem->setText(1, QString::fromStdString(ByteSizeToString(entry->fileSize)));
             entryItem->setText(2, "0x" + QString::number(entry->startingCluster, 16).toUpper());
 
             MSTime createdtime = DWORDToMSTime(entry->creationDate);
@@ -216,8 +223,22 @@ void DeviceViewer::LoadPartitions()
         item->setIcon(0, QIcon(":/Images/partition.png"));
 
         item->setText(0, QString::fromStdString(parts.at(i)->name));
+        item->setText(1, QString::fromStdString(ByteSizeToString(parts.at(i)->size)));
         item->setData(0, Qt::UserRole, QVariant::fromValue(parts.at(i)));
     }
 
     currentIndex = -1;
+}
+
+void DeviceViewer::on_comboBox_currentIndexChanged(int index)
+{
+    if (index < 0)
+        return;
+
+    std::vector<Partition*> parts = currentDrive->GetPartitions();
+    Partition* part = parts.at(index);
+    ui->lblPartID->setText("0x" + QString::number(part->partitionId, 16).toUpper());
+    ui->lblPartSize->setText(QString::fromStdString(ByteSizeToString(part->size)));
+    ui->lblPartClusterSize->setText("0x" + QString::number(part->clusterSize, 16).toUpper());
+    ui->lblPartFirstClusterAddr->setText("0x" + QString::number(part->clusterStartingAddress, 16).toUpper());
 }

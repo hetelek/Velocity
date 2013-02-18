@@ -39,6 +39,8 @@ private slots:
     void on_treeWidget_doubleClicked(const QModelIndex &index);
     void on_btnBack_clicked();
 
+    void on_comboBox_currentIndexChanged(int index);
+
 private:
     Ui::DeviceViewer *ui;
     FatxDrive *currentDrive;
