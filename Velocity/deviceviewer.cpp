@@ -75,7 +75,7 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
 
             // get the entries
             for (int i = 0; i < items.size(); i++)
-                filesToExtract.push_back(items.at(0)->data(0, Qt::UserRole).value<FatxFileEntry*>());
+                filesToExtract.push_back(items.at(i)->data(0, Qt::UserRole).value<FatxFileEntry*>());
 
             // get the save path
             QString path = QFileDialog::getExistingDirectory(this, "Save Location", QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
@@ -156,9 +156,16 @@ void DeviceViewer::LoadFolder(FatxFileEntry *folder)
             else
             {
                 QIcon fileIcon;
-                FatxIO io = currentDrive->GetFatxIO(entry);
-                io.SetPosition(0);
-                QtHelpers::GetFileIcon(io.ReadDword(), QString::fromStdString(entry->name), fileIcon, *entryItem);
+
+                DWORD magic = 0;
+
+                if (entry->fileSize >= 0x4)
+                {
+                    FatxIO io = currentDrive->GetFatxIO(entry);
+                    magic = io.ReadDword();
+                }
+
+                QtHelpers::GetFileIcon(magic, QString::fromStdString(entry->name), fileIcon, *entryItem);
 
                 entryItem->setIcon(0, fileIcon);
             }
