@@ -94,10 +94,6 @@ void FatxIO::WriteBytes(BYTE *buffer, DWORD len)
 
 void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL)
 {
-    /*
-      Should have gotten up before 1.
-    */
-
     // get the current position
     INT64 pos;
     INT64 originalPos = device->GetPosition();
@@ -108,8 +104,14 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
     // open the new file
     FileIO outFile(savePath, true);
 
+    DWORD bufferSize = (entry->fileSize / 0x10);
+    if (bufferSize < 0x10000)
+        bufferSize = 0x10000;
+    else if (bufferSize > 0x100000)
+        bufferSize = 0x100000;
+
     std::vector<Range> readRanges;
-    BYTE *buffer = new BYTE[0x100000];
+    BYTE *buffer = new BYTE[bufferSize];
 
     // generate the read ranges
     for (DWORD i = 0; i < entry->clusterChain.size() - 1; i++)
@@ -122,7 +124,7 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
         {
             range.len += entry->partition->clusterSize;
         }
-        while ((entry->clusterChain.at(i) + 1) == entry->clusterChain.at(++i) && i < (entry->clusterChain.size() - 2) && range.len < 0x100000);
+        while ((entry->clusterChain.at(i) + 1) == entry->clusterChain.at(++i) && i < (entry->clusterChain.size() - 2) && range.len < bufferSize);
         i--;
 
         readRanges.push_back(range);
