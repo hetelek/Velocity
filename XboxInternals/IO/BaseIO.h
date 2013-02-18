@@ -63,7 +63,7 @@ public:
     void Write(INT24 i24, EndianType et = Default);
     void Write(DWORD dw);
     void Write(UINT64 u64);
-    void Write(string s, int forceLen = -1, bool nullTerminating = true);
+    void Write(string s, int forceLen = -1, bool nullTerminating = true, BYTE nullTerminator = 0);
     void Write(wstring ws, bool nullTerminating = true);
     void Write(BYTE *buffer, DWORD len);
 

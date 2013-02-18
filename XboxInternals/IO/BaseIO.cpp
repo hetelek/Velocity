@@ -238,7 +238,7 @@ void BaseIO::Write(UINT64 u64)
     WriteBytes(reinterpret_cast<BYTE*>(&u64), 8);
 }
 
-void BaseIO::Write(string s, int forceLen, bool nullTerminating)
+void BaseIO::Write(string s, int forceLen, bool nullTerminating, BYTE nullTerminator)
 {
     WriteBytes(s.c_str(), s.length() + nullTerminating);
 
@@ -247,7 +247,7 @@ void BaseIO::Write(string s, int forceLen, bool nullTerminating)
         forceLen -= s.size();
 
         for (int i = 0; i < forceLen; i++)
-            Write((BYTE)0);
+            Write(nullTerminator);
     }
 }
 
