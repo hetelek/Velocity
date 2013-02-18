@@ -70,8 +70,7 @@ string LicenseTypeToString(LicenseType type)
     }
 }
 
-
-XBOXINTERNALSSHARED_EXPORT string ByteSizeToString(DWORD bytes)
+XBOXINTERNALSSHARED_EXPORT string ByteSizeToString(UINT64 bytes)
 {
     DWORD B = 1; //byte
     DWORD KB = 1024 * B; //kilobyte
