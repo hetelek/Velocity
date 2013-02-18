@@ -41,7 +41,8 @@ enum OnlineContentResumeState
 enum FileSystem
 {
     FileSystemSTFS = 0,
-    FileSystemSVOD
+    FileSystemSVOD,
+    FileSystemFATX
 };
 
 class XBOXINTERNALSSHARED_EXPORT XContentHeader
