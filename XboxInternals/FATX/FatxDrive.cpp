@@ -153,7 +153,7 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
     for (int i = 0; i < entry->clusterChain.size(); i++)
     {
         // go to the cluster offset
-        io->SetPosition(ClusterToOffset(entry->partition, entry->clusterChain.at(i)));
+        io->SetPosition(FatxIO::ClusterToOffset(entry->partition, entry->clusterChain.at(i)));
 
         for (int x = 0; x < entriesInCluster; x++)
         {
@@ -231,11 +231,6 @@ void FatxDrive::ReadClusterChain(FatxFileEntry *entry)
 void FatxDrive::Close()
 {
     io->Close();
-}
-
-INT64 FatxDrive::ClusterToOffset(Partition *part, DWORD cluster)
-{
-    return part->clusterStartingAddress + (part->clusterSize * (INT64)(cluster - 1));
 }
 
 BYTE FatxDrive::cntlzw(DWORD x)
