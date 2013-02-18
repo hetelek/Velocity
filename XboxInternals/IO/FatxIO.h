@@ -5,6 +5,15 @@
 #include "FileIO.h"
 #include "../Fatx/FatxConstants.h"
 
+#include <iostream>
+#include <vector>
+
+struct Range
+{
+    UINT64 start;
+    UINT64 len;
+};
+
 class XBOXINTERNALSSHARED_EXPORT FatxIO : public BaseIO
 {
 public:
