@@ -95,12 +95,7 @@ void FatxIO::WriteBytes(BYTE *buffer, DWORD len)
 void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL)
 {
     /*
-      Got this thing down to 20s for that one file. The only problem is that it doesn't work for
-      extracting some of the profiles. It works fine for that halo map pack though, the CRCs match.
-      The progress is screwed up too, I know why but I'm not sure how we'll fix that. For the profiles
-      it's doing the same thing that it was before. I know that you fixed it but I'm too lazy to go
-      back and figure out what you changed. I expect this to be fixed by the time that I wake up,
-      if you don't, there will be consequences.
+      Should have gotten up before 1.
     */
 
     // get the current position
@@ -117,19 +112,26 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
     BYTE *buffer = new BYTE[0x50000];
 
     // generate the read ranges
-    for (DWORD i = 0; i < entry->clusterChain.size(); i++)
+    for (DWORD i = 0; i < entry->clusterChain.size() - 1; i++)
     {
         // calculate cluster's address
-        pos = (entry->partition->clusterStartingAddress + (entry->partition->clusterSize * (INT64)(entry->clusterChain.at(i) - 1)));
+        pos = ClusterToOffset(entry->partition, entry->clusterChain.at(i));
 
         Range range = { pos, 0 };
         do
         {
             range.len += entry->partition->clusterSize;
         }
-        while (i < (entry->clusterChain.size() -1) && range.len < 0x50000 && (entry->clusterChain.at(i) + 1) == entry->clusterChain.at(++i));
+        while ((entry->clusterChain.at(i) + 1) == entry->clusterChain.at(++i) && i < (entry->clusterChain.size() - 2) && range.len < 0x50000);
+        i--;
+
         readRanges.push_back(range);
     }
+
+    DWORD finalClusterSize = entry->fileSize % entry->partition->clusterSize;
+    INT64 finalClusterOffset = ClusterToOffset(entry->partition, entry->clusterChain.at(entry->clusterChain.size() - 1));
+    Range lastRange = { finalClusterOffset , (finalClusterSize == 0) ? entry->partition->clusterSize : finalClusterSize};
+    readRanges.push_back(lastRange);
 
     // read all the data in
     for (DWORD i = 0; i < readRanges.size(); i++)
@@ -152,60 +154,9 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
     delete[] buffer;
 
     device->SetPosition(originalPos);
-
-    // initialization
-   /* BYTE *buffer = new BYTE[0x10000];
-    DWORD fileLen = entry->fileSize;
-    DWORD total = (fileLen + 0xFFFF) / 0x10000;
-    DWORD cur = 0;
-
-    // extract by 0x10000 byte buffers
-    while (fileLen >= 0x10000)
-    {
-        ReadBytes(buffer, 0x10000);
-        outFile.Write(buffer, 0x10000);
-        fileLen -= 0x10000;
-
-        // update progress
-        if (progress)
-            progress(arg, cur++, total);
-    }
-
-    // pick up any slack
-    if (fileLen != 0)
-    {
-        ReadBytes(buffer, fileLen);
-        outFile.Write(buffer, fileLen);
-    }
-
-    // update progress
-    if (progress)
-        progress(arg, total, total);
-
-    // cleanup
-    outFile.Close();
-    delete[] buffer;
-
-    // set the original position
-    device->SetPosition(pos);*/
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+INT64 FatxIO::ClusterToOffset(Partition *part, DWORD cluster)
+{
+    return part->clusterStartingAddress + (part->clusterSize * (INT64)(cluster - 1));
+}

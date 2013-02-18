@@ -35,6 +35,9 @@ public:
 
     void SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
+    // convert a cluster to an offset
+    static INT64 ClusterToOffset(Partition *part, DWORD cluster);
+
 private:
     DeviceIO *device;
     FatxFileEntry *entry;
