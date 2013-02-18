@@ -22,7 +22,10 @@ std::vector<Partition*> FatxDrive::GetPartitions()
 
 FatxIO FatxDrive::GetFatxIO(FatxFileEntry *entry)
 {
-    ReadClusterChain(entry);
+    // only if it hasn't been read yet
+    if (entry->clusterChain.size() == 0)
+        ReadClusterChain(entry);
+
     return FatxIO(io, entry);
 }
 
@@ -98,42 +101,7 @@ void FatxDrive::processBootSector(Partition *part)
     part->root.name = "Root";
     part->root.partition = part;
     part->root.fileAttributes = FatxDirectory;
-}
-
-std::vector<DWORD> FatxDrive::getFreeClusters(Partition *part, DWORD count)
-{
-    io->SetPosition(part->address + 0x1000 + (part->clusterEntrySize * part->lastFreeClusterFound));
-
-    std::vector<DWORD> freeClusters;
-
-    DWORD currentCluster = 1;
-    DWORD cluster;
-
-    while (count != 0 && currentCluster != part->clusterCount)
-    {
-        currentCluster++;
-        switch (part->clusterEntrySize)
-        {
-            case FAT32:
-                if (io->ReadDword() == FAT_CLUSTER_AVAILABLE)
-                {
-                    freeClusters.push_back(currentCluster);
-                    part->lastFreeClusterFound = currentCluster + 1;
-                    count--;
-                }
-                break;
-            case FAT16:
-                if (io->ReadWord() == FAT_CLUSTER16_AVAILABLE)
-                {
-                    freeClusters.push_back(currentCluster);
-                    part->lastFreeClusterFound = currentCluster + 1;
-                    count--;
-                }
-                break;
-        }
-    }
-
-    return freeClusters;
+    part->root.address = -1;
 }
 
 void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
@@ -152,8 +120,10 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
     // read all entries
     for (int i = 0; i < entry->clusterChain.size(); i++)
     {
+        UINT64 posCur = FatxIO::ClusterToOffset(entry->partition, entry->clusterChain.at(i));
+
         // go to the cluster offset
-        io->SetPosition(FatxIO::ClusterToOffset(entry->partition, entry->clusterChain.at(i)));
+        io->SetPosition(posCur);
 
         for (int x = 0; x < entriesInCluster; x++)
         {
@@ -164,6 +134,9 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
             // check if there are no more entries
             if (newEntry.nameLen == 0xFF || newEntry.nameLen == 0)
                 break;
+
+            // calcualte the address
+            newEntry.address = posCur + (x * 0x40);
 
             // read the attributes
             newEntry.fileAttributes = io->ReadByte();
