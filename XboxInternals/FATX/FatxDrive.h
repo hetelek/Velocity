@@ -35,9 +35,6 @@ public:
     SecurityInfo securityBlob;
 
 private:
-    // find count amount of free custers
-    std::vector<DWORD> getFreeClusters(Partition *part, DWORD count);
-
     // open up a physical drive
     void loadFatxDrive(std::wstring drivePath);
 
