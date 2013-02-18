@@ -47,8 +47,10 @@ void DeviceViewer::on_pushButton_clicked()
         std::vector<Partition*> parts = currentDrive->GetPartitions();
         for (DWORD i = 0; i < parts.size(); i++)
             ui->comboBox->addItem(QString::fromStdString(parts.at(i)->name));
+
         ui->comboBox->setCurrentIndex(0);
         ui->comboBox->setEnabled(true);
+        ui->btnClusterTool->setEnabled(true);
     }
     catch (std::string error)
     {
@@ -241,4 +243,10 @@ void DeviceViewer::on_comboBox_currentIndexChanged(int index)
     ui->lblPartSize->setText(QString::fromStdString(ByteSizeToString(part->size)));
     ui->lblPartClusterSize->setText("0x" + QString::number(part->clusterSize, 16).toUpper());
     ui->lblPartFirstClusterAddr->setText("0x" + QString::number(part->clusterStartingAddress, 16).toUpper());
+}
+
+void DeviceViewer::on_btnClusterTool_clicked()
+{
+    ClusterToolDialog dialog(currentDrive->GetPartitions().at(ui->comboBox->currentIndex()), this);
+    dialog.exec();
 }

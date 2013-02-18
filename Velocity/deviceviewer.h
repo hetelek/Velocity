@@ -13,6 +13,7 @@
 
 // forms
 #include "multiprogressdialog.h"
+#include "clustertooldialog.h"
 
 // xbox
 #include "Fatx/FatxDrive.h"
@@ -40,6 +41,8 @@ private slots:
     void on_btnBack_clicked();
 
     void on_comboBox_currentIndexChanged(int index);
+
+    void on_btnClusterTool_clicked();
 
 private:
     Ui::DeviceViewer *ui;

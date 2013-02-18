@@ -89,7 +89,8 @@ SOURCES += main.cpp \
     svodvolumedescriptordialog.cpp \
     multiprogressdialog.cpp \
     ytgrdialog.cpp \
-    deviceviewer.cpp
+    deviceviewer.cpp \
+    clustertooldialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -133,7 +134,8 @@ HEADERS  += mainwindow.h \
     PluginInterfaces/igpdmodder.h \
     PluginInterfaces/igamemodder.h \
     ytgrdialog.h \
-    deviceviewer.h
+    deviceviewer.h \
+    clustertooldialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -169,7 +171,8 @@ FORMS    += mainwindow.ui \
     stfsvolumedescriptordialog.ui \
     multiprogressdialog.ui \
     ytgrdialog.ui \
-    deviceviewer.ui
+    deviceviewer.ui \
+    clustertooldialog.ui
 
 RESOURCES += \
     Resources.qrc
