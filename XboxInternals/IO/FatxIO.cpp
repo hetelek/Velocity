@@ -52,23 +52,25 @@ void FatxIO::Close()
 
 void FatxIO::AllocateMemory(DWORD byteAmount)
 {
-    DWORD clusterCount = byteAmount / entry->partition->clusterSize;
+    // calcualte how many clusters to allocate
+    DWORD clusterCount = (byteAmount + (entry->fileSize % entry->partition->clusterSize)) / entry->partition->clusterSize;
 
-    if (clusterCount == 0)
-        clusterCount = 1;
-
+    // get the free clusters
     std::vector<DWORD> freeClusters = getFreeClusters(entry->partition, clusterCount);
     if (freeClusters.size() != clusterCount)
-        throw std::string("FATX: Cannot found requested amount of free clusters.\n");
+        throw std::string("FATX: Cannot find requested amount of free clusters.\n");
 
     // add the free clusters to the cluster chain
     for (int i = 0; i < freeClusters.size(); i++)
         entry->clusterChain.push_back(freeClusters.at(i));
 
-    writeClusterChain(entry->partition, entry->startingCluster, entry->clusterChain);
+    // write the cluster chain (only if it's changed)
+    if (clusterCount != 0)
+        writeClusterChain(entry->partition, entry->startingCluster, &entry->clusterChain);
 
+    // update the file size
     entry->fileSize += byteAmount;
-    rewriteEntryToDisk(entry, entry->clusterChain);
+    rewriteEntryToDisk(entry);
 }
 
 UINT64 FatxIO::GetPosition()
@@ -76,9 +78,9 @@ UINT64 FatxIO::GetPosition()
     return pos;
 }
 
-FatxFileEntry FatxIO::GetFatxFileEntry()
+FatxFileEntry* FatxIO::GetFatxFileEntry()
 {
-    return *entry;
+    return entry;
 }
 
 void FatxIO::ReadBytes(BYTE *outBuffer, DWORD len)
@@ -167,12 +169,12 @@ std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
     return freeClusters;
 }
 
-void FatxIO::rewriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> clusterChain)
+void FatxIO::rewriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> *clusterChain)
 {
     BYTE nameLen = (entry->nameLen != FATX_ENTRY_DELETED) ? entry->name.length() : FATX_ENTRY_DELETED;
-    bool wantsToWriteClusterChain = (clusterChain.size() > 0);
+    bool wantsToWriteClusterChain = (clusterChain != NULL);
 
-    if (wantsToWriteClusterChain && entry->startingCluster != clusterChain.at(0))
+    if (wantsToWriteClusterChain && entry->startingCluster != clusterChain->at(0))
         throw std::string("FATX: Entry starting cluster does not match with cluster chain.\n");
 
     device->SetPosition(entry->address);
@@ -192,9 +194,9 @@ void FatxIO::rewriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> cluster
     }
 }
 
-void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vector<DWORD> clusterChain)
+void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vector<DWORD> *clusterChain)
 {
-    if (startingCluster == 0 || clusterChain.size() == 0)
+    if (startingCluster == 0 || clusterChain->size() == 0)
         return;
     else if (startingCluster > part->clusterCount)
         throw std::string("FATX: Cluster is greater than cluster count.\n");
@@ -202,21 +204,19 @@ void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vect
     bool clusterSizeIs16 = part->clusterEntrySize == FAT16;
     DWORD previousCluster = startingCluster;
 
-    clusterChain.push_back(FAT_CLUSTER_LAST);
+    clusterChain->push_back(FAT_CLUSTER_LAST);
 
-    for (int i = 0; i < clusterChain.size(); i++)
+    for (int i = 0; i < clusterChain->size(); i++)
     {
         device->SetPosition(part->address + 0x1000 + (previousCluster * part->clusterEntrySize));
 
         if (clusterSizeIs16)
-            device->Write((WORD)clusterChain.at(i));
+            device->Write((WORD)clusterChain->at(i));
         else
-            device->Write((DWORD)clusterChain.at(i));
+            device->Write((DWORD)clusterChain->at(i));
 
-        previousCluster = clusterChain.at(i);
+        previousCluster = clusterChain->at(i);
     }
-
-    device->SetPosition(part->address + 0x1000 + (previousCluster * part->clusterEntrySize));
 }
 
 void FatxIO::setAllClusters(Partition *part, std::vector<DWORD> clusters, DWORD value)
