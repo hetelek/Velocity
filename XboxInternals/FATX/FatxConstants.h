@@ -59,6 +59,7 @@ struct FatxFileEntry
     bool readDirectories;
     std::vector<FatxFileEntry> cachedFiles;
     std::vector<DWORD> clusterChain;
+    std::string path;
 };
 
 struct Partition

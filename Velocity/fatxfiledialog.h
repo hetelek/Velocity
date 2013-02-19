@@ -17,7 +17,7 @@ class FatxFileDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit FatxFileDialog(FatxFileEntry *entry, DWORD clusterSize, QString type, QString path, QWidget *parent = 0);
+    explicit FatxFileDialog(FatxFileEntry *entry, DWORD clusterSize, QString type, QWidget *parent);
     ~FatxFileDialog();
     
 private:

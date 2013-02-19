@@ -98,10 +98,11 @@ void FatxDrive::processBootSector(Partition *part)
     // setup the root
     part->root.startingCluster = part->rootDirectoryCluster;
     part->root.readDirectories = false;
-    part->root.name = "Root";
+    part->root.name = part->name;
     part->root.partition = part;
     part->root.fileAttributes = FatxDirectory;
     part->root.address = -1;
+    part->root.path = "Drive:\\";
 }
 
 void FatxDrive::ExtractSecurityBlob(string path)
@@ -227,6 +228,7 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
             newEntry.lastAccessDate = io->ReadDword();
             newEntry.partition = entry->partition;
             newEntry.readDirectories = false;
+            newEntry.path = entry->path + entry->name + "\\";
 
             // add it to the file cache
             entry->cachedFiles.push_back(newEntry);

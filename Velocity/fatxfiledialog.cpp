@@ -1,7 +1,7 @@
 #include "fatxfiledialog.h"
 #include "ui_fatxfiledialog.h"
 
-FatxFileDialog::FatxFileDialog(FatxFileEntry *entry, DWORD clusterSize, QString type, QString path, QWidget *parent) :
+FatxFileDialog::FatxFileDialog(FatxFileEntry *entry, DWORD clusterSize, QString type, QWidget *parent) :
     QDialog(parent), ui(new Ui::FatxFileDialog), entry(entry), type(type)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -13,7 +13,7 @@ FatxFileDialog::FatxFileDialog(FatxFileEntry *entry, DWORD clusterSize, QString 
     ui->lblModified->setText(msTimeToString(entry->lastWriteDate));
     ui->lblAccessed->setText(msTimeToString(entry->lastAccessDate));
     ui->lblTypeOfFile->setText(getFileType(QString::fromStdString(entry->name)));
-    ui->lblLocation->setText(path);
+    ui->lblLocation->setText(QString::fromStdString(entry->path));
 
     if ((entry->fileAttributes & FatxDirectory) == 0)
     {

@@ -129,7 +129,7 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
             currentDrive->CreateFileEntry(parent, &child);*/
 
             FatxFileEntry *entry = items.at(0)->data(0, Qt::UserRole).value<FatxFileEntry*>();
-            FatxFileDialog dialog(entry, entry->partition->clusterSize, items.at(0)->data(1, Qt::UserRole).toString(), ui->txtPath->text(), this);
+            FatxFileDialog dialog(entry, entry->partition->clusterSize, items.at(0)->data(1, Qt::UserRole).toString(), this);
             dialog.exec();
         }
     }
