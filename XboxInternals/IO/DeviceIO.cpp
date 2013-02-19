@@ -22,12 +22,15 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
     if ((pos & 0x1FF) == 0 && (len & 0x1FF) == 0)
     {
         #ifdef _WIN32
-            ReadFile(
+            bool success = ReadFile(
                 deviceHandle,	// Device to read from
                 outBuffer,      // Output buffer
                 len,			// Length to read
                 NULL,           // Pointer to the number of bytes read
                 &offset);		// OVERLAPPED structure containing the offset to read from
+
+            if (!success)
+                throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
         #else
             read(device, lastReadData, 0x200);
         #endif
@@ -43,12 +46,15 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
     if (lastReadOffset != pos)
     {
         #ifdef _WIN32
-                ReadFile(
+                bool success = ReadFile(
                     deviceHandle,	// Device to read from
                     lastReadData,	// Output buffer
                     0x200,			// Length to read
                     NULL,           // Pointer to the number of bytes read
                     &offset);		// OVERLAPPED structure containing the offset to read from
+
+                if (!success)
+                    throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
         #else
                 read(device, lastReadData, 0x200);
         #endif
@@ -76,12 +82,15 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
 
     // read the consecutive sectors
     #ifdef _WIN32
-            ReadFile(
+            bool success = ReadFile(
                 deviceHandle,                       // Device to read from
                 outBuffer,                          // Output buffer
                 downTo,                             // Length to read
                 NULL,                               // Pointer to the number of bytes read
                 &offset);                           // OVERLAPPED structure containing the offset to read from
+
+            if (!success)
+                throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
     #else
             read(device, lastReadData, 0x200);
     #endif
@@ -99,12 +108,15 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
 
     // read the stragglers
     #ifdef _WIN32
-            ReadFile(
+            success = ReadFile(
                 deviceHandle,                       // Device to read from
                 lastReadData,                       // Output buffer
                 0x200,                              // Length to read
                 NULL,                               // Pointer to the number of bytes read
                 &offset);                           // OVERLAPPED structure containing the offset to read from
+
+            if (!success)
+                throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
     #else
             read(device, lastReadData, 0x200);
     #endif
