@@ -154,6 +154,8 @@ void FatxDrive::CreateFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
             throw std::string("FATX: Could not calculate correct entry address.\n");
     }
 
+    parentIO.AllocateMemory(FATX_ENTRY_SIZE);
+
     newEntry->startingCluster = FAT_CLUSTER_LAST;
 
     DWORD fileSize = newEntry->fileSize;
@@ -235,6 +237,7 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
         }
     }
 
+    entry->fileSize = (entry->cachedFiles.size() * FATX_ENTRY_SIZE);
     entry->readDirectories = true;
 }
 
