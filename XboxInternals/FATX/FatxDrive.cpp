@@ -104,6 +104,30 @@ void FatxDrive::processBootSector(Partition *part)
     part->root.address = -1;
 }
 
+void FatxDrive::ExtractSecurityBlob(string path)
+{
+    INT64 originalPos = io->GetPosition();
+
+    // create a file to save to
+    FileIO outFile(path, true);
+
+    // seek to the beginning of the security blob
+    io->SetPosition(0x2000);
+
+    // allocate memory for the data
+    BYTE *buffer = new BYTE[securityBlob.msLogoSize + 0x204];
+
+    // read in the data
+    io->ReadBytes(buffer, securityBlob.msLogoSize + 0x204);
+    outFile.WriteBytes(buffer, securityBlob.msLogoSize + 0x204);
+    outFile.Flush();
+
+    // cleanup
+    delete[] buffer;
+    outFile.Close();
+    io->SetPosition(originalPos);
+}
+
 void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
 {
     // if all entries have been read, skip this

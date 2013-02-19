@@ -26,6 +26,9 @@ public:
     // populate entry's clusterChain with its cluster chain
     void ReadClusterChain(FatxFileEntry *entry);
 
+    // save the security blob to local disk
+    void ExtractSecurityBlob(string path);
+
     // close the underlying io
     void Close();
 
