@@ -42,12 +42,33 @@ void FatxIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios
 
 void FatxIO::Flush()
 {
-    // nothing to flush since it's a physical drive
+    device->Flush();
 }
 
 void FatxIO::Close()
 {
     // nothing to close since this doesn't actually have a file open
+}
+
+void FatxIO::AllocateMemory(DWORD byteAmount)
+{
+    DWORD clusterCount = byteAmount / entry->partition->clusterSize;
+
+    if (clusterCount == 0)
+        clusterCount = 1;
+
+    std::vector<DWORD> freeClusters = getFreeClusters(entry->partition, clusterCount);
+    if (freeClusters.size() != clusterCount)
+        throw std::string("FATX: Cannot found requested amount of free clusters.\n");
+
+    // add the free clusters to the cluster chain
+    for (int i = 0; i < freeClusters.size(); i++)
+        entry->clusterChain.push_back(freeClusters.at(i));
+
+    writeClusterChain(entry->partition, entry->startingCluster, entry->clusterChain);
+
+    entry->fileSize += byteAmount;
+    rewriteEntryToDisk(entry);
 }
 
 UINT64 FatxIO::GetPosition()
@@ -152,7 +173,7 @@ void FatxIO::rewriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> cluster
     bool wantsToWriteClusterChain = (clusterChain.size() > 0);
 
     if (wantsToWriteClusterChain && entry->startingCluster != clusterChain.at(0))
-        throw std::string("FATX: Entry starting cluster does not match with cluster chain.");
+        throw std::string("FATX: Entry starting cluster does not match with cluster chain.\n");
 
     device->SetPosition(entry->address);
     device->Write(nameLen);
@@ -176,7 +197,7 @@ void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vect
     if (startingCluster == 0 || clusterChain.size() == 0)
         return;
     else if (startingCluster > part->clusterCount)
-        throw std::string("FATX: Cluster is greater than cluster count.");
+        throw std::string("FATX: Cluster is greater than cluster count.\n");
 
     bool clusterSizeIs16 = part->clusterEntrySize == FAT16;
     DWORD previousCluster = startingCluster;
