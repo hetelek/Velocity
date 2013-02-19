@@ -9,12 +9,23 @@ FatxFileDialog::FatxFileDialog(FatxFileEntry *entry, DWORD clusterSize, QString 
 
     ui->txtName->setText(QString::fromStdString(entry->name));
     ui->lblCluster->setText("0x" + QString::number(entry->startingCluster, 16).toUpper());
-    ui->lblSize->setText(QString::fromStdString(ByteSizeToString(entry->fileSize)));
     ui->lblCreated->setText(msTimeToString(entry->creationDate));
     ui->lblModified->setText(msTimeToString(entry->lastWriteDate));
     ui->lblAccessed->setText(msTimeToString(entry->lastAccessDate));
     ui->lblTypeOfFile->setText(getFileType(QString::fromStdString(entry->name)));
     ui->lblLocation->setText(path);
+
+    if ((entry->fileAttributes & FatxDirectory) == 0)
+    {
+        ui->lblSize->setText(QString::fromStdString(ByteSizeToString(entry->fileSize)));
+        ui->lblSizeOnDisk->setText(QString::fromStdString(ByteSizeToString(entry->clusterChain.size() * clusterSize)));
+    }
+    else
+    {
+        // TODO: calcuate the size of directories
+        ui->lblSize->setText("N/A");
+        ui->lblSizeOnDisk->setText("N/A");
+    }
 
     ui->chArchive->setChecked(entry->fileAttributes & FatxArchive);
     ui->chDevice->setChecked(entry->fileAttributes & FatxDevice);
