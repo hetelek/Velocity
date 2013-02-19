@@ -86,7 +86,7 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
     if (hasPartitions)
         return;
 
-    if (hasFiles && !hasFolders)
+    //if (hasFiles && !hasFolders)
         contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
     contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
 
@@ -102,7 +102,13 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
 
             // get the entries
             for (int i = 0; i < items.size(); i++)
-                filesToExtract.push_back(items.at(i)->data(0, Qt::UserRole).value<FatxFileEntry*>());
+            {
+                FatxFileEntry *entry = items.at(i)->data(0, Qt::UserRole).value<FatxFileEntry*>();
+                if (entry->fileAttributes & FatxDirectory)
+                    GetSubFiles(entry, filesToExtract);
+                else
+                    filesToExtract.push_back(entry);
+            }
 
             // get the save path
             QString path = QFileDialog::getExistingDirectory(this, "Save Location", QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
@@ -111,7 +117,7 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
                 return;
 
             // save the file to the local disk
-            MultiProgressDialog *dialog = new MultiProgressDialog(FileSystemFATX, currentDrive, path + "/", filesToExtract, this);
+            MultiProgressDialog *dialog = new MultiProgressDialog(FileSystemFATX, currentDrive, path + "/", filesToExtract, this, ui->txtPath->text());
             dialog->setModal(true);
             dialog->show();
             dialog->start();
@@ -309,4 +315,18 @@ void DeviceViewer::on_btnExtractSecuritySector_clicked()
     {
         QMessageBox::critical(this, "Error", "An error occurred while extracting the security blob.\n\n" + QString::fromStdString(error));
     }
+}
+
+void DeviceViewer::GetSubFiles(FatxFileEntry *parent, QList<void *> &entries)
+{
+    if ((parent->fileAttributes & FatxDirectory) == 0)
+    {
+        entries.push_back(parent);
+        return;
+    }
+
+    currentDrive->GetChildFileEntries(parent);
+
+    for (DWORD i = 0; i < parent->cachedFiles.size(); i++)
+        GetSubFiles(&parent->cachedFiles.at(i), entries);
 }

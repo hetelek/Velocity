@@ -56,6 +56,8 @@ private:
     void LoadFolder(FatxFileEntry *folder);
 
     void LoadPartitions();
+
+    void GetSubFiles(FatxFileEntry *parent, QList<void*> &entries);
 };
 
 #endif // DEVICEVIEWER_H

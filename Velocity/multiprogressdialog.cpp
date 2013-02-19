@@ -1,9 +1,9 @@
 #include "multiprogressdialog.h"
 #include "ui_multiprogressdialog.h"
 
-MultiProgressDialog::MultiProgressDialog(FileSystem fileSystem, void *device, QString outDir, QList<void*> filesToExtract, QWidget *parent) :
+MultiProgressDialog::MultiProgressDialog(FileSystem fileSystem, void *device, QString outDir, QList<void*> filesToExtract, QWidget *parent, QString rootPath) :
     QDialog(parent),ui(new Ui::MultiProgressDialog), system(fileSystem), device(device), outDir(outDir), filesToExtract(filesToExtract),
-    fileIndex(0), overallProgress(0), overallProgressTotal(0), prevProgress(0)
+    fileIndex(0), overallProgress(0), overallProgressTotal(0), prevProgress(0), rootPath(rootPath)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -111,6 +111,9 @@ void MultiProgressDialog::extractNextFile()
             // get the file entry
             FatxFileEntry *entry = reinterpret_cast<FatxFileEntry*>(filesToExtract.at(fileIndex++));
 
+            if (entry->fileAttributes & FatxDirectory)
+                extractNextFile();
+
             setWindowTitle("Extracting " + QString::fromStdString(entry->name));
 
             // get the file from the device
@@ -119,8 +122,15 @@ void MultiProgressDialog::extractNextFile()
 
             try
             {
+                // make all the directories needed
+                QString dirPath = QDir::toNativeSeparators(outDir + QString::fromStdString(entry->path).replace(rootPath, ""));
+                QDir saveDir(dirPath);
+
+                if (!saveDir.exists())
+                    saveDir.mkpath(dirPath);
+
                 // extract the file
-                io.SaveFile(outDir.toStdString() + entry->name, updateProgress, this);
+                io.SaveFile(dirPath.toStdString() + entry->name, updateProgress, this);
             }
             catch (string error)
             {

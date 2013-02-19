@@ -4,6 +4,7 @@
 // qt
 #include <QDialog>
 #include <QMessageBox>
+#include <QDir>
 
 // xbox
 #include "Stfs/XContentHeader.h"
@@ -24,7 +25,7 @@ class MultiProgressDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit MultiProgressDialog(FileSystem fileSystem, void *device, QString outDir, QList<void*> filesToExtract, QWidget *parent = 0);
+    explicit MultiProgressDialog(FileSystem fileSystem, void *device, QString outDir, QList<void*> filesToExtract, QWidget *parent = 0, QString rootPath = "");
     ~MultiProgressDialog();
 
     void start();
@@ -39,6 +40,7 @@ private:
     DWORD overallProgress;
     DWORD overallProgressTotal;
     DWORD prevProgress;
+    QString rootPath;
 
     void extractNextFile();
 
