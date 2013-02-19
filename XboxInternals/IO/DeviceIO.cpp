@@ -188,6 +188,8 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
         #endif
     }
 
+    lastReadOffset = (pos == 0) ? 0 : pos - 0x200;
+
     // set the position
     SetPosition(finalPos);
 }
