@@ -45,6 +45,8 @@ private slots:
 
     void on_btnClusterTool_clicked();
 
+    void on_btnExtractSecuritySector_clicked();
+
 private:
     Ui::DeviceViewer *ui;
     FatxDrive *currentDrive;

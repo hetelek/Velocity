@@ -51,6 +51,8 @@ void DeviceViewer::on_pushButton_clicked()
         ui->comboBox->setCurrentIndex(0);
         ui->comboBox->setEnabled(true);
         ui->btnClusterTool->setEnabled(true);
+        ui->btnExtractSecuritySector->setEnabled(true);
+        ui->btnReplaceSecuritySector->setEnabled(true);
     }
     catch (std::string error)
     {
@@ -260,10 +262,29 @@ void DeviceViewer::on_comboBox_currentIndexChanged(int index)
     ui->lblPartSize->setText(QString::fromStdString(ByteSizeToString(part->size)));
     ui->lblPartClusterSize->setText("0x" + QString::number(part->clusterSize, 16).toUpper());
     ui->lblPartFirstClusterAddr->setText("0x" + QString::number(part->clusterStartingAddress, 16).toUpper());
+    ui->lblPartSectorsPerCluster->setText(QString::number(part->sectorsPerCluster));
+    ui->lblPartRootDirCluster->setText("0x" + QString::number(part->rootDirectoryCluster, 16).toUpper());
 }
 
 void DeviceViewer::on_btnClusterTool_clicked()
 {
     ClusterToolDialog dialog(currentDrive->GetPartitions().at(ui->comboBox->currentIndex()), this);
     dialog.exec();
+}
+
+void DeviceViewer::on_btnExtractSecuritySector_clicked()
+{
+    QString savePath = QFileDialog::getSaveFileName(this, "Choose a place to save the security blob...", QtHelpers::DesktopLocation() + "/Security Blob.bin");
+    if (savePath == "")
+        return;
+
+    try
+    {
+        currentDrive->ExtractSecurityBlob(savePath.toStdString());
+        QMessageBox::information(this, "Success", "Successfully saved the security blob.");
+    }
+    catch (string error)
+    {
+        QMessageBox::critical(this, "Error", "An error occurred while extracting the security blob.\n\n" + QString::fromStdString(error));
+    }
 }
