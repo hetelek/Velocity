@@ -251,8 +251,8 @@ UINT64 DeviceIO::DriveLength()
 
 void DeviceIO::SetPosition(UINT64 address, std::ios_base::seek_dir dir)
 {
-    //if (dir != std::ios_base::beg)
-        //throw std::string("DeviceIO: Unsupported seek direction\n");
+    if (dir != std::ios_base::beg)
+        throw std::string("DeviceIO: Unsupported seek direction\n");
 
     pos = address;
     address = DOWN_TO_NEAREST_SECTOR(address); // Round the position down to the nearest sector offset
