@@ -67,14 +67,30 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
     QPoint globalPos = ui->treeWidget->mapToGlobal(point);
     QMenu contextMenu;
 
-    contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
+
+    bool hasFolders = false, hasFiles = false, hasPartitions = false;
+
+    QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
+    for (int i = 0; i < items.count(); i++)
+    {
+        if (items.at(i)->text(3).isEmpty())
+            hasPartitions = true;
+        else if (items.at(i)->text(1).isEmpty())
+            hasFolders = true;
+        else
+            hasFiles = true;
+    }
+
+    if (hasPartitions)
+        return;
+
     contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
+    if (hasFiles && !hasFolders)
+        contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
 
     QAction *selectedItem = contextMenu.exec(globalPos);
     if(selectedItem == NULL)
         return;
-
-    QList <QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
 
     try
     {

@@ -238,7 +238,6 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
     }
 }
 
-
 void MainWindow::on_actionDonate_triggered()
 {
     QDesktopServices::openUrl(QUrl("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GW3CMHU8F9DT2"));
