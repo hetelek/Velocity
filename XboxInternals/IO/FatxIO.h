@@ -20,7 +20,7 @@ public:
     FatxIO(DeviceIO *device, FatxFileEntry *entry);
 
     // get the current file entry
-    FatxFileEntry GetFatxFileEntry();
+    FatxFileEntry *GetFatxFileEntry();
 
     // set the position
     void SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios_base::beg);
@@ -54,10 +54,10 @@ private:
     std::vector<DWORD> getFreeClusters(Partition *part, DWORD count);
 
     // find count amount of free custers
-    void rewriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> clusterChain);
+    void rewriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> *clusterChain = NULL);
 
     // writes the cluster chain (and links them correctly) starting from startingCluster
-    void writeClusterChain(Partition *part, DWORD startingCluster, std::vector<DWORD> clusterChain);
+    void writeClusterChain(Partition *part, DWORD startingCluster, std::vector<DWORD> *clusterChain);
 
     // sets all the clusters equal to value
     void setAllClusters(Partition *part, std::vector<DWORD> clusters, DWORD value);
