@@ -90,7 +90,8 @@ SOURCES += main.cpp \
     multiprogressdialog.cpp \
     ytgrdialog.cpp \
     deviceviewer.cpp \
-    clustertooldialog.cpp
+    clustertooldialog.cpp \
+    fatxfiledialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -135,7 +136,8 @@ HEADERS  += mainwindow.h \
     PluginInterfaces/igamemodder.h \
     ytgrdialog.h \
     deviceviewer.h \
-    clustertooldialog.h
+    clustertooldialog.h \
+    fatxfiledialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -172,7 +174,8 @@ FORMS    += mainwindow.ui \
     multiprogressdialog.ui \
     ytgrdialog.ui \
     deviceviewer.ui \
-    clustertooldialog.ui
+    clustertooldialog.ui \
+    fatxfiledialog.ui
 
 RESOURCES += \
     Resources.qrc
