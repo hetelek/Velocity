@@ -128,6 +128,47 @@ void FatxDrive::ExtractSecurityBlob(string path)
     io->SetPosition(originalPos);
 }
 
+void FatxDrive::CreateFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
+{
+    if (!(parent->fileAttributes & FatxDirectory))
+        throw std::string("FATX: Parent file entry is not a directory.\n");
+
+    GetChildFileEntries(parent);
+    for (int i = 0; i < parent->cachedFiles.size(); i++)
+        if (parent->cachedFiles.at(i).name == newEntry->name)
+            throw std::string("FATX: Entry already exists.\n");
+
+    newEntry->nameLen = newEntry->name.length();
+
+    UINT64 freeEntryAddress = parent->cachedFiles.size() * FATX_ENTRY_SIZE;
+    FatxIO parentIO = GetFatxIO(parent);
+
+    // check to make sure this address is the correct one
+    if (freeEntryAddress != 0)
+    {
+        parentIO.SetPosition(freeEntryAddress - FATX_ENTRY_SIZE);
+
+        BYTE prevNameLength = parentIO.ReadByte();
+        if (prevNameLength == 0xFF || prevNameLength == 0)
+            throw std::string("FATX: Could not calculate correct entry address.\n");
+    }
+
+    newEntry->startingCluster = FAT_CLUSTER_LAST;
+
+    DWORD fileSize = newEntry->fileSize;
+    newEntry->fileSize = 0;
+    newEntry->partition = parent->partition;
+
+    FatxIO childIO = GetFatxIO(newEntry);
+
+    parentIO.SetPosition(freeEntryAddress);
+    newEntry->address = parentIO.GetDrivePosition();
+
+    childIO.AllocateMemory(fileSize);
+
+    parent->cachedFiles.push_back(*newEntry);
+}
+
 void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
 {
     // if all entries have been read, skip this

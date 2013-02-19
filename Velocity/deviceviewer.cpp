@@ -67,10 +67,12 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
     QPoint globalPos = ui->treeWidget->mapToGlobal(point);
     QMenu contextMenu;
 
-
     bool hasFolders = false, hasFiles = false, hasPartitions = false;
 
     QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
+    if (items.size() < 1)
+        return;
+
     for (int i = 0; i < items.count(); i++)
     {
         if (items.at(i)->text(3).isEmpty())
@@ -96,9 +98,6 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
     {
         if (selectedItem->text() == "Copy Selected to Local Disk")
         {
-            if (items.size() < 1)
-                return;
-
             QList<void*> filesToExtract;
 
             // get the entries
@@ -119,8 +118,15 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
         }
         else if (selectedItem->text() == "View Properties")
         {
-            if (items.size() < 1)
-                return;
+            /*FatxFileEntry *parent = items.at(0)->data(0, Qt::UserRole).value<FatxFileEntry*>();
+            FatxFileEntry child;
+            child.name = "hetelek";
+            child.creationDate = 0x4252B24A;
+            child.lastWriteDate = 0x4252B24A;
+            child.lastAccessDate = 0x4252B24A;
+            child.fileAttributes = 0;
+            child.fileSize = 0x43;
+            currentDrive->CreateFileEntry(parent, &child);*/
 
             FatxFileEntry *entry = items.at(0)->data(0, Qt::UserRole).value<FatxFileEntry*>();
             FatxFileDialog dialog(entry, entry->partition->clusterSize, items.at(0)->data(1, Qt::UserRole).toString(), ui->txtPath->text(), this);

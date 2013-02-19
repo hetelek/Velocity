@@ -27,7 +27,10 @@ public:
     void ReadClusterChain(FatxFileEntry *entry);
 
     // save the security blob to local disk
-    void ExtractSecurityBlob(string path);
+    void ExtractSecurityBlob(std::string path);
+
+    // writes the 'newEntry' to disk, in the 'parent' folder
+    void CreateFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry);
 
     // close the underlying io
     void Close();
