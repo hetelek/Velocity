@@ -287,40 +287,63 @@ void FatxDrive::loadFatxDrive(std::wstring drivePath)
     // TODO: verify the signature
 
     // seek to the next sector
-    io->SetPosition(0x2200);
+    io->SetPosition(HddOffsets::SecuritySector + 0x200);
     securityBlob.msLogoSize = io->ReadDword();
     securityBlob.msLogo = new BYTE[securityBlob.msLogoSize];
     io->ReadBytes(securityBlob.msLogo, securityBlob.msLogoSize);
 
-    // system extended partition initialization
-    Partition *systemExtended = new Partition;
-    systemExtended->address = HddOffsets::SystemExtended;
-    systemExtended->size = HddSizes::SystemExtended;
-    systemExtended->name = "System Extended";
+    // if it's a dev drive then we have to read the partition table
+    io->SetPosition(0);
+    if (io->ReadDword() == FATX_DEVKIT_DRIVE)
+    {
+        // read the id?
+        io->ReadDword();
 
-    // system auxiliary partition initialization
-    Partition *systemAuxiliary = new Partition;
-    systemAuxiliary->address = HddOffsets::SystemAuxiliary;
-    systemAuxiliary->size = HddSizes::SystemAuxiliary;
-    systemAuxiliary->name = "System Auxiliary";
+        Partition *content = new Partition;
+        content->address = (UINT64)io->ReadDword() * 0x200;
+        content->size = (UINT64)io->ReadDword() * 0x200;
+        content->name = "Content";
 
-    // system partition initialization
-    Partition *systemPartition = new Partition;
-    systemPartition->address = HddOffsets::SystemPartition;
-    systemPartition->size = HddSizes::SystemPartition;
-    systemPartition->name = "System Partition";
+        Partition *dashboard = new Partition;
+        dashboard->address = (UINT64)io->ReadDword() * 0x200;
+        dashboard->size = (UINT64)io->ReadDword() * 0x200;
+        dashboard->name = "Xbox 360 Dashboard";
 
-    // content partition initialization
-    Partition *content = new Partition;
-    content->address = HddOffsets::Data;
-    content->size = io->DriveLength() - content->address;
-    content->name = "Content";
+        partitions.push_back(content);
+        partitions.push_back(dashboard);
+    }
+    else
+    {
+        // system extended partition initialization
+        Partition *systemExtended = new Partition;
+        systemExtended->address = HddOffsets::SystemExtended;
+        systemExtended->size = HddSizes::SystemExtended;
+        systemExtended->name = "System Extended";
 
-    // add the partitions to the vector
-    this->partitions.push_back(systemExtended);
-    this->partitions.push_back(systemAuxiliary);
-    this->partitions.push_back(systemPartition);
-    this->partitions.push_back(content);
+        // system auxiliary partition initialization
+        Partition *systemAuxiliary = new Partition;
+        systemAuxiliary->address = HddOffsets::SystemAuxiliary;
+        systemAuxiliary->size = HddSizes::SystemAuxiliary;
+        systemAuxiliary->name = "System Auxiliary";
+
+        // system partition initialization
+        Partition *systemPartition = new Partition;
+        systemPartition->address = HddOffsets::SystemPartition;
+        systemPartition->size = HddSizes::SystemPartition;
+        systemPartition->name = "System Partition";
+
+        // content partition initialization
+        Partition *content = new Partition;
+        content->address = HddOffsets::Data;
+        content->size = io->DriveLength() - content->address;
+        content->name = "Content";
+
+        // add the partitions to the vector
+        this->partitions.push_back(systemExtended);
+        this->partitions.push_back(systemAuxiliary);
+        this->partitions.push_back(systemPartition);
+        this->partitions.push_back(content);
+    }
 
     // process all bootsectors
     for (int i = 0; i < this->partitions.size(); i++)
