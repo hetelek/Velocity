@@ -185,6 +185,8 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
     // find out how many entries are in a single cluster
     DWORD entriesInCluster = entry->partition->clusterSize / FATX_ENTRY_SIZE;
 
+    bool doneForGood = false;
+
     // read all entries
     for (int i = 0; i < entry->clusterChain.size(); i++)
     {
@@ -201,7 +203,10 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
 
             // check if there are no more entries
             if (newEntry.nameLen == 0xFF || newEntry.nameLen == 0)
+            {
+                doneForGood = true;
                 break;
+            }
 
             // calcualte the address
             newEntry.address = posCur + (x * 0x40);
@@ -235,9 +240,11 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
             // add it to the file cache
             entry->cachedFiles.push_back(newEntry);
         }
+        if (doneForGood)
+            break;
     }
 
-    entry->fileSize = (entry->cachedFiles.size() * FATX_ENTRY_SIZE);
+    //entry->fileSize = (entry->cachedFiles.size() * FATX_ENTRY_SIZE);
     entry->readDirectories = true;
 }
 
