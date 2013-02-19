@@ -84,9 +84,9 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
     if (hasPartitions)
         return;
 
-    contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
     if (hasFiles && !hasFolders)
         contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
+    contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
 
     QAction *selectedItem = contextMenu.exec(globalPos);
     if(selectedItem == NULL)
