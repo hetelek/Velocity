@@ -41,7 +41,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit">
+          <widget class="QLineEdit" name="txtPath">
            <property name="text">
             <string>\\.\PHYSICALDRIVE1</string>
            </property>
@@ -223,7 +223,7 @@
         <item>
          <widget class="QGroupBox" name="groupBox_3">
           <property name="title">
-           <string>Partions</string>
+           <string>Partitions</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_8" stretch="0,9">
            <item>

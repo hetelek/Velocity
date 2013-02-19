@@ -34,7 +34,7 @@ void DeviceViewer::on_pushButton_clicked()
     try
     {
         // open the drive
-        currentDrive = new FatxDrive(ui->lineEdit->text().toStdWString());
+        currentDrive = new FatxDrive(ui->txtPath->text().toStdWString());
 
         // load the security blob
         ui->lblFirmwareRevision->setText(QString::fromStdString(currentDrive->securityBlob.firmwareRevision).trimmed());
@@ -66,6 +66,7 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
     QMenu contextMenu;
 
     contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
+    contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
 
     QAction *selectedItem = contextMenu.exec(globalPos);
     if(selectedItem == NULL)
@@ -97,6 +98,14 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
             dialog->setModal(true);
             dialog->show();
             dialog->start();
+        }
+        else if (selectedItem->text() == "View Properties")
+        {
+            if (items.size() < 1)
+                return;
+
+            FatxFileDialog dialog(items.at(0)->data(0, Qt::UserRole).value<FatxFileEntry*>(), 0, items.at(0)->data(1, Qt::UserRole).toString(), ui->txtPath->text(), this);
+            dialog.exec();
         }
     }
     catch (std::string error)
@@ -196,6 +205,11 @@ void DeviceViewer::LoadFolder(FatxFileEntry *folder)
             directoryChain.append(folder);
         else
             directoryChain[currentIndex] = folder;
+
+        QString path = "Drive:\\" + QString::fromStdString(directoryChain.at(0)->partition->name) + "\\";
+        for (DWORD i = 1; i <= currentIndex; i++)
+            path += QString::fromStdString(directoryChain.at(i)->name) + "\\";
+        ui->txtPath->setText(path);
     }
     catch (std::string error)
     {
@@ -215,6 +229,8 @@ void DeviceViewer::on_btnBack_clicked()
 void DeviceViewer::LoadPartitions()
 {
     ui->treeWidget->clear();
+
+    ui->txtPath->setText("Drive:\\");
 
     // load partitions
     std::vector<Partition*> parts = currentDrive->GetPartitions();

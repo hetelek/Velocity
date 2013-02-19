@@ -14,6 +14,7 @@
 // forms
 #include "multiprogressdialog.h"
 #include "clustertooldialog.h"
+#include "fatxfiledialog.h"
 
 // xbox
 #include "Fatx/FatxDrive.h"
