@@ -28,6 +28,9 @@ public:
     // get the current position
     UINT64 GetPosition();
 
+    // get the drive's current position
+    UINT64 GetDrivePosition();
+
     // read bytes at the current position
     void ReadBytes(BYTE *outBuffer, DWORD len);
 
@@ -46,15 +49,15 @@ public:
     // expands the cluster chain if necessary
     void AllocateMemory(DWORD byteAmount);
 
+    // write the entry to disk
+    void WriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> *clusterChain = NULL);
+
     // convert a cluster to an offset
     static INT64 ClusterToOffset(Partition *part, DWORD cluster);
 
 private:
     // find count amount of free custers
     std::vector<DWORD> getFreeClusters(Partition *part, DWORD count);
-
-    // find count amount of free custers
-    void rewriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> *clusterChain = NULL);
 
     // writes the cluster chain (and links them correctly) starting from startingCluster
     void writeClusterChain(Partition *part, DWORD startingCluster, std::vector<DWORD> *clusterChain);

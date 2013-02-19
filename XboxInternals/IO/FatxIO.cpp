@@ -54,6 +54,10 @@ void FatxIO::AllocateMemory(DWORD byteAmount)
 {
     // calcualte how many clusters to allocate
     DWORD clusterCount = (byteAmount + (entry->fileSize % entry->partition->clusterSize)) / entry->partition->clusterSize;
+    bool fileIsNull = (entry->fileSize == 0);
+
+    if (fileIsNull)
+        clusterCount++;
 
     // get the free clusters
     std::vector<DWORD> freeClusters = getFreeClusters(entry->partition, clusterCount);
@@ -64,18 +68,29 @@ void FatxIO::AllocateMemory(DWORD byteAmount)
     for (int i = 0; i < freeClusters.size(); i++)
         entry->clusterChain.push_back(freeClusters.at(i));
 
+    if (fileIsNull)
+        entry->startingCluster = entry->clusterChain.at(0);
+
     // write the cluster chain (only if it's changed)
     if (clusterCount != 0)
         writeClusterChain(entry->partition, entry->startingCluster, &entry->clusterChain);
 
-    // update the file size
-    entry->fileSize += byteAmount;
-    rewriteEntryToDisk(entry);
+    // update the file size, only if it's not a directory
+    if (!(entry->fileAttributes & FatxDirectory))
+    {
+        entry->fileSize += byteAmount;
+        WriteEntryToDisk(entry);
+    }
 }
 
 UINT64 FatxIO::GetPosition()
 {
     return pos;
+}
+
+UINT64 FatxIO::GetDrivePosition()
+{
+    return device->GetPosition();
 }
 
 FatxFileEntry* FatxIO::GetFatxFileEntry()
@@ -169,7 +184,7 @@ std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
     return freeClusters;
 }
 
-void FatxIO::rewriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> *clusterChain)
+void FatxIO::WriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> *clusterChain)
 {
     BYTE nameLen = (entry->nameLen != FATX_ENTRY_DELETED) ? entry->name.length() : FATX_ENTRY_DELETED;
     bool wantsToWriteClusterChain = (clusterChain != NULL);
