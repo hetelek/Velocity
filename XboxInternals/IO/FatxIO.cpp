@@ -186,7 +186,16 @@ std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
 
 void FatxIO::WriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> *clusterChain)
 {
-    BYTE nameLen = (entry->nameLen != FATX_ENTRY_DELETED) ? entry->name.length() : FATX_ENTRY_DELETED;
+    bool isDeleted = (entry->nameLen == FATX_ENTRY_DELETED);
+    BYTE nameLen;
+    if (isDeleted)
+        nameLen = FATX_ENTRY_DELETED;
+    else
+    {
+        nameLen = entry->name.length();
+        if (nameLen > FATX_ENTRY_MAX_NAME_LENGTH)
+            throw std::string("FATX: Entry name must be less than 42 characters.\n");
+    }
     bool wantsToWriteClusterChain = (clusterChain != NULL);
 
     if (wantsToWriteClusterChain && entry->startingCluster != clusterChain->at(0))
