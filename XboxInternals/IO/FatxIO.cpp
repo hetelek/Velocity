@@ -68,7 +68,7 @@ void FatxIO::AllocateMemory(DWORD byteAmount)
     writeClusterChain(entry->partition, entry->startingCluster, entry->clusterChain);
 
     entry->fileSize += byteAmount;
-    rewriteEntryToDisk(entry);
+    rewriteEntryToDisk(entry, entry->clusterChain);
 }
 
 UINT64 FatxIO::GetPosition()
