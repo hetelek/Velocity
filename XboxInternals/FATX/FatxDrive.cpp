@@ -39,7 +39,10 @@ void FatxDrive::processBootSector(Partition *part)
     // read the header
     part->magic = io->ReadDword();
     if (part->magic != FATX_MAGIC)
-        throw std::string("FATX: Invalid partition magic.\n");
+    {
+        part->address = 0;
+        return;
+    }
 
     part->partitionId = io->ReadDword();
     part->sectorsPerCluster = io->ReadDword();
@@ -213,10 +216,11 @@ void FatxDrive::InjectFile(FatxFileEntry *parent, std::string name, std::string 
     FatxFileEntry entry;
     entry.name = name;
 
-    // get the file size
+    // seek to the end of the file
     FileIO toInject(filePath);
     toInject.SetPosition(0, ios_base::end);
 
+    // get the file size
     UINT64 fileSize = toInject.GetPosition();
     entry.fileSize = fileSize;
 
@@ -232,24 +236,31 @@ void FatxDrive::InjectFile(FatxFileEntry *parent, std::string name, std::string 
     // create the entry
     CreateFileEntry(parent, &entry);
 
+    // calculate the amount of data
+    DWORD toWriteLength = (fileSize >= 0x100000) ? 0x100000 : fileSize;
+
+    // get the data to write
+    BYTE *buffer = new BYTE[0x100000];
+    toInject.SetPosition(0);
+    toInject.ReadBytes(buffer, toWriteLength);
+
     // write the data
     FatxIO newEntryIO = GetFatxIO(&entry);
-    DWORD toWriteLength = (fileSize >= 0x10000) ? 0x10000 : fileSize;
-
-    BYTE buffer = new BYTE[0x10000];
-    toInject.ReadBytes(buffer, toWriteLength);
     newEntryIO.WriteBytes(buffer, toWriteLength);
     fileSize -= toWriteLength;
 
-    while (fileSize >= 0x10000)
+    while (fileSize >= 0x100000)
     {
-        toInject.ReadBytes(buffer, 0x10000);
-        newEntryIO.WriteBytes(buffer, 0x10000);
-        fileSize -= 0x10000;
+        toInject.ReadBytes(buffer, 0x100000);
+        newEntryIO.WriteBytes(buffer, 0x100000);
+        fileSize -= 0x100000;
     }
 
-    toInject.ReadBytes(buffer, fileSize);
-    newEntryIO.WriteBytes(buffer, fileSize);
+    if (fileSize > 0)
+    {
+        toInject.ReadBytes(buffer, fileSize);
+        newEntryIO.WriteBytes(buffer, fileSize);
+    }
 
     toInject.Close();
 }
@@ -492,5 +503,14 @@ void FatxDrive::loadFatxDrive(std::wstring drivePath)
 
     // process all bootsectors
     for (int i = 0; i < this->partitions.size(); i++)
+    {
         processBootSector(this->partitions.at(i));
+
+        // if there's invalid magic
+        if (this->partitions.at(i)->address == 0)
+        {
+            delete partitions.at(i);
+            partitions.erase(partitions.begin() + i);
+        }
+    }
 }
