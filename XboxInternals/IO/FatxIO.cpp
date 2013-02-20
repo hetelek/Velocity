@@ -180,6 +180,21 @@ std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
     return freeClusters;
 }
 
+void FatxIO::SetAllClusters(DeviceIO *device, Partition *part, std::vector<DWORD> clusters, DWORD value)
+{
+    bool clusterSizeIs16 = part->clusterEntrySize == FAT16;
+
+    for (int i = 0; i < clusters.size(); i++)
+    {
+        device->SetPosition(part->address + 0x1000 + (clusters.at(i) * part->clusterEntrySize));
+
+        if (clusterSizeIs16)
+            device->Write((WORD)value);
+        else
+            device->Write((DWORD)value);
+    }
+}
+
 void FatxIO::WriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> *clusterChain)
 {
     bool isDeleted = (entry->nameLen == FATX_ENTRY_DELETED);
@@ -209,7 +224,7 @@ void FatxIO::WriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> *clusterC
 
     if (wantsToWriteClusterChain)
     {
-        setAllClusters(entry->partition, entry->clusterChain, FAT_CLUSTER_AVAILABLE);
+        SetAllClusters(device, entry->partition, entry->clusterChain, FAT_CLUSTER_AVAILABLE);
         writeClusterChain(entry->partition, entry->startingCluster, *clusterChain);
     }
 }
@@ -236,22 +251,6 @@ void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vect
             device->Write((DWORD)clusterChain.at(i));
 
         previousCluster = clusterChain.at(i);
-    }
-}
-
-void FatxIO::setAllClusters(Partition *part, std::vector<DWORD> clusters, DWORD value)
-{
-    bool clusterSizeIs16 = part->clusterEntrySize == FAT16;
-
-    for (int i = 0; i < clusters.size(); i++)
-    {
-        device->SetPosition(part->address + 0x1000 + (clusters.at(i) * part->clusterEntrySize));
-
-        if (clusterSizeIs16)
-            device->Write((WORD)value);
-        else
-            device->Write((DWORD)value);
-
     }
 }
 

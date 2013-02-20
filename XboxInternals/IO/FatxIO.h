@@ -55,15 +55,15 @@ public:
     // convert a cluster to an offset
     static INT64 ClusterToOffset(Partition *part, DWORD cluster);
 
+    // sets all the clusters equal to value
+    static void SetAllClusters(DeviceIO *device, Partition *part, std::vector<DWORD> clusters, DWORD value);
+
 private:
     // find count amount of free custers
     std::vector<DWORD> getFreeClusters(Partition *part, DWORD count);
 
     // writes the cluster chain (and links them correctly) starting from startingCluster
     void writeClusterChain(Partition *part, DWORD startingCluster, std::vector<DWORD> clusterChain);
-
-    // sets all the clusters equal to value
-    void setAllClusters(Partition *part, std::vector<DWORD> clusters, DWORD value);
 
     DeviceIO *device;
     FatxFileEntry *entry;
