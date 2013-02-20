@@ -2,7 +2,7 @@
 #include "ui_deviceviewer.h"
 
 DeviceViewer::DeviceViewer(QWidget *parent) :
-    QDialog(parent), ui(new Ui::DeviceViewer), currentIndex(-1)
+    QDialog(parent), ui(new Ui::DeviceViewer)
 {
     ui->setupUi(this);
     currentDrive = NULL;
@@ -108,7 +108,7 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
                 return;
 
             // save the file to the local disk
-            MultiProgressDialog *dialog = new MultiProgressDialog(FileSystemFATX, currentDrive, path + "/", filesToExtract, this, ui->txtPath->text());
+            MultiProgressDialog *dialog = new MultiProgressDialog(FileSystemFATX, currentDrive, path + "/", filesToExtract, this, QString::fromStdString(directoryChain.last()->path + directoryChain.last()->name + "\\"));
             dialog->setModal(true);
             dialog->show();
             dialog->start();
@@ -167,9 +167,7 @@ void DeviceViewer::on_treeWidget_doubleClicked(const QModelIndex &index)
         if ((currentParent->fileAttributes & FatxDirectory) == 0)
             return;
 
-        currentIndex++;
         LoadFolderAll(currentParent);
-        ui->btnBack->setEnabled(currentIndex >= 0);
     }
     catch (std::string error)
     {
@@ -195,6 +193,9 @@ void DeviceViewer::LoadFolderAll(FatxFileEntry *folder)
 {
     try
     {
+        directoryChain.push_back(folder);
+        ui->btnBack->setEnabled(directoryChain.size() > 1);
+
         ui->treeWidget->clear();
         currentDrive->GetChildFileEntries(folder);
 
@@ -238,15 +239,7 @@ void DeviceViewer::LoadFolderAll(FatxFileEntry *folder)
             entryItem->setText(2, date.toString(Qt::DefaultLocaleShortDate));
         }
 
-        if (currentIndex == directoryChain.size())
-            directoryChain.append(folder);
-        else
-            directoryChain[currentIndex] = folder;
-
-        QString path = "Drive:\\" + QString::fromStdString(directoryChain.at(0)->partition->name) + "\\";
-        for (DWORD i = 1; i <= currentIndex; i++)
-            path += QString::fromStdString(directoryChain.at(i)->name) + "\\";
-        ui->txtPath->setText(path);
+        ui->txtPath->setText(QString::fromStdString(folder->path + folder->name + "\\"));
     }
     catch (std::string error)
     {
@@ -294,12 +287,17 @@ void DeviceViewer::LoadFolderTree(QTreeWidgetItem *item)
 
 void DeviceViewer::on_btnBack_clicked()
 {
-    if (currentIndex == 0)
+    int index = directoryChain.size() - 2;
+    FatxFileEntry *entry = directoryChain.at(index);
+
+    if (entry->name == "Drive Root")
         LoadPartitions();
     else
-        LoadFolderAll(directoryChain.at(--currentIndex));
+        LoadFolderAll(entry);
+    directoryChain.removeLast();
+    directoryChain.removeLast();
 
-    ui->btnBack->setEnabled(currentIndex >= 0);
+    ui->btnBack->setEnabled(directoryChain.size() > 1);
 }
 
 void DeviceViewer::LoadPartitions()
@@ -321,7 +319,9 @@ void DeviceViewer::LoadPartitions()
         item->setData(0, Qt::UserRole, QVariant::fromValue(parts.at(i)));
     }
 
-    currentIndex = -1;
+    FatxFileEntry *entry = new FatxFileEntry;
+    entry->name = "Drive Root";
+    directoryChain.push_back(entry);
 }
 
 void DeviceViewer::GetSubFiles(FatxFileEntry *parent, QList<void *> &entries)
@@ -348,26 +348,8 @@ void DeviceViewer::on_treeWidget_2_itemExpanded(QTreeWidgetItem *item)
 
 void DeviceViewer::on_treeWidget_2_itemClicked(QTreeWidgetItem *item, int column)
 {
-    currentIndex = item->data(4, Qt::UserRole).toInt() + 1;
-    FixDirectoryChain(item->parent(), currentIndex);
-
     FatxFileEntry *entry = GetFatxFileEntry(item);
     LoadFolderAll(entry);
-    ui->btnBack->setEnabled(currentIndex >= 0);
-}
-
-void DeviceViewer::FixDirectoryChain(QTreeWidgetItem *currentItem, int index)
-{
-    if (index == -1 || currentItem == NULL)
-        return;
-
-    FatxFileEntry *entry = GetFatxFileEntry(currentItem);
-    FixDirectoryChain(currentItem->parent(), index - 1);
-
-    if (index >= directoryChain.size())
-        directoryChain.append(entry);
-    else
-        directoryChain[index] = entry;
 }
 
 void DeviceViewer::on_btnSecurityBlob_clicked()

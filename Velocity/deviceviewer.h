@@ -51,7 +51,6 @@ private:
     Ui::DeviceViewer *ui;
     FatxDrive *currentDrive;
     QList<FatxFileEntry*> directoryChain;
-    int currentIndex;
 
     void LoadFolderAll(FatxFileEntry *folder);
 
@@ -62,8 +61,6 @@ private:
     void GetSubFiles(FatxFileEntry *parent, QList<void*> &entries);
 
     FatxFileEntry* GetFatxFileEntry(QTreeWidgetItem *item);
-
-    void FixDirectoryChain(QTreeWidgetItem *currentItem, int index);
 };
 
 #endif // DEVICEVIEWER_H
