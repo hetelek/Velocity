@@ -193,7 +193,9 @@ void DeviceViewer::LoadFolderAll(FatxFileEntry *folder)
 {
     try
     {
-        directoryChain.push_back(folder);
+        if (directoryChain.at(directoryChain.size() - 1) != folder)
+            directoryChain.push_back(folder);
+
         ui->btnBack->setEnabled(directoryChain.size() > 1);
 
         ui->treeWidget->clear();
