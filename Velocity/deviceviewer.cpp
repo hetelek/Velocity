@@ -152,9 +152,6 @@ void DeviceViewer::on_treeWidget_doubleClicked(const QModelIndex &index)
         // get the item
         QTreeWidgetItem *item = (QTreeWidgetItem*)index.internalPointer();
 
-        // remove all current child items
-        qDeleteAll(item->takeChildren());
-
         // set the current parent
         FatxFileEntry *currentParent;
         if (item->data(5, Qt::UserRole).toBool())
@@ -206,15 +203,9 @@ void DeviceViewer::LoadFolder(FatxFileEntry *folder)
             {
                 QIcon fileIcon;
 
-                DWORD magic = 0;
+                currentDrive->GetFileEntryMagic(entry);
 
-                if (entry->fileSize >= 0x4)
-                {
-                    FatxIO io = currentDrive->GetFatxIO(entry);
-                    magic = io.ReadDword();
-                }
-
-                QtHelpers::GetFileIcon(magic, QString::fromStdString(entry->name), fileIcon, *entryItem);
+                QtHelpers::GetFileIcon(entry->magic, QString::fromStdString(entry->name), fileIcon, *entryItem);
 
                 entryItem->setIcon(0, fileIcon);
                 entryItem->setText(1, QString::fromStdString(ByteSizeToString(entry->fileSize)));

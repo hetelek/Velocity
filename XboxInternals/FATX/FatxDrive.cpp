@@ -172,6 +172,15 @@ void FatxDrive::CreateFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
     parent->cachedFiles.push_back(*newEntry);
 }
 
+void FatxDrive::GetFileEntryMagic(FatxFileEntry *entry)
+{
+    if (entry->fileSize < 4 || entry->magic != 0)
+        return;
+
+    io->SetPosition(FatxIO::ClusterToOffset(entry->partition, entry->startingCluster));
+    entry->magic = io->ReadDword();
+}
+
 void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
 {
     // if all entries have been read, skip this
@@ -236,6 +245,7 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
             newEntry.partition = entry->partition;
             newEntry.readDirectories = false;
             newEntry.path = entry->path + entry->name + "\\";
+            newEntry.magic = 0;
 
             // add it to the file cache
             entry->cachedFiles.push_back(newEntry);

@@ -32,6 +32,9 @@ public:
     // writes the 'newEntry' to disk, in the 'parent' folder
     void CreateFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry);
 
+    // get the first 4 bytes of a file
+    void GetFileEntryMagic(FatxFileEntry *entry);
+
     // close the underlying io
     void Close();
 

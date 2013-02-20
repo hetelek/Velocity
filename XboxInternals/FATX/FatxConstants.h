@@ -55,8 +55,9 @@ struct FatxFileEntry
     DWORD lastWriteDate;
     DWORD lastAccessDate;
 
-    INT64 address;
     bool readDirectories;
+    INT64 address;
+    DWORD magic;
     std::vector<FatxFileEntry> cachedFiles;
     std::vector<DWORD> clusterChain;
     std::string path;
