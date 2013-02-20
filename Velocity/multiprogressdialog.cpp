@@ -123,7 +123,8 @@ void MultiProgressDialog::extractNextFile()
             try
             {
                 // make all the directories needed
-                QString dirPath = QDir::toNativeSeparators(outDir + QString::fromStdString(entry->path).replace(rootPath, ""));
+                QString temp = QString::fromStdString(entry->path);
+                QString dirPath = QDir::toNativeSeparators(outDir + temp.replace(rootPath, ""));
                 QDir saveDir(dirPath);
 
                 if (!saveDir.exists())
