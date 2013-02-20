@@ -91,7 +91,9 @@ SOURCES += main.cpp \
     ytgrdialog.cpp \
     deviceviewer.cpp \
     clustertooldialog.cpp \
-    fatxfiledialog.cpp
+    fatxfiledialog.cpp \
+    partitiondialog.cpp \
+    securitysectordialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -137,7 +139,9 @@ HEADERS  += mainwindow.h \
     ytgrdialog.h \
     deviceviewer.h \
     clustertooldialog.h \
-    fatxfiledialog.h
+    fatxfiledialog.h \
+    partitiondialog.h \
+    securitysectordialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -175,7 +179,9 @@ FORMS    += mainwindow.ui \
     ytgrdialog.ui \
     deviceviewer.ui \
     clustertooldialog.ui \
-    fatxfiledialog.ui
+    fatxfiledialog.ui \
+    partitiondialog.ui \
+    securitysectordialog.ui
 
 RESOURCES += \
     Resources.qrc
