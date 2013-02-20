@@ -53,7 +53,7 @@ void FatxIO::Close()
 void FatxIO::AllocateMemory(DWORD byteAmount)
 {
     // calcualte how many clusters to allocate
-    DWORD clusterCount = (byteAmount + (entry->partition->clusterSize - 1)) / entry->partition->clusterSize;
+    DWORD clusterCount = (byteAmount + ((entry->partition->clusterSize - (entry->fileSize % entry->partition->clusterSize)) - 1)) / entry->partition->clusterSize;
     bool fileIsNull = (entry->fileSize == 0);
 
     // get the free clusters
