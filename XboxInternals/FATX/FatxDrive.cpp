@@ -186,6 +186,28 @@ void FatxDrive::CreateFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
     parent->cachedFiles.push_back(*newEntry);
 }
 
+void FatxDrive::DeleteFile(FatxFileEntry *entry)
+{
+    // read the data
+    GetChildFileEntries(entry);
+    ReadClusterChain(entry);
+
+    for (int i = 0; i < entry->cachedFiles.size(); i++)
+        DeleteFile(&entry->cachedFiles.at(i));
+
+    // set all the clusters to available
+    entry->clusterChain.push_back(entry->startingCluster);
+    FatxIO::SetAllClusters(io, entry->partition, entry->clusterChain, FAT_CLUSTER_AVAILABLE);
+
+    // update the entry
+    entry->clusterChain.clear();
+    entry->nameLen = FATX_ENTRY_DELETED;
+
+    // update the entry file name lenght to deleted
+    io->SetPosition(entry->address);
+    io->Write((BYTE)FATX_ENTRY_DELETED);
+}
+
 void FatxDrive::GetFileEntryMagic(FatxFileEntry *entry)
 {
     if (entry->fileSize < 4 || entry->magic != 0)

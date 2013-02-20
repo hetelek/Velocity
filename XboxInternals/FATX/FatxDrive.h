@@ -35,6 +35,9 @@ public:
     // get the first 4 bytes of a file
     void GetFileEntryMagic(FatxFileEntry *entry);
 
+    // deletes the entry and all of it's children
+    void DeleteFile(FatxFileEntry *entry);
+
     // close the underlying io
     void Close();
 
