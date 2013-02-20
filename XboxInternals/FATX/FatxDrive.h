@@ -1,6 +1,8 @@
 #ifndef FATXDRIVE_H
 #define FATXDRIVE_H
 
+#include "../Stfs/StfsDefinitions.h"
+
 #include "../IO/DeviceIO.h"
 #include "../IO/FatxIO.h"
 #include "../Cryptography/XeKeys.h"
@@ -37,6 +39,9 @@ public:
 
     // deletes the entry and all of it's children
     void DeleteFile(FatxFileEntry *entry);
+
+    // inject the file
+    void InjectFile(FatxFileEntry *parent, std::string name, std::string filePath);
 
     // close the underlying io
     void Close();

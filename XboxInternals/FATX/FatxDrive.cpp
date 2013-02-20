@@ -208,6 +208,52 @@ void FatxDrive::DeleteFile(FatxFileEntry *entry)
     io->Write((BYTE)FATX_ENTRY_DELETED);
 }
 
+void FatxDrive::InjectFile(FatxFileEntry *parent, std::string name, std::string filePath)
+{
+    FatxFileEntry entry;
+    entry.name = name;
+
+    // get the file size
+    FileIO toInject(filePath);
+    toInject.SetPosition(0, ios_base::end);
+
+    UINT64 fileSize = toInject.GetPosition();
+    entry.fileSize = fileSize;
+
+    // set the times
+    DWORD currentTime = MSTimeToDWORD(TimetToMSTime(time(NULL)));
+    entry.creationDate = currentTime;
+    entry.lastAccessDate = currentTime;
+    entry.lastWriteDate = currentTime;
+
+    // set other stuff
+    entry.fileAttributes = 0;
+
+    // create the entry
+    CreateFileEntry(parent, &entry);
+
+    // write the data
+    FatxIO newEntryIO = GetFatxIO(&entry);
+    DWORD toWriteLength = (fileSize >= 0x10000) ? 0x10000 : fileSize;
+
+    BYTE buffer = new BYTE[0x10000];
+    toInject.ReadBytes(buffer, toWriteLength);
+    newEntryIO.WriteBytes(buffer, toWriteLength);
+    fileSize -= toWriteLength;
+
+    while (fileSize >= 0x10000)
+    {
+        toInject.ReadBytes(buffer, 0x10000);
+        newEntryIO.WriteBytes(buffer, 0x10000);
+        fileSize -= 0x10000;
+    }
+
+    toInject.ReadBytes(buffer, fileSize);
+    newEntryIO.WriteBytes(buffer, fileSize);
+
+    toInject.Close();
+}
+
 void FatxDrive::GetFileEntryMagic(FatxFileEntry *entry)
 {
     if (entry->fileSize < 4 || entry->magic != 0)
