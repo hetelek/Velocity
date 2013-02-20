@@ -14,7 +14,9 @@
 // forms
 #include "multiprogressdialog.h"
 #include "clustertooldialog.h"
+#include "securitysectordialog.h"
 #include "fatxfiledialog.h"
+#include "partitiondialog.h"
 
 // xbox
 #include "Fatx/FatxDrive.h"
@@ -40,12 +42,10 @@ private slots:
     void showRemoveContextMenu(QPoint point);
     void on_treeWidget_doubleClicked(const QModelIndex &index);
     void on_btnBack_clicked();
-
-    void on_comboBox_currentIndexChanged(int index);
-
-    void on_btnClusterTool_clicked();
-
-    void on_btnExtractSecuritySector_clicked();
+    void on_treeWidget_2_itemExpanded(QTreeWidgetItem *item);
+    void on_treeWidget_2_itemClicked(QTreeWidgetItem *item, int column);
+    void on_btnSecurityBlob_clicked();
+    void on_btnPartitions_clicked();
 
 private:
     Ui::DeviceViewer *ui;
@@ -53,11 +53,17 @@ private:
     QList<FatxFileEntry*> directoryChain;
     int currentIndex;
 
-    void LoadFolder(FatxFileEntry *folder);
+    void LoadFolderAll(FatxFileEntry *folder);
+
+    void LoadFolderTree(QTreeWidgetItem *item);
 
     void LoadPartitions();
 
     void GetSubFiles(FatxFileEntry *parent, QList<void*> &entries);
+
+    FatxFileEntry* GetFatxFileEntry(QTreeWidgetItem *item);
+
+    void FixDirectoryChain(QTreeWidgetItem *currentItem, int index);
 };
 
 #endif // DEVICEVIEWER_H

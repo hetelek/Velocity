@@ -36,23 +36,20 @@ void DeviceViewer::on_pushButton_clicked()
         // open the drive
         currentDrive = new FatxDrive(ui->txtPath->text().toStdWString());
 
-        // load the security blob
-        ui->lblFirmwareRevision->setText(QString::fromStdString(currentDrive->securityBlob.firmwareRevision).trimmed());
-        ui->lblModelNumber->setText(QString::fromStdString(currentDrive->securityBlob.modelNumber).trimmed());
-        ui->lblSerialNumber->setText(QString::fromStdString(currentDrive->securityBlob.serialNumber).trimmed());
-        ui->lblSectors->setText("0x" + QString::number(currentDrive->securityBlob.userAddressableSectors, 16).toUpper());
-        ui->lblValidSignature->setText(((currentDrive->securityBlob.validSignature) ? "Yes" : "No"));
-
         // load the partion information
         std::vector<Partition*> parts = currentDrive->GetPartitions();
         for (DWORD i = 0; i < parts.size(); i++)
-            ui->comboBox->addItem(QString::fromStdString(parts.at(i)->name));
-
-        ui->comboBox->setCurrentIndex(0);
-        ui->comboBox->setEnabled(true);
-        ui->btnClusterTool->setEnabled(true);
-        ui->btnExtractSecuritySector->setEnabled(true);
-        ui->btnReplaceSecuritySector->setEnabled(true);
+        {
+            QTreeWidgetItem *secondItem = new QTreeWidgetItem(ui->treeWidget_2);
+            secondItem->setText(0, QString::fromStdString(parts.at(i)->name));
+            secondItem->setIcon(0, QIcon(":/Images/partition.png"));
+            secondItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+            secondItem->setData(0, Qt::UserRole, QVariant::fromValue(parts.at(i)));
+            secondItem->setData(5, Qt::UserRole, QVariant::fromValue(true));
+            secondItem->setData(4, Qt::UserRole, QVariant::fromValue(-1));
+        }
+        ui->btnPartitions->setEnabled(true);
+        ui->btnSecurityBlob->setEnabled(true);
     }
     catch (std::string error)
     {
@@ -67,27 +64,15 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
     QPoint globalPos = ui->treeWidget->mapToGlobal(point);
     QMenu contextMenu;
 
-    bool hasFolders = false, hasFiles = false, hasPartitions = false;
-
     QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
     if (items.size() < 1)
         return;
 
-    for (int i = 0; i < items.count(); i++)
-    {
-        if (items.at(i)->text(3).isEmpty())
-            hasPartitions = true;
-        else if (items.at(i)->text(1).isEmpty())
-            hasFolders = true;
-        else
-            hasFiles = true;
-    }
+    foreach (QTreeWidgetItem *item, items)
+        if (item->data(5, Qt::UserRole).toBool())
+            return;
 
-    if (hasPartitions)
-        return;
-
-    //if (hasFiles && !hasFolders)
-        contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
+    contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
     contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
 
     QAction *selectedItem = contextMenu.exec(globalPos);
@@ -153,20 +138,13 @@ void DeviceViewer::on_treeWidget_doubleClicked(const QModelIndex &index)
         QTreeWidgetItem *item = (QTreeWidgetItem*)index.internalPointer();
 
         // set the current parent
-        FatxFileEntry *currentParent;
-        if (item->data(5, Qt::UserRole).toBool())
-        {
-            Partition *part = item->data(0, Qt::UserRole).value<Partition*>();
-            currentParent = &part->root;
-        }
-        else
-            currentParent = item->data(0, Qt::UserRole).value<FatxFileEntry*>();
+        FatxFileEntry *currentParent = GetFatxFileEntry(item);
 
         if ((currentParent->fileAttributes & FatxDirectory) == 0)
             return;
 
         currentIndex++;
-        LoadFolder(currentParent);
+        LoadFolderAll(currentParent);
         ui->btnBack->setEnabled(currentIndex >= 0);
     }
     catch (std::string error)
@@ -175,7 +153,21 @@ void DeviceViewer::on_treeWidget_doubleClicked(const QModelIndex &index)
     }
 }
 
-void DeviceViewer::LoadFolder(FatxFileEntry *folder)
+FatxFileEntry* DeviceViewer::GetFatxFileEntry(QTreeWidgetItem *item)
+{
+    FatxFileEntry *currentParent;
+    if (item->data(5, Qt::UserRole).toBool())
+    {
+        Partition *part = item->data(0, Qt::UserRole).value<Partition*>();
+        currentParent = &part->root;
+    }
+    else
+        currentParent = item->data(0, Qt::UserRole).value<FatxFileEntry*>();
+
+    return currentParent;
+}
+
+void DeviceViewer::LoadFolderAll(FatxFileEntry *folder)
 {
     try
     {
@@ -213,14 +205,13 @@ void DeviceViewer::LoadFolder(FatxFileEntry *folder)
 
             // setup the text
             entryItem->setText(0, QString::fromStdString(entry->name));
-            entryItem->setText(2, "0x" + QString::number(entry->startingCluster, 16).toUpper());
 
             MSTime createdtime = DWORDToMSTime(entry->creationDate);
 
             QDate date;
             date.setDate(createdtime.year, createdtime.month, createdtime.monthDay);
 
-            entryItem->setText(3, date.toString(Qt::DefaultLocaleShortDate));
+            entryItem->setText(2, date.toString(Qt::DefaultLocaleShortDate));
         }
 
         if (currentIndex == directoryChain.size())
@@ -238,12 +229,51 @@ void DeviceViewer::LoadFolder(FatxFileEntry *folder)
         QMessageBox::warning(this, "Problem Loading", "The folder failed to load.\n\n" + QString::fromStdString(error));
     }
 }
+
+void DeviceViewer::LoadFolderTree(QTreeWidgetItem *item)
+{
+    try
+    {
+        // get the FatxFile entry and make sure it's a directory
+        FatxFileEntry *folder = GetFatxFileEntry(item);
+        if ((folder->fileAttributes & FatxDirectory) == 0)
+            return;
+
+        currentDrive->GetChildFileEntries(folder);
+
+        for (DWORD i = 0; i < folder->cachedFiles.size(); i++)
+        {
+            // if it isn't a folder then don't bother loading it
+            FatxFileEntry *entry = &folder->cachedFiles.at(i);
+            if ((entry->fileAttributes & FatxDirectory) == 0)
+                continue;
+
+            QTreeWidgetItem *subFolder = new QTreeWidgetItem(item);
+            subFolder->setIcon(0, QIcon(":/Images/FolderFileIcon.png"));
+            subFolder->setText(0, QString::fromStdString(entry->name));
+
+            subFolder->setData(0, Qt::UserRole, QVariant::fromValue(entry));
+            subFolder->setData(4, Qt::UserRole, QVariant(item->data(4, Qt::UserRole).toInt() + 1));
+            subFolder->setData(5, Qt::UserRole, QVariant::fromValue(false));
+
+            subFolder->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+        }
+
+        if (item->childCount() == 0)
+            item->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicator);
+    }
+    catch (std::string error)
+    {
+        QMessageBox::warning(this, "Problem Loading", "The folder failed to load.\n\n" + QString::fromStdString(error));
+    }
+}
+
 void DeviceViewer::on_btnBack_clicked()
 {
     if (currentIndex == 0)
         LoadPartitions();
     else
-        LoadFolder(directoryChain.at(--currentIndex));
+        LoadFolderAll(directoryChain.at(--currentIndex));
 
     ui->btnBack->setEnabled(currentIndex >= 0);
 }
@@ -270,44 +300,6 @@ void DeviceViewer::LoadPartitions()
     currentIndex = -1;
 }
 
-void DeviceViewer::on_comboBox_currentIndexChanged(int index)
-{
-    if (index < 0)
-        return;
-
-    std::vector<Partition*> parts = currentDrive->GetPartitions();
-    Partition* part = parts.at(index);
-    ui->lblPartID->setText("0x" + QString::number(part->partitionId, 16).toUpper());
-    ui->lblPartSize->setText(QString::fromStdString(ByteSizeToString(part->size)));
-    ui->lblPartClusterSize->setText("0x" + QString::number(part->clusterSize, 16).toUpper());
-    ui->lblPartFirstClusterAddr->setText("0x" + QString::number(part->clusterStartingAddress, 16).toUpper());
-    ui->lblPartSectorsPerCluster->setText(QString::number(part->sectorsPerCluster));
-    ui->lblPartRootDirCluster->setText("0x" + QString::number(part->rootDirectoryCluster, 16).toUpper());
-}
-
-void DeviceViewer::on_btnClusterTool_clicked()
-{
-    ClusterToolDialog dialog(currentDrive->GetPartitions().at(ui->comboBox->currentIndex()), this);
-    dialog.exec();
-}
-
-void DeviceViewer::on_btnExtractSecuritySector_clicked()
-{
-    QString savePath = QFileDialog::getSaveFileName(this, "Choose a place to save the security blob...", QtHelpers::DesktopLocation() + "/Security Blob.bin");
-    if (savePath == "")
-        return;
-
-    try
-    {
-        currentDrive->ExtractSecurityBlob(savePath.toStdString());
-        QMessageBox::information(this, "Success", "Successfully saved the security blob.");
-    }
-    catch (string error)
-    {
-        QMessageBox::critical(this, "Error", "An error occurred while extracting the security blob.\n\n" + QString::fromStdString(error));
-    }
-}
-
 void DeviceViewer::GetSubFiles(FatxFileEntry *parent, QList<void *> &entries)
 {
     if ((parent->fileAttributes & FatxDirectory) == 0)
@@ -320,4 +312,45 @@ void DeviceViewer::GetSubFiles(FatxFileEntry *parent, QList<void *> &entries)
 
     for (DWORD i = 0; i < parent->cachedFiles.size(); i++)
         GetSubFiles(&parent->cachedFiles.at(i), entries);
+}
+
+void DeviceViewer::on_treeWidget_2_itemExpanded(QTreeWidgetItem *item)
+{
+    LoadFolderTree(item);
+}
+
+void DeviceViewer::on_treeWidget_2_itemClicked(QTreeWidgetItem *item, int column)
+{
+    currentIndex = item->data(4, Qt::UserRole).toInt() + 1;
+    FixDirectoryChain(item->parent(), currentIndex);
+
+    FatxFileEntry *entry = GetFatxFileEntry(item);
+    LoadFolderAll(entry);
+    ui->btnBack->setEnabled(currentIndex >= 0);
+}
+
+void DeviceViewer::FixDirectoryChain(QTreeWidgetItem *currentItem, int index)
+{
+    if (index == -1 || currentItem == NULL)
+        return;
+
+    FatxFileEntry *entry = GetFatxFileEntry(currentItem);
+    FixDirectoryChain(currentItem->parent(), index - 1);
+
+    if (index >= directoryChain.size())
+        directoryChain.append(entry);
+    else
+        directoryChain[index] = entry;
+}
+
+void DeviceViewer::on_btnSecurityBlob_clicked()
+{
+    SecuritySectorDialog dialog(currentDrive, this);
+    dialog.exec();
+}
+
+void DeviceViewer::on_btnPartitions_clicked()
+{
+    PartitionDialog dialog(currentDrive->GetPartitions(), this);
+    dialog.exec();
 }
