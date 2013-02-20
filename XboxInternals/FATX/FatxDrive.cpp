@@ -134,38 +134,52 @@ void FatxDrive::CreateFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
     if (!(parent->fileAttributes & FatxDirectory))
         throw std::string("FATX: Parent file entry is not a directory.\n");
 
+    // set the address to null
+    newEntry->address = 0;
+
+    // get the child entries
     GetChildFileEntries(parent);
+
     for (int i = 0; i < parent->cachedFiles.size(); i++)
         if (parent->cachedFiles.at(i).name == newEntry->name)
-            throw std::string("FATX: Entry already exists.\n");
+        {
+            // if it's deleted, it's okay!
+            if (parent->cachedFiles.at(i).nameLen != FATX_ENTRY_DELETED)
+                throw std::string("FATX: Entry already exists.\n");
 
+            newEntry->address = parent->cachedFiles.at(i).address;
+        }
+
+    // set the name length
     newEntry->nameLen = newEntry->name.length();
 
-    UINT64 freeEntryAddress = parent->cachedFiles.size() * FATX_ENTRY_SIZE;
-    FatxIO parentIO = GetFatxIO(parent);
-
-    // check to make sure this address is the correct one
-    if (freeEntryAddress != 0)
+    if (newEntry->address == 0)
     {
-        parentIO.SetPosition(freeEntryAddress - FATX_ENTRY_SIZE);
+        UINT64 freeEntryAddress = parent->cachedFiles.size() * FATX_ENTRY_SIZE;
+        FatxIO parentIO = GetFatxIO(parent);
 
-        BYTE prevNameLength = parentIO.ReadByte();
-        if (prevNameLength == 0xFF || prevNameLength == 0)
-            throw std::string("FATX: Could not calculate correct entry address.\n");
+        // check to make sure this address is the correct one
+        if (freeEntryAddress != 0)
+        {
+            parentIO.SetPosition(freeEntryAddress - FATX_ENTRY_SIZE);
+
+            BYTE prevNameLength = parentIO.ReadByte();
+            if (prevNameLength == 0xFF || prevNameLength == 0)
+                throw std::string("FATX: Could not calculate correct entry address.\n");
+        }
+
+        parentIO.AllocateMemory(FATX_ENTRY_SIZE);
+
+        parentIO.SetPosition(freeEntryAddress);
+        newEntry->address = parentIO.GetDrivePosition();
     }
-
-    parentIO.AllocateMemory(FATX_ENTRY_SIZE);
-
-    newEntry->startingCluster = FAT_CLUSTER_LAST;
 
     DWORD fileSize = newEntry->fileSize;
     newEntry->fileSize = 0;
     newEntry->partition = parent->partition;
 
     FatxIO childIO = GetFatxIO(newEntry);
-
-    parentIO.SetPosition(freeEntryAddress);
-    newEntry->address = parentIO.GetDrivePosition();
+    newEntry->clusterChain.clear();
 
     childIO.AllocateMemory(fileSize);
 
@@ -254,7 +268,7 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
             break;
     }
 
-    //entry->fileSize = (entry->cachedFiles.size() * FATX_ENTRY_SIZE);
+    entry->fileSize = (entry->cachedFiles.size() * FATX_ENTRY_SIZE);
     entry->readDirectories = true;
 }
 
