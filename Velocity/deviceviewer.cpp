@@ -73,8 +73,10 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
             return;
 
     contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
-    contextMenu.addAction(QPixmap(":/Images/delete.png"), "Delete Selected");
+    contextMenu.addAction(QPixmap(":/Images/add.png"), "Copy File(s) Here");
 
+    contextMenu.addSeparator();
+    contextMenu.addAction(QPixmap(":/Images/delete.png"), "Delete Selected");
     contextMenu.addSeparator();
 
     contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
@@ -114,15 +116,25 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
         else if (selectedItem->text() == "View Properties")
         {
             FatxFileEntry *entry = items.at(0)->data(0, Qt::UserRole).value<FatxFileEntry*>();
-
-            QString toInjectPath = QFileDialog::getOpenFileName(this);
-            if (toInjectPath.isEmpty())
-                return;
-
-            currentDrive->InjectFile(entry, "test.hetelek", toInjectPath.toStdString());
-
             FatxFileDialog dialog(entry, entry->partition->clusterSize, items.at(0)->data(1, Qt::UserRole).toString(), this);
             dialog.exec();
+        }
+        else if (selectedItem->text() == "Copy File(s) Here")
+        {
+            FatxFileEntry *entry = items.at(0)->data(0, Qt::UserRole).value<FatxFileEntry*>();
+
+            QStringList toInjectPath = QFileDialog::getOpenFileNames(this);
+            if (toInjectPath.size() == 0)
+                return;
+
+            for (int i = 0; i < toInjectPath.size(); i++)
+            {
+                QString filePath = toInjectPath.at(i);
+                QFileInfo info(filePath);
+                currentDrive->InjectFile(entry, info.fileName().toStdString(), filePath.toStdString());
+            }
+
+            QMessageBox::information(this, "Copied Files", "All files have been successfully copied to the harddrive.");
         }
         else if (selectedItem->text() == "Delete Selected")
         {
