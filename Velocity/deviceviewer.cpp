@@ -73,6 +73,10 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
             return;
 
     contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
+    contextMenu.addAction(QPixmap(":/Images/extract.png"), "Delete Selected");
+
+    contextMenu.addSeparator();
+
     contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
 
     QAction *selectedItem = contextMenu.exec(globalPos);
@@ -109,19 +113,27 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
         }
         else if (selectedItem->text() == "View Properties")
         {
-            /*FatxFileEntry *parent = items.at(0)->data(0, Qt::UserRole).value<FatxFileEntry*>();
-            FatxFileEntry child;
-            child.name = "hetelek";
-            child.creationDate = 0x4252B24A;
-            child.lastWriteDate = 0x4252B24A;
-            child.lastAccessDate = 0x4252B24A;
-            child.fileAttributes = 0;
-            child.fileSize = 0x43;
-            currentDrive->CreateFileEntry(parent, &child);*/
-
             FatxFileEntry *entry = items.at(0)->data(0, Qt::UserRole).value<FatxFileEntry*>();
+
+            QString toInjectPath = QFileDialog::getOpenFileName(this);
+            if (toInjectPath.isEmpty())
+                return;
+
+            currentDrive->InjectFile(entry, "test.hetelek", toInjectPath.toStdString());
+
             FatxFileDialog dialog(entry, entry->partition->clusterSize, items.at(0)->data(1, Qt::UserRole).toString(), this);
             dialog.exec();
+        }
+        else if (selectedItem->text() == "Delete Selected")
+        {
+            // delete the entries
+            for (int i = 0; i < items.size(); i++)
+            {
+                FatxFileEntry *entry = items.at(i)->data(0, Qt::UserRole).value<FatxFileEntry*>();
+                currentDrive->DeleteFile(entry);
+
+                delete items.at(i);
+            }
         }
     }
     catch (std::string error)
