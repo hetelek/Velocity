@@ -73,7 +73,7 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
             return;
 
     contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
-    contextMenu.addAction(QPixmap(":/Images/extract.png"), "Delete Selected");
+    contextMenu.addAction(QPixmap(":/Images/delete.png"), "Delete Selected");
 
     contextMenu.addSeparator();
 
@@ -328,6 +328,9 @@ void DeviceViewer::GetSubFiles(FatxFileEntry *parent, QList<void *> &entries)
 
 void DeviceViewer::on_treeWidget_2_itemExpanded(QTreeWidgetItem *item)
 {
+    if (item->childCount() > 0)
+        return;
+
     LoadFolderTree(item);
 }
 
