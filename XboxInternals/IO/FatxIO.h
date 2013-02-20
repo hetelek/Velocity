@@ -60,7 +60,7 @@ private:
     std::vector<DWORD> getFreeClusters(Partition *part, DWORD count);
 
     // writes the cluster chain (and links them correctly) starting from startingCluster
-    void writeClusterChain(Partition *part, DWORD startingCluster, std::vector<DWORD> *clusterChain);
+    void writeClusterChain(Partition *part, DWORD startingCluster, std::vector<DWORD> clusterChain);
 
     // sets all the clusters equal to value
     void setAllClusters(Partition *part, std::vector<DWORD> clusters, DWORD value);

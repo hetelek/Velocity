@@ -18,7 +18,7 @@ void FatxIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios
 
     pos = position;
 
-    if (pos == entry->fileSize)
+    if (pos == entry->fileSize && !(entry->fileAttributes & FatxDirectory))
         return;
 
     // calculate the actual offset on disk
@@ -53,11 +53,8 @@ void FatxIO::Close()
 void FatxIO::AllocateMemory(DWORD byteAmount)
 {
     // calcualte how many clusters to allocate
-    DWORD clusterCount = (byteAmount + (entry->fileSize % entry->partition->clusterSize)) / entry->partition->clusterSize;
+    DWORD clusterCount = (byteAmount + (entry->partition->clusterSize - 1)) / entry->partition->clusterSize;
     bool fileIsNull = (entry->fileSize == 0);
-
-    if (fileIsNull)
-        clusterCount++;
 
     // get the free clusters
     std::vector<DWORD> freeClusters = getFreeClusters(entry->partition, clusterCount);
@@ -73,7 +70,7 @@ void FatxIO::AllocateMemory(DWORD byteAmount)
 
     // write the cluster chain (only if it's changed)
     if (clusterCount != 0)
-        writeClusterChain(entry->partition, entry->startingCluster, &entry->clusterChain);
+        writeClusterChain(entry->partition, entry->startingCluster, entry->clusterChain);
 
     // update the file size, only if it's not a directory
     if (!(entry->fileAttributes & FatxDirectory))
@@ -156,10 +153,9 @@ std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
 
     std::vector<DWORD> freeClusters;
 
-    DWORD currentCluster = 1;
-    while (count != 0 && currentCluster != part->clusterCount)
+    DWORD currentCluster = 0;
+    while (count != 0 && currentCluster++ != part->clusterCount)
     {
-        currentCluster++;
         switch (part->clusterEntrySize)
         {
             case FAT32:
@@ -214,13 +210,13 @@ void FatxIO::WriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> *clusterC
     if (wantsToWriteClusterChain)
     {
         setAllClusters(entry->partition, entry->clusterChain, FAT_CLUSTER_AVAILABLE);
-        writeClusterChain(entry->partition, entry->startingCluster, clusterChain);
+        writeClusterChain(entry->partition, entry->startingCluster, *clusterChain);
     }
 }
 
-void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vector<DWORD> *clusterChain)
+void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vector<DWORD> clusterChain)
 {
-    if (startingCluster == 0 || clusterChain->size() == 0)
+    if (startingCluster == 0 || clusterChain.size() == 0)
         return;
     else if (startingCluster > part->clusterCount)
         throw std::string("FATX: Cluster is greater than cluster count.\n");
@@ -228,18 +224,18 @@ void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vect
     bool clusterSizeIs16 = part->clusterEntrySize == FAT16;
     DWORD previousCluster = startingCluster;
 
-    clusterChain->push_back(FAT_CLUSTER_LAST);
+    clusterChain.push_back(FAT_CLUSTER_LAST);
 
-    for (int i = 0; i < clusterChain->size(); i++)
+    for (int i = 0; i < clusterChain.size(); i++)
     {
         device->SetPosition(part->address + 0x1000 + (previousCluster * part->clusterEntrySize));
 
         if (clusterSizeIs16)
-            device->Write((WORD)clusterChain->at(i));
+            device->Write((WORD)clusterChain.at(i));
         else
-            device->Write((DWORD)clusterChain->at(i));
+            device->Write((DWORD)clusterChain.at(i));
 
-        previousCluster = clusterChain->at(i);
+        previousCluster = clusterChain.at(i);
     }
 }
 
