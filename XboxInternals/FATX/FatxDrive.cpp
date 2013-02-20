@@ -425,6 +425,27 @@ FatxDrive::~FatxDrive()
     delete io;
 }
 
+void FatxDrive::loadProfiles()
+{
+    // the general path for profiles is Drive:\Content\Content\OFFLINE_XUID\FFFE07D1\00010000\OFFLINE_XUID
+
+    FatxFileEntry *contentRoot = NULL;
+
+    // get the content partition's root
+    for (DWORD i = 0; i < partitions.size(); i++)
+        if (partitions.at(i)->name == "Content")
+            contentRoot = &partitions.at(i)->root;
+
+    // if the content partition doesn't exist, then return
+    if (contentRoot == NULL)
+        return;
+
+    FatxFileEntry *contentFolder = NULL;
+
+    // get the content folder in the content partition
+    GetChildFileEntries(contentRoot);
+}
+
 void FatxDrive::loadFatxDrive(std::wstring drivePath)
 {
     // open the device io

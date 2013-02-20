@@ -58,11 +58,15 @@ private:
     // process a partition and load it with calulated information
     void processBootSector(Partition *part);
 
+    // load all the profiles on the device
+    void loadProfiles();
+
     // counts the largest amount of consecutive unset bits
     static BYTE cntlzw(DWORD x);
 
     DeviceIO *io;
     std::vector<Partition*> partitions;
+    std::vector<FatxFileEntry*> profiles;
 };
 
 #endif // FATXDRIVE_H
