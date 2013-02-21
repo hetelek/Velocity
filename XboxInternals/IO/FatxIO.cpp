@@ -56,6 +56,9 @@ int FatxIO::AllocateMemory(DWORD byteAmount)
     DWORD clusterCount = (byteAmount + ((entry->partition->clusterSize - (entry->fileSize % entry->partition->clusterSize)) - 1)) / entry->partition->clusterSize;
     bool fileIsNull = (entry->fileSize == 0);
 
+    if (fileIsNull && entry->fileAttributes & FatxDirectory)
+        return 0;
+
     // get the free clusters
     std::vector<DWORD> freeClusters = getFreeClusters(entry->partition, clusterCount);
     if (freeClusters.size() != clusterCount)
