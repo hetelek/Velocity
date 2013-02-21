@@ -16,6 +16,9 @@ public:
     void ReadBytes(BYTE *outBuffer, DWORD len);
     void WriteBytes(BYTE *buffer, DWORD len);
 
+    void Close();
+    void Flush();
+
 private:
     BYTE *memory;
     size_t length;

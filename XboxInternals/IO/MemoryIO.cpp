@@ -46,5 +46,13 @@ void MemoryIO::WriteBytes(BYTE *buffer, DWORD len)
     pos += len;
 }
 
+void MemoryIO::Close()
+{
 
+}
+
+void MemoryIO::Flush()
+{
+
+}
 
