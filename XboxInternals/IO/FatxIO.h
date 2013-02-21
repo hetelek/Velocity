@@ -46,8 +46,8 @@ public:
     // does nothing, required implementation
     void Close();
 
-    // expands the cluster chain if necessary
-    void AllocateMemory(DWORD byteAmount);
+    // expands the cluster chain if necessary, returns the amount of new clusters allocated
+    int AllocateMemory(DWORD byteAmount);
 
     // write the entry to disk
     void WriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> *clusterChain = NULL);

@@ -50,7 +50,7 @@ void FatxIO::Close()
     // nothing to close since this doesn't actually have a file open
 }
 
-void FatxIO::AllocateMemory(DWORD byteAmount)
+int FatxIO::AllocateMemory(DWORD byteAmount)
 {
     // calcualte how many clusters to allocate
     DWORD clusterCount = (byteAmount + ((entry->partition->clusterSize - (entry->fileSize % entry->partition->clusterSize)) - 1)) / entry->partition->clusterSize;
@@ -78,6 +78,7 @@ void FatxIO::AllocateMemory(DWORD byteAmount)
         entry->fileSize += byteAmount;
         WriteEntryToDisk(entry);
     }
+    return clusterCount;
 }
 
 UINT64 FatxIO::GetPosition()
