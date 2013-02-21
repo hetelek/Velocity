@@ -464,7 +464,9 @@ void FatxDrive::loadFatxDrive(std::wstring drivePath)
     securityBlob.firmwareRevision = io->ReadString(8);
     securityBlob.modelNumber = io->ReadString(0x28);
     io->ReadBytes(securityBlob.msLogoHash, 0x14);
+    io->SetEndian(LittleEndian);
     securityBlob.userAddressableSectors = io->ReadDword();
+    io->SetEndian(BigEndian);
     io->ReadBytes(securityBlob.rsaSignature, 0x100);
     securityBlob.validSignature = false;
 
