@@ -93,7 +93,8 @@ SOURCES += main.cpp \
     clustertooldialog.cpp \
     fatxfiledialog.cpp \
     partitiondialog.cpp \
-    securitysectordialog.cpp
+    securitysectordialog.cpp \
+    nightcharts.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -141,7 +142,8 @@ HEADERS  += mainwindow.h \
     clustertooldialog.h \
     fatxfiledialog.h \
     partitiondialog.h \
-    securitysectordialog.h
+    securitysectordialog.h \
+    nightcharts.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \

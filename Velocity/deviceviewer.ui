@@ -19,9 +19,9 @@
   <property name="windowTitle">
    <string>Device Viewer</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QLabel" name="label">
        <property name="minimumSize">
@@ -40,7 +40,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="Resources.qrc">:/Images/harddrive.png</pixmap>
+        <pixmap>:/Images/harddrive.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -61,6 +61,113 @@
       </spacer>
      </item>
      <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="imgFreeMem">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>5</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>16</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Box</enum>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="imgUsedMem">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>5</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>16</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Box</enum>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QLabel" name="lblFeeMemory">
+           <property name="text">
+            <string>Free Space</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="lblUsedSpace">
+           <property name="text">
+            <string>Used Space</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QLabel" name="imgPiechart">
+       <property name="minimumSize">
+        <size>
+         <width>75</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>75</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QPushButton" name="btnSecurityBlob">
@@ -71,7 +178,7 @@
           <string>Security Blob</string>
          </property>
          <property name="icon">
-          <iconset resource="Resources.qrc">
+          <iconset>
            <normaloff>:/Images/ytgr.png</normaloff>:/Images/ytgr.png</iconset>
          </property>
         </widget>
@@ -85,7 +192,7 @@
           <string>Partitions</string>
          </property>
          <property name="icon">
-          <iconset resource="Resources.qrc">
+          <iconset>
            <normaloff>:/Images/partition.png</normaloff>:/Images/partition.png</iconset>
          </property>
         </widget>
@@ -107,7 +214,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="Resources.qrc">
+          <iconset>
            <normaloff>:/Images/back.png</normaloff>:/Images/back.png</iconset>
          </property>
         </widget>
@@ -197,8 +304,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="Resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

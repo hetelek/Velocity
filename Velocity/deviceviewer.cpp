@@ -15,6 +15,8 @@ DeviceViewer::DeviceViewer(QWidget *parent) :
     // setup the context menus
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showRemoveContextMenu(QPoint)));
+
+
 }
 
 DeviceViewer::~DeviceViewer()
@@ -37,6 +39,8 @@ void DeviceViewer::on_pushButton_clicked()
     {
         // open the drive
         currentDrive = new FatxDrive(ui->txtPath->text().toStdWString());
+        UINT64 totalFreeSpace = 0;
+        UINT64 totalSpace = 0;
 
         // load the partion information
         std::vector<Partition*> parts = currentDrive->GetPartitions();
@@ -50,8 +54,37 @@ void DeviceViewer::on_pushButton_clicked()
             secondItem->setData(5, Qt::UserRole, QVariant::fromValue(true));
             secondItem->setData(4, Qt::UserRole, QVariant::fromValue(-1));
 
-            qDebug() << QString::fromStdString(ByteSizeToString(currentDrive->GetFreeMemory(parts.at(i))));
+            totalFreeSpace += currentDrive->GetFreeMemory(parts.at(i));
         }
+
+        // calculate the percentage
+        float freeMemPercentage = (((float)totalFreeSpace * 100.0) / ((UINT64)currentDrive->securityBlob.userAddressableSectors * 0x200));
+
+        // draw the insano piechart
+        QPixmap chart(750, 500);
+        chart.fill(ui->imgPiechart->palette().background().color());
+        QPainter painter(&chart);
+        Nightcharts pieChart;
+        pieChart.setType(Nightcharts::Dpie);
+        pieChart.setCords(25, 1, 700, 425);
+        pieChart.setFont(QFont());
+        pieChart.addPiece("Used Space", QColor(0, 0, 254), 100.0 - freeMemPercentage);
+        pieChart.addPiece("Free Space", QColor(255, 0, 254), freeMemPercentage);
+        pieChart.draw(&painter);
+
+        ui->imgPiechart->setPixmap(chart);
+
+        // setup the legend
+        QPixmap freeMemClr(16, 16);
+        freeMemClr.fill(QColor(255, 0, 254));
+        ui->imgFreeMem->setPixmap(freeMemClr);
+        ui->lblFeeMemory->setText(QString::fromStdString(ByteSizeToString(totalFreeSpace)) + " of Free Space");
+
+        QPixmap usedMemClr(16, 16);
+        usedMemClr.fill(QColor(0, 0, 254));
+        ui->imgUsedMem->setPixmap(usedMemClr);
+        ui->lblUsedSpace->setText(QString::fromStdString(ByteSizeToString(((UINT64)currentDrive->securityBlob.userAddressableSectors * 0x200) - totalFreeSpace)) + " of Used Space");
+
         ui->btnPartitions->setEnabled(true);
         ui->btnSecurityBlob->setEnabled(true);
     }
@@ -372,3 +405,4 @@ void DeviceViewer::on_btnPartitions_clicked()
     PartitionDialog dialog(currentDrive->GetPartitions(), this);
     dialog.exec();
 }
+

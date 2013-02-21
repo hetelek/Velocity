@@ -23,6 +23,9 @@
 #include "Fatx/FatxDrive.h"
 #include "Stfs/StfsDefinitions.h"
 
+// sick pie chart
+#include "nightcharts.h"
+
 Q_DECLARE_METATYPE( FatxFileEntry* )
 Q_DECLARE_METATYPE( Partition* )
 
