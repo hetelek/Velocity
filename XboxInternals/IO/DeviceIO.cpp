@@ -129,21 +129,38 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
 
 void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
 {
-    #ifdef _WIN32
-        if (deviceHandle == INVALID_HANDLE_VALUE)
-            throw std::string("DeviceIO: INVALID_HANDLE_VALUE.");
-    #endif
+    UINT64 endingPos = pos + len;
+    if ((pos & 0x1FF) == 0 && (len & 0x1FF) == 0)
+    {
+        #ifdef _WIN32
+            bool success = WriteFile(
+                deviceHandle,	// Device to read from
+                buffer,      // Output buffer
+                len,			// Length to read
+                NULL,           // Pointer to the number of bytes read
+                &offset);		// OVERLAPPED structure containing the offset to read from
 
-    // We can't write beyond the end of the stream
-    if (pos + len > DriveLength())
-        throw std::string("Can not write beyond end of stream! At xDeviceStream::Write");
+            if (!success)
+                throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
+        #else
+            read(device, lastReadData, 0x200);
+        #endif
+
+        SetPosition(endingPos);
+
+        return;
+    }
 
     // nothing to do
     if (len == 0)
         return;
 
+    // We can't write beyond the end of the stream
+    if (pos + len > DriveLength())
+        throw std::string("Can not write beyond end of stream! At xDeviceStream::Write");
+
+
     UINT64 originalPos = pos;
-    UINT64 finalPos = pos + len;
     UINT64 currentSector = DOWN_TO_NEAREST_SECTOR(pos);
 
     // write the bytes up to the next sector
@@ -203,7 +220,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
     lastReadOffset = (pos == 0) ? 0 : pos - 0x200;
 
     // set the position
-    SetPosition(finalPos);
+    SetPosition(endingPos);
 }
 
 UINT64 DeviceIO::DriveLength()
