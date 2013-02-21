@@ -11,6 +11,9 @@
 #include "Stfs/StfsDefinitions.h"
 #include "Fatx/FatxConstants.h"
 
+// other
+#include "nightcharts.h"
+
 namespace Ui {
 class PartitionDialog;
 }
