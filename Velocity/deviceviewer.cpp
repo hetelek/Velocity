@@ -337,7 +337,8 @@ void DeviceViewer::GetSubFiles(FatxFileEntry *parent, QList<void *> &entries)
     currentDrive->GetChildFileEntries(parent);
 
     for (DWORD i = 0; i < parent->cachedFiles.size(); i++)
-        GetSubFiles(&parent->cachedFiles.at(i), entries);
+        if (parent->cachedFiles.at(i).nameLen != FATX_ENTRY_DELETED)
+            GetSubFiles(&parent->cachedFiles.at(i), entries);
 }
 
 void DeviceViewer::on_treeWidget_2_itemExpanded(QTreeWidgetItem *item)
