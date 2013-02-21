@@ -79,12 +79,13 @@ XBOXINTERNALSSHARED_EXPORT string ByteSizeToString(UINT64 bytes)
 
     // divide stuff
     std::stringstream result;
+    result.precision(1);
     if (bytes > GB)
-        result << (bytes / GB) << " GB";
+        result << std::fixed << ((float)bytes / GB) << " GB";
     else if (bytes > MB)
-        result << (bytes / MB) << " MB";
+        result << std::fixed << ((float)bytes / MB) << " MB";
     else if (bytes > KB)
-        result << ((DWORD)(((bytes / (float)KB) + 0.005f) * 100) / 100.0f) << " KB";
+        result << std::fixed << ((DWORD)(((bytes / (float)KB) + 0.005f) * 100) / 100.0f) << " KB";
     else
         result << bytes << " bytes";
 
