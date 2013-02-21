@@ -221,11 +221,11 @@ void FatxDrive::InjectFile(FatxFileEntry *parent, std::string name, std::string 
     entry.name = name;
 
     // seek to the end of the file
-    FileIO toInject(filePath);
-    toInject.SetPosition(0, ios_base::end);
+    FileIO inFile(filePath);
+    inFile.SetPosition(0, ios_base::end);
 
     // get the file size
-    UINT64 fileSize = toInject.GetPosition();
+    UINT64 fileSize = inFile.GetPosition();
     entry.fileSize = fileSize;
 
     // set the times
@@ -240,36 +240,77 @@ void FatxDrive::InjectFile(FatxFileEntry *parent, std::string name, std::string 
     // create the entry
     CreateFileEntry(parent, &entry);
 
-    // calculate the amount of data
-    DWORD toWriteLength = (fileSize >= 0x100000) ? 0x100000 : fileSize;
-
-    // get the data to write
-    BYTE *buffer = new BYTE[0x100000];
-    toInject.SetPosition(0);
-    toInject.ReadBytes(buffer, toWriteLength);
+    ////////////////////////////
+    // START WRITING THE DATA //
+    ////////////////////////////
 
     // write the data
-    FatxIO newEntryIO = GetFatxIO(&entry);
-    newEntryIO.WriteBytes(buffer, toWriteLength);
-    fileSize -= toWriteLength;
+    FatxIO entryIO = GetFatxIO(&entry);
 
-    progress(arg, entry.fileSize - fileSize, entry.fileSize);
-    while (fileSize >= 0x100000)
+    // seek to the beginning of the files
+    entryIO.SetPosition(0);
+    inFile.SetPosition(0);
+
+    // calculate stuff
+    DWORD bufferSize = (entry.fileSize / 0x10);
+    if (bufferSize < 0x10000)
+        bufferSize = 0x10000;
+    else if (bufferSize > 0x100000)
+        bufferSize = 0x100000;
+
+    std::vector<Range> writeRanges;
+    BYTE *buffer = new BYTE[bufferSize];
+    INT64 pos;
+
+    // generate the read ranges
+    for (DWORD i = 0; i < entry.clusterChain.size() - 1; i++)
     {
-        toInject.ReadBytes(buffer, 0x100000);
-        newEntryIO.WriteBytes(buffer, 0x100000);
-        fileSize -= 0x100000;
-        progress(arg, entry.fileSize - fileSize, entry.fileSize);
-    }
-    progress(arg, entry.fileSize - fileSize, entry.fileSize);
+        // calculate cluster's address
+        pos = FatxIO::ClusterToOffset(entry.partition, entry.clusterChain.at(i));
 
-    if (fileSize > 0)
+        Range range = { pos, 0 };
+        do
+        {
+            range.len += entry.partition->clusterSize;
+        }
+        while ((entry.clusterChain.at(i) + 1) == entry.clusterChain.at(++i) && i < (entry.clusterChain.size() - 2) && (range.len + entry.partition->clusterSize) <= bufferSize);
+        i--;
+
+        writeRanges.push_back(range);
+    }
+
+    DWORD finalClusterSize = entry.fileSize % entry.partition->clusterSize;
+    INT64 finalClusterOffset = FatxIO::ClusterToOffset(entry.partition, entry.clusterChain.at(entry.clusterChain.size() - 1));
+    Range lastRange = { finalClusterOffset , (finalClusterSize == 0) ? entry.partition->clusterSize : finalClusterSize };
+    writeRanges.push_back(lastRange);
+
+    DWORD modulus = writeRanges.size() / 100;
+    if (modulus == 0)
+        modulus = 1;
+    else if (modulus > 3)
+        modulus = 3;
+
+    // read all the data in
+    for (DWORD i = 0; i < writeRanges.size(); i++)
     {
-        toInject.ReadBytes(buffer, fileSize);
-        newEntryIO.WriteBytes(buffer, fileSize);
+        // seek to the beginning of the range
+        io->SetPosition(writeRanges.at(i).start);
+
+        // get the range from the device
+        inFile.ReadBytes(buffer, writeRanges.at(i).len);
+        io->WriteBytes(buffer, writeRanges.at(i).len);
+
+        // update progress if needed
+        if (progress && i % modulus == 0)
+            progress(arg, i + 1, writeRanges.size());
     }
 
-    toInject.Close();
+    // make sure it hits the end
+    progress(arg, writeRanges.size(), writeRanges.size());
+
+    inFile.Close();
+
+    delete[] buffer;
 }
 
 void FatxDrive::GetFileEntryMagic(FatxFileEntry *entry)
