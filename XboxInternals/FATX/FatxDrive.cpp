@@ -600,7 +600,7 @@ UINT64 FatxDrive::GetFreeMemory(Partition *part)
     // check if it's FAT16
     bool clusterSizeIs2 = (part->clusterEntrySize == FAT16);
 
-    DWORD bytesLeft = part->clusterCount * 4;
+    DWORD bytesLeft = part->clusterCount * ((clusterSizeIs2) ? 2 : 4);
     UINT64 freeClusters = 0;
     DWORD readSize;
     while (bytesLeft > 0)
