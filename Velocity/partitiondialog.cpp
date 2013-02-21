@@ -46,14 +46,13 @@ void PartitionDialog::on_comboBox_currentIndexChanged(int index)
     pieChart.draw(&painter);
     pieChart.drawLegend(&painter);
 
-    chart.save("C:\\Users\\Adam\\Desktop\\sick pic.png", "PNG");
+    chart.copy();
 
     ui->imgPiechart->setPixmap(chart);
 }
 
 void PartitionDialog::on_btnClusterTool_clicked()
 {
-    Partition *part = partitions.at(ui->comboBox->currentIndex());
-    ClusterToolDialog dialog(part, this);
+    ClusterToolDialog dialog(partitions.at(ui->comboBox->currentIndex()), this);
     dialog.exec();
 }

@@ -2,8 +2,10 @@
 #include "ui_clustertooldialog.h"
 
 ClusterToolDialog::ClusterToolDialog(Partition *part, QWidget *parent) :
-    QDialog(parent), ui(new Ui::ClusterToolDialog), part(part)
+    QDialog(parent), ui(new Ui::ClusterToolDialog)
 {
+    this->part = part;
+
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
