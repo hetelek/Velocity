@@ -129,7 +129,7 @@ void SvodDialog::showFileContextMenu(QPoint pos)
         SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSVOD, svod, OpReplace, QString::fromStdString(entry->filePath + entry->name), filePath, NULL, this);
         dialog->setModal(true);
         dialog->show();
-        dialog->startJob();
+        dialog->start();
     }
 }
 

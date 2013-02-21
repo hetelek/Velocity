@@ -19,7 +19,7 @@ SingleProgressDialog::SingleProgressDialog(FileSystem system, void *device, Oper
     }
 }
 
-void SingleProgressDialog::startJob()
+void SingleProgressDialog::start()
 {
     try
     {
