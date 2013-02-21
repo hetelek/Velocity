@@ -1,6 +1,8 @@
 #include "deviceviewer.h"
 #include "ui_deviceviewer.h"
 
+#include <QDebug>
+
 DeviceViewer::DeviceViewer(QWidget *parent) :
     QDialog(parent), ui(new Ui::DeviceViewer)
 {
@@ -47,6 +49,8 @@ void DeviceViewer::on_pushButton_clicked()
             secondItem->setData(0, Qt::UserRole, QVariant::fromValue(parts.at(i)));
             secondItem->setData(5, Qt::UserRole, QVariant::fromValue(true));
             secondItem->setData(4, Qt::UserRole, QVariant::fromValue(-1));
+
+            qDebug() << QString::fromStdString(ByteSizeToString(currentDrive->GetFreeMemory(parts.at(i))));
         }
         ui->btnPartitions->setEnabled(true);
         ui->btnSecurityBlob->setEnabled(true);

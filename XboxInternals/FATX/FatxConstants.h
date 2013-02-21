@@ -86,6 +86,7 @@ struct Partition
     UINT64 clusterStartingAddress;
     DWORD fatEntryShift;
     UINT64 allocationTableSize;
+    UINT64 freeMemory;
 };
 
 enum FatxDirentAttributes

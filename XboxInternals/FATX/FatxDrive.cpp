@@ -97,6 +97,7 @@ void FatxDrive::processBootSector(Partition *part)
     part->clusterEntrySize = (clusters < FAT_CLUSTER16_RESERVED) ? FAT16 : FAT32;
     part->clusterStartingAddress = part->address + partitionSize + 0x1000;
     part->lastFreeClusterFound = 1;
+    part->freeMemory = 0;
 
     // setup the root
     part->root.startingCluster = part->rootDirectoryCluster;
@@ -537,4 +538,54 @@ void FatxDrive::loadFatxDrive(std::wstring drivePath)
             partitions.erase(partitions.begin() + i);
         }
     }
+}
+
+UINT64 FatxDrive::GetFreeMemory(Partition *part)
+{
+    if (part->freeMemory != 0)
+        return;
+
+    // allocate memory for a buffer to minimize the amount of reads
+    BYTE *buffer = new BYTE[0x50000];
+
+    // seek to the chainmap
+    io->SetPosition(part->address + 0x1000);
+
+    // check if it's FAT16
+    bool clusterSizeIs2 = (part->clusterEntrySize == FAT16);
+
+    DWORD bytesLeft = part->clusterCount * 4;
+    UINT64 freeClusters = 0;
+    DWORD readSize;
+    while (bytesLeft > 0)
+    {
+        // calculate the read size
+        readSize = (bytesLeft > 0x50000) ? 0x50000 : bytesLeft;
+        bytesLeft -= readSize;
+
+        // read in the segment
+        io->ReadBytes(buffer, readSize);
+        MemoryIO memory(buffer, 0x50000);
+        memory.SetPosition(0);
+
+        // iterate through all of the clusters
+        if (clusterSizeIs2)
+        {
+            for (DWORD i = 0; i < (readSize / 2); i++)
+                freeClusters += (memory.ReadWord() == FAT_CLUSTER16_AVAILABLE);
+        }
+        else
+        {
+            for (DWORD i = 0; i < (readSize / 4); i++)
+                freeClusters += (memory.ReadDword() == FAT_CLUSTER_AVAILABLE);
+        }
+    }
+
+    // calculate the amount of free memory
+    part->freeMemory = freeClusters * part->clusterSize;
+
+    // cleanup
+    delete[] buffer;
+
+    return part->freeMemory;
 }

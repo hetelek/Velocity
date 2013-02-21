@@ -5,6 +5,7 @@
 
 #include "../IO/DeviceIO.h"
 #include "../IO/FatxIO.h"
+#include "../IO/MemoryIO.h"
 #include "../Cryptography/XeKeys.h"
 #include "FatxConstants.h"
 
@@ -45,6 +46,9 @@ public:
 
     // close the underlying io
     void Close();
+
+    // get the amount of free bytes on the device
+    UINT64 GetFreeMemory(Partition *part);
 
     // convert a cluster to an offset
     static INT64 ClusterToOffset(Partition *part, DWORD cluster);
