@@ -133,7 +133,7 @@ double BaseIO::ReadDouble()
     return *(double*)&temp;
 }
 
-string BaseIO::ReadString(int len, char nullTerminator, bool forceInclude0)
+string BaseIO::ReadString(int len, char nullTerminator, bool forceInclude0, int maxLength)
 {
     string toReturn;
 
@@ -141,8 +141,9 @@ string BaseIO::ReadString(int len, char nullTerminator, bool forceInclude0)
     if (len == -1)
     {
         toReturn = "";
+        int i = 1;
         char nextChar;
-        while ((nextChar = ReadByte()) != nullTerminator && (forceInclude0 && nextChar != 0))
+        while ((nextChar = ReadByte()) != nullTerminator && (forceInclude0 && nextChar != 0) && (i++ <= maxLength))
             toReturn += nextChar;
     }
     else

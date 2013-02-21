@@ -319,7 +319,7 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
             // read the name (0xFF is the null terminator)
             bool subtract = true;
             if (newEntry.nameLen == FATX_ENTRY_DELETED)
-                newEntry.name = io->ReadString(-1, 0xFF);
+                newEntry.name = io->ReadString(-1, 0xFF, true, FATX_ENTRY_MAX_NAME_LENGTH);
             else
             {
                 newEntry.name = io->ReadString(newEntry.nameLen);
@@ -327,7 +327,7 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
             }
 
             // seek past the name
-            io->SetPosition(io->GetPosition() + (FATX_ENTRY_MAX_NAME_LENGTH - newEntry.name.length() - subtract));
+            io->SetPosition(io->GetPosition() + (FATX_ENTRY_MAX_NAME_LENGTH - newEntry.name.length()) - subtract);
 
             // read the rest of the entry information
             newEntry.startingCluster = io->ReadDword();

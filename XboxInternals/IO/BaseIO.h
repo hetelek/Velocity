@@ -54,7 +54,7 @@ public:
     UINT64 ReadMultiByte(size_t size);
     float ReadFloat();
     double ReadDouble();
-    string ReadString(int len = -1, char nullTerminator = 0, bool forceInclude0 = true);
+    string ReadString(int len = -1, char nullTerminator = 0, bool forceInclude0 = true, int maxLength = 0x7FFFFFFF);
     wstring ReadWString(int len = -1);
 
     // write functions
