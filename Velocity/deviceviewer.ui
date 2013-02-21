@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>907</width>
-    <height>548</height>
+    <height>570</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -19,36 +19,78 @@
   <property name="windowTitle">
    <string>Device Viewer</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QPushButton" name="btnSecurityBlob">
-       <property name="enabled">
-        <bool>false</bool>
+      <widget class="QLabel" name="label">
+       <property name="minimumSize">
+        <size>
+         <width>87</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>87</width>
+         <height>50</height>
+        </size>
        </property>
        <property name="text">
-        <string>Security Blob</string>
+        <string/>
        </property>
-       <property name="icon">
-        <iconset resource="Resources.qrc">
-         <normaloff>:/Images/ytgr.png</normaloff>:/Images/ytgr.png</iconset>
+       <property name="pixmap">
+        <pixmap resource="Resources.qrc">:/Images/harddrive.png</pixmap>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btnPartitions">
-       <property name="enabled">
-        <bool>false</bool>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
-       <property name="text">
-        <string>Partitions</string>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
        </property>
-       <property name="icon">
-        <iconset resource="Resources.qrc">
-         <normaloff>:/Images/partition.png</normaloff>:/Images/partition.png</iconset>
-       </property>
-      </widget>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QPushButton" name="btnSecurityBlob">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Security Blob</string>
+         </property>
+         <property name="icon">
+          <iconset resource="Resources.qrc">
+           <normaloff>:/Images/ytgr.png</normaloff>:/Images/ytgr.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnPartitions">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Partitions</string>
+         </property>
+         <property name="icon">
+          <iconset resource="Resources.qrc">
+           <normaloff>:/Images/partition.png</normaloff>:/Images/partition.png</iconset>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>

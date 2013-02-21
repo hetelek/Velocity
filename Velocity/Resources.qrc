@@ -91,5 +91,7 @@
         <file>Images/partition.png</file>
         <file>Images/back.png</file>
         <file>Images/forward.png</file>
+        <file>Images/harddrive.png</file>
+        <file>Images/usb drive.png</file>
     </qresource>
 </RCC>

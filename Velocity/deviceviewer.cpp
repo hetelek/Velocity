@@ -264,7 +264,7 @@ void DeviceViewer::LoadFolderTree(QTreeWidgetItem *item)
         {
             // if it isn't a folder then don't bother loading it
             FatxFileEntry *entry = &folder->cachedFiles.at(i);
-            if ((entry->fileAttributes & FatxDirectory) == 0)
+            if ((entry->fileAttributes & FatxDirectory) == 0 || entry->nameLen == FATX_ENTRY_DELETED)
                 continue;
 
             QTreeWidgetItem *subFolder = new QTreeWidgetItem(item);
