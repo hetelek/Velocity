@@ -370,7 +370,7 @@ int Nightcharts::drawLegend(QPainter *painter)
             float x = lX+dist;
             float y = lY+dist+i*(painter->fontMetrics().height()+2*dist);
             painter->drawRect(x,y,painter->fontMetrics().height(),painter->fontMetrics().height());
-            painter->drawText(x+painter->fontMetrics().height()+dist,y+painter->fontMetrics().height()/2+dist,pieces[i].pname + " - " + QString::number(pieces[i].pPerc)+"%");
+            painter->drawText(x+painter->fontMetrics().height()+dist,y+painter->fontMetrics().height()/2+dist,pieces[i].pname + "\t" + QString::number(pieces[i].pPerc,'g', 3)+"%");
         }
         break;
     }
