@@ -21,7 +21,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,4,0,0,0,1">
      <item>
       <widget class="QLabel" name="label">
        <property name="minimumSize">
@@ -40,7 +40,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap>:/Images/harddrive.png</pixmap>
+        <pixmap resource="Resources.qrc">:/Images/harddrive.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -168,6 +168,19 @@
       </widget>
      </item>
      <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QPushButton" name="btnSecurityBlob">
@@ -178,7 +191,7 @@
           <string>Security Blob</string>
          </property>
          <property name="icon">
-          <iconset>
+          <iconset resource="Resources.qrc">
            <normaloff>:/Images/ytgr.png</normaloff>:/Images/ytgr.png</iconset>
          </property>
         </widget>
@@ -192,7 +205,7 @@
           <string>Partitions</string>
          </property>
          <property name="icon">
-          <iconset>
+          <iconset resource="Resources.qrc">
            <normaloff>:/Images/partition.png</normaloff>:/Images/partition.png</iconset>
          </property>
         </widget>
@@ -214,7 +227,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
+          <iconset resource="Resources.qrc">
            <normaloff>:/Images/back.png</normaloff>:/Images/back.png</iconset>
          </property>
         </widget>
@@ -304,6 +317,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="Resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
