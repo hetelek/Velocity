@@ -50,6 +50,16 @@ void SingleProgressDialog::startJob()
                 }
                 break;
             }
+            case FileSystemFATX:
+            {
+                FatxDrive *drive = reinterpret_cast<FatxDrive*>(device);
+                if (op == OpInject)
+                {
+                    FatxFileEntry *parent = reinterpret_cast<FatxFileEntry*>(outEntry);
+                    drive->InjectFile(parent, internalPath.toStdString(), externalPath.toStdString(), UpdateProgress, this);
+                }
+                break;
+            }
         }
     }
     catch (string error)

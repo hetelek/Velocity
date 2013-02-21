@@ -17,6 +17,7 @@
 #include "securitysectordialog.h"
 #include "fatxfiledialog.h"
 #include "partitiondialog.h"
+#include "singleprogressdialog.h"
 
 // xbox
 #include "Fatx/FatxDrive.h"

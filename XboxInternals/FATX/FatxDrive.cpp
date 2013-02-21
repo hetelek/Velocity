@@ -215,7 +215,7 @@ void FatxDrive::DeleteFile(FatxFileEntry *entry)
     io->Write((BYTE)FATX_ENTRY_DELETED);
 }
 
-void FatxDrive::InjectFile(FatxFileEntry *parent, std::string name, std::string filePath)
+void FatxDrive::InjectFile(FatxFileEntry *parent, std::string name, std::string filePath, void (*progress)(void *, DWORD, DWORD), void *arg)
 {
     FatxFileEntry entry;
     entry.name = name;
@@ -253,12 +253,15 @@ void FatxDrive::InjectFile(FatxFileEntry *parent, std::string name, std::string 
     newEntryIO.WriteBytes(buffer, toWriteLength);
     fileSize -= toWriteLength;
 
+    progress(arg, entry.fileSize - fileSize, entry.fileSize);
     while (fileSize >= 0x100000)
     {
         toInject.ReadBytes(buffer, 0x100000);
         newEntryIO.WriteBytes(buffer, 0x100000);
         fileSize -= 0x100000;
+        progress(arg, entry.fileSize - fileSize, entry.fileSize);
     }
+    progress(arg, entry.fileSize - fileSize, entry.fileSize);
 
     if (fileSize > 0)
     {

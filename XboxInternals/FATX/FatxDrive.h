@@ -42,7 +42,7 @@ public:
     void DeleteFile(FatxFileEntry *entry);
 
     // inject the file
-    void InjectFile(FatxFileEntry *parent, std::string name, std::string filePath);
+    void InjectFile(FatxFileEntry *parent, std::string name, std::string filePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
     // close the underlying io
     void Close();

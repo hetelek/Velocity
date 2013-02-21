@@ -135,7 +135,9 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
             {
                 QString filePath = toInjectPath.at(i);
                 QFileInfo info(filePath);
-                currentDrive->InjectFile(entry, info.fileName().toStdString(), filePath.toStdString());
+
+                SingleProgressDialog dialog(FileSystemFATX, currentDrive, OpInject, info.fileName(), filePath, entry, this);
+                dialog.exec();
             }
 
             QMessageBox::information(this, "Copied Files", "All files have been successfully copied to the harddrive.");
