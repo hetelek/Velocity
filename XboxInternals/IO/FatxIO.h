@@ -3,10 +3,12 @@
 
 #include "DeviceIO.h"
 #include "FileIO.h"
+#include "MemoryIO.h"
 #include "../Fatx/FatxConstants.h"
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 struct Range
 {
@@ -70,5 +72,7 @@ private:
     UINT64 pos;
     DWORD maxReadConsecutive;
 };
+
+bool compareDWORDs(DWORD a, DWORD b);
 
 #endif // FATXIO_H

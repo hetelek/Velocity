@@ -186,17 +186,57 @@ std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
 
 void FatxIO::SetAllClusters(DeviceIO *device, Partition *part, std::vector<DWORD> clusters, DWORD value)
 {
-    bool clusterSizeIs16 = part->clusterEntrySize == FAT16;
+    // sort the clusters numerically, order doesn't matter any more since we're just setting them all to the same value
+    std::sort(clusters.begin(), clusters.end(), compareDWORDs);
 
-    for (int i = 0; i < clusters.size(); i++)
+    // we'll work with the clusters in 0x10000 chunks to minimize the amount of reads
+    BYTE buffer[0x10000];
+
+    for (DWORD i = 0; i < clusters.size(); i++)
     {
-        device->SetPosition(part->address + 0x1000 + (clusters.at(i) * part->clusterEntrySize));
+        // seek to the lowest cluster in the chainmap, but round to get a fast read
+        UINT64 clusterEntryAddr = (part->address + 0x1000 + clusters.at(i) * part->clusterEntrySize);
+        device->SetPosition(DOWN_TO_NEAREST_SECTOR(clusterEntryAddr));
 
-        if (clusterSizeIs16)
-            device->Write((WORD)value);
-        else
-            device->Write((DWORD)value);
+        // read in a chunk of the chainmap
+        device->ReadBytes(buffer, 0x10000);
+
+        // open a MemoryIO on the memory for easier access
+        MemoryIO bufferIO(buffer, 0x10000);
+
+        // calculate the offset of the cluster in the buffer
+        UINT64 clusterEntryOffset = clusterEntryAddr - DOWN_TO_NEAREST_SECTOR(clusterEntryAddr);
+
+        // loop while still in the bounds of the buffer
+        while (clusterEntryOffset < 0x10000)
+        {
+            // seek to the address of the cluster in the buffer
+            bufferIO.SetPosition(clusterEntryOffset);
+
+            // set the cluster chain map entry to the value requested
+            if (part->clusterEntrySize == 2)
+                bufferIO.Write((WORD)value);
+            else
+                bufferIO.Write((DWORD)value);
+
+            if (i + 1 == clusters.size())
+            {
+                ++i;
+                break;
+            }
+
+            // calculate the value of the next cluster entry
+            clusterEntryOffset = (part->address + 0x1000 + clusters.at(++i) * part->clusterEntrySize) - DOWN_TO_NEAREST_SECTOR(clusterEntryAddr);
+        }
+        --i;
+
+        // once we're done then write the block of memory back
+        device->SetPosition(DOWN_TO_NEAREST_SECTOR(clusterEntryAddr));
+        device->WriteBytes(buffer, 0x10000);
     }
+
+    // flush the device just to be safe
+    device->Flush();
 }
 
 void FatxIO::WriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> *clusterChain)
@@ -337,4 +377,9 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
 INT64 FatxIO::ClusterToOffset(Partition *part, DWORD cluster)
 {
     return part->clusterStartingAddress + (part->clusterSize * (INT64)(cluster - 1));
+}
+
+bool compareDWORDs(DWORD a, DWORD b)
+{
+    return a < b;
 }
