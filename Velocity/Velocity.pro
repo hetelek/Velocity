@@ -38,14 +38,16 @@ macx:ICON = velocity.icns
 CONFIG(debug, debug|release) {
     win32:LIBS += -L$$PWD/../XboxInternals-Win/debug/ -lXboxInternals
     macx:LIBS += -L$$PWD/../XboxInternals-OSX/debug/ -lXboxInternals
-    unix:LIBS += -L$$PWD/../XboxInternals-Linux/debug/ -lXboxInternals
-    unix:PRE_TARGETDEPS += $$PWD/../XboxInternals-Linux/debug/libXboxInternals.a
+    macx:PRE_TARGETDEPS += $$PWD/../XboxInternals-OSX/debug/libXboxInternals.a
+    unix:!macx:LIBS += -L$$PWD/../XboxInternals-Linux/debug/ -lXboxInternals
+    unix:!macx:PRE_TARGETDEPS += $$PWD/../XboxInternals-Linux/debug/libXboxInternals.a
 }
 CONFIG(release, debug|release) {
     win32:LIBS += -L$$PWD/../XboxInternals-Win/release/ -lXboxInternals
     macx:LIBS += -L$$PWD/../XboxInternals-OSX/release/ -lXboxInternals
-    unix:LIBS += -L$$PWD/../XboxInternals-Linux/release/ -lXboxInternals
-    unix:PRE_TARGETDEPS += $$PWD/../XboxInternals-Linux/release/libXboxInternals.a
+    macx:PRE_TARGETDEPS += $$PWD/../XboxInternals-OSX/release/libXboxInternals.a
+    unix:!macx:LIBS += -L$$PWD/../XboxInternals-Linux/release/ -lXboxInternals
+    unix:!macx:PRE_TARGETDEPS += $$PWD/../XboxInternals-Linux/release/libXboxInternals.a
 }
 
 SOURCES += main.cpp \
