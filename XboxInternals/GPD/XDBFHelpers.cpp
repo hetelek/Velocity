@@ -15,11 +15,11 @@ string XDBFHelpers::EntryTypeToString(EntryType type)
 
 string XDBFHelpers::SettingEntryTypeToString(SettingEntryType type)
 {
-	if (type <= 0 || type > 7)
+    if (type < 0 || type > 7)
 		throw string("XDBF: Invalid setting entry type.\n");
 
-	string strings[7] = { "Int32", "Int64", "Double", "Unicode String", "Float", "Binary", "DataTime" };
-	return strings[type - 1];
+    string strings[8] = { "Context", "Int32", "Int64", "Double", "Unicode String", "Float", "Binary", "DataTime" };
+    return strings[type];
 }
 
 bool XDBFHelpers::CompareEntries(XDBFEntry a, XDBFEntry b)

@@ -81,7 +81,7 @@ SettingEntry GPDBase::readSettingEntry(XDBFEntry entry)
 
     // read the setting entry type
     toReturn.type = (SettingEntryType)io->readByte();
-    if (toReturn.type <= 0 || toReturn.type > 7)
+    if (toReturn.type < 0 || toReturn.type > 7)
     {
         printf("%llX\n", entry.id);
         throw string("XDBF: Error reading setting entry. Invalid setting entry type.\n");
@@ -92,6 +92,14 @@ SettingEntry GPDBase::readSettingEntry(XDBFEntry entry)
 
     switch (toReturn.type)
     {
+        case Context:
+            io->setPosition(entryAddr);
+
+            toReturn.binaryData.data = new BYTE[entry.length];
+            toReturn.binaryData.length = entry.length;
+
+            io->readBytes(toReturn.binaryData.data, entry.length);
+            break;
         case Int32:
             toReturn.int32 = io->readInt32();
             break;
@@ -175,6 +183,9 @@ void GPDBase::CreateSettingEntry(SettingEntry *setting, UINT64 entryID)
     DWORD entryLen = 0;
     switch (setting->type)
     {
+    case Context:
+        entryLen = setting->binaryData.length;
+        break;
     case Int32:
     case Float:
     case Int64:
@@ -232,6 +243,20 @@ void GPDBase::WriteSettingEntry(SettingEntry setting)
     // write setting
     switch (setting.type)
     {
+        case Context:
+        {
+            if (setting.entry.length != setting.binaryData.length)
+            {
+                // adjust the memory if the length changed
+                xdbf->DeallocateMemory(xdbf->GetRealAddress(setting.entry.addressSpecifier), setting.entry.length);
+                setting.entry.length = setting.binaryData.length;
+                entryAddr = xdbf->AllocateMemory(setting.entry.length);
+                setting.entry.addressSpecifier = xdbf->GetSpecifier(entryAddr);
+            }
+            io->setPosition(entryAddr);
+            io->write(setting.binaryData.data, setting.binaryData.length);
+            break;
+        }
         case Int32:
         case Float:
             io->write((DWORD)setting.int32);
@@ -341,7 +366,7 @@ GPDBase::~GPDBase(void)
     // deallocate all of the setting memory
     for (DWORD i = 0; i < settings.size(); i++)
     {
-        if (settings.at(i).type == Binary)
+        if (settings.at(i).type == Binary || settings.at(i).type == Context)
             delete[] settings.at(i).binaryData.data;
         else if (settings.at(i).type == UnicodeString)
             delete settings.at(i).str;

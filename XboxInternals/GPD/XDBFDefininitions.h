@@ -77,7 +77,8 @@ struct XDBFEntryGroup
 
 enum SettingEntryType
 {
-	Int32 = 1,
+    Context,
+    Int32,
 	Int64,
 	Double,
 	UnicodeString,
