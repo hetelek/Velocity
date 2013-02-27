@@ -767,8 +767,10 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
         group->syncs.lengthChanged = true;
     }
 
+    bool syncExists = false;
+
     // find the sync if it isn't already in the queue
-    for (DWORD i = 0; i < group->syncs.synced.size(); i++)
+    for (int i = 0; i < group->syncs.synced.size(); i++)
     {
         if (group->syncs.synced.at(i).entryID == entry->id)
         {
@@ -780,11 +782,13 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
             // add the sync to the queue
             sync.syncValue = group->syncData.nextSyncID++;
             group->syncs.toSync.push_back(sync);
+
+            syncExists = true;
         }
     }
 
     // if it is alread in the queue, then push it to the front
-    for (DWORD i = 0; i < (group->syncs.toSync.size() - 1); i++)
+    for (int i = 0; i < (int)(group->syncs.toSync.size() - 1); i++)
     {
         if (group->syncs.toSync.at(i).entryID == entry->id)
         {
@@ -794,7 +798,16 @@ void XDBF::UpdateEntry(XDBFEntry *entry)
             group->syncs.toSync.erase(group->syncs.toSync.begin() + i);
             sync.syncValue = group->syncData.nextSyncID++;
             group->syncs.toSync.push_back(sync);
+
+            syncExists = true;
         }
+    }
+
+    // if the sync entry doesn't exist then we need to create it
+    if (!syncExists)
+    {
+        SyncEntry sync = { entry->id,  group->syncData.nextSyncID++ };
+        group->syncs.toSync.push_back(sync);
     }
 
     // re-write the new sync list
@@ -845,14 +858,14 @@ void XDBF::RewriteEntry(XDBFEntry entry, BYTE *entryBuffer)
     // if the size has changed, then we need to reallocate memory
     if (entry.length != entryList->at(i).length)
     {
-        DeallocateMemory(entryList->at(i).addressSpecifier, entryList->at(i).length);
-        entryList->at(i).addressSpecifier = entry.length = GetSpecifier(AllocateMemory(entry.length));
+        DeallocateMemory(GetRealAddress(entryList->at(i).addressSpecifier), entryList->at(i).length);
+        entryList->at(i).addressSpecifier = GetSpecifier(AllocateMemory(entry.length));
         entryList->at(i).length = entry.length;
     }
 
     // write the entry
-    io->setPosition(GetRealAddress(entry.addressSpecifier));
-    io->write(entryBuffer, entry.length);
+    io->setPosition(GetRealAddress(entryList->at(i).addressSpecifier));
+    io->write(entryBuffer, entryList->at(i).length);
 
     // update the file
     UpdateEntry(&entryList->at(i));
