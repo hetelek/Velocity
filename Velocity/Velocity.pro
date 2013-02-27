@@ -12,7 +12,7 @@ TEMPLATE = app
 win32:UI_DIR = ../Velocity
 
 # application version
-VERSION = 0.0.1.2
+VERSION = 0.0.1.4
 DEFINES += VERSION=\\\"$$VERSION\\\"
 
 # flags
