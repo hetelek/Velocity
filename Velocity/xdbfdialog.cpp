@@ -175,6 +175,7 @@ void XdbfDialog::showContextMenu(QPoint p)
             io.setPosition(0);
             io.readBytes(entryBuff, fileLen);
 
+            xentry.length = fileLen;
             gpd->xdbf->RewriteEntry(xentry, entryBuff);
 
             // cleanup
@@ -182,6 +183,25 @@ void XdbfDialog::showContextMenu(QPoint p)
             io.close();
             if (modified != NULL)
                 *modified = true;
+
+            // get the xdbf entry again so we can update the UI
+            if (e.type == Achievement)
+                xentry = gpd->xdbf->achievements.entries.at(e.index);
+            else if (e.type == Image)
+                xentry = gpd->xdbf->images.at(e.index);
+            else if (e.type == Setting)
+                xentry = gpd->xdbf->settings.entries.at(e.index);
+            else if (e.type == Title)
+                xentry = gpd->xdbf->titlesPlayed.entries.at(e.index);
+            else if (e.type == String)
+                xentry = gpd->xdbf->strings.at(e.index);
+            else if (e.type == AvatarAward)
+                xentry = gpd->xdbf->avatarAwards.entries.at(e.index);
+
+            // update the entry in the UI
+            QTreeWidgetItem *item = ui->treeWidget->selectedItems().at(0);
+            item->setText(1, "0x" + QString::number(gpd->xdbf->GetRealAddress(xentry.addressSpecifier), 16).toUpper());
+            item->setText(2, "0x" + QString::number(xentry.length, 16).toUpper());
 
             statusBar->showMessage("Entry replaced successfully", 3000);
         }
