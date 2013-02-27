@@ -209,6 +209,12 @@ void FatxDrive::DeleteFile(FatxFileEntry *entry)
     entry->clusterChain.push_back(entry->startingCluster);
     FatxIO::SetAllClusters(io, entry->partition, entry->clusterChain, FAT_CLUSTER_AVAILABLE);
 
+    entry->partition->freeClusters.resize(entry->partition->freeClusters.size() + entry->clusterChain.size());
+
+    // add all of the clusters to the free memory since they're now unused
+    std::copy(entry->clusterChain.begin(), entry->clusterChain.end(), entry->partition->freeClusters.end());
+    std::sort(entry->partition->freeClusters.begin(), entry->partition->freeClusters.end(), compareDWORDs);
+
     // update the entry
     entry->clusterChain.clear();
     entry->nameLen = FATX_ENTRY_DELETED;
@@ -604,8 +610,8 @@ UINT64 FatxDrive::GetFreeMemory(Partition *part)
     bool clusterSizeIs2 = (part->clusterEntrySize == FAT16);
 
     DWORD bytesLeft = part->clusterCount * ((clusterSizeIs2) ? 2 : 4);
-    UINT64 freeClusters = 0;
     DWORD readSize;
+    DWORD x = 0;
     while (bytesLeft > 0)
     {
         // calculate the read size
@@ -621,17 +627,25 @@ UINT64 FatxDrive::GetFreeMemory(Partition *part)
         if (clusterSizeIs2)
         {
             for (DWORD i = 0; i < (readSize / 2); i++)
-                freeClusters += (memory.ReadWord() == FAT_CLUSTER16_AVAILABLE);
+            {
+                if (memory.ReadWord() == FAT_CLUSTER16_AVAILABLE)
+                    part->freeClusters.push_back(x + i);
+            }
+            x += 0x28000;
         }
         else
         {
             for (DWORD i = 0; i < (readSize / 4); i++)
-                freeClusters += (memory.ReadDword() == FAT_CLUSTER_AVAILABLE);
+            {
+                if (memory.ReadWord() == FAT_CLUSTER_AVAILABLE)
+                    part->freeClusters.push_back(x + i);
+            }
+            x += 0x14000;
         }
     }
 
     // calculate the amount of free memory
-    part->freeMemory = freeClusters * part->clusterSize;
+    part->freeMemory = part->freeClusters.size() * part->clusterSize;
 
     // cleanup
     delete[] buffer;

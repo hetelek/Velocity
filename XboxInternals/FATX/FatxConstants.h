@@ -90,6 +90,7 @@ struct Partition
     DWORD fatEntryShift;
     UINT64 allocationTableSize;
     UINT64 freeMemory;
+    std::vector<DWORD> freeClusters;
 };
 
 enum FatxDirentAttributes

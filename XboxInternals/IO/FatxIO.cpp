@@ -57,7 +57,10 @@ int FatxIO::AllocateMemory(DWORD byteAmount)
     bool fileIsNull = (entry->fileSize == 0);
 
     if (fileIsNull && entry->fileAttributes & FatxDirectory)
+    {
+        entry->fileSize += byteAmount;
         return 0;
+    }
 
     // get the free clusters
     std::vector<DWORD> freeClusters = getFreeClusters(entry->partition, clusterCount);
@@ -153,33 +156,13 @@ void FatxIO::WriteBytes(BYTE *buffer, DWORD len)
 
 std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
 {
-    device->SetPosition(part->address + 0x1000 + (part->clusterEntrySize * part->lastFreeClusterFound));
+    std::vector<DWORD> freeClusters(count);
 
-    std::vector<DWORD> freeClusters;
+    // copy over some free clusters
+    std::copy(part->freeClusters.begin(), part->freeClusters.begin() + count, freeClusters.begin());
 
-    DWORD currentCluster = 0;
-    while (count != 0 && currentCluster++ != part->clusterCount)
-    {
-        switch (part->clusterEntrySize)
-        {
-            case FAT32:
-                if (device->ReadDword() == FAT_CLUSTER_AVAILABLE)
-                {
-                    freeClusters.push_back(currentCluster);
-                    part->lastFreeClusterFound = currentCluster + 1;
-                    count--;
-                }
-                break;
-            case FAT16:
-                if (device->ReadWord() == FAT_CLUSTER16_AVAILABLE)
-                {
-                    freeClusters.push_back(currentCluster);
-                    part->lastFreeClusterFound = currentCluster + 1;
-                    count--;
-                }
-                break;
-        }
-    }
+    // remove them from the list of free clusters
+    part->freeClusters.erase(part->freeClusters.begin(), part->freeClusters.begin() + count);
 
     return freeClusters;
 }
@@ -281,11 +264,59 @@ void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vect
         throw std::string("FATX: Cluster is greater than cluster count.\n");
 
     bool clusterSizeIs16 = part->clusterEntrySize == FAT16;
-    DWORD previousCluster = startingCluster;
 
     clusterChain.push_back(FAT_CLUSTER_LAST);
 
-    for (int i = 0; i < clusterChain.size(); i++)
+    // we'll work with the clusters in 0x10000 chunks to minimize the amount of reads
+    BYTE buffer[0x10000];
+
+    for (DWORD i = 0; i < clusterChain.size(); i++)
+    {
+        // seek to the lowest cluster in the chainmap, but round to get a fast read
+        UINT64 clusterEntryAddr = (part->address + 0x1000 + clusterChain.at(i) * part->clusterEntrySize);
+        device->SetPosition(DOWN_TO_NEAREST_SECTOR(clusterEntryAddr));
+
+        // read in a chunk of the chainmap
+        device->ReadBytes(buffer, 0x10000);
+
+        // open a MemoryIO on the memory for easier access
+        MemoryIO bufferIO(buffer, 0x10000);
+
+        // calculate the offset of the cluster in the buffer
+        UINT64 clusterEntryOffset = clusterEntryAddr - DOWN_TO_NEAREST_SECTOR(clusterEntryAddr);
+
+        // loop while still in the bounds of the buffer
+        while (clusterEntryOffset < 0x10000)
+        {
+            // seek to the address of the cluster in the buffer
+            bufferIO.SetPosition(clusterEntryOffset);
+
+            // set the cluster chain map entry to the value requested
+            if (clusterSizeIs16)
+                bufferIO.Write((WORD)clusterChain.at(i));
+            else
+                bufferIO.Write((DWORD)clusterChain.at(i));
+
+            if (i + 1 == clusterChain.size())
+            {
+                ++i;
+                break;
+            }
+
+            // calculate the value of the next cluster entry
+            clusterEntryOffset = (part->address + 0x1000 + clusterChain.at(++i) * part->clusterEntrySize) - DOWN_TO_NEAREST_SECTOR(clusterEntryAddr);
+        }
+        --i;
+
+        // once we're done then write the block of memory back
+        device->SetPosition(DOWN_TO_NEAREST_SECTOR(clusterEntryAddr));
+        device->WriteBytes(buffer, 0x10000);
+    }
+
+    // flush the device just to be safe
+    device->Flush();
+
+    /*for (int i = 0; i < clusterChain.size(); i++)
     {
         device->SetPosition(part->address + 0x1000 + (previousCluster * part->clusterEntrySize));
 
@@ -295,7 +326,7 @@ void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vect
             device->Write((DWORD)clusterChain.at(i));
 
         previousCluster = clusterChain.at(i);
-    }
+    }*/
 }
 
 void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL)
