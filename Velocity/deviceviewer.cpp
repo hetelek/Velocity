@@ -55,10 +55,11 @@ void DeviceViewer::on_pushButton_clicked()
             secondItem->setData(4, Qt::UserRole, QVariant::fromValue(-1));
 
             totalFreeSpace += currentDrive->GetFreeMemory(parts.at(i));
+            totalSpace += (UINT64)parts.at(i)->clusterCount * parts.at(i)->clusterSize;
         }
 
         // calculate the percentage
-        float freeMemPercentage = (((float)totalFreeSpace * 100.0) / ((UINT64)currentDrive->securityBlob.userAddressableSectors * 0x200));
+        float freeMemPercentage = (((float)totalFreeSpace * 100.0) / totalSpace);
 
         // draw the insano piechart
         QPixmap chart(750, 500);
@@ -83,7 +84,7 @@ void DeviceViewer::on_pushButton_clicked()
         QPixmap usedMemClr(16, 16);
         usedMemClr.fill(QColor(0, 0, 254));
         ui->imgUsedMem->setPixmap(usedMemClr);
-        ui->lblUsedSpace->setText(QString::fromStdString(ByteSizeToString(((UINT64)currentDrive->securityBlob.userAddressableSectors * 0x200) - totalFreeSpace)) + " of Used Space");
+        ui->lblUsedSpace->setText(QString::fromStdString(ByteSizeToString(totalSpace - totalFreeSpace)) + " of Used Space");
 
         ui->btnPartitions->setEnabled(true);
         ui->btnSecurityBlob->setEnabled(true);
