@@ -270,10 +270,10 @@ void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vect
     // we'll work with the clusters in 0x10000 chunks to minimize the amount of reads
     BYTE buffer[0x10000];
 
-    for (DWORD i = 0; i < clusterChain.size(); i++)
+    for (DWORD i = 1; i < clusterChain.size(); i++)
     {
         // seek to the lowest cluster in the chainmap, but round to get a fast read
-        UINT64 clusterEntryAddr = (part->address + 0x1000 + clusterChain.at(i) * part->clusterEntrySize);
+        UINT64 clusterEntryAddr = (part->address + 0x1000 + clusterChain.at(i - 1) * part->clusterEntrySize);
         device->SetPosition(DOWN_TO_NEAREST_SECTOR(clusterEntryAddr));
 
         // read in a chunk of the chainmap
