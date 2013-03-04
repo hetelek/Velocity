@@ -157,11 +157,40 @@ void FatxIO::WriteBytes(BYTE *buffer, DWORD len)
 std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
 {
     std::vector<DWORD> freeClusters(count);
+    std::vector<Range> consecutiveClusters;
+    std::vector<Range> usedRanges;
 
-    // copy over some free clusters
-    std::copy(part->freeClusters.begin(), part->freeClusters.begin() + count, freeClusters.begin());
+    // get the consecutive clusters
+    getConsecutive(part->freeClusters, consecutiveClusters);
 
-    // remove them from the list of free clusters
+    // sort the consecutive clusters so that the longest ranges are at the beginning
+    std::sort(consecutiveClusters.begin(), consecutiveClusters.end(), compareRanges);
+
+    // first get clusters that are consecutive
+    DWORD i = 0, currentIndex = 0;
+    while (count > 0 && i < consecutiveClusters.size())
+    {
+        // get the amount of clusters to copy from the consecutive cluster range
+        DWORD clustersToCopy = (count > consecutiveClusters.at(i).len) ? consecutiveClusters.at(i).len : count;
+        std::vector<DWORD>::iterator rangeStart = part->freeClusters.begin() + consecutiveClusters.at(i).start;
+
+        // get that calculated amount of consecutive clusters
+        std::copy(rangeStart, rangeStart + clustersToCopy, freeClusters.begin() + currentIndex);
+
+        Range r = { consecutiveClusters.at(i).start, clustersToCopy };
+        usedRanges.push_back(r);
+
+        count -= clustersToCopy;
+        currentIndex += clustersToCopy;
+        i++;
+    }
+
+    // remove all of the used clusters
+    for (DWORD i = 0; i < usedRanges.size(); i++)
+        part->freeClusters.erase(part->freeClusters.begin() + usedRanges.at(i).start, part->freeClusters.begin() + usedRanges.at(i).start + usedRanges.at(i).len);
+
+    // if we still need more clusters, then we'll just copy over non-consecutive ones that are left
+    std::copy(part->freeClusters.begin(), part->freeClusters.begin() + count, freeClusters.begin() + currentIndex);
     part->freeClusters.erase(part->freeClusters.begin(), part->freeClusters.begin() + count);
 
     return freeClusters;
@@ -329,6 +358,28 @@ void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vect
     }*/
 }
 
+void FatxIO::getConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges)
+{
+    for (int i = 0; i < list.size(); i++)
+    {
+        int start = i++;
+        int streak = 1;
+
+        while (i < list.size() && list[i] - list[start] == i - start)
+        {
+            streak++;
+            i++;
+        }
+        i--;
+
+        if (streak > 1)
+        {
+            Range range = { start, streak };
+            outRanges.push_back(range);
+        }
+    }
+}
+
 void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL)
 {
     // get the current position
@@ -413,4 +464,9 @@ INT64 FatxIO::ClusterToOffset(Partition *part, DWORD cluster)
 bool compareDWORDs(DWORD a, DWORD b)
 {
     return a < b;
+}
+
+bool compareRanges(Range a, Range b)
+{
+    return a.len > b.len;
 }

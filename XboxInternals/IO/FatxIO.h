@@ -67,6 +67,9 @@ private:
     // writes the cluster chain (and links them correctly) starting from startingCluster
     void writeClusterChain(Partition *part, DWORD startingCluster, std::vector<DWORD> clusterChain);
 
+    // get the ranges of consecutive numbers in list where it's sorted
+    void getConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges);
+
     DeviceIO *device;
     FatxFileEntry *entry;
     UINT64 pos;
@@ -74,5 +77,6 @@ private:
 };
 
 bool compareDWORDs(DWORD a, DWORD b);
+bool compareRanges(Range a, Range b);
 
 #endif // FATXIO_H
