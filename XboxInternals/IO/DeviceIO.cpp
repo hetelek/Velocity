@@ -141,9 +141,9 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
                 &offset);		// OVERLAPPED structure containing the offset to read from
 
             if (!success)
-                throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
+                throw std::string("DeviceIO: Error writing to the device, may be disconnected.\n");
         #else
-            read(device, lastReadData, 0x200);
+            write(device, lastReadData, 0x200);
         #endif
 
         SetPosition(endingPos);
