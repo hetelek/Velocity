@@ -333,7 +333,7 @@ void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vect
             }
 
             // calculate the value of the next cluster entry
-            clusterEntryOffset = (part->address + 0x1000 + clusterChain.at(++i) * part->clusterEntrySize) - DOWN_TO_NEAREST_SECTOR(clusterEntryAddr);
+            clusterEntryOffset = (part->address + 0x1000 + clusterChain.at(i++) * part->clusterEntrySize) - DOWN_TO_NEAREST_SECTOR(clusterEntryAddr);
         }
         --i;
 
