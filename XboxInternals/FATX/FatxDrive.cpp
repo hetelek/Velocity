@@ -598,7 +598,7 @@ void FatxDrive::loadFatxDrive(std::wstring drivePath)
 UINT64 FatxDrive::GetFreeMemory(Partition *part)
 {
     if (part->freeMemory != 0)
-        return;
+        return part->freeClusters.size() * part->clusterSize;
 
     // allocate memory for a buffer to minimize the amount of reads
     BYTE *buffer = new BYTE[0x50000];
