@@ -65,6 +65,8 @@ private:
     void GetSubFiles(FatxFileEntry *parent, QList<void*> &entries);
 
     FatxFileEntry* GetFatxFileEntry(QTreeWidgetItem *item);
+
+    void DrawMemoryGraph();
 };
 
 #endif // DEVICEVIEWER_H

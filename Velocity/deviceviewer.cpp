@@ -39,8 +39,6 @@ void DeviceViewer::on_pushButton_clicked()
     {
         // open the drive
         currentDrive = new FatxDrive(ui->txtPath->text().toStdWString());
-        UINT64 totalFreeSpace = 0;
-        UINT64 totalSpace = 0;
 
         // load the partion information
         std::vector<Partition*> parts = currentDrive->GetPartitions();
@@ -53,38 +51,9 @@ void DeviceViewer::on_pushButton_clicked()
             secondItem->setData(0, Qt::UserRole, QVariant::fromValue(parts.at(i)));
             secondItem->setData(5, Qt::UserRole, QVariant::fromValue(true));
             secondItem->setData(4, Qt::UserRole, QVariant::fromValue(-1));
-
-            totalFreeSpace += currentDrive->GetFreeMemory(parts.at(i));
-            totalSpace += (UINT64)parts.at(i)->clusterCount * parts.at(i)->clusterSize;
         }
 
-        // calculate the percentage
-        float freeMemPercentage = (((float)totalFreeSpace * 100.0) / totalSpace);
-
-        // draw the insano piechart
-        QPixmap chart(750, 500);
-        chart.fill(ui->imgPiechart->palette().background().color());
-        QPainter painter(&chart);
-        Nightcharts pieChart;
-        pieChart.setType(Nightcharts::Dpie);
-        pieChart.setCords(25, 1, 700, 425);
-        pieChart.setFont(QFont());
-        pieChart.addPiece("Used Space", QColor(0, 0, 254), 100.0 - freeMemPercentage);
-        pieChart.addPiece("Free Space", QColor(255, 0, 254), freeMemPercentage);
-        pieChart.draw(&painter);
-
-        ui->imgPiechart->setPixmap(chart);
-
-        // setup the legend
-        QPixmap freeMemClr(16, 16);
-        freeMemClr.fill(QColor(255, 0, 254));
-        ui->imgFreeMem->setPixmap(freeMemClr);
-        ui->lblFeeMemory->setText(QString::fromStdString(ByteSizeToString(totalFreeSpace)) + " of Free Space");
-
-        QPixmap usedMemClr(16, 16);
-        usedMemClr.fill(QColor(0, 0, 254));
-        ui->imgUsedMem->setPixmap(usedMemClr);
-        ui->lblUsedSpace->setText(QString::fromStdString(ByteSizeToString(totalSpace - totalFreeSpace)) + " of Used Space");
+        DrawMemoryGraph();
 
         ui->btnPartitions->setEnabled(true);
         ui->btnSecurityBlob->setEnabled(true);
@@ -95,6 +64,48 @@ void DeviceViewer::on_pushButton_clicked()
     }
 
     LoadPartitions();
+}
+
+void DeviceViewer::DrawMemoryGraph()
+{
+    UINT64 totalFreeSpace = 0;
+    UINT64 totalSpace = 0;
+
+    // load the partion information
+    std::vector<Partition*> parts = currentDrive->GetPartitions();
+    for (DWORD i = 0; i < parts.size(); i++)
+    {
+        totalFreeSpace += currentDrive->GetFreeMemory(parts.at(i));
+        totalSpace += (UINT64)parts.at(i)->clusterCount * parts.at(i)->clusterSize;
+    }
+
+    // calculate the percentage
+    float freeMemPercentage = (((float)totalFreeSpace * 100.0) / totalSpace);
+
+    // draw the insano piechart
+    QPixmap chart(750, 500);
+    chart.fill(ui->imgPiechart->palette().background().color());
+    QPainter painter(&chart);
+    Nightcharts pieChart;
+    pieChart.setType(Nightcharts::Dpie);
+    pieChart.setCords(25, 1, 700, 425);
+    pieChart.setFont(QFont());
+    pieChart.addPiece("Used Space", QColor(0, 0, 254), 100.0 - freeMemPercentage);
+    pieChart.addPiece("Free Space", QColor(255, 0, 254), freeMemPercentage);
+    pieChart.draw(&painter);
+
+    ui->imgPiechart->setPixmap(chart);
+
+    // setup the legend
+    QPixmap freeMemClr(16, 16);
+    freeMemClr.fill(QColor(255, 0, 254));
+    ui->imgFreeMem->setPixmap(freeMemClr);
+    ui->lblFeeMemory->setText(QString::fromStdString(ByteSizeToString(totalFreeSpace)) + " of Free Space");
+
+    QPixmap usedMemClr(16, 16);
+    usedMemClr.fill(QColor(0, 0, 254));
+    ui->imgUsedMem->setPixmap(usedMemClr);
+    ui->lblUsedSpace->setText(QString::fromStdString(ByteSizeToString(totalSpace - totalFreeSpace)) + " of Used Space");
 }
 
 void DeviceViewer::showRemoveContextMenu(QPoint point)
@@ -175,6 +186,8 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
                 dialog->setModal(true);
                 dialog->show();
                 dialog->start();
+
+                DrawMemoryGraph();
             }
 
             QMessageBox::information(this, "Copied Files", "All files have been successfully copied to the harddrive.");
@@ -186,6 +199,10 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
             {
                 FatxFileEntry *entry = items.at(i)->data(0, Qt::UserRole).value<FatxFileEntry*>();
                 currentDrive->DeleteFile(entry);
+
+                QApplication::processEvents();
+
+                DrawMemoryGraph();
 
                 delete items.at(i);
             }
