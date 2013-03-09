@@ -245,7 +245,7 @@ void MainWindow::on_actionDonate_triggered()
 
 void MainWindow::on_actionDevice_Viewer_triggered()
 {
-    DeviceViewer *viewer = new DeviceViewer(this);
+    DeviceViewer *viewer = new DeviceViewer(ui->statusBar, this);
     viewer->setAttribute(Qt::WA_DeleteOnClose);
     ui->mdiArea->addSubWindow(viewer);
     viewer->show();
@@ -341,7 +341,13 @@ MainWindow::~MainWindow()
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
     if (event->mimeData()->hasFormat("text/uri-list"))
+    {
         event->acceptProposedAction();
+        if (settings->value("PackageDropAction").toInt() == OpenInPackageViewer)
+            ui->statusBar->showMessage("Open file(s)");
+        else
+            ui->statusBar->showMessage("Rehash and resign file(s)");
+    }
 }
 
 void MainWindow::on_actionTheme_Creator_triggered()
@@ -352,10 +358,17 @@ void MainWindow::on_actionTheme_Creator_triggered()
 
 void MainWindow::dropEvent(QDropEvent *event)
 {
+    ui->statusBar->showMessage("");
+
     QList<QUrl> filePaths = event->mimeData()->urls();
 
     // iterate through all of the files dropped
     LoadFiles(filePaths);
+}
+
+void MainWindow::dragLeaveEvent(QDragLeaveEvent *)
+{
+    ui->statusBar->showMessage("");
 }
 
 void MainWindow::LoadFiles(QList<QUrl> &filePaths)

@@ -80,6 +80,7 @@ public:
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *);
 
 private slots:
     void on_actionAbout_triggered();
