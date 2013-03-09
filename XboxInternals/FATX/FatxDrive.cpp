@@ -245,6 +245,8 @@ void FatxDrive::InjectFile(FatxFileEntry *parent, std::string name, std::string 
 
     // set other stuff
     entry.fileAttributes = 0;
+    inFile.SetPosition(0);
+    entry.magic = inFile.ReadDword();
 
     // create the entry
     CreateFileEntry(parent, &entry);
