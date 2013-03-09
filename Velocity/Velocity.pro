@@ -94,7 +94,8 @@ SOURCES += main.cpp \
     fatxfiledialog.cpp \
     partitiondialog.cpp \
     securitysectordialog.cpp \
-    nightcharts.cpp
+    nightcharts.cpp \
+    dragdroptreewidget.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -143,7 +144,8 @@ HEADERS  += mainwindow.h \
     fatxfiledialog.h \
     partitiondialog.h \
     securitysectordialog.h \
-    nightcharts.h
+    nightcharts.h \
+    dragdroptreewidget.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \

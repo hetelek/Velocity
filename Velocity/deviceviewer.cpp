@@ -3,8 +3,8 @@
 
 #include <QDebug>
 
-DeviceViewer::DeviceViewer(QWidget *parent) :
-    QDialog(parent), ui(new Ui::DeviceViewer)
+DeviceViewer::DeviceViewer(QStatusBar *statusBar, QWidget *parent) :
+    QDialog(parent), ui(new Ui::DeviceViewer), parentEntry(NULL), statusBar(statusBar)
 {
     ui->setupUi(this);
     currentDrive = NULL;
@@ -16,7 +16,12 @@ DeviceViewer::DeviceViewer(QWidget *parent) :
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showRemoveContextMenu(QPoint)));
 
-
+    // setup treewdiget for drag and drop
+    setAcceptDrops(true);
+    ui->treeWidget->setAcceptDrops(true);
+    connect(ui->treeWidget, SIGNAL(dragDropped(QDropEvent*)), this, SLOT(onDragDropped(QDropEvent*)));
+    connect(ui->treeWidget, SIGNAL(dragEntered(QDragEnterEvent*)), this, SLOT(onDragEntered(QDragEnterEvent*)));
+    connect(ui->treeWidget, SIGNAL(dragLeft(QDragLeaveEvent*)), this, SLOT(onDragLeft(QDragLeaveEvent*)));
 }
 
 DeviceViewer::~DeviceViewer()
@@ -114,21 +119,26 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
     QMenu contextMenu;
 
     QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
-    if (items.size() < 1)
-        return;
 
     foreach (QTreeWidgetItem *item, items)
         if (item->data(5, Qt::UserRole).toBool())
             return;
 
-    contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
-    contextMenu.addAction(QPixmap(":/Images/add.png"), "Copy File(s) Here");
+    if (items.size() >= 1)
+    {
+        contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
+        contextMenu.addAction(QPixmap(":/Images/add.png"), "Copy File(s) Here");
 
-    contextMenu.addSeparator();
-    contextMenu.addAction(QPixmap(":/Images/delete.png"), "Delete Selected");
-    contextMenu.addSeparator();
+        contextMenu.addSeparator();
+        contextMenu.addAction(QPixmap(":/Images/delete.png"), "Delete Selected");
+        contextMenu.addSeparator();
 
-    contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
+        contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
+    }
+    else
+    {
+        contextMenu.addAction(QPixmap(":/Images/add.png"), "Copy File(s) Here");
+    }
 
     QAction *selectedItem = contextMenu.exec(globalPos);
     if(selectedItem == NULL)
@@ -170,27 +180,11 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
         }
         else if (selectedItem->text() == "Copy File(s) Here")
         {
-            FatxFileEntry *entry = items.at(0)->data(0, Qt::UserRole).value<FatxFileEntry*>();
-
-            QStringList toInjectPath = QFileDialog::getOpenFileNames(this);
-            if (toInjectPath.size() == 0)
+            QStringList toInjectPaths = QFileDialog::getOpenFileNames(this);
+            if (toInjectPaths.size() == 0)
                 return;
 
-            for (int i = 0; i < toInjectPath.size(); i++)
-            {
-                QString filePath = toInjectPath.at(i);
-                QFileInfo info(filePath);
-
-                // save the file to the local disk
-                SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemFATX, currentDrive, OpInject, info.fileName(), filePath, entry, this);
-                dialog->setModal(true);
-                dialog->show();
-                dialog->start();
-
-                DrawMemoryGraph();
-            }
-
-            QMessageBox::information(this, "Copied Files", "All files have been successfully copied to the harddrive.");
+            InjectFiles(toInjectPaths);
         }
         else if (selectedItem->text() == "Delete Selected")
         {
@@ -214,6 +208,27 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
     }
 }
 
+void DeviceViewer::InjectFiles(QStringList files)
+{
+    for (int i = 0; i < files.size(); i++)
+    {
+        QString filePath = files.at(i);
+        QFileInfo info(filePath);
+
+        // get the file from the local disk
+        SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemFATX, currentDrive, OpInject, info.fileName(), filePath, parentEntry, this);
+        dialog->setModal(true);
+        dialog->show();
+        dialog->start();
+
+        DrawMemoryGraph();
+    }
+
+    LoadFolderAll(parentEntry);
+
+    QMessageBox::information(this, "Copied Files", "All files have been successfully copied to the harddrive.");
+}
+
 void DeviceViewer::on_treeWidget_doubleClicked(const QModelIndex &index)
 {
     try
@@ -226,6 +241,8 @@ void DeviceViewer::on_treeWidget_doubleClicked(const QModelIndex &index)
 
         if ((currentParent->fileAttributes & FatxDirectory) == 0)
             return;
+
+        parentEntry = currentParent;
 
         LoadFolderAll(currentParent);
     }
@@ -351,6 +368,7 @@ void DeviceViewer::on_btnBack_clicked()
 {
     int index = directoryChain.size() - 2;
     FatxFileEntry *entry = directoryChain.at(index);
+    parentEntry = entry;
 
     if (entry->name == "Drive Root")
         LoadPartitions();
@@ -427,3 +445,30 @@ void DeviceViewer::on_btnPartitions_clicked()
     dialog.exec();
 }
 
+void DeviceViewer::onDragEntered(QDragEnterEvent *event)
+{
+    if (parentEntry != NULL && parentEntry->name != "Drive Root" && event->mimeData()->hasFormat("text/uri-list"))
+    {
+        event->acceptProposedAction();
+        statusBar->showMessage("Copy file(s) here");
+    }
+}
+
+void DeviceViewer::onDragDropped(QDropEvent *event)
+{
+    statusBar->showMessage("");
+
+    QList<QUrl> filePaths = event->mimeData()->urls();
+
+    // fix the file name to remove the "file:///" at the beginning
+    QStringList files;
+    for (int i = 0; i < filePaths.size(); i++)
+        files.push_back(filePaths.at(i).toString().mid(8));
+
+    InjectFiles(files);
+}
+
+void DeviceViewer::onDragLeft(QDragLeaveEvent *event)
+{
+    statusBar->showMessage("");
+}
