@@ -18,7 +18,9 @@ FatxFileDialog::FatxFileDialog(FatxFileEntry *entry, DWORD clusterSize, QString 
     if ((entry->fileAttributes & FatxDirectory) == 0)
     {
         ui->lblSize->setText(QString::fromStdString(ByteSizeToString(entry->fileSize)));
-        ui->lblSizeOnDisk->setText(QString::fromStdString(ByteSizeToString(entry->clusterChain.size() * clusterSize)));
+
+        UINT64 sizeOnDisk = (entry->fileSize + (clusterSize - 1)) & ~(clusterSize - 1);
+        ui->lblSizeOnDisk->setText(QString::fromStdString(ByteSizeToString(sizeOnDisk)));
     }
     else
     {
