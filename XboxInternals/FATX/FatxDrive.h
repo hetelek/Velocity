@@ -47,6 +47,12 @@ public:
     // inject the file
     void InjectFile(FatxFileEntry *parent, std::string name, std::string filePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
+    // determines if a file at the specified path exists
+    bool FileExists(std::string filePath);
+
+    // get the FatxFileEntry from its path
+    FatxFileEntry* GetFileEntry(std::string filePath);
+
     // close the underlying io
     void Close();
 

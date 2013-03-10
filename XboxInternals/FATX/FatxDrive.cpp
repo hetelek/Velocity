@@ -654,3 +654,68 @@ UINT64 FatxDrive::GetFreeMemory(Partition *part)
 
     return part->freeMemory;
 }
+
+bool FatxDrive::FileExists(std::string filePath)
+{
+    return !!GetFileEntry(filePath);
+}
+
+FatxFileEntry *FatxDrive::GetFileEntry(std::string filePath)
+{
+    // make sure the path starts with "Drive:\\"
+    if (filePath.size() < 7 || filePath.substr(0, 7) != "Drive:\\")
+        throw string("FATX: Invalid path name.");
+
+    // strip off the prefix
+    filePath = filePath.substr(7);
+
+    // get the partition
+    std::string partitionName = filePath.substr(0, filePath.find('\\'));
+    filePath = filePath.substr(filePath.find('\\') + 1);
+    Partition *part = NULL;
+    for (DWORD i = 0; i < partitions.size(); i++)
+    {
+        if (partitions.at(i)->name == partitionName)
+        {
+            part = partitions.at(i);
+            break;
+        }
+    }
+
+    // if there is no corresponding partition, then the path is invalid
+    if (part == NULL)
+        return false;
+
+    FatxFileEntry *parent = &part->root;
+    while (filePath.find('\\') >= 0 && filePath.size() > 0)
+    {
+        // load all the entries children (not recursively)
+        GetChildFileEntries(parent);
+
+        // get the next file name
+        std::string fileName = filePath.substr(0, filePath.find('\\'));
+
+        if (filePath.find('\\') == -1)
+            filePath = "";
+        else
+            filePath = filePath.substr(filePath.find('\\') + 1);
+
+        // check and see if the sub-directory exists
+        FatxFileEntry *foundEntry = NULL;
+        for (DWORD i = 0; i < parent->cachedFiles.size(); i++)
+        {
+            if (parent->cachedFiles.at(i).name == fileName)
+            {
+                foundEntry = &parent->cachedFiles.at(i);
+                break;
+            }
+        }
+
+        if (foundEntry == NULL)
+            return NULL;
+
+        parent = foundEntry;
+    }
+
+    return parent;
+}
