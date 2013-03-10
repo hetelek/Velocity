@@ -425,7 +425,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
         try
         {
-            MultiProgressDialog *dialog = new MultiProgressDialog(FileSystemSTFS, package, path.replace("\\", "/"), outFiles, this);
+            MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemSTFS, package, path.replace("\\", "/"), outFiles, this);
             dialog->setModal(true);
             dialog->show();
             dialog->start();

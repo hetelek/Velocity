@@ -8,12 +8,6 @@
 // xbox360
 #include "Stfs/StfsPackage.h"
 
-enum Operation
-{
-    OpReplace,
-    OpInject
-};
-
 void UpdateProgress(void *arg, DWORD cur, DWORD total);
 
 namespace Ui {

@@ -192,7 +192,7 @@ void DeviceViewer::showContextMenu(QPoint point)
                 return;
 
             // save the file to the local disk
-            MultiProgressDialog *dialog = new MultiProgressDialog(FileSystemFATX, currentDrive, path + "/", filesToExtract, this, QString::fromStdString(directoryChain.last()->path + directoryChain.last()->name + "\\"));
+            MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemFATX, currentDrive, path + "/", filesToExtract, this, QString::fromStdString(directoryChain.last()->path + directoryChain.last()->name + "\\"));
             dialog->setModal(true);
             dialog->show();
             dialog->start();
@@ -209,7 +209,11 @@ void DeviceViewer::showContextMenu(QPoint point)
             if (toInjectPaths.size() == 0)
                 return;
 
-            InjectFiles(toInjectPaths);
+            QList<void*> files;
+            for (DWORD i = 0; i < toInjectPaths.size(); i++)
+                files.push_back(&toInjectPaths.at(i));
+
+            InjectFiles(files);
         }
         else if (selectedItem->text() == "Delete Selected")
         {
@@ -233,21 +237,14 @@ void DeviceViewer::showContextMenu(QPoint point)
     }
 }
 
-void DeviceViewer::InjectFiles(QStringList files)
+void DeviceViewer::InjectFiles(QList<void*> files)
 {
-    for (int i = 0; i < files.size(); i++)
-    {
-        QString filePath = files.at(i);
-        QFileInfo info(filePath);
+    MultiProgressDialog *dialog = new MultiProgressDialog(OpInject, FileSystemFATX, currentDrive, "", files, this, "", parentEntry);
+    dialog->setModal(true);
+    dialog->show();
+    dialog->start();
 
-        // get the file from the local disk
-        SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemFATX, currentDrive, OpInject, info.fileName(), filePath, parentEntry, this);
-        dialog->setModal(true);
-        dialog->show();
-        dialog->start();
-
-        DrawMemoryGraph();
-    }
+    DrawMemoryGraph();
 
     LoadFolderAll(parentEntry);
 
@@ -486,9 +483,9 @@ void DeviceViewer::onDragDropped(QDropEvent *event)
     QList<QUrl> filePaths = event->mimeData()->urls();
 
     // fix the file name to remove the "file:///" at the beginning
-    QStringList files;
+    QList<void*> files;
     for (int i = 0; i < filePaths.size(); i++)
-        files.push_back(filePaths.at(i).toString().mid(8));
+        files.push_back(new QString(filePaths.at(i).toString().mid(8)));
 
     InjectFiles(files);
 }

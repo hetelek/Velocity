@@ -1,9 +1,9 @@
 #include "multiprogressdialog.h"
 #include "ui_multiprogressdialog.h"
 
-MultiProgressDialog::MultiProgressDialog(FileSystem fileSystem, void *device, QString outDir, QList<void*> filesToExtract, QWidget *parent, QString rootPath) :
-    QDialog(parent),ui(new Ui::MultiProgressDialog), system(fileSystem), device(device), outDir(outDir), filesToExtract(filesToExtract),
-    fileIndex(0), overallProgress(0), overallProgressTotal(0), prevProgress(0), rootPath(rootPath)
+MultiProgressDialog::MultiProgressDialog(Operation op, FileSystem fileSystem, void *device, QString outDir, QList<void *> internalFiles, QWidget *parent, QString rootPath, FatxFileEntry *parentEntry) :
+    QDialog(parent),ui(new Ui::MultiProgressDialog), system(fileSystem), device(device), outDir(outDir), internalFiles(internalFiles),
+    fileIndex(0), overallProgress(0), overallProgressTotal(0), prevProgress(0), rootPath(rootPath), op(op), parentEntry(parentEntry)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -20,9 +20,9 @@ void MultiProgressDialog::start()
     switch(system)
     {
         case FileSystemSTFS:
-            for (DWORD i = 0; i < filesToExtract.size(); i++)
+            for (DWORD i = 0; i < internalFiles.size(); i++)
             {
-                StfsFileEntry *entry = reinterpret_cast<StfsFileEntry*>(filesToExtract.at(i));
+                StfsFileEntry *entry = reinterpret_cast<StfsFileEntry*>(internalFiles.at(i));
                 if (entry->blocksForFile == 0)
                     overallProgressTotal++;
                 else
@@ -30,9 +30,9 @@ void MultiProgressDialog::start()
             }
             break;
         case FileSystemSVOD:
-            for (DWORD i = 0; i < filesToExtract.size(); i++)
+            for (DWORD i = 0; i < internalFiles.size(); i++)
             {
-                GdfxFileEntry *entry = reinterpret_cast<GdfxFileEntry*>(filesToExtract.at(i));
+                GdfxFileEntry *entry = reinterpret_cast<GdfxFileEntry*>(internalFiles.at(i));
                 overallProgressTotal += (entry->size + 0xFFFF) / 0x10000;
             } 
             break;
@@ -49,7 +49,7 @@ void MultiProgressDialog::start()
 void MultiProgressDialog::extractNextFile()
 {
     // make sure there's another file to extract
-    if (fileIndex == filesToExtract.size())
+    if (fileIndex == internalFiles.size())
     {
         close();
         return;
@@ -60,16 +60,18 @@ void MultiProgressDialog::extractNextFile()
     {
         case FileSystemSTFS:
         {
+            if (op != OpExtract)
+                throw string("MultiProgressDialog: Invalid operation for file system.\n");
 
             // get the file entry
-            StfsFileEntry *entry = reinterpret_cast<StfsFileEntry*>(filesToExtract.at(fileIndex++));
+            StfsFileEntry *entry = reinterpret_cast<StfsFileEntry*>(internalFiles.at(fileIndex++));
 
             setWindowTitle("Extracting " + QString::fromStdString(entry->name));
 
             try
             {
                 StfsPackage *package = reinterpret_cast<StfsPackage*>(device);
-                package->ExtractFile(entry, ((filesToExtract.size() != 1) ? (outDir.replace("\\", "/").toStdString() + entry->name) : outDir.toStdString()), updateProgress, this);
+                package->ExtractFile(entry, ((internalFiles.size() != 1) ? (outDir.replace("\\", "/").toStdString() + entry->name) : outDir.toStdString()), updateProgress, this);
             }
             catch (string error)
             {
@@ -80,9 +82,11 @@ void MultiProgressDialog::extractNextFile()
         }
         case FileSystemSVOD:
         {
+            if (op != OpExtract)
+                throw string("MultiProgressDialog: Invalid operation for file system.\n");
 
             // get the file entry
-            GdfxFileEntry *entry = reinterpret_cast<GdfxFileEntry*>(filesToExtract.at(fileIndex++));
+            GdfxFileEntry *entry = reinterpret_cast<GdfxFileEntry*>(internalFiles.at(fileIndex++));
 
             setWindowTitle("Extracting " + QString::fromStdString(entry->name));
 
@@ -106,37 +110,58 @@ void MultiProgressDialog::extractNextFile()
         case FileSystemFATX:
         {
             // update groupbox text
-            ui->groupBox_2->setTitle("Overall Progress - " + QString::number(fileIndex + 1) + " of " + QString::number(filesToExtract.size()));
+            ui->groupBox_2->setTitle("Overall Progress - " + QString::number(fileIndex + 1) + " of " + QString::number(internalFiles.size()));
 
-            // get the file entry
-            FatxFileEntry *entry = reinterpret_cast<FatxFileEntry*>(filesToExtract.at(fileIndex++));
-
-            if (entry->fileAttributes & FatxDirectory)
-                extractNextFile();
-
-            setWindowTitle("Extracting " + QString::fromStdString(entry->name));
-
-            // get the file from the device
-            FatxDrive *drive = reinterpret_cast<FatxDrive*>(device);
-            FatxIO io = drive->GetFatxIO(entry);
-
-            try
+            if (op == OpExtract)
             {
-                // make all the directories needed
-                QString temp = QString::fromStdString(entry->path);
-                QString dirPath = QDir::toNativeSeparators(outDir + temp.replace(rootPath, ""));
-                QDir saveDir(dirPath);
+                // get the file entry
+                FatxFileEntry *entry = reinterpret_cast<FatxFileEntry*>(internalFiles.at(fileIndex++));
 
-                if (!saveDir.exists())
-                    saveDir.mkpath(dirPath);
+                if (entry->fileAttributes & FatxDirectory)
+                    extractNextFile();
 
-                // extract the file
-                io.SaveFile(dirPath.toStdString() + entry->name, updateProgress, this);
+                setWindowTitle("Extracting " + QString::fromStdString(entry->name));
+
+                // get the file from the device
+                FatxDrive *drive = reinterpret_cast<FatxDrive*>(device);
+                FatxIO io = drive->GetFatxIO(entry);
+
+                try
+                {
+                    // make all the directories needed
+                    QString temp = QString::fromStdString(entry->path);
+                    QString dirPath = QDir::toNativeSeparators(outDir + temp.replace(rootPath, ""));
+                    QDir saveDir(dirPath);
+
+                    if (!saveDir.exists())
+                        saveDir.mkpath(dirPath);
+
+                    // extract the file
+                    io.SaveFile(dirPath.toStdString() + entry->name, updateProgress, this);
+                }
+                catch (string error)
+                {
+                    QMessageBox::critical(this, "", "An error occurred while extracting files.\n\n" + QString::fromStdString(error));
+                }
             }
-            catch (string error)
+            else if (op == OpInject)
             {
-                QMessageBox::critical(this, "", "An error occurred while extracting files.\n\n" + QString::fromStdString(error));
+                try
+                {
+                    // get the file from the device
+                    FatxDrive *drive = reinterpret_cast<FatxDrive*>(device);
+
+                    QString *fileName = reinterpret_cast<QString*>(internalFiles.at(fileIndex++));
+                    QFileInfo fileInfo(*fileName);
+
+                    drive->InjectFile(parentEntry, fileInfo.fileName().toStdString(), fileName->toStdString(), updateProgress, this);
+                }
+                catch (string error)
+                {
+                    QMessageBox::critical(this, "", "An error occurred while extracting files.\n\n" + QString::fromStdString(error));
+                }
             }
+
             break;
         }
     }

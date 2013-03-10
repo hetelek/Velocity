@@ -114,7 +114,7 @@ void SvodDialog::showFileContextMenu(QPoint pos)
             list.push_back(entry);
         }
 
-        MultiProgressDialog *dialog = new MultiProgressDialog(FileSystemSVOD, svod, savePath + "/", list, this);
+        MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemSVOD, svod, savePath + "/", list, this);
         dialog->setModal(true);
         dialog->show();
         dialog->start();

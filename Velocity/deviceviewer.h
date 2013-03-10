@@ -76,7 +76,7 @@ private:
 
     void DrawMemoryGraph();
 
-    void InjectFiles(QStringList files);
+    void InjectFiles(QList<void *> files);
 };
 
 #endif // DEVICEVIEWER_H

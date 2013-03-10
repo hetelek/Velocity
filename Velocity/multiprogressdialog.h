@@ -14,6 +14,13 @@
 #include "Fatx/FatxConstants.h"
 #include "Fatx/FatxDrive.h"
 
+enum Operation
+{
+    OpExtract,
+    OpReplace,
+    OpInject
+};
+
 namespace Ui {
 class MultiProgressDialog;
 }
@@ -25,7 +32,7 @@ class MultiProgressDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit MultiProgressDialog(FileSystem fileSystem, void *device, QString outDir, QList<void*> filesToExtract, QWidget *parent = 0, QString rootPath = "");
+    explicit MultiProgressDialog(Operation op, FileSystem fileSystem, void *device, QString outDir, QList<void*> internalFiles, QWidget *parent = 0, QString rootPath = "", FatxFileEntry *parentEntry = NULL);
     ~MultiProgressDialog();
 
     void start();
@@ -35,12 +42,14 @@ private:
     FileSystem system;
     void *device;
     QString outDir;
-    QList<void*> filesToExtract;
+    QList<void*> internalFiles;
     int fileIndex;
     DWORD overallProgress;
     DWORD overallProgressTotal;
     DWORD prevProgress;
     QString rootPath;
+    Operation op;
+    FatxFileEntry *parentEntry;
 
     void extractNextFile();
 
