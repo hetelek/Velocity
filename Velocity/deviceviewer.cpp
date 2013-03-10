@@ -62,6 +62,28 @@ void DeviceViewer::on_pushButton_clicked()
 
         ui->btnPartitions->setEnabled(true);
         ui->btnSecurityBlob->setEnabled(true);
+        ui->txtDriveName->setEnabled(true);
+
+        // load the name of the drive
+        FatxFileEntry *nameEntry = currentDrive->GetFileEntry("Drive:\\Content\\name.txt");
+        if (nameEntry)
+        {
+            FatxIO nameFile = currentDrive->GetFatxIO(nameEntry);
+            nameFile.SetPosition(0);
+
+            // make sure that it starts with 0xFEFF
+            if (nameFile.ReadWord() != 0xFEFF)
+            {
+                ui->txtDriveName->setText("Hard Drive");
+                return;
+            }
+
+            ui->txtDriveName->setText(QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 : (nameEntry->fileSize - 2) / 2)));
+        }
+        else
+        {
+            ui->txtDriveName->setText("Hard Drive");
+        }
     }
     catch (std::string error)
     {
