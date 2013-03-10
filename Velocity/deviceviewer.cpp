@@ -14,7 +14,7 @@ DeviceViewer::DeviceViewer(QStatusBar *statusBar, QWidget *parent) :
 
     // setup the context menus
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showRemoveContextMenu(QPoint)));
+    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
 
     // setup treewdiget for drag and drop
     setAcceptDrops(true);
@@ -135,7 +135,7 @@ void DeviceViewer::DrawMemoryGraph()
     ui->lblUsedSpace->setText(QString::fromStdString(ByteSizeToString(totalSpace - totalFreeSpace)) + " of Used Space");
 }
 
-void DeviceViewer::showRemoveContextMenu(QPoint point)
+void DeviceViewer::showContextMenu(QPoint point)
 {
     QPoint globalPos = ui->treeWidget->mapToGlobal(point);
     QMenu contextMenu;
@@ -145,6 +145,9 @@ void DeviceViewer::showRemoveContextMenu(QPoint point)
     foreach (QTreeWidgetItem *item, items)
         if (item->data(5, Qt::UserRole).toBool())
             return;
+
+    if (parentEntry == NULL || parentEntry->name == "Drive Root")
+        return;
 
     if (items.size() >= 1)
     {

@@ -46,7 +46,7 @@ public:
 
 private slots:
     void on_pushButton_clicked();
-    void showRemoveContextMenu(QPoint point);
+    void showContextMenu(QPoint point);
     void on_treeWidget_doubleClicked(const QModelIndex &index);
     void on_btnBack_clicked();
     void on_treeWidget_2_itemExpanded(QTreeWidgetItem *item);
