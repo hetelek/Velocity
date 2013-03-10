@@ -84,13 +84,13 @@ void DeviceViewer::on_pushButton_clicked()
         {
             ui->txtDriveName->setText("Hard Drive");
         }
+
+        LoadPartitions();
     }
     catch (std::string error)
     {
         QMessageBox::warning(this, "Problem Loading", "The drive failed to load.\n\n" + QString::fromStdString(error));
     }
-
-    LoadPartitions();
 }
 
 void DeviceViewer::DrawMemoryGraph()
@@ -153,6 +153,7 @@ void DeviceViewer::showContextMenu(QPoint point)
     {
         contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
         contextMenu.addAction(QPixmap(":/Images/add.png"), "Copy File(s) Here");
+        contextMenu.addAction(QPixmap(":/Images/FolderFileIcon.png"), "Create Folder Here");
 
         contextMenu.addSeparator();
         contextMenu.addAction(QPixmap(":/Images/delete.png"), "Delete Selected");
@@ -163,6 +164,7 @@ void DeviceViewer::showContextMenu(QPoint point)
     else
     {
         contextMenu.addAction(QPixmap(":/Images/add.png"), "Copy File(s) Here");
+        contextMenu.addAction(QPixmap(":/Images/FolderFileIcon.png"), "Create Folder Here");
     }
 
     QAction *selectedItem = contextMenu.exec(globalPos);
@@ -230,10 +232,22 @@ void DeviceViewer::showContextMenu(QPoint point)
                 delete items.at(i);
             }
         }
+        else if (selectedItem->text() == "Create Folder Here")
+        {
+            bool ok;
+            QString text = QInputDialog::getText(this, "New Folder", "Folder name:", QLineEdit::Normal, "New Folder", &ok, windowFlags() & ~Qt::WindowContextHelpButtonHint);
+            if (ok && !text.isEmpty())
+            {
+                if (text.length() > FATX_ENTRY_MAX_NAME_LENGTH)
+                    QMessageBox::critical(this, "Invalid Filename", "The inputted name is invalid.");
+                else
+                    currentDrive->CreateFolder(parentEntry, text.toStdString());
+            }
+        }
     }
     catch (std::string error)
     {
-        QMessageBox::warning(this, "Problem Extracting", "The file failed to extract.\n\n" + QString::fromStdString(error));
+        QMessageBox::warning(this, "Problem", "The operation failed.\n\n" + QString::fromStdString(error));
     }
 }
 

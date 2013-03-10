@@ -58,6 +58,7 @@ int FatxIO::AllocateMemory(DWORD byteAmount)
 
     if (fileIsNull && entry->fileAttributes & FatxDirectory)
     {
+        WriteEntryToDisk(entry);
         entry->fileSize += byteAmount;
         return 0;
     }
@@ -273,7 +274,12 @@ void FatxIO::WriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> *clusterC
     device->Write(entry->fileAttributes);
     device->Write(entry->name, FATX_ENTRY_MAX_NAME_LENGTH, false, 0xFF);
     device->Write(entry->startingCluster);
-    device->Write(entry->fileSize);
+
+    if (entry->fileAttributes & FatxDirectory)
+        device->Write((DWORD)0);
+    else
+        device->Write(entry->fileSize);
+
     device->Write(entry->creationDate);
     device->Write(entry->lastWriteDate);
     device->Write(entry->lastAccessDate);

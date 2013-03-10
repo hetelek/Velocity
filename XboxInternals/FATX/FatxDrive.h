@@ -35,8 +35,8 @@ public:
     // save the security blob to local disk
     void ExtractSecurityBlob(std::string path);
 
-    // writes the 'newEntry' to disk, in the 'parent' folder
-    void CreateFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry);
+    // writes the a folder named 'folderName', in the 'parent' folder
+    void CreateFolder(FatxFileEntry *parent, std::string folderName);
 
     // get the first 4 bytes of a file
     void GetFileEntryMagic(FatxFileEntry *entry);
@@ -49,6 +49,9 @@ public:
 
     // determines if a file at the specified path exists
     bool FileExists(std::string filePath);
+
+    // determines if a file in the specified folder exists
+    bool FileExists(FatxFileEntry *folder, std::string fileName, bool checkDeleted = false);
 
     // get the FatxFileEntry from its path
     FatxFileEntry* GetFileEntry(std::string filePath);
@@ -65,6 +68,9 @@ public:
     SecurityInfo securityBlob;
 
 private:
+    // writes the 'newEntry' to disk, in the 'parent' folder
+    void createFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry);
+
     // open up a physical drive
     void loadFatxDrive(std::wstring drivePath);
 

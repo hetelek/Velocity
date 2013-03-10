@@ -136,10 +136,16 @@ void FatxDrive::ExtractSecurityBlob(string path)
     io->SetPosition(originalPos);
 }
 
-void FatxDrive::CreateFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
+void FatxDrive::createFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
 {
     if (!(parent->fileAttributes & FatxDirectory))
         throw std::string("FATX: Parent file entry is not a directory.\n");
+
+    // set the times
+    DWORD currentTime = MSTimeToDWORD(TimetToMSTime(time(NULL)));
+    newEntry->creationDate = currentTime;
+    newEntry->lastAccessDate = currentTime;
+    newEntry->lastWriteDate = currentTime;
 
     // set the address to null
     newEntry->address = 0;
@@ -196,6 +202,19 @@ void FatxDrive::CreateFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
     parent->cachedFiles.push_back(*newEntry);
 }
 
+void FatxDrive::CreateFolder(FatxFileEntry *parent, std::string folderName)
+{
+    if (this->FileExists(parent, folderName))
+        throw std::string("FATX: The folder already exists.");
+
+    FatxFileEntry newEntry;
+    newEntry.fileSize = FATX_ENTRY_SIZE;
+    newEntry.name = folderName;
+    newEntry.fileAttributes = FatxDirectory;
+
+    this->createFileEntry(parent, &newEntry);
+}
+
 void FatxDrive::DeleteFile(FatxFileEntry *entry)
 {
     // read the data
@@ -237,29 +256,19 @@ void FatxDrive::InjectFile(FatxFileEntry *parent, std::string name, std::string 
     UINT64 fileSize = inFile.GetPosition();
     entry.fileSize = fileSize;
 
-    // set the times
-    DWORD currentTime = MSTimeToDWORD(TimetToMSTime(time(NULL)));
-    entry.creationDate = currentTime;
-    entry.lastAccessDate = currentTime;
-    entry.lastWriteDate = currentTime;
-
     // set other stuff
     entry.fileAttributes = 0;
     inFile.SetPosition(0);
     entry.magic = inFile.ReadDword();
 
     // create the entry
-    CreateFileEntry(parent, &entry);
+    createFileEntry(parent, &entry);
 
     ////////////////////////////
     // START WRITING THE DATA //
     ////////////////////////////
 
-    // write the data
-    FatxIO entryIO = GetFatxIO(&entry);
-
-    // seek to the beginning of the files
-    entryIO.SetPosition(0);
+    // seek to the beginning of the file
     inFile.SetPosition(0);
 
     // calculate stuff
@@ -658,6 +667,17 @@ UINT64 FatxDrive::GetFreeMemory(Partition *part)
 bool FatxDrive::FileExists(std::string filePath)
 {
     return !!GetFileEntry(filePath);
+}
+
+bool FatxDrive::FileExists(FatxFileEntry *folder, std::string fileName, bool checkDeleted)
+{
+    GetChildFileEntries(folder);
+
+    for (int i = 0; i < folder->cachedFiles.size(); i++)
+        if (folder->cachedFiles.at(i).name == fileName && (folder->cachedFiles.at(i).nameLen == FATX_ENTRY_DELETED && checkDeleted))
+            return true;
+
+    return false;
 }
 
 FatxFileEntry *FatxDrive::GetFileEntry(std::string filePath)

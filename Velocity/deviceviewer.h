@@ -11,6 +11,7 @@
 #include <QDateTime>
 #include <QUrl>
 #include <QStatusBar>
+#include <QInputDialog>
 #include "qthelpers.h"
 
 // forms
