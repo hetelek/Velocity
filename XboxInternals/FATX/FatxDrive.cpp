@@ -541,11 +541,16 @@ void FatxDrive::loadFatxDrive(std::wstring drivePath)
 
     // if it's a dev drive then we have to read the partition table
     io->SetPosition(0);
-    if (io->ReadDword() == FATX_DEVKIT_DRIVE)
-    {
-        // read the id?
-        io->ReadDword();
 
+    // parse the version
+    lastFormatRecoveryVersion.major = io->ReadWord();
+    lastFormatRecoveryVersion.minor = io->ReadWord();
+    lastFormatRecoveryVersion.build = io->ReadWord();
+    lastFormatRecoveryVersion.revision = io->ReadWord();
+
+    // Eaton determined this was a version struct and figured out the minimum version
+    if (lastFormatRecoveryVersion.major == 2 && lastFormatRecoveryVersion.build >= 1525 && lastFormatRecoveryVersion.revision >= 1)
+    {
         Partition *content = new Partition;
         content->address = (UINT64)io->ReadDword() * 0x200;
         content->size = (UINT64)io->ReadDword() * 0x200;

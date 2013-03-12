@@ -5,6 +5,7 @@
 #define FATXDRIVE_H
 
 #include "../Stfs/StfsDefinitions.h"
+#include "../Stfs/StfsConstants.h"
 
 #include "../IO/DeviceIO.h"
 #include "../IO/FatxIO.h"
@@ -19,6 +20,9 @@ public:
     FatxDrive(std::string drivePath);
     FatxDrive(std::wstring drivePath);
     ~FatxDrive();
+
+    // format recovery version, found by Eaton
+    Version lastFormatRecoveryVersion;
 
     // get the drives partitions
     std::vector<Partition*> GetPartitions();
