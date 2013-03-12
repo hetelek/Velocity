@@ -28,6 +28,7 @@
 class XBOXINTERNALSSHARED_EXPORT DeviceIO : public BaseIO
 {
 public:
+    DeviceIO(HANDLE deviceHandle);
     DeviceIO(std::string devicePath);
     DeviceIO(std::wstring devicePath);
 

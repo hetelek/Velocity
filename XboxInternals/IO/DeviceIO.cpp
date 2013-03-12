@@ -1,5 +1,18 @@
 #include "DeviceIO.h"
 
+
+DeviceIO::DeviceIO(HANDLE deviceHandle)
+{
+    #ifdef __WIN32
+        pos = 0;
+        if (deviceHandle == INVALID_HANDLE_VALUE)
+            throw std::string("DeviceIO: Invalid device handle.\n");
+
+        this->deviceHandle = deviceHandle;
+        memset(&offset, 0, sizeof(OVERLAPPED));
+    #endif
+}
+
 DeviceIO::DeviceIO(std::string devicePath)
 {
     // convert it to a wstring

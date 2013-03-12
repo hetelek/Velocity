@@ -17,6 +17,7 @@ class XBOXINTERNALSSHARED_EXPORT FatxDrive
 {
 
 public:
+    FatxDrive(HANDLE deviceHandle);
     FatxDrive(std::string drivePath);
     FatxDrive(std::wstring drivePath);
     ~FatxDrive();
@@ -77,6 +78,12 @@ private:
 
     // open up a physical drive
     void loadFatxDrive(std::wstring drivePath);
+
+    // open up a physical drive
+    void loadFatxDrive(HANDLE deviceHandle);
+
+    // open up a physical drive
+    void loadFatxDrive();
 
     // process a partition and load it with calulated information
     void processBootSector(Partition *part);

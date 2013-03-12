@@ -18,6 +18,11 @@ FatxDrive::FatxDrive(std::wstring drivePath)
     loadFatxDrive(drivePath);
 }
 
+FatxDrive::FatxDrive(HANDLE deviceHandle)
+{
+    loadFatxDrive(deviceHandle);
+}
+
 std::vector<Partition*> FatxDrive::GetPartitions()
 {
     return partitions;
@@ -519,6 +524,19 @@ void FatxDrive::loadFatxDrive(std::wstring drivePath)
     // open the device io
     io = new DeviceIO(drivePath);
 
+    loadFatxDrive();
+}
+
+void FatxDrive::loadFatxDrive(HANDLE deviceHandle)
+{
+    // open the device io
+    io = new DeviceIO(deviceHandle);
+
+    loadFatxDrive();
+}
+
+void FatxDrive::loadFatxDrive()
+{
     // parse the security blob
     io->SetPosition(HddOffsets::SecuritySector);
     securityBlob.serialNumber = io->ReadString(0x14);
