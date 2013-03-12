@@ -16,7 +16,7 @@ VERSION = 0.0.1.2
 DEFINES += VERSION=\\\"$$VERSION\\\"
 
 # flags
-QMAKE_CXXFLAGS += -fpermissive
+#QMAKE_CXXFLAGS += -fpermissive
 
 # header include path
 INCLUDEPATH += $$PWD/../XboxInternals

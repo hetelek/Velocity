@@ -22,6 +22,8 @@ DeviceViewer::DeviceViewer(QStatusBar *statusBar, QWidget *parent) :
     connect(ui->treeWidget, SIGNAL(dragDropped(QDropEvent*)), this, SLOT(onDragDropped(QDropEvent*)));
     connect(ui->treeWidget, SIGNAL(dragEntered(QDragEnterEvent*)), this, SLOT(onDragEntered(QDragEnterEvent*)));
     connect(ui->treeWidget, SIGNAL(dragLeft(QDragLeaveEvent*)), this, SLOT(onDragLeft(QDragLeaveEvent*)));
+
+    this->LoadDrives();
 }
 
 DeviceViewer::~DeviceViewer()
@@ -34,63 +36,7 @@ DeviceViewer::~DeviceViewer()
 
 void DeviceViewer::on_pushButton_clicked()
 {
-    // clear all the items
-    ui->treeWidget->clear();
-
-    if (currentDrive)
-        currentDrive->Close();
-
-    try
-    {
-        // open the drive
-        currentDrive = new FatxDrive(ui->txtPath->text().toStdWString());
-
-        // load the partion information
-        std::vector<Partition*> parts = currentDrive->GetPartitions();
-        for (DWORD i = 0; i < parts.size(); i++)
-        {
-            QTreeWidgetItem *secondItem = new QTreeWidgetItem(ui->treeWidget_2);
-            secondItem->setText(0, QString::fromStdString(parts.at(i)->name));
-            secondItem->setIcon(0, QIcon(":/Images/partition.png"));
-            secondItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
-            secondItem->setData(0, Qt::UserRole, QVariant::fromValue(parts.at(i)));
-            secondItem->setData(5, Qt::UserRole, QVariant::fromValue(true));
-            secondItem->setData(4, Qt::UserRole, QVariant::fromValue(-1));
-        }
-
-        DrawMemoryGraph();
-
-        ui->btnPartitions->setEnabled(true);
-        ui->btnSecurityBlob->setEnabled(true);
-        ui->txtDriveName->setEnabled(true);
-
-        // load the name of the drive
-        FatxFileEntry *nameEntry = currentDrive->GetFileEntry("Drive:\\Content\\name.txt");
-        if (nameEntry)
-        {
-            FatxIO nameFile = currentDrive->GetFatxIO(nameEntry);
-            nameFile.SetPosition(0);
-
-            // make sure that it starts with 0xFEFF
-            if (nameFile.ReadWord() != 0xFEFF)
-            {
-                ui->txtDriveName->setText("Hard Drive");
-                return;
-            }
-
-            ui->txtDriveName->setText(QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 : (nameEntry->fileSize - 2) / 2)));
-        }
-        else
-        {
-            ui->txtDriveName->setText("Hard Drive");
-        }
-
-        LoadPartitions();
-    }
-    catch (std::string error)
-    {
-        QMessageBox::warning(this, "Problem Loading", "The drive failed to load.\n\n" + QString::fromStdString(error));
-    }
+    this->LoadDrives();
 }
 
 void DeviceViewer::DrawMemoryGraph()
@@ -213,7 +159,7 @@ void DeviceViewer::showContextMenu(QPoint point)
 
             QList<void*> files;
             for (DWORD i = 0; i < toInjectPaths.size(); i++)
-                files.push_back(&toInjectPaths.at(i));
+                files.push_back(const_cast<void*>((void*)&toInjectPaths.at(i)));
 
             InjectFiles(files);
         }
@@ -263,6 +209,71 @@ void DeviceViewer::InjectFiles(QList<void*> files)
     LoadFolderAll(parentEntry);
 
     QMessageBox::information(this, "Copied Files", "All files have been successfully copied to the harddrive.");
+}
+
+void DeviceViewer::LoadDrives()
+{
+    // clear all the items
+    ui->treeWidget->clear();
+
+    if (currentDrive)
+        currentDrive->Close();
+
+    try
+    {
+        std::vector<FatxDrive*> drives = FatxDriveDetection::GetAllFatxDrives();
+        if (drives.size() < 1)
+            return;
+
+        // open the drive
+        currentDrive = drives.at(0);
+
+        // load the partion information
+        std::vector<Partition*> parts = currentDrive->GetPartitions();
+        for (DWORD i = 0; i < parts.size(); i++)
+        {
+            QTreeWidgetItem *secondItem = new QTreeWidgetItem(ui->treeWidget_2);
+            secondItem->setText(0, QString::fromStdString(parts.at(i)->name));
+            secondItem->setIcon(0, QIcon(":/Images/partition.png"));
+            secondItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+            secondItem->setData(0, Qt::UserRole, QVariant::fromValue(parts.at(i)));
+            secondItem->setData(5, Qt::UserRole, QVariant::fromValue(true));
+            secondItem->setData(4, Qt::UserRole, QVariant::fromValue(-1));
+        }
+
+        DrawMemoryGraph();
+
+        ui->btnPartitions->setEnabled(true);
+        ui->btnSecurityBlob->setEnabled(true);
+        ui->txtDriveName->setEnabled(true);
+
+        // load the name of the drive
+        FatxFileEntry *nameEntry = currentDrive->GetFileEntry("Drive:\\Content\\name.txt");
+        if (nameEntry)
+        {
+            FatxIO nameFile = currentDrive->GetFatxIO(nameEntry);
+            nameFile.SetPosition(0);
+
+            // make sure that it starts with 0xFEFF
+            if (nameFile.ReadWord() != 0xFEFF)
+            {
+                ui->txtDriveName->setText("Hard Drive");
+                return;
+            }
+
+            ui->txtDriveName->setText(QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 : (nameEntry->fileSize - 2) / 2)));
+        }
+        else
+        {
+            ui->txtDriveName->setText("Hard Drive");
+        }
+
+        LoadPartitions();
+    }
+    catch (std::string error)
+    {
+        QMessageBox::warning(this, "Problem Loading", "The drive failed to load.\n\n" + QString::fromStdString(error));
+    }
 }
 
 void DeviceViewer::on_treeWidget_doubleClicked(const QModelIndex &index)

@@ -116,7 +116,7 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
         item->setText(1, totalGamerscore);
         item->setText(2, totalAwardCount);
 
-        TitleEntry entry = {0};
+        TitleEntry entry = { (EntryType)0 };
         entry.gameName = gameName.toStdWString();
         entry.titleID = titleId;
         entry.achievementCount = achievementCount.toULong();

@@ -244,7 +244,7 @@ void SvodDialog::on_btnResign_clicked()
     // make sure the console ids match
     if (memcmp(consoleID, svod->metadata->certificate.ownerConsoleID, 5) != 0)
     {
-        QMessageBox::StandardButton btn = QMessageBox::question(this, "Continue?",
+        QMessageBox::StandardButton btn = (QMessageBox::StandardButton)QMessageBox::question(this, "Continue?",
                                                                 "The KeyVault provided is not from the console where this SVOD system was signed. This system will show up as corrupt on the original console. Unless you know what you're doing, choose no.\n\nAre you sure that you want to contiure?",
                                                                 QMessageBox::No, QMessageBox::Yes);
         if (btn != QMessageBox::Yes)

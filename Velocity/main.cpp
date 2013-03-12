@@ -1,14 +1,10 @@
 #include <QtGui/QApplication>
 #include <QStringList>
-#include "mainwindow.h"
 #include <botan/botan.h>
-
-#include "FATX/FatxDrive.h"
+#include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
-    //FatxDrive drive(L"\\\\.\\PHYSICALDRIVE1");
-
     QApplication a(argc, argv);
     a.addLibraryPath(":/plugins/imageformats");
 

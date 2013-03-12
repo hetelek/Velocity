@@ -889,7 +889,7 @@ void ProfileEditor::loadAvatarAwardInfo(int gameIndex, unsigned int awardIndex)
     // download the thumbnail
     string tmp = AvatarAwardGpd::GetLargeAwardImageURL(award);
     QNetworkRequest request(QUrl(QString::fromStdString(tmp)));
-    request.setAttribute(1001, QVariant::fromValue(award));
+    request.setAttribute((QNetworkRequest::Attribute)1001, QVariant::fromValue(award));
     awardThumbnailManager->get(request);
 }
 
@@ -901,7 +901,7 @@ void ProfileEditor::replyFinishedAwImg(QNetworkReply *aReply)
         ui->imgAw->clear();
         ui->imgAw->setPixmap(QPixmap::fromImage(QImage::fromData(img)));
 
-        struct AvatarAward *award = aReply->request().attribute(1001).value<struct AvatarAward*>();
+        struct AvatarAward *award = aReply->request().attribute((QNetworkRequest::Attribute)1001).value<struct AvatarAward*>();
 
         // add the avatar image to the gpd if it isn't already there
         if (ok && !ui->imgAw->pixmap()->isNull())

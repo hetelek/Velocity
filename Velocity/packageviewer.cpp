@@ -420,7 +420,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             QString packagePath;
             GetPackagePath(items.at(i), &packagePath);
             sillyNess.append(package->GetFileEntry(packagePath.toStdString()));
-            outFiles.append(&sillyNess.at(i));
+            outFiles.append(const_cast<void*>((void*)&sillyNess.at(i)));
         }
 
         try

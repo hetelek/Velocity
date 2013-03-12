@@ -23,6 +23,7 @@
 #include "singleprogressdialog.h"
 
 // xbox
+#include "Fatx/FatxDriveDetection.h"
 #include "Fatx/FatxDrive.h"
 #include "Stfs/StfsDefinitions.h"
 
@@ -78,6 +79,8 @@ private:
     void DrawMemoryGraph();
 
     void InjectFiles(QList<void *> files);
+
+    void LoadDrives();
 };
 
 #endif // DEVICEVIEWER_H

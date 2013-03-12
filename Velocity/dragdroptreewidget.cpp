@@ -2,7 +2,7 @@
 #include <QDebug>
 
 DragDropTreeWidget::DragDropTreeWidget(QObject *parent) :
-    QTreeWidget(parent)
+    QTreeWidget((QTreeWidget*)parent)
 {
     setAcceptDrops(true);
 }
