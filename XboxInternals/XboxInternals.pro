@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       -= gui core
+QT       -= gui
 
 TARGET = XboxInternals
 TEMPLATE = lib
@@ -15,7 +15,8 @@ unix {
 }
 
 # flags
-QMAKE_CXXFLAGS += -fpermissive
+#QMAKE_CXXFLAGS += -fpermissive
+QMAKE_CFLAGS_RELEASE = -O3
 
 # library version
 #VERSION = 0.1.0.0
@@ -58,7 +59,8 @@ SOURCES += \
     Fatx/FatxHelpers.cpp \
     Fatx/FatxDrive.cpp \
     IO/FileIO.cpp \
-    IO/FatxIO.cpp
+    IO/FatxIO.cpp \
+    Fatx/FatxDriveDetection.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -94,4 +96,5 @@ HEADERS +=\
     Fatx/FatxDrive.h \
     Fatx/FatxConstants.h \
     IO/FileIO.h \
-    IO/FatxIO.h
+    IO/FatxIO.h \
+    Fatx/FatxDetection.h
