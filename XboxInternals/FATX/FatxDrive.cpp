@@ -115,6 +115,7 @@ void FatxDrive::processBootSector(Partition *part)
     part->root.fileAttributes = FatxDirectory;
     part->root.address = -1;
     part->root.path = "Drive:\\";
+    part->drive = this;
 }
 
 void FatxDrive::ExtractSecurityBlob(string path)

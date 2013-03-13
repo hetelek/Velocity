@@ -25,6 +25,7 @@
 #define FAT_CLUSTER16_RESERVED (WORD)0xfff0
 #define FAT_CLUSTER16_LAST (WORD)0xffff
 
+class FatxDrive;
 struct Partition;
 
 struct SecurityInfo
@@ -70,6 +71,7 @@ struct Partition
     std::string name;
     INT64 address;
     UINT64 size;
+    FatxDrive *drive;
 
     // header
     DWORD magic;
