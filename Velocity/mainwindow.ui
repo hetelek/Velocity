@@ -105,12 +105,22 @@
      <addaction name="actionProfile_Creator"/>
      <addaction name="actionProfile_Editor"/>
     </widget>
+    <widget class="QMenu" name="menuDevice_Tools">
+     <property name="title">
+      <string>Device Tools</string>
+     </property>
+     <property name="icon">
+      <iconset resource="Resources.qrc">
+       <normaloff>:/Images/hdd.png</normaloff>:/Images/hdd.png</iconset>
+     </property>
+     <addaction name="actionDevice_Viewer"/>
+     <addaction name="actionFATX_File_Path"/>
+    </widget>
+    <addaction name="menuDevice_Tools"/>
     <addaction name="menuProfile_Editor"/>
-    <addaction name="actionFATX_File_Path"/>
     <addaction name="actionGamer_Picture_Pack_Creator"/>
     <addaction name="actionTitle_ID_Finder"/>
     <addaction name="actionTheme_Creator"/>
-    <addaction name="actionDevice_Viewer"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -308,12 +318,8 @@
    </property>
   </action>
   <action name="actionFATX_File_Path">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/Images/hdd.png</normaloff>:/Images/hdd.png</iconset>
-   </property>
    <property name="text">
-    <string>FATX File Path Tool</string>
+    <string>File Path Tool</string>
    </property>
   </action>
   <action name="actionProfile_Cleaner">
@@ -350,7 +356,7 @@
   </action>
   <action name="actionDevice_Viewer">
    <property name="text">
-    <string>Device Viewer</string>
+    <string>Raw Device Viewer</string>
    </property>
   </action>
  </widget>
