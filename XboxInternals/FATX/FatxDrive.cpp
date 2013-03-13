@@ -103,7 +103,7 @@ void FatxDrive::processBootSector(Partition *part)
     part->clusterCount = clusters;
     part->allocationTableSize = partitionSize;
     part->clusterEntrySize = (clusters < FAT_CLUSTER16_RESERVED) ? FAT16 : FAT32;
-    part->clusterStartingAddress = part->address + partitionSize + 0x1000;
+    part->clusterStartingAddress = part->address + (INT64)partitionSize + 0x1000;
     part->lastFreeClusterFound = 1;
     part->freeMemory = 0;
 
@@ -348,7 +348,7 @@ void FatxDrive::GetFileEntryMagic(FatxFileEntry *entry)
     entry->magic = io->ReadDword();
 }
 
-void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
+void FatxDrive::GetChildFileEntries(FatxFileEntry *entry, void(*progress)(void*, bool), void *arg)
 {
     // if all entries have been read, skip this
     if (entry->readDirectories || !(entry->fileAttributes & FatxDirectory))
@@ -416,10 +416,19 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry)
 
             // add it to the file cache
             entry->cachedFiles.push_back(newEntry);
+
+            // update progress if needed
+            if (progress)
+                progress(arg, false);
         }
+
         if (doneForGood)
             break;
     }
+
+    // update progress if needed
+    if (progress)
+        progress(arg, true);
 
     entry->fileSize = (entry->cachedFiles.size() * FATX_ENTRY_SIZE);
     entry->readDirectories = true;

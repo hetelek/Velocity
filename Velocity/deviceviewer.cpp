@@ -351,9 +351,12 @@ void DeviceViewer::LoadFolderAll(FatxFileEntry *folder)
 
         ui->btnBack->setEnabled(directoryChain.size() > 1);
 
+        progressBar->setVisible(true);
+        progressBar->setMaximum(0);
+
         ui->treeWidget->clear();
         currentDrive = folder->partition->drive;
-        currentDrive->GetChildFileEntries(folder);
+        currentDrive->GetChildFileEntries(folder, updateUI);
 
         for (int i = 0; i < folder->cachedFiles.size(); i++)
         {
@@ -393,7 +396,13 @@ void DeviceViewer::LoadFolderAll(FatxFileEntry *folder)
             date.setDate(createdtime.year, createdtime.month, createdtime.monthDay);
 
             entryItem->setText(2, date.toString(Qt::DefaultLocaleShortDate));
+
+            if (i % 25 == 0)
+                QApplication::processEvents();
         }
+
+        progressBar->setVisible(false);
+        progressBar->setMaximum(1);
 
         ui->txtPath->setText(QString::fromStdString(folder->path + folder->name + "\\"));
     }

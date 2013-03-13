@@ -32,7 +32,7 @@ public:
     FatxIO GetFatxIO(FatxFileEntry *entry);
 
     // populate entry's cachedFiles vector (only if it's a directory)
-    void GetChildFileEntries(FatxFileEntry *entry);
+    void GetChildFileEntries(FatxFileEntry *entry, void(*progress)(void*, bool) = NULL, void *arg = NULL);
 
     // populate entry's clusterChain with its cluster chain
     void ReadClusterChain(FatxFileEntry *entry);
