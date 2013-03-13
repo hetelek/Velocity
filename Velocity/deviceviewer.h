@@ -71,6 +71,7 @@ private:
     QList<FatxFileEntry*> directoryChain;
     QStatusBar *statusBar;
     QProgressBar *progressBar;
+    bool drivesLoaded;
 
     void LoadFolderAll(FatxFileEntry *folder);
 

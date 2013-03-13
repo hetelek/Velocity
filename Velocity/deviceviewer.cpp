@@ -4,7 +4,7 @@
 #include <QDebug>
 
 DeviceViewer::DeviceViewer(QStatusBar *statusBar, QWidget *parent) :
-    QDialog(parent), ui(new Ui::DeviceViewer), parentEntry(NULL), statusBar(statusBar), currentDrive(NULL)
+    QDialog(parent), ui(new Ui::DeviceViewer), parentEntry(NULL), statusBar(statusBar), currentDrive(NULL), drivesLoaded(false)
 {
     ui->setupUi(this);
 
@@ -43,7 +43,7 @@ void DeviceViewer::DrawMemoryGraph()
     UINT64 totalFreeSpace = 0;
     UINT64 totalSpace = 0;
 
-    if (!currentDrive)
+    if (!drivesLoaded)
     {
         progressBar->setVisible(true);
         progressBar->setMinimum(0);
@@ -58,7 +58,7 @@ void DeviceViewer::DrawMemoryGraph()
         totalSpace += (UINT64)parts.at(i)->clusterCount * parts.at(i)->clusterSize;
     }
 
-    if (!currentDrive)
+    if (!drivesLoaded)
     {
         progressBar->setMaximum(1);
         progressBar->setVisible(false);
@@ -240,10 +240,10 @@ void DeviceViewer::LoadDrives()
             return;
         }
 
-        currentDrive = loadedDrives.at(0);
-
         for (int i = 0; i < loadedDrives.size(); i++)
         {
+            currentDrive = loadedDrives.at(i);
+
             QTreeWidgetItem *driveItem = new QTreeWidgetItem(ui->treeWidget_2);
             driveItem->setText(0, "Hard Drive");
             driveItem->setIcon(0, QIcon(":/Images/harddrive.png"));
@@ -263,11 +263,6 @@ void DeviceViewer::LoadDrives()
 
             DrawMemoryGraph();
 
-            ui->btnPartitions->setEnabled(true);
-            ui->btnSecurityBlob->setEnabled(true);
-            ui->txtDriveName->setEnabled(true);
-            ui->txtPath->setEnabled(true);
-
             // load the name of the drive
             FatxFileEntry *nameEntry = loadedDrives.at(i)->GetFileEntry("Drive:\\Content\\name.txt");
             if (nameEntry)
@@ -277,12 +272,9 @@ void DeviceViewer::LoadDrives()
 
                 // make sure that it starts with 0xFEFF
                 if (nameFile.ReadWord() != 0xFEFF)
-                {
                     ui->txtDriveName->setText("Hard Drive");
-                    return;
-                }
-
-                driveItem->setText(0, QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 : (nameEntry->fileSize - 2) / 2)));
+                else
+                    driveItem->setText(0, QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 : (nameEntry->fileSize - 2) / 2)));
             }
             else
             {
@@ -290,9 +282,22 @@ void DeviceViewer::LoadDrives()
             }
 
             LoadPartitions();
-
-            statusBar->showMessage("Drive(s) loaded successfully", 3000);
         }
+
+        ui->btnPartitions->setEnabled(true);
+        ui->btnSecurityBlob->setEnabled(true);
+        ui->txtDriveName->setEnabled(true);
+        ui->txtPath->setEnabled(true);
+        ui->treeWidget->setEnabled(true);
+        ui->treeWidget_2->setEnabled(true);
+        ui->lblFeeMemory->setEnabled(true);
+        ui->lblUsedSpace->setEnabled(true);
+        ui->imgFreeMem->setEnabled(true);
+        ui->imgUsedMem->setEnabled(true);
+        ui->imgPiechart->setEnabled(true);
+
+        drivesLoaded = true;
+        statusBar->showMessage("Drive(s) loaded successfully", 3000);
     }
     catch (std::string error)
     {
