@@ -1,7 +1,4 @@
 #include "mainwindow.h"
-#include "Disc/svod.h"
-
-#include "IO/DeviceIO.h"
 
 MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {

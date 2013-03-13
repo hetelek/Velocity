@@ -51,6 +51,8 @@
 #include "IO/MultiFileIO.h"
 #include "Disc/svod.h"
 #include "AvatarAsset/Ytgr.h"
+#include "Disc/svod.h"
+#include "IO/DeviceIO.h"
 
 using namespace std;
 
