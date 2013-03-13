@@ -31,6 +31,7 @@ public:
     DeviceIO(HANDLE deviceHandle);
     DeviceIO(std::string devicePath);
     DeviceIO(std::wstring devicePath);
+    ~DeviceIO();
 
     void ReadBytes(BYTE *outBuffer, DWORD len);
 

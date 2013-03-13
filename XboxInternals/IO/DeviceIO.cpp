@@ -29,6 +29,11 @@ DeviceIO::DeviceIO(std::wstring devicePath)
     loadDevice(devicePath);
 }
 
+DeviceIO::~DeviceIO()
+{
+    lastReadOffset = -1;
+}
+
 void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
 {
     UINT64 endingPos = pos + len;
