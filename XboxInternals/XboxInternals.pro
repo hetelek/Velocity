@@ -97,4 +97,4 @@ HEADERS +=\
     Fatx/FatxConstants.h \
     IO/FileIO.h \
     IO/FatxIO.h \
-    Fatx/FatxDetection.h
+    Fatx/FatxDriveDetection.h
