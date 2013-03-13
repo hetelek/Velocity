@@ -249,6 +249,7 @@ void MainWindow::on_actionDevice_Viewer_triggered()
     viewer->setAttribute(Qt::WA_DeleteOnClose);
     ui->mdiArea->addSubWindow(viewer);
     viewer->show();
+    viewer->LoadDrives();
 }
 
 void MainWindow::on_actionView_Wiki_triggered()

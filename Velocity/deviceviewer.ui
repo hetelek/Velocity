@@ -252,15 +252,11 @@
            </item>
            <item>
             <widget class="QLineEdit" name="txtPath">
-             <property name="text">
-              <string>\\.\PHYSICALDRIVE1</string>
+             <property name="enabled">
+              <bool>false</bool>
              </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton">
              <property name="text">
-              <string>Load Device</string>
+              <string/>
              </property>
             </widget>
            </item>

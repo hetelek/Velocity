@@ -65,7 +65,7 @@ public:
     void Close();
 
     // get the amount of free bytes on the device
-    UINT64 GetFreeMemory(Partition *part);
+    UINT64 GetFreeMemory(Partition *part, void(*progress)(void*, bool) = NULL, void *arg = NULL);
 
     // convert a cluster to an offset
     static INT64 ClusterToOffset(Partition *part, DWORD cluster);

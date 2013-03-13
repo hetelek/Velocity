@@ -4,7 +4,7 @@
 #include <QDebug>
 
 DeviceViewer::DeviceViewer(QStatusBar *statusBar, QWidget *parent) :
-    QDialog(parent), ui(new Ui::DeviceViewer), parentEntry(NULL), statusBar(statusBar)
+    QDialog(parent), ui(new Ui::DeviceViewer), parentEntry(NULL), statusBar(statusBar), driveLoaded(false)
 {
     ui->setupUi(this);
     currentDrive = NULL;
@@ -23,7 +23,12 @@ DeviceViewer::DeviceViewer(QStatusBar *statusBar, QWidget *parent) :
     connect(ui->treeWidget, SIGNAL(dragEntered(QDragEnterEvent*)), this, SLOT(onDragEntered(QDragEnterEvent*)));
     connect(ui->treeWidget, SIGNAL(dragLeft(QDragLeaveEvent*)), this, SLOT(onDragLeft(QDragLeaveEvent*)));
 
-    this->LoadDrives();
+    progressBar = new QProgressBar(this);
+    progressBar->setMaximumHeight(statusBar->height() - 5);
+    progressBar->setMinimumWidth(statusBar->width());
+    progressBar->setTextVisible(false);
+    progressBar->setVisible(false);
+    statusBar->addWidget(progressBar);
 }
 
 DeviceViewer::~DeviceViewer()
@@ -34,22 +39,30 @@ DeviceViewer::~DeviceViewer()
     delete ui;
 }
 
-void DeviceViewer::on_pushButton_clicked()
-{
-    this->LoadDrives();
-}
-
 void DeviceViewer::DrawMemoryGraph()
 {
     UINT64 totalFreeSpace = 0;
     UINT64 totalSpace = 0;
 
+    if (!driveLoaded)
+    {
+        progressBar->setVisible(true);
+        progressBar->setMinimum(0);
+        progressBar->setMaximum(0);
+    }
+
     // load the partion information
     std::vector<Partition*> parts = currentDrive->GetPartitions();
     for (DWORD i = 0; i < parts.size(); i++)
     {
-        totalFreeSpace += currentDrive->GetFreeMemory(parts.at(i));
+        totalFreeSpace += currentDrive->GetFreeMemory(parts.at(i), updateUI);
         totalSpace += (UINT64)parts.at(i)->clusterCount * parts.at(i)->clusterSize;
+    }
+
+    if (!driveLoaded)
+    {
+        progressBar->setMaximum(1);
+        progressBar->setVisible(false);
     }
 
     // calculate the percentage
@@ -223,7 +236,10 @@ void DeviceViewer::LoadDrives()
     {
         std::vector<FatxDrive*> drives = FatxDriveDetection::GetAllFatxDrives();
         if (drives.size() < 1)
+        {
+            statusBar->showMessage("No drives detected", 3000);
             return;
+        }
 
         // open the drive
         currentDrive = drives.at(0);
@@ -246,6 +262,7 @@ void DeviceViewer::LoadDrives()
         ui->btnPartitions->setEnabled(true);
         ui->btnSecurityBlob->setEnabled(true);
         ui->txtDriveName->setEnabled(true);
+        ui->txtPath->setEnabled(true);
 
         // load the name of the drive
         FatxFileEntry *nameEntry = currentDrive->GetFileEntry("Drive:\\Content\\name.txt");
@@ -269,6 +286,9 @@ void DeviceViewer::LoadDrives()
         }
 
         LoadPartitions();
+
+        driveLoaded = true;
+        statusBar->showMessage("Drive(s) loaded successfully", 3000);
     }
     catch (std::string error)
     {
@@ -518,4 +538,9 @@ void DeviceViewer::onDragDropped(QDropEvent *event)
 void DeviceViewer::onDragLeft(QDragLeaveEvent *event)
 {
     statusBar->showMessage("");
+}
+
+void updateUI(void *arg, bool finished)
+{
+    QApplication::processEvents();
 }

@@ -12,6 +12,7 @@
 #include <QUrl>
 #include <QStatusBar>
 #include <QInputDialog>
+#include <QProgressBar>
 #include "qthelpers.h"
 
 // forms
@@ -38,16 +39,19 @@ namespace Ui {
 class DeviceViewer;
 }
 
+void updateUI(void *arg, bool finished);
+
 class DeviceViewer : public QDialog
 {
     Q_OBJECT
 
 public:
     explicit DeviceViewer(QStatusBar *statusBar, QWidget *parent = 0);
+
+    void LoadDrives();
     ~DeviceViewer();
 
 private slots:
-    void on_pushButton_clicked();
     void showContextMenu(QPoint point);
     void on_treeWidget_doubleClicked(const QModelIndex &index);
     void on_btnBack_clicked();
@@ -65,6 +69,8 @@ private:
     FatxFileEntry *parentEntry;
     QList<FatxFileEntry*> directoryChain;
     QStatusBar *statusBar;
+    QProgressBar *progressBar;
+    bool driveLoaded;
 
     void LoadFolderAll(FatxFileEntry *folder);
 
@@ -80,7 +86,7 @@ private:
 
     void InjectFiles(QList<void *> files);
 
-    void LoadDrives();
+    friend void updateUI(void *arg, bool finished);
 };
 
 #endif // DEVICEVIEWER_H

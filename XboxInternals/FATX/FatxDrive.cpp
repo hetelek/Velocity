@@ -629,7 +629,7 @@ void FatxDrive::loadFatxDrive()
     }
 }
 
-UINT64 FatxDrive::GetFreeMemory(Partition *part)
+UINT64 FatxDrive::GetFreeMemory(Partition *part, void(*progress)(void*, bool), void *arg)
 {
     if (part->freeMemory != 0)
         return part->freeClusters.size() * part->clusterSize;
@@ -657,6 +657,10 @@ UINT64 FatxDrive::GetFreeMemory(Partition *part)
         MemoryIO memory(buffer, 0x50000);
         memory.SetPosition(0);
 
+        // update progress if needed
+        if (progress)
+            progress(arg, false);
+
         // iterate through all of the clusters
         if (clusterSizeIs2)
         {
@@ -683,6 +687,9 @@ UINT64 FatxDrive::GetFreeMemory(Partition *part)
 
     // cleanup
     delete[] buffer;
+
+    if (progress)
+        progress(arg, true);
 
     return part->freeMemory;
 }
