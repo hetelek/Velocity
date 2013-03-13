@@ -7,8 +7,6 @@
 #include <sstream>
 #include "FatxDrive.h"
 
-#include <QDebug>
-
 #include "XboxInternals_global.h"
 
 class XBOXINTERNALSSHARED_EXPORT FatxDriveDetection

@@ -10,15 +10,12 @@ std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
     {
         try
         {
-            qDebug() << QString::number((DWORD)devices.at(i));
-
             io = new DeviceIO(devices.at(i));
             if (io->DriveLength() > HddOffsets::Data)
             {
                 io->SetPosition(HddOffsets::Data);
                 if (io->ReadDword() == FATX_MAGIC)
                 {
-                    qDebug() << QString::number(devices.size());
                     FatxDrive *drive = new FatxDrive(devices.at(i));
                     drives.push_back(drive);
                 }

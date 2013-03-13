@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       -= gui
+QT       -= gui core
 
 TARGET = XboxInternals
 TEMPLATE = lib
