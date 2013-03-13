@@ -65,12 +65,12 @@ private slots:
 
 private:
     Ui::DeviceViewer *ui;
+    std::vector<FatxDrive*> loadedDrives;
     FatxDrive *currentDrive;
     FatxFileEntry *parentEntry;
     QList<FatxFileEntry*> directoryChain;
     QStatusBar *statusBar;
     QProgressBar *progressBar;
-    bool driveLoaded;
 
     void LoadFolderAll(FatxFileEntry *folder);
 
