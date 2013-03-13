@@ -1,7 +1,8 @@
 #include "DeviceIO.h"
 
 
-DeviceIO::DeviceIO(HANDLE deviceHandle)
+DeviceIO::DeviceIO(HANDLE deviceHandle) :
+    lastReadOffset(-1)
 {
     #ifdef __WIN32
         pos = 0;
@@ -13,7 +14,8 @@ DeviceIO::DeviceIO(HANDLE deviceHandle)
     #endif
 }
 
-DeviceIO::DeviceIO(std::string devicePath)
+DeviceIO::DeviceIO(std::string devicePath) :
+    lastReadOffset(-1)
 {
     // convert it to a wstring
     std::wstring wsDevicePath;
@@ -23,7 +25,8 @@ DeviceIO::DeviceIO(std::string devicePath)
     loadDevice(wsDevicePath);
 }
 
-DeviceIO::DeviceIO(std::wstring devicePath)
+DeviceIO::DeviceIO(std::wstring devicePath) :
+    lastReadOffset(-1)
 {
     // load the device
     loadDevice(devicePath);
@@ -31,7 +34,7 @@ DeviceIO::DeviceIO(std::wstring devicePath)
 
 DeviceIO::~DeviceIO()
 {
-    lastReadOffset = -1;
+
 }
 
 void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)

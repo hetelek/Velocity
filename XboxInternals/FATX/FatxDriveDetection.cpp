@@ -4,26 +4,23 @@ std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
 {
     std::vector<FatxDrive*> drives;
     std::vector<HANDLE> devices = getPhysicalDisks();
-    DeviceIO *io;
 
     for (int i = 0; i < devices.size(); i++)
     {
         try
         {
-            io = new DeviceIO(devices.at(i));
-            if (io->DriveLength() > HddOffsets::Data)
+            DeviceIO io(devices.at(i));
+            if (io.DriveLength() > HddOffsets::Data)
             {
-                io->SetPosition(HddOffsets::Data);
-                if (io->ReadDword() == FATX_MAGIC)
+                io.SetPosition(HddOffsets::Data);
+                if (io.ReadDword() == FATX_MAGIC)
                 {
                     FatxDrive *drive = new FatxDrive(devices.at(i));
                     drives.push_back(drive);
                 }
                 else
-                    io->Close();
+                    io.Close();
             }
-
-            delete io;
         }
         catch (...)
         {
