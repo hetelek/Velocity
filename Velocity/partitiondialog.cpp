@@ -1,7 +1,7 @@
 #include "partitiondialog.h"
 #include "ui_partitiondialog.h"
 
-PartitionDialog::PartitionDialog(std::vector<Partition*> partitions, QWidget *parent) :
+PartitionDialog::PartitionDialog(std::vector<Partition*> &partitions, QWidget *parent) :
     QDialog(parent), ui(new Ui::PartitionDialog), partitions(partitions)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -53,6 +53,7 @@ void PartitionDialog::on_comboBox_currentIndexChanged(int index)
 
 void PartitionDialog::on_btnClusterTool_clicked()
 {
-    ClusterToolDialog dialog(partitions.at(ui->comboBox->currentIndex()), this);
+    Partition part = *partitions.at(ui->comboBox->currentIndex());
+    ClusterToolDialog dialog(part, this);
     dialog.exec();
 }

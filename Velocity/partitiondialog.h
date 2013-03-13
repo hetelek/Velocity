@@ -23,7 +23,7 @@ class PartitionDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit PartitionDialog(std::vector<Partition*> partitions, QWidget *parent = 0);
+    explicit PartitionDialog(std::vector<Partition*> &partitions, QWidget *parent = 0);
     ~PartitionDialog();
     
 private slots:
@@ -33,7 +33,7 @@ private slots:
 
 private:
     Ui::PartitionDialog *ui;
-    std::vector<Partition*> partitions;
+    std::vector<Partition*> &partitions;
 
 };
 

@@ -16,7 +16,7 @@ class ClusterToolDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit ClusterToolDialog(Partition *part, QWidget *parent = 0);
+    explicit ClusterToolDialog(Partition &partition, QWidget *parent = 0);
     ~ClusterToolDialog();
     
 private slots:
@@ -24,7 +24,7 @@ private slots:
 
 private:
     Ui::ClusterToolDialog *ui;
-    Partition *part;
+    Partition &part;
 };
 
 #endif // CLUSTERTOOLDIALOG_H

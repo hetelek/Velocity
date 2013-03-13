@@ -530,7 +530,9 @@ void DeviceViewer::on_btnSecurityBlob_clicked()
 
 void DeviceViewer::on_btnPartitions_clicked()
 {
-    PartitionDialog dialog(currentDrive->GetPartitions(), this);
+    std::vector<Partition*> partitions = currentDrive->GetPartitions();
+
+    PartitionDialog dialog(partitions, this);
     dialog.exec();
 }
 
