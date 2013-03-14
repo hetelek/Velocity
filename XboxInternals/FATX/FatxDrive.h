@@ -94,7 +94,7 @@ private:
     // counts the largest amount of consecutive unset bits
     static BYTE cntlzw(DWORD x);
 
-    DeviceIO *io;
+    BaseIO *io;
     std::vector<Partition*> partitions;
     std::vector<FatxFileEntry*> profiles;
 };
