@@ -33,7 +33,7 @@ public:
     // get current address in the file
     virtual UINT64 GetPosition() = 0;
 
-    // get current address in the file
+    // get length of the file
     virtual UINT64 Length() = 0;
 
     // get the byte order in which to read the bytes
