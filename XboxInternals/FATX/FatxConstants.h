@@ -28,6 +28,12 @@
 class FatxDrive;
 struct Partition;
 
+enum FatxDriveType
+{
+    FlashDrive,
+    Harddrive
+};
+
 struct SecurityInfo
 {
     std::string serialNumber;

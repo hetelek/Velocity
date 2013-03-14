@@ -17,9 +17,9 @@ class XBOXINTERNALSSHARED_EXPORT FatxDrive
 {
 
 public:
-    FatxDrive(HANDLE deviceHandle);
-    FatxDrive(std::string drivePath);
-    FatxDrive(std::wstring drivePath);
+    FatxDrive(HANDLE deviceHandle, FatxDriveType type = Harddrive);
+    FatxDrive(std::string drivePath, FatxDriveType type = Harddrive);
+    FatxDrive(std::wstring drivePath, FatxDriveType type = Harddrive);
     ~FatxDrive();
 
     // format recovery version, found by Eaton
@@ -27,6 +27,9 @@ public:
 
     // get the drives partitions
     std::vector<Partition*> GetPartitions();
+
+    // get the drive type
+    FatxDriveType GetFatxDriveType();
 
     // get a FatxIO for the given entry
     FatxIO GetFatxIO(FatxFileEntry *entry);
@@ -97,6 +100,7 @@ private:
     BaseIO *io;
     std::vector<Partition*> partitions;
     std::vector<FatxFileEntry*> profiles;
+    FatxDriveType type;
 };
 
 #endif // FATXDRIVE_H

@@ -3,7 +3,7 @@
 
 #include "FatxDrive.h"
 
-FatxDrive::FatxDrive(std::string drivePath)
+FatxDrive::FatxDrive(std::string drivePath, FatxDriveType type)  : type(type)
 {
     // convert it to a wstring
     std::wstring wsDrivePath;
@@ -13,12 +13,12 @@ FatxDrive::FatxDrive(std::string drivePath)
     loadFatxDrive(wsDrivePath);
 }
 
-FatxDrive::FatxDrive(std::wstring drivePath)
+FatxDrive::FatxDrive(std::wstring drivePath, FatxDriveType type) : type(type)
 {
     loadFatxDrive(drivePath);
 }
 
-FatxDrive::FatxDrive(HANDLE deviceHandle)
+FatxDrive::FatxDrive(HANDLE deviceHandle, FatxDriveType type) : type(type)
 {
     loadFatxDrive(deviceHandle);
 }
@@ -26,6 +26,11 @@ FatxDrive::FatxDrive(HANDLE deviceHandle)
 std::vector<Partition*> FatxDrive::GetPartitions()
 {
     return partitions;
+}
+
+FatxDriveType FatxDrive::GetFatxDriveType()
+{
+    return type;
 }
 
 FatxIO FatxDrive::GetFatxIO(FatxFileEntry *entry)
