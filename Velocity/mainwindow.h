@@ -48,7 +48,7 @@
 #include "json.h"
 #include "Stfs/StfsPackage.h"
 #include "Gpd/GpdBase.h"
-#include "IO/MultiFileIO.h"
+#include "IO/SvodMultiFileIO.h"
 #include "Disc/svod.h"
 #include "AvatarAsset/Ytgr.h"
 #include "Disc/svod.h"

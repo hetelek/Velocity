@@ -12,11 +12,11 @@ using std::string;
 using std::wstring;
 using std::vector;
 
-class XBOXINTERNALSSHARED_EXPORT MultiFileIO : public BaseIO
+class XBOXINTERNALSSHARED_EXPORT SvodMultiFileIO : public BaseIO
 {
 public:
-    MultiFileIO(string fileDirectory);
-    ~MultiFileIO();
+    SvodMultiFileIO(string fileDirectory);
+    ~SvodMultiFileIO();
 
     // seek to a certain address in the file, index of -1 for current file
     void SetPosition(DWORD addressInFile, int fileIndex = -1);

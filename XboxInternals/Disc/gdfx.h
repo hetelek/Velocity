@@ -2,7 +2,7 @@
 #define GDFX_H
 
 #include "winnames.h"
-#include "IO/MultiFileIO.h"
+#include "IO/SvodMultiFileIO.h"
 #include <iostream>
 #include <vector>
 
@@ -48,12 +48,12 @@ enum GdfxDirentAttributesutes
 // TODO: make this work with the IO interface, and write header
 
 // read the GDFX header, seek io to position of header beforehand
-void GdfxReadHeader(MultiFileIO *io, GdfxHeader *header);
+void GdfxReadHeader(SvodMultiFileIO *io, GdfxHeader *header);
 
 // read the next file entry in the listing, reeturns false on listing end
-bool GdfxReadFileEntry(MultiFileIO *io, GdfxFileEntry *entry);
+bool GdfxReadFileEntry(SvodMultiFileIO *io, GdfxFileEntry *entry);
 
 // write a file entry back to the listing
-void GdfxWriteFileEntry(MultiFileIO *io, GdfxFileEntry *entry);
+void GdfxWriteFileEntry(SvodMultiFileIO *io, GdfxFileEntry *entry);
 
 #endif // GDFX_H

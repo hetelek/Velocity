@@ -2,7 +2,7 @@
 #define SVOD_H
 
 #include "IO/FileIO.h"
-#include "IO/MultiFileIO.h"
+#include "IO/SvodMultiFileIO.h"
 #include "gdfx.h"
 #include "Stfs/XContentHeader.h"
 #include <iostream>
@@ -49,7 +49,7 @@ public:
 
 private:
     string contentDirectory;
-    MultiFileIO *io;
+    SvodMultiFileIO *io;
     FileIO *rootFile;
     GdfxHeader header;
     DWORD baseAddress;

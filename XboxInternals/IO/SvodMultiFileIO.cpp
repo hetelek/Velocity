@@ -1,8 +1,8 @@
-#include "MultiFileIO.h"
+#include "SvodMultiFileIO.h"
 
 using namespace std;
 
-MultiFileIO::MultiFileIO(string fileDirectory) :
+SvodMultiFileIO::SvodMultiFileIO(string fileDirectory) :
     BaseIO(), fileIndex(0), addressInFile(0)
 {  
     loadDirectories(fileDirectory);
@@ -15,13 +15,13 @@ MultiFileIO::MultiFileIO(string fileDirectory) :
     currentIO = new FileIO(files.at(0));
 }
 
-MultiFileIO::~MultiFileIO()
+SvodMultiFileIO::~SvodMultiFileIO()
 {
     currentIO->Close();
     delete currentIO;
 }
 
-void MultiFileIO::loadDirectories(string path)
+void SvodMultiFileIO::loadDirectories(string path)
 {
     DIR *dir;
     struct dirent *ent;
@@ -47,7 +47,7 @@ void MultiFileIO::loadDirectories(string path)
         throw string("MultiFileIO: Error opening directory\n");
 }
 
-void MultiFileIO::SetPosition(DWORD addressInFile, int fileIndex)
+void SvodMultiFileIO::SetPosition(DWORD addressInFile, int fileIndex)
 {
     // check if we're in the current file
     if (fileIndex == -1 || fileIndex == this->fileIndex)
@@ -77,13 +77,13 @@ void MultiFileIO::SetPosition(DWORD addressInFile, int fileIndex)
     }
 }
 
-void MultiFileIO::GetPosition(DWORD *addressInFile, DWORD *fileIndex)
+void SvodMultiFileIO::GetPosition(DWORD *addressInFile, DWORD *fileIndex)
 {
     *addressInFile = this->addressInFile;
     *fileIndex = this->fileIndex;
 }
 
-DWORD MultiFileIO::CurrentFileLength()
+DWORD SvodMultiFileIO::CurrentFileLength()
 {
     currentIO->SetPosition(0, ios_base::end);
     DWORD fileLen = currentIO->GetPosition();
@@ -92,7 +92,7 @@ DWORD MultiFileIO::CurrentFileLength()
     return fileLen;
 }
 
-void MultiFileIO::ReadBytes(BYTE *outBuffer, DWORD len)
+void SvodMultiFileIO::ReadBytes(BYTE *outBuffer, DWORD len)
 {
     while (len)
     {
@@ -114,7 +114,7 @@ void MultiFileIO::ReadBytes(BYTE *outBuffer, DWORD len)
     }
 }
 
-void MultiFileIO::WriteBytes(BYTE *buffer, DWORD len)
+void SvodMultiFileIO::WriteBytes(BYTE *buffer, DWORD len)
 {
     while (len)
     {
@@ -136,32 +136,32 @@ void MultiFileIO::WriteBytes(BYTE *buffer, DWORD len)
     }
 }
 
-void MultiFileIO::Close()
+void SvodMultiFileIO::Close()
 {
     currentIO->Close();
 }
 
-DWORD MultiFileIO::FileCount()
+DWORD SvodMultiFileIO::FileCount()
 {
     return files.size();
 }
 
-void MultiFileIO::SetPosition(UINT64 position, ios_base::seek_dir dir)
+void SvodMultiFileIO::SetPosition(UINT64 position, ios_base::seek_dir dir)
 {
     throw string("MultiFileIO: Unused function has been called.\n");
 }
 
-UINT64 MultiFileIO::GetPosition()
+UINT64 SvodMultiFileIO::GetPosition()
 {
     throw string("MultiFileIO: Unused function has been called.\n");
 }
 
-void MultiFileIO::Flush()
+void SvodMultiFileIO::Flush()
 {
     currentIO->Flush();
 }
 
-UINT64 MultiFileIO::Length()
+UINT64 SvodMultiFileIO::Length()
 {
     return currentIO->Length();
 }

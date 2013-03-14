@@ -1,6 +1,6 @@
 #include "SvodIO.h"
 
-SvodIO::SvodIO(XContentHeader *metadata, GdfxFileEntry entry, MultiFileIO *io) :
+SvodIO::SvodIO(XContentHeader *metadata, GdfxFileEntry entry, SvodMultiFileIO *io) :
     BaseIO(), io(io), metadata(metadata), fileEntry(entry), pos(0)
 {
     offset = ((metadata->svodVolumeDescriptor.flags & EnhancedGDFLayout) ? 0x2000 : 0x1000);

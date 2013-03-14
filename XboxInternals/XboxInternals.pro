@@ -45,7 +45,6 @@ SOURCES += \
     Stfs/StfsDefinitions.cpp \
     Stfs/StfsPackage.cpp \
     Stfs/XContentHeader.cpp \
-    IO/MultiFileIO.cpp \
     Account/AccountHelpers.cpp \
     Gpd/DashboardGpd.cpp \
     Gpd/GpdBase.cpp \
@@ -60,7 +59,8 @@ SOURCES += \
     Fatx/FatxDrive.cpp \
     IO/FileIO.cpp \
     IO/FatxIO.cpp \
-    Fatx/FatxDriveDetection.cpp
+    Fatx/FatxDriveDetection.cpp \
+    IO/SvodMultiFileIO.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -85,7 +85,6 @@ HEADERS +=\
     Stfs/StfsDefinitions.h \
     Stfs/StfsPackage.h \
     Stfs/XContentHeader.h \
-    IO/MultiFileIO.h \
     Account/AccountDefinitions.h \
     IO/MemoryIO.h \
     IO/DeviceIO.h \
@@ -97,4 +96,5 @@ HEADERS +=\
     Fatx/FatxConstants.h \
     IO/FileIO.h \
     IO/FatxIO.h \
-    Fatx/FatxDriveDetection.h
+    Fatx/FatxDriveDetection.h \
+    IO/SvodMultiFileIO.h
