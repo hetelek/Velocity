@@ -41,7 +41,7 @@ public:
 
     UINT64 GetPosition();
 
-    UINT64 DriveLength();
+    UINT64 Length();
 
     void Close();
 

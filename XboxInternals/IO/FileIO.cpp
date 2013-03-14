@@ -7,6 +7,10 @@ FileIO::FileIO(string path, bool truncate) :
     if (!fstr->is_open())
         throw std::string("FileIO: Error opening the file. " + string(strerror(errno)) + "\n");
 	endian = BigEndian;
+
+    fstr->seekp(0, std::ios_base::end);
+    length = fstr->tellp();
+    fstr->seekp(0);
 }
 
 void FileIO::SetPosition(UINT64 pos, ios_base::seek_dir dir)
@@ -16,7 +20,11 @@ void FileIO::SetPosition(UINT64 pos, ios_base::seek_dir dir)
 
 UINT64 FileIO::GetPosition()
 {
-	return fstr->tellp();
+    return fstr->tellp();
+}
+
+UINT64 FileIO::Length()
+{
 }
 
 void FileIO::Close()

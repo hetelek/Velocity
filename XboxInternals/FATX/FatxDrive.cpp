@@ -615,7 +615,7 @@ void FatxDrive::loadFatxDrive()
         // content partition initialization
         Partition *content = new Partition;
         content->address = HddOffsets::Data;
-        content->size = io->DriveLength() - content->address;
+        content->size = io->Length() - content->address;
         content->name = "Content";
 
         // add the partitions to the vector

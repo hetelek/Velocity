@@ -62,6 +62,11 @@ UINT64 SvodIO::GetPosition()
     return pos;
 }
 
+UINT64 SvodIO::Length()
+{
+    return fileEntry.size;
+}
+
 void SvodIO::ReadBytes(BYTE *outBuffer, DWORD len)
 {
     // all the SvodIOs are using the same IO underneath, so we have to make sure we're at the correct pos

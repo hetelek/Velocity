@@ -12,6 +12,7 @@ public:
 
     void SetPosition(UINT64 pos, std::ios_base::seek_dir dir = std::ios_base::beg);
     UINT64 GetPosition();
+    UINT64 Length();
 
     void ReadBytes(BYTE *outBuffer, DWORD len);
     void WriteBytes(BYTE *buffer, DWORD len);

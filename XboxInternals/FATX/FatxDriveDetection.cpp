@@ -10,7 +10,7 @@ std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
         try
         {
             DeviceIO io(devices.at(i));
-            if (io.DriveLength() > HddOffsets::Data)
+            if (io.Length() > HddOffsets::Data)
             {
                 io.SetPosition(HddOffsets::Data);
                 if (io.ReadDword() == FATX_MAGIC)

@@ -177,7 +177,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
         return;
 
     // We can't write beyond the end of the stream
-    if (pos + len > DriveLength())
+    if (pos + len > Length())
         throw std::string("Can not write beyond end of stream! At xDeviceStream::Write");
 
 
@@ -244,7 +244,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
     SetPosition(endingPos);
 }
 
-UINT64 DeviceIO::DriveLength()
+UINT64 DeviceIO::Length()
 {
     UINT64 length;
     #ifdef _WIN32

@@ -23,6 +23,8 @@ public:
 
     UINT64 GetPosition();
 
+    UINT64 Length();
+
     void Flush();
 
     void Close();

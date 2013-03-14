@@ -14,7 +14,7 @@ void FatxIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios
     if (dir == std::ios_base::cur)
         position += pos;
     else if (dir == std::ios_base::end)
-        position = (device->DriveLength() - position);
+        position = (device->Length() - position);
 
     pos = position;
 
@@ -91,6 +91,11 @@ int FatxIO::AllocateMemory(DWORD byteAmount)
 UINT64 FatxIO::GetPosition()
 {
     return pos;
+}
+
+UINT64 FatxIO::Length()
+{
+    return entry->fileSize;
 }
 
 UINT64 FatxIO::GetDrivePosition()

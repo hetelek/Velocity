@@ -19,6 +19,7 @@ public:
 	FileIO(string path, bool truncate = false);
     void SetPosition(UINT64 pos, ios_base::seek_dir dir = ios_base::beg);
     UINT64 GetPosition();
+    UINT64 Length();
 
     void ReadBytes(BYTE *outBuffer, DWORD len);
     void WriteBytes(BYTE *buffer, DWORD len);
@@ -32,6 +33,7 @@ public:
 	~FileIO();
 private:
 	EndianType endian;
+    UINT64 length;
 	void readBytesWithChecks(void *buffer, INT32 size);
 	fstream *fstr;
 	const string filePath;

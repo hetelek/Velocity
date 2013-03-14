@@ -160,3 +160,8 @@ void MultiFileIO::Flush()
 {
     currentIO->Flush();
 }
+
+UINT64 MultiFileIO::Length()
+{
+    return currentIO->Length();
+}

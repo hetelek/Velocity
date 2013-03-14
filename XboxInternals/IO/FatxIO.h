@@ -30,6 +30,9 @@ public:
     // get the current position
     UINT64 GetPosition();
 
+    // returns the length
+    UINT64 Length();
+
     // get the drive's current position
     UINT64 GetDrivePosition();
 

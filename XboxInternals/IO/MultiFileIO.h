@@ -34,6 +34,8 @@ public:
 
     void Flush();
 
+    UINT64 Length();
+
     // get the number of files in the directory
     DWORD FileCount();
 

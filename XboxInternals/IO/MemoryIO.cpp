@@ -34,6 +34,11 @@ UINT64 MemoryIO::GetPosition()
     return pos;
 }
 
+UINT64 MemoryIO::Length()
+{
+    return length;
+}
+
 void MemoryIO::ReadBytes(BYTE *outBuffer, DWORD len)
 {
     memcpy(outBuffer, memory + pos, len);
