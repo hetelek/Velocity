@@ -154,7 +154,23 @@ void MultiProgressDialog::extractNextFile()
                     QString *fileName = reinterpret_cast<QString*>(internalFiles.at(fileIndex++));
                     QFileInfo fileInfo(*fileName);
 
-                    drive->InjectFile(parentEntry, fileInfo.fileName().toStdString(), fileName->toStdString(), updateProgress, this);
+                    // check if the file already exists
+                    if (drive->FileExists(parentEntry, fileInfo.fileName().toStdString()))
+                    {
+                        int button = QMessageBox::question(this, "File Alread Exists", "The file " + fileInfo.fileName() +
+                                              " already exists in this directory. Would you like to replace the current one?",
+                                              QMessageBox::Yes, QMessageBox::No);
+
+                        if (button == QMessageBox::Yes)
+                        {
+                            FatxIO file = drive->GetFatxIO(drive->GetFileEntry(parentEntry->path + parentEntry->name + "\\" + fileInfo.fileName().toStdString()));
+                            file.ReplaceFile(fileName->toStdString(), updateProgress, this);
+                        }
+                    }
+                    else
+                    {
+                        drive->InjectFile(parentEntry, fileInfo.fileName().toStdString(), fileName->toStdString(), updateProgress, this);
+                    }
                 }
                 catch (string error)
                 {
