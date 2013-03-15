@@ -404,6 +404,8 @@ void DeviceViewer::LoadFolderAll(FatxFileEntry *folder)
         progressBar->setVisible(false);
         progressBar->setMaximum(1);
 
+        parentEntry = folder;
+
         ui->txtPath->setText(QString::fromStdString(folder->path + folder->name + "\\"));
     }
     catch (std::string error)
