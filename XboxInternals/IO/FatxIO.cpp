@@ -202,7 +202,7 @@ std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
     return freeClusters;
 }
 
-void FatxIO::SetAllClusters(DeviceIO *device, Partition *part, std::vector<DWORD> clusters, DWORD value)
+void FatxIO::SetAllClusters(DeviceIO *device, Partition *part, std::vector<DWORD> &clusters, DWORD value)
 {
     // sort the clusters numerically, order doesn't matter any more since we're just setting them all to the same value
     std::sort(clusters.begin(), clusters.end(), compareDWORDs);
@@ -294,6 +294,110 @@ void FatxIO::WriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> *clusterC
         SetAllClusters(device, entry->partition, entry->clusterChain, FAT_CLUSTER_AVAILABLE);
         writeClusterChain(entry->partition, entry->startingCluster, *clusterChain);
     }
+}
+
+void FatxIO::ReplaceFile(std::string sourcePath, void (*progress)(void *, DWORD, DWORD), void *arg)
+{
+    // open the file to replace the current one with
+    FileIO inFile(sourcePath);
+
+    // get the size of the file
+    inFile.SetPosition(0, std::ios_base::end);
+    UINT64 fileSize = inFile.GetPosition();
+
+    // reset the position
+    inFile.SetPosition(0);
+
+    // calculate the amount of clusters for the file
+    DWORD clusterCount = (fileSize / entry->partition->clusterSize) + ((fileSize % entry->partition->clusterSize == 0) ? 0 : 1);
+
+    // if the file is smaller, then we can free up some clusters at the end
+    if (clusterCount < entry->clusterChain.size())
+    {
+        std::vector<DWORD> clustersToFree(entry->clusterChain.size() - clusterCount);
+
+        // copy over the clusters that can be freed
+        std::copy(entry->clusterChain.begin() + clusterCount, entry->clusterChain.end(), clustersToFree.begin());
+
+        // set all of those clusters to free
+        SetAllClusters(device, entry->partition, clustersToFree, FAT_CLUSTER_AVAILABLE);
+
+        // erase the now freed ones from the chain
+        entry->clusterChain.erase(entry->clusterChain.begin() + clusterCount, entry->clusterChain.end());
+    }
+    // if the file is bigger then we need to allocate clustes
+    else if (clusterCount > entry->clusterChain.size())
+    {
+        AllocateMemory((clusterCount * entry->partition->clusterSize) - entry->fileSize);
+    }
+
+    entry->fileSize = fileSize;
+    WriteEntryToDisk(entry, NULL);
+
+    ///////////////////
+    // START WRITING //
+    ///////////////////
+
+    // calculate stuff
+    DWORD bufferSize = (entry->fileSize / 0x10);
+    if (bufferSize < 0x10000)
+        bufferSize = 0x10000;
+    else if (bufferSize > 0x100000)
+        bufferSize = 0x100000;
+
+    std::vector<Range> writeRanges;
+    BYTE *buffer = new BYTE[bufferSize];
+    INT64 pos;
+
+    // generate the read ranges
+    for (DWORD i = 0; i < entry->clusterChain.size() - 1; i++)
+    {
+        // calculate cluster's address
+        pos = FatxIO::ClusterToOffset(entry->partition, entry->clusterChain.at(i));
+
+        Range range = { pos, 0 };
+        do
+        {
+            range.len += entry->partition->clusterSize;
+        }
+        while ((entry->clusterChain.at(i) + 1) == entry->clusterChain.at(++i) && i < (entry->clusterChain.size() - 2) && (range.len + entry->partition->clusterSize) <= bufferSize);
+        i--;
+
+        writeRanges.push_back(range);
+    }
+
+    DWORD finalClusterSize = entry->fileSize % entry->partition->clusterSize;
+    INT64 finalClusterOffset = FatxIO::ClusterToOffset(entry->partition, entry->clusterChain.at(entry->clusterChain.size() - 1));
+    Range lastRange = { finalClusterOffset , (finalClusterSize == 0) ? entry->partition->clusterSize : finalClusterSize };
+    writeRanges.push_back(lastRange);
+
+    DWORD modulus = writeRanges.size() / 100;
+    if (modulus == 0)
+        modulus = 1;
+    else if (modulus > 3)
+        modulus = 3;
+
+    // read all the data in
+    for (DWORD i = 0; i < writeRanges.size(); i++)
+    {
+        // seek to the beginning of the range
+        device->SetPosition(writeRanges.at(i).start);
+
+        // get the range from the device
+        inFile.ReadBytes(buffer, writeRanges.at(i).len);
+        device->WriteBytes(buffer, writeRanges.at(i).len);
+
+        // update progress if needed
+        if (progress && i % modulus == 0)
+            progress(arg, i + 1, writeRanges.size());
+    }
+
+    // make sure it hits the end
+    progress(arg, writeRanges.size(), writeRanges.size());
+
+    inFile.Close();
+
+    delete[] buffer;
 }
 
 void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vector<DWORD> clusterChain)

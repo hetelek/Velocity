@@ -271,77 +271,13 @@ void FatxDrive::InjectFile(FatxFileEntry *parent, std::string name, std::string 
     entry.fileAttributes = 0;
     inFile.SetPosition(0);
     entry.magic = inFile.ReadDword();
+    inFile.Close();
 
     // create the entry
     createFileEntry(parent, &entry);
 
-    ////////////////////////////
-    // START WRITING THE DATA //
-    ////////////////////////////
-
-    // seek to the beginning of the file
-    inFile.SetPosition(0);
-
-    // calculate stuff
-    DWORD bufferSize = (entry.fileSize / 0x10);
-    if (bufferSize < 0x10000)
-        bufferSize = 0x10000;
-    else if (bufferSize > 0x100000)
-        bufferSize = 0x100000;
-
-    std::vector<Range> writeRanges;
-    BYTE *buffer = new BYTE[bufferSize];
-    INT64 pos;
-
-    // generate the read ranges
-    for (DWORD i = 0; i < entry.clusterChain.size() - 1; i++)
-    {
-        // calculate cluster's address
-        pos = FatxIO::ClusterToOffset(entry.partition, entry.clusterChain.at(i));
-
-        Range range = { pos, 0 };
-        do
-        {
-            range.len += entry.partition->clusterSize;
-        }
-        while ((entry.clusterChain.at(i) + 1) == entry.clusterChain.at(++i) && i < (entry.clusterChain.size() - 2) && (range.len + entry.partition->clusterSize) <= bufferSize);
-        i--;
-
-        writeRanges.push_back(range);
-    }
-
-    DWORD finalClusterSize = entry.fileSize % entry.partition->clusterSize;
-    INT64 finalClusterOffset = FatxIO::ClusterToOffset(entry.partition, entry.clusterChain.at(entry.clusterChain.size() - 1));
-    Range lastRange = { finalClusterOffset , (finalClusterSize == 0) ? entry.partition->clusterSize : finalClusterSize };
-    writeRanges.push_back(lastRange);
-
-    DWORD modulus = writeRanges.size() / 100;
-    if (modulus == 0)
-        modulus = 1;
-    else if (modulus > 3)
-        modulus = 3;
-
-    // read all the data in
-    for (DWORD i = 0; i < writeRanges.size(); i++)
-    {
-        // seek to the beginning of the range
-        io->SetPosition(writeRanges.at(i).start);
-
-        // get the range from the device
-        inFile.ReadBytes(buffer, writeRanges.at(i).len);
-        io->WriteBytes(buffer, writeRanges.at(i).len);
-
-        // update progress if needed
-        if (progress && i % modulus == 0)
-            progress(arg, i + 1, writeRanges.size());
-    }
-
-    // make sure it hits the end
-    progress(arg, writeRanges.size(), writeRanges.size());
-
-    inFile.Close();
-
-    delete[] buffer;
+    FatxIO fatxIO = GetFatxIO(&entry);
+    fatxIO.ReplaceFile(filePath, progress, arg);
 }
 
 void FatxDrive::GetFileEntryMagic(FatxFileEntry *entry)
@@ -719,8 +655,19 @@ bool FatxDrive::FileExists(FatxFileEntry *folder, std::string fileName, bool che
     GetChildFileEntries(folder);
 
     for (int i = 0; i < folder->cachedFiles.size(); i++)
-        if (folder->cachedFiles.at(i).name == fileName && (folder->cachedFiles.at(i).nameLen == FATX_ENTRY_DELETED && checkDeleted))
-            return true;
+    {
+        // there's a better way to do this, but...
+        if (folder->cachedFiles.at(i).name == fileName)
+        {
+             if (folder->cachedFiles.at(i).nameLen == FATX_ENTRY_DELETED)
+             {
+                 if (checkDeleted)
+                    return true;
+             }
+             else
+                 return true;
+        }
+    }
 
     return false;
 }
