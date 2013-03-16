@@ -413,6 +413,37 @@ void FatxDrive::Close()
     io->Close();
 }
 
+void FatxDrive::CreateBackup(std::string outPath, void (*progress)(void *, DWORD, DWORD), void *arg)
+{
+    // create a file on the local disk to store the backup
+    FileIO outBackup(outPath, true);
+
+    UINT64 driveLen = io->Length();
+    io->SetPosition(0);
+
+    BYTE *buffer = new BYTE[0x100000];
+
+    // start writing the drive contents to the local disk
+    DWORD i = 0;
+    while (driveLen >= 0x100000)
+    {
+        io->ReadBytes(buffer, 0x100000);
+        outBackup.WriteBytes(buffer, 0x100000);
+
+        if (progress)
+            progress(arg, i++, driveLen & 0xFFFFF);
+    }
+
+    // read the crap at the end
+    io->ReadBytes(buffer, 0x100000);
+    outBackup.WriteBytes(buffer, 0x100000);
+
+    if (progress)
+        progress(arg, driveLen & 0xFFFFF, driveLen & 0xFFFFF);
+
+    delete buffer;
+}
+
 BYTE FatxDrive::cntlzw(DWORD x)
 {
     if (x == 0)

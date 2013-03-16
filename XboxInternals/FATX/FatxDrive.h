@@ -69,6 +69,9 @@ public:
     // close the underlying io
     void Close();
 
+    // write the entire contents of the drive to the local disk
+    void CreateBackup(std::string outPath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+
     // get the amount of free bytes on the device
     UINT64 GetFreeMemory(Partition *part, void(*progress)(void*, bool) = NULL, void *arg = NULL);
 
