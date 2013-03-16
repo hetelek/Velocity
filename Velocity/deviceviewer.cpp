@@ -325,6 +325,8 @@ void DeviceViewer::LoadDrives()
         ui->imgFreeMem->setEnabled(true);
         ui->imgUsedMem->setEnabled(true);
         ui->imgPiechart->setEnabled(true);
+        ui->btnBackup->setEnabled(true);
+        ui->btnRestore->setEnabled(true);
 
         drivesLoaded = true;
         statusBar->showMessage("Drive(s) loaded successfully", 3000);

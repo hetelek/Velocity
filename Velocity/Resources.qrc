@@ -93,5 +93,6 @@
         <file>Images/forward.png</file>
         <file>Images/harddrive.png</file>
         <file>Images/usb drive.png</file>
+        <file>Images/restore.png</file>
     </qresource>
 </RCC>
