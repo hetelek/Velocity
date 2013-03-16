@@ -13,6 +13,7 @@
 #include "../Cryptography/XeKeys.h"
 #include "../Cryptography/XeCrypt.h"
 #include "FatxConstants.h"
+#include <ctype.h>
 
 class XBOXINTERNALSSHARED_EXPORT FatxDrive
 {
@@ -74,6 +75,9 @@ public:
     // convert a cluster to an offset
     static INT64 ClusterToOffset(Partition *part, DWORD cluster);
 
+    // check to see whether or not a file name is valid
+    static bool ValidFileName(std::string fileName);
+
     SecurityInfo securityBlob;
 
 private:
@@ -97,6 +101,9 @@ private:
 
     // counts the largest amount of consecutive unset bits
     static BYTE cntlzw(DWORD x);
+
+    // check to see if a certain character is allowed as a file name
+    static bool validFileChar(char c);
 
     BaseIO *io;
     std::vector<Partition*> partitions;

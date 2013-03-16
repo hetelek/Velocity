@@ -117,6 +117,7 @@ void DeviceViewer::showContextMenu(QPoint point)
         contextMenu.addAction(QPixmap(":/Images/delete.png"), "Delete Selected");
         contextMenu.addSeparator();
 
+        contextMenu.addAction(QPixmap(":/Images/rename.png"), "Rename");
         contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
     }
     else
@@ -201,6 +202,25 @@ void DeviceViewer::showContextMenu(QPoint point)
                 else
                     currentDrive->CreateFolder(parentEntry, text.toStdString());
             }
+        }
+        else if (selectedItem->text() == "Rename")
+        {
+            QString name, label = "";
+
+            do
+            {
+                name = QInputDialog::getText(this, "New File Name", label, QLineEdit::Normal, items.at(0)->text(0), NULL, windowFlags() & ~Qt::WindowContextHelpButtonHint);
+                label = "<font color=\"red\">Invalid File Name</font>";
+            }
+            while (!FatxDrive::ValidFileName(name.toStdString()));
+
+            FatxFileEntry *fileEntry = items.at(0)->data(0, Qt::UserRole).value<FatxFileEntry*>();
+            FatxIO io = currentDrive->GetFatxIO(fileEntry);
+
+            fileEntry->name = name.toStdString();
+            io.WriteEntryToDisk(fileEntry);
+
+            items.at(0)->setText(0, name);
         }
     }
     catch (std::string error)

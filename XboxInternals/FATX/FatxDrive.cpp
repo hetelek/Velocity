@@ -444,6 +444,39 @@ BYTE FatxDrive::cntlzw(DWORD x)
     return largestCount;
 }
 
+bool FatxDrive::validFileChar(char c)
+{
+    if (isalpha(c) || isdigit(c))
+        return true;
+
+    switch (c)
+    {
+        case '!':
+        case '#':
+        case '$':
+        case '%':
+        case '&':
+        case '\'':
+        case '(':
+        case ')':
+        case '-':
+        case '.':
+        case '@':
+        case '[':
+        case ']':
+        case '^':
+        case '_':
+        case '`':
+        case '{':
+        case '}':
+        case '~':
+        case ' ':
+            return true;
+        default:
+            return false;
+    }
+}
+
 FatxDrive::~FatxDrive()
 {
     delete[] securityBlob.msLogo;
@@ -733,4 +766,16 @@ FatxFileEntry *FatxDrive::GetFileEntry(std::string filePath)
     }
 
     return parent;
+}
+
+bool FatxDrive::ValidFileName(std::string fileName)
+{
+    if (fileName.size() > FATX_ENTRY_MAX_NAME_LENGTH)
+        return false;
+
+    for (DWORD i = 0; i < fileName.size(); i++)
+        if (!validFileChar(fileName.at(i)))
+            return false;
+
+    return true;
 }
