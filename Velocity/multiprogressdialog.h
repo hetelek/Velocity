@@ -18,7 +18,8 @@ enum Operation
 {
     OpExtract,
     OpReplace,
-    OpInject
+    OpInject,
+    OpBackup
 };
 
 namespace Ui {

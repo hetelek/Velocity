@@ -602,3 +602,16 @@ void updateUI(void *arg, bool finished)
 {
     QApplication::processEvents();
 }
+
+void DeviceViewer::on_btnBackup_clicked()
+{
+    QString savePath = QFileDialog::getSaveFileName(this, "Create a backup for your device", QtHelpers::DesktopLocation() + "/Drive Backup.bin");
+
+    if (savePath == "")
+        return;
+
+    SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemFATX, currentDrive, OpBackup, "", savePath, NULL, this);
+    dialog->setModal(true);
+    dialog->show();
+    dialog->start();
+}

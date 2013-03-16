@@ -17,6 +17,11 @@ SingleProgressDialog::SingleProgressDialog(FileSystem system, void *device, Oper
         setWindowTitle("Replacing File");
         ui->lblIcon->setPixmap(QPixmap(":/Images/replace.png"));
     }
+    else if (op == OpBackup)
+    {
+        setWindowTitle("Creating Backup");
+        ui->lblIcon->setPixmap(QPixmap(":/Images/save.png"));
+    }
 }
 
 void SingleProgressDialog::start()
@@ -55,8 +60,27 @@ void SingleProgressDialog::start()
                 FatxDrive *drive = reinterpret_cast<FatxDrive*>(device);
                 if (op == OpInject)
                 {
-                    FatxFileEntry *parent = reinterpret_cast<FatxFileEntry*>(outEntry);
-                    drive->InjectFile(parent, internalPath.toStdString(), externalPath.toStdString(), UpdateProgress, this);
+                    try
+                    {
+                        FatxFileEntry *parent = reinterpret_cast<FatxFileEntry*>(outEntry);
+                        drive->InjectFile(parent, internalPath.toStdString(), externalPath.toStdString(), UpdateProgress, this);
+                    }
+                    catch (string error)
+                    {
+                        QMessageBox::critical(this, "", "An error occurred while copy the file to your device.\n\n" + QString::fromStdString(error));
+                    }
+                }
+                else if (op == OpBackup)
+                {
+                    try
+                    {
+                        FatxDrive *drive = reinterpret_cast<FatxDrive*>(device);
+                        drive->CreateBackup(externalPath.toStdString(), UpdateProgress, this);
+                    }
+                    catch (string error)
+                    {
+                        QMessageBox::critical(this, "", "An error occurred while creating a backup for your device.\n\n" + QString::fromStdString(error));
+                    }
                 }
                 break;
             }

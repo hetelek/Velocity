@@ -63,6 +63,8 @@ private slots:
     void onDragEntered(QDragEnterEvent *event);
     void onDragLeft(QDragLeaveEvent *event);
 
+    void on_btnBackup_clicked();
+
 private:
     Ui::DeviceViewer *ui;
     std::vector<FatxDrive*> loadedDrives;
