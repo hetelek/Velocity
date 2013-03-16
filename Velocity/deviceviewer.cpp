@@ -214,6 +214,9 @@ void DeviceViewer::showContextMenu(QPoint point)
             }
             while (!FatxDrive::ValidFileName(name.toStdString()));
 
+            if (name == "")
+                return;
+
             FatxFileEntry *fileEntry = items.at(0)->data(0, Qt::UserRole).value<FatxFileEntry*>();
             FatxIO io = currentDrive->GetFatxIO(fileEntry);
 
@@ -292,9 +295,16 @@ void DeviceViewer::LoadDrives()
 
                 // make sure that it starts with 0xFEFF
                 if (nameFile.ReadWord() != 0xFEFF)
+                {
                     ui->txtDriveName->setText("Hard Drive");
+                    driveItem->setText(0, "Hard Drive");
+                }
                 else
-                    driveItem->setText(0, QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 : (nameEntry->fileSize - 2) / 2)));
+                {
+                    QString driveName = QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 : (nameEntry->fileSize - 2) / 2));
+                    ui->txtDriveName->setText(driveName);
+                    driveItem->setText(0, driveName);
+                }
             }
             else
             {
