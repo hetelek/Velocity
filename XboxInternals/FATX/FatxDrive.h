@@ -11,6 +11,7 @@
 #include "../IO/FatxIO.h"
 #include "../IO/MemoryIO.h"
 #include "../Cryptography/XeKeys.h"
+#include "../Cryptography/XeCrypt.h"
 #include "FatxConstants.h"
 
 class XBOXINTERNALSSHARED_EXPORT FatxDrive

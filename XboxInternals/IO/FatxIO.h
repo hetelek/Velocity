@@ -5,6 +5,7 @@
 #include "FileIO.h"
 #include "MemoryIO.h"
 #include "../Fatx/FatxConstants.h"
+#include "../Cryptography/XeCrypt.h"
 
 #include <iostream>
 #include <vector>
@@ -82,7 +83,6 @@ private:
     DWORD maxReadConsecutive;
 };
 
-bool compareDWORDs(DWORD a, DWORD b);
 bool compareRanges(Range a, Range b);
 
 #endif // FATXIO_H

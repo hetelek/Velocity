@@ -243,7 +243,10 @@ void FatxDrive::DeleteFile(FatxFileEntry *entry)
 
     // add all of the clusters to the free memory since they're now unused
     std::copy(entry->clusterChain.begin(), entry->clusterChain.end(), entry->partition->freeClusters.end());
-    std::sort(entry->partition->freeClusters.begin(), entry->partition->freeClusters.end(), compareDWORDs);
+
+    // insertion sort makes the most sense here since the vast majority of the free cluster vector will
+    // be sorted, and the insertion sort algorithm has very good performance on mostly sorted lists
+    XeCrypt::InsertionSort(entry->partition->freeClusters.begin(), entry->partition->freeClusters.end());
 
     // update the entry
     entry->clusterChain.clear();

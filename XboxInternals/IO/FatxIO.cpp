@@ -205,7 +205,7 @@ std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
 void FatxIO::SetAllClusters(DeviceIO *device, Partition *part, std::vector<DWORD> &clusters, DWORD value)
 {
     // sort the clusters numerically, order doesn't matter any more since we're just setting them all to the same value
-    std::sort(clusters.begin(), clusters.end(), compareDWORDs);
+    XeCrypt::InsertionSort(clusters.begin(), clusters.end());
 
     // we'll work with the clusters in 0x10000 chunks to minimize the amount of reads
     BYTE buffer[0x10000];
@@ -574,11 +574,6 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
 INT64 FatxIO::ClusterToOffset(Partition *part, DWORD cluster)
 {
     return part->clusterStartingAddress + (part->clusterSize * (INT64)(cluster - 1));
-}
-
-bool compareDWORDs(DWORD a, DWORD b)
-{
-    return a < b;
 }
 
 bool compareRanges(Range a, Range b)
