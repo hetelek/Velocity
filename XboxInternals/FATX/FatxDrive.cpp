@@ -112,7 +112,7 @@ void FatxDrive::processBootSector(Partition *part)
 
     part->clusterCount = clusters;
     part->allocationTableSize = partitionSize;
-    part->clusterEntrySize = (clusters < FAT_CLUSTER16_RESERVED) ? FAT16 : FAT32;
+    part->clusterEntrySize = part->fatEntryShift * 2;
     part->clusterStartingAddress = part->address + (INT64)partitionSize + 0x1000;
     part->lastFreeClusterFound = 1;
     part->freeMemory = 0;
