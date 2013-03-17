@@ -16,6 +16,7 @@ public:
 
 private:
     static std::vector<HANDLE> getPhysicalDisks();
+    static std::vector<std::wstring> getLogicalDrives();
 };
 
 #endif // FATXDRIVEDETECTION_H

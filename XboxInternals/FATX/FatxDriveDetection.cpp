@@ -2,6 +2,7 @@
 
 std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
 {
+    std::vector<std::wstring> logicalDrivePaths = getLogicalDrives();
     std::vector<FatxDrive*> drives;
     std::vector<HANDLE> devices = getPhysicalDisks();
 
@@ -20,6 +21,43 @@ std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
                 }
                 else
                     io.Close();
+            }
+        }
+        catch (...)
+        {
+        }
+    }
+
+    for (int i = 0; i < logicalDrivePaths.size(); i++)
+    {
+        try
+        {
+            std::vector<std::string> dataFiles;
+            WIN32_FIND_DATA fi;
+
+            HANDLE h = FindFirstFile((logicalDrivePaths.at(i) + L"\\Data*").c_str(), &fi);
+            if (h != INVALID_HANDLE_VALUE)
+            {
+                std::string directory;
+                directory.assign(logicalDrivePaths.at(i).begin(), logicalDrivePaths.at(i).end());
+
+                dataFiles.clear();
+                do
+                {
+                    char path[9];
+                    wcstombs(path, fi.cFileName, wcslen(fi.cFileName) + 1);
+                    dataFiles.push_back(directory + "\\" + std::string(path));
+                }
+                while (FindNextFile(h, &fi));
+
+                FindClose(h);
+
+                if (dataFiles.size() >= 3)
+                {
+                    MultiFileIO *io = new MultiFileIO(dataFiles);
+                    FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
+                    drives.push_back(usbDrive);
+                }
             }
         }
         catch (...)
@@ -47,4 +85,27 @@ std::vector<HANDLE> FatxDriveDetection::getPhysicalDisks()
     }
 
     return physicalDiskPaths;
+}
+
+std::vector<std::wstring> FatxDriveDetection::getLogicalDrives()
+{
+    DWORD drives = GetLogicalDrives();
+    std::vector<std::wstring> driveStrings;
+    std::wstringstream ss;
+    char currentChar = 'A';
+
+    for (int i = 0; i < 32; i++)
+    {
+        if (drives & 1)
+        {
+            ss << currentChar << ":\\Xbox360";
+            driveStrings.push_back(ss.str());
+            ss.str(std::wstring());
+        }
+
+        drives >>= 1;
+        currentChar++;
+    }
+
+    return driveStrings;
 }
