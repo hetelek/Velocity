@@ -77,6 +77,9 @@ class XBOXINTERNALSSHARED_EXPORT StfsPackage
 public:
     XContentHeader *metaData;
 
+    // Description: initialize a stfs package from an already opened io
+    StfsPackage(BaseIO *io, DWORD flags);
+
     // Description: initialize a stfs package
     StfsPackage(string packgePath, DWORD flags = 0);
 
@@ -148,8 +151,9 @@ private:
     StfsFileListing fileListing;
     StfsFileListing writtenToFile;
 
-    FileIO *io;
+    BaseIO *io;
     stringstream except;
+    bool ioPassedIn;
 
     Sex packageSex;
     DWORD blockStep[2];
@@ -257,4 +261,7 @@ private:
 
     // Description: parse the file
     void Parse();
+
+    // Description: initializes the object
+    void Init();
 };

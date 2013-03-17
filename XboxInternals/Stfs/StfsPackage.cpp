@@ -3,10 +3,22 @@
 
 #include <stdio.h>
 
-StfsPackage::StfsPackage(string packagePath, DWORD flags) : flags(flags)
+StfsPackage::StfsPackage(BaseIO *io, DWORD flags) :
+    io(io), ioPassedIn(true), flags(flags)
+{
+    Init();
+}
+
+StfsPackage::StfsPackage(string packagePath, DWORD flags) :
+    flags(flags), ioPassedIn(false)
 {
     io = new FileIO(packagePath, (bool)(flags & StfsPackageCreate));
+    Init();
+}
 
+
+void StfsPackage::Init()
+{
     // if we need to create a file, then do it yo
     if (flags & StfsPackageCreate)
     {
@@ -1984,6 +1996,8 @@ void StfsPackage::GenerateRawFileListing(StfsFileListing *in, vector<StfsFileEnt
 StfsPackage::~StfsPackage(void)
 {
     io->Close();
-    delete io;
+
+    if (!ioPassedIn)
+        delete io;
     delete metaData;
 }
