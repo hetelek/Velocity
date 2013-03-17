@@ -87,10 +87,10 @@ void FatxDrive::processBootSector(Partition *part)
     partitionSize >>= shiftFactor;
     partitionSize++;
 
-    if (partitionSize < FAT_CLUSTER16_RESERVED && part->address != UsbOffsets::Data)
-        part->fatEntryShift = 1;
-    else
+    if ((this->type == FatxFlashDrive && part->address == UsbOffsets::Data) || partitionSize >= FAT_CLUSTER16_RESERVED)
         part->fatEntryShift = 2;
+    else
+        part->fatEntryShift = 1;
 
     partitionSize <<= part->fatEntryShift;
     partitionSize += 0x1000;
