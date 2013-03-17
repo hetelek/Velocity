@@ -4,17 +4,16 @@
 #ifndef FATXDRIVE_H
 #define FATXDRIVE_H
 
-#include "../Stfs/StfsDefinitions.h"
-#include "../Stfs/StfsConstants.h"
-
 #include "FatxConstants.h"
 
+#include "../Stfs/XContentHeader.h"
 #include "../IO/DeviceIO.h"
 #include "../IO/FatxIO.h"
 #include "../IO/MemoryIO.h"
 #include "../IO/MultiFileIO.h"
 #include "../Cryptography/XeKeys.h"
 #include "../Cryptography/XeCrypt.h"
+
 #include <ctype.h>
 
 class XBOXINTERNALSSHARED_EXPORT FatxDrive
@@ -25,9 +24,6 @@ public:
     FatxDrive(std::string drivePath, FatxDriveType type = FatxHarddrive);
     FatxDrive(std::wstring drivePath, FatxDriveType type = FatxHarddrive);
     ~FatxDrive();
-
-    // format recovery version, found by Eaton
-    Version lastFormatRecoveryVersion;
 
     // get the drives partitions
     std::vector<Partition*> GetPartitions();
@@ -83,7 +79,14 @@ public:
     // check to see whether or not a file name is valid
     static bool ValidFileName(std::string fileName);
 
+    // format recovery version, found by Eaton (only on dev kit drives)
+    Version lastFormatRecoveryVersion;
+
+    // security sector information (only on hard drives)
     SecurityInfo securityBlob;
+
+    // configuration data (only in flash drives)
+    FlashDriveConfigurationData configurationData;
 
 private:
     // writes the 'newEntry' to disk, in the 'parent' folder

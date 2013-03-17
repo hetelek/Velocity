@@ -1,12 +1,14 @@
 #pragma once
 
-#include "IO/FileIO.h"
+#include "winnames.h"
+
 #include "StfsConstants.h"
 #include "StfsDefinitions.h"
+#include "IO/FileIO.h"
 #include "../AvatarAsset/AvatarAssetDefinintions.h"
 #include "../Gpd/XdbfHelpers.h"
-#include "winnames.h"
 #include "../Cryptography/XeCrypt.h"
+
 #include <iostream>
 
 #include <botan/botan.h>
@@ -49,7 +51,7 @@ class XBOXINTERNALSSHARED_EXPORT XContentHeader
 {
 public:
 	// Description: read in all of the metadata for the package
-    XContentHeader(FileIO *io, DWORD flags = 0);
+    XContentHeader(BaseIO *io, DWORD flags = 0);
 
     // fix the signature in the header
     void ResignHeader(string kvPath);
@@ -143,7 +145,7 @@ public:
 	BYTE *titleThumbnailImage;
 
 private:
-	FileIO *io;
+    BaseIO *io;
     DWORD flags;
 
     void readMetadata();

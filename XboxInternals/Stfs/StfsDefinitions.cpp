@@ -2,7 +2,7 @@
 
 #include "XboxInternals_global.h"
 
-void ReadStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, FileIO *io, DWORD address)
+void ReadStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, BaseIO *io, DWORD address)
 {
     // seek to the volume descriptor
     io->SetPosition(address);
@@ -24,7 +24,7 @@ void ReadStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, FileIO *io, DW
     descriptor->unallocatedBlockCount = io->ReadDword();
 }
 
-void ReadSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, FileIO *io)
+void ReadSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, BaseIO *io)
 {
     // seek to the volume descriptor
     io->SetPosition(0x379);
@@ -134,7 +134,7 @@ MSTime TimetToMSTime(time_t time)
     return toReturn;
 }
 
-void WriteStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, FileIO *io, DWORD address)
+void WriteStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, BaseIO *io, DWORD address)
 {
     // volume descriptor position
     io->SetPosition(address);
@@ -148,7 +148,6 @@ void WriteStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, FileIO *io, D
     io->SwapEndian();
     io->Write(descriptor->fileTableBlockCount);
     io->SwapEndian();
-    io->ReverseGenericArray(0, 0, 0);
 
     io->Write(descriptor->fileTableBlockNum, LittleEndian);
     io->Write(descriptor->topHashTableHash, 0x14);
@@ -156,7 +155,7 @@ void WriteStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, FileIO *io, D
     io->Write(descriptor->unallocatedBlockCount);
 }
 
-void WriteSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, FileIO *io)
+void WriteSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, BaseIO *io)
 {
     // volume descriptor position
     io->SetPosition(0x379);
@@ -178,7 +177,7 @@ void WriteSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, FileIO *io)
     io->SetEndian(BigEndian);
 }
 
-void ReadCertificateEx(Certificate *cert, FileIO *io, DWORD address)
+void ReadCertificateEx(Certificate *cert, BaseIO *io, DWORD address)
 {
     // seek to the address of the certificate
     io->SetPosition(address);
@@ -207,7 +206,7 @@ void ReadCertificateEx(Certificate *cert, FileIO *io, DWORD address)
     io->ReadBytes(cert->signature, 0x80);
 }
 
-void WriteCertificateEx(Certificate *cert, FileIO *io, DWORD address)
+void WriteCertificateEx(Certificate *cert, BaseIO *io, DWORD address)
 {
     // seek to the position of the certificate
     io->SetPosition(address);

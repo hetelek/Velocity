@@ -4,7 +4,7 @@
 
 using namespace std;
 
-XContentHeader::XContentHeader(FileIO *io, DWORD flags) : installerType((InstallerType)0), flags(flags)
+XContentHeader::XContentHeader(BaseIO *io, DWORD flags) : installerType((InstallerType)0), flags(flags)
 {
 	// set the io
 	this->io = io;

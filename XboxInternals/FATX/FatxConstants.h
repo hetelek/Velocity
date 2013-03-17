@@ -5,6 +5,9 @@
 #define FATXCONSTANTS_H
 
 #include "../winnames.h"
+
+#include "../Stfs/StfsDefinitions.h"
+
 #include <vector>
 #include <iostream>
 
@@ -46,6 +49,22 @@ struct SecurityInfo
 
     DWORD msLogoSize;
     BYTE *msLogo;
+};
+
+struct FlashDriveConfigurationData
+{
+    // type1
+    Certificate certificate;
+    BYTE conSignature[0x80];
+
+    // type2
+    BYTE deviceSignature[0x100];
+
+    BYTE deviceID[0x14];
+    DWORD securityLength; // must be 0x228 or 0x100
+    UINT64 deviceLength;
+    DWORD readSpeed;
+    DWORD writeSpeed;
 };
 
 struct FatxFileEntry

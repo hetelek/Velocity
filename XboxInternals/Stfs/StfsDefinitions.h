@@ -81,17 +81,17 @@ struct MSTime
     BYTE seconds;
 };
 
-void ReadStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, FileIO *io, DWORD address);
+void ReadStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, BaseIO *io, DWORD address);
 
-void ReadSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, FileIO *io);
+void ReadSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, BaseIO *io);
 
-void WriteStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, FileIO *io, DWORD address);
+void WriteStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, BaseIO *io, DWORD address);
 
-void WriteSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, FileIO *io);
+void WriteSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, BaseIO *io);
 
-void ReadCertificateEx(Certificate *cert, FileIO *io, DWORD address);
+void ReadCertificateEx(Certificate *cert, BaseIO *io, DWORD address);
 
-void WriteCertificateEx(Certificate *cert, FileIO *io, DWORD address);
+void WriteCertificateEx(Certificate *cert, BaseIO *io, DWORD address);
 
 string MagicToString(Magic magic);
 

@@ -87,7 +87,7 @@ void FatxDrive::processBootSector(Partition *part)
     partitionSize >>= shiftFactor;
     partitionSize++;
 
-    if (partitionSize < FAT_CLUSTER16_RESERVED)
+    if (partitionSize < FAT_CLUSTER16_RESERVED && part->address != UsbOffsets::Data)
         part->fatEntryShift = 1;
     else
         part->fatEntryShift = 2;
@@ -616,6 +616,27 @@ void FatxDrive::loadFatxDrive()
     }
     else if (type == FatxFlashDrive)
     {
+        io->SetPosition(0x228);
+
+        // read the data after the security information
+        io->ReadBytes(configurationData.deviceID, 0x14);
+        configurationData.securityLength = io->ReadDword();
+        configurationData.deviceLength = io->ReadUInt64();
+        configurationData.readSpeed = io->ReadDword();
+        configurationData.writeSpeed = io->ReadDword();
+
+        // check for type 1/2
+        if (configurationData.securityLength == 0x228)
+        {
+            ReadCertificateEx(&configurationData.certificate, io, 0);
+            io->ReadBytes(configurationData.conSignature, 0x80);
+        }
+        else if (configurationData.securityLength == 0x100)
+            io->ReadBytes(configurationData.deviceSignature, 0x100);
+        else
+            throw std::string("FATX: Device contains invalid configuration data.\n");
+
+        // set this so the next check fails
         lastFormatRecoveryVersion.major = 0;
     }
 
