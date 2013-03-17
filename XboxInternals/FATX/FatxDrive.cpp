@@ -13,6 +13,11 @@ FatxDrive::FatxDrive(std::string drivePath, FatxDriveType type)  : type(type)
     loadFatxDrive(wsDrivePath);
 }
 
+FatxDrive::FatxDrive(BaseIO *io, FatxDriveType type) : io(io), type(type)
+{
+    loadFatxDrive();
+}
+
 FatxDrive::FatxDrive(std::wstring drivePath, FatxDriveType type) : type(type)
 {
     loadFatxDrive(drivePath);
@@ -543,8 +548,26 @@ void FatxDrive::loadProfiles()
 
 void FatxDrive::loadFatxDrive(std::wstring drivePath)
 {
-    // open the device io
-    io = new DeviceIO(drivePath);
+    if (type == FatxHarddrive)
+    {
+        // open the device io
+        io = new DeviceIO(drivePath);
+    }
+    else if (type == FatxFlashDrive)
+    {
+        std::vector<std::string> dataFiles;
+        std::stringstream ss;
+        for (int i = 0; i < 3; i++)
+        {
+            ss << "F:/Xbox360/Data000" << i;
+            dataFiles.push_back(ss.str());
+            ss.str(std::string());
+        }
+
+        io = new MultiFileIO(dataFiles);
+        DWORD  a = io->ReadDword();
+        DWORD b = 5;
+    }
 
     loadFatxDrive();
 }
@@ -560,33 +583,40 @@ void FatxDrive::loadFatxDrive(HANDLE deviceHandle)
 void FatxDrive::loadFatxDrive()
 {
     // parse the security blob
-    io->SetPosition(HddOffsets::SecuritySector);
-    securityBlob.serialNumber = io->ReadString(0x14);
-    securityBlob.firmwareRevision = io->ReadString(8);
-    securityBlob.modelNumber = io->ReadString(0x28);
-    io->ReadBytes(securityBlob.msLogoHash, 0x14);
-    io->SetEndian(LittleEndian);
-    securityBlob.userAddressableSectors = io->ReadDword();
-    io->SetEndian(BigEndian);
-    io->ReadBytes(securityBlob.rsaSignature, 0x100);
-    securityBlob.validSignature = false;
+    if (type == FatxHarddrive)
+    {
+        io->SetPosition(HddOffsets::SecuritySector);
+        securityBlob.serialNumber = io->ReadString(0x14);
+        securityBlob.firmwareRevision = io->ReadString(8);
+        securityBlob.modelNumber = io->ReadString(0x28);
+        io->ReadBytes(securityBlob.msLogoHash, 0x14);
+        io->SetEndian(LittleEndian);
+        securityBlob.userAddressableSectors = io->ReadDword();
+        io->SetEndian(BigEndian);
+        io->ReadBytes(securityBlob.rsaSignature, 0x100);
+        securityBlob.validSignature = false;
 
-    // TODO: verify the signature
+        // TODO: verify the signature
 
-    // seek to the next sector
-    io->SetPosition(HddOffsets::SecuritySector + 0x200);
-    securityBlob.msLogoSize = io->ReadDword();
-    securityBlob.msLogo = new BYTE[securityBlob.msLogoSize];
-    io->ReadBytes(securityBlob.msLogo, securityBlob.msLogoSize);
+        // seek to the next sector
+        io->SetPosition(HddOffsets::SecuritySector + 0x200);
+        securityBlob.msLogoSize = io->ReadDword();
+        securityBlob.msLogo = new BYTE[securityBlob.msLogoSize];
+        io->ReadBytes(securityBlob.msLogo, securityBlob.msLogoSize);
 
-    // if it's a dev drive then we have to read the partition table
-    io->SetPosition(0);
+        // if it's a dev drive then we have to read the partition table
+        io->SetPosition(0);
 
-    // parse the version
-    lastFormatRecoveryVersion.major = io->ReadWord();
-    lastFormatRecoveryVersion.minor = io->ReadWord();
-    lastFormatRecoveryVersion.build = io->ReadWord();
-    lastFormatRecoveryVersion.revision = io->ReadWord();
+        // parse the version
+        lastFormatRecoveryVersion.major = io->ReadWord();
+        lastFormatRecoveryVersion.minor = io->ReadWord();
+        lastFormatRecoveryVersion.build = io->ReadWord();
+        lastFormatRecoveryVersion.revision = io->ReadWord();
+    }
+    else if (type == FatxFlashDrive)
+    {
+        lastFormatRecoveryVersion.major = 0;
+    }
 
     // Eaton determined this was a version struct and figured out the minimum version
     if (lastFormatRecoveryVersion.major == 2 && lastFormatRecoveryVersion.build >= 1525 && lastFormatRecoveryVersion.revision >= 1)
@@ -608,37 +638,40 @@ void FatxDrive::loadFatxDrive()
     {
         // system extended partition initialization
         Partition *systemExtended = new Partition;
-        systemExtended->address = HddOffsets::SystemExtended;
-        systemExtended->size = HddSizes::SystemExtended;
+        systemExtended->address = (type == FatxHarddrive) ? +HddOffsets::SystemExtended : +UsbOffsets::SystemExtended;
+        systemExtended->size = (type == FatxHarddrive) ? +HddSizes::SystemExtended : +UsbSizes::SystemExtended;
         systemExtended->name = "System Extended";
 
         // system auxiliary partition initialization
         Partition *systemAuxiliary = new Partition;
-        systemAuxiliary->address = HddOffsets::SystemAuxiliary;
-        systemAuxiliary->size = HddSizes::SystemAuxiliary;
+        systemAuxiliary->address = (type == FatxHarddrive) ? +HddOffsets::SystemAuxiliary : +UsbOffsets::SystemAuxiliary;
+        systemAuxiliary->size = (type == FatxHarddrive) ? +HddSizes::SystemAuxiliary : +UsbSizes::SystemAuxiliary;
         systemAuxiliary->name = "System Auxiliary";
 
-        // system partition initialization
-        Partition *systemPartition = new Partition;
-        systemPartition->address = HddOffsets::SystemPartition;
-        systemPartition->size = HddSizes::SystemPartition;
-        systemPartition->name = "System Partition";
+        if (type == FatxHarddrive)
+        {
+            // system partition initialization
+            Partition *systemPartition = new Partition;
+            systemPartition->address = HddOffsets::SystemPartition;
+            systemPartition->size = HddSizes::SystemPartition;
+            systemPartition->name = "System Partition";
+            this->partitions.push_back(systemPartition);
+        }
 
         // content partition initialization
         Partition *content = new Partition;
-        content->address = HddOffsets::Data;
+        content->address = (type == FatxHarddrive) ? +HddOffsets::Data : +UsbOffsets::Data;
         content->size = io->Length() - content->address;
         content->name = "Content";
 
         // add the partitions to the vector
         this->partitions.push_back(systemExtended);
         this->partitions.push_back(systemAuxiliary);
-        this->partitions.push_back(systemPartition);
         this->partitions.push_back(content);
     }
 
     // process all bootsectors
-    for (int i = 0; i < this->partitions.size(); i++)
+    for (int i = 0; i < this->partitions.size(); )
     {
         processBootSector(this->partitions.at(i));
 
@@ -648,6 +681,8 @@ void FatxDrive::loadFatxDrive()
             delete partitions.at(i);
             partitions.erase(partitions.begin() + i);
         }
+        else
+            i++;
     }
 }
 

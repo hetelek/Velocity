@@ -7,21 +7,23 @@
 #include "../Stfs/StfsDefinitions.h"
 #include "../Stfs/StfsConstants.h"
 
+#include "FatxConstants.h"
+
 #include "../IO/DeviceIO.h"
 #include "../IO/FatxIO.h"
 #include "../IO/MemoryIO.h"
+#include "../IO/MultiFileIO.h"
 #include "../Cryptography/XeKeys.h"
 #include "../Cryptography/XeCrypt.h"
-#include "FatxConstants.h"
 #include <ctype.h>
 
 class XBOXINTERNALSSHARED_EXPORT FatxDrive
 {
-
 public:
-    FatxDrive(HANDLE deviceHandle, FatxDriveType type = Harddrive);
-    FatxDrive(std::string drivePath, FatxDriveType type = Harddrive);
-    FatxDrive(std::wstring drivePath, FatxDriveType type = Harddrive);
+    FatxDrive(BaseIO *io, FatxDriveType type);
+    FatxDrive(HANDLE deviceHandle, FatxDriveType type = FatxHarddrive);
+    FatxDrive(std::string drivePath, FatxDriveType type = FatxHarddrive);
+    FatxDrive(std::wstring drivePath, FatxDriveType type = FatxHarddrive);
     ~FatxDrive();
 
     // format recovery version, found by Eaton
