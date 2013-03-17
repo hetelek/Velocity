@@ -4,9 +4,8 @@
 #ifndef MULTIFILEIO_H
 #define MULTIFILEIO_H
 
-#include <vector>
-
 #include "FileIO.h"
+#include <vector>
 
 class XBOXINTERNALSSHARED_EXPORT MultiFileIO : public BaseIO
 {
@@ -20,11 +19,8 @@ public:
     // get current address in the file
     UINT64 GetPosition();
 
-    // get the length of the current file
+    // get the length of all the files
     UINT64 Length();
-
-    // get the byte order in which to read the bytes
-    EndianType GetEndian();
 
     // read len bytes from the current file at the current position into buffer
     void ReadBytes(BYTE *outBuffer, DWORD len);
@@ -32,10 +28,18 @@ public:
     // write len bytes from the current file at the current position into buffer
     void WriteBytes(BYTE *buffer, DWORD len);
 
+    // flushes the stream
+    void Flush();
+
+    // closes all the files
+    void Close();
+
 private:
-    UINT64 pos;
+    UINT64 pos, lengthOfFiles;
     DWORD currentIOIndex;
     std::vector<BaseIO*> files;
+
+    void calcualteLengthOfAllFiles();
 };
 
 #endif // MULTIFILEIO_H

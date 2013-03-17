@@ -1,16 +1,19 @@
 #include "MultiFileIO.h"
 
-MultiFileIO::MultiFileIO(std::vector<std::string> filePaths) : currentIOIndex(0)
+MultiFileIO::MultiFileIO(std::vector<std::string> filePaths) : currentIOIndex(0), pos(0)
 {
     for (int i = 0; i < filePaths.size(); i++)
     {
         FileIO *io = new FileIO(filePaths.at(i));
         files.push_back(io);
     }
+
+    calcualteLengthOfAllFiles();
 }
 
-MultiFileIO::MultiFileIO(std::vector<BaseIO*> files) : files(files), currentIOIndex(0)
+MultiFileIO::MultiFileIO(std::vector<BaseIO*> files) : files(files), currentIOIndex(0), pos(0)
 {
+    calcualteLengthOfAllFiles();
 }
 
 void MultiFileIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir)
@@ -43,11 +46,16 @@ UINT64 MultiFileIO::GetPosition()
 
 UINT64 MultiFileIO::Length()
 {
-    return files.at(currentIOIndex)->Length();
+    return lengthOfFiles;
 }
 
 void MultiFileIO::WriteBytes(BYTE *buffer, DWORD len)
 {
+}
+
+void MultiFileIO::Flush()
+{
+    files.at(currentIOIndex)->Flush();
 }
 
 void MultiFileIO::ReadBytes(BYTE *outBuffer, DWORD len)
@@ -72,4 +80,22 @@ void MultiFileIO::ReadBytes(BYTE *outBuffer, DWORD len)
         files.at(currentIOIndex)->ReadBytes(outBuffer, len);
         pos += len;
     }
+}
+
+void MultiFileIO::Close()
+{
+    for (int i = 0; i < files.size(); i++)
+    {
+        files.at(i)->Close();
+        delete files.at(i);
+        files.erase(files.begin() + i);
+    }
+}
+
+void MultiFileIO::calcualteLengthOfAllFiles()
+{
+    lengthOfFiles = 0;
+
+    for (int i = 0; i < files.size(); i++)
+        lengthOfFiles += files.at(i)->Length();
 }
