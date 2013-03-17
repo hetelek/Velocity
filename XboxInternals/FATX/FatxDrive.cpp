@@ -438,6 +438,7 @@ void FatxDrive::CreateBackup(std::string outPath, void (*progress)(void *, DWORD
         if (progress)
             progress(arg, i, driveLen / 0x100000);
 
+        driveLen -= 0x100000;
         i++;
     }
 
