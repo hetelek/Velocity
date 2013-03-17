@@ -117,7 +117,6 @@ void DeviceViewer::showContextMenu(QPoint point)
         contextMenu.addAction(QPixmap(":/Images/delete.png"), "Delete Selected");
         contextMenu.addSeparator();
 
-        contextMenu.addAction(QPixmap(":/Images/rename.png"), "Rename");
         contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
     }
     else
@@ -268,8 +267,18 @@ void DeviceViewer::LoadDrives()
             currentDrive = loadedDrives.at(i);
 
             QTreeWidgetItem *driveItem = new QTreeWidgetItem(ui->treeWidget_2);
-            driveItem->setText(0, "Hard Drive");
-            driveItem->setIcon(0, QIcon(":/Images/harddrive.png"));
+
+            if (currentDrive->GetFatxDriveType() == FatxHarddrive)
+            {
+                driveItem->setIcon(0, QIcon(":/Images/harddrive.png"));
+                driveItem->setText(0, "Hard Drive");
+            }
+            else
+            {
+                driveItem->setIcon(0, QIcon(":/Images/usb drive.png"));
+                driveItem->setText(0, "Flash Drive");
+            }
+
 
             // load the partion information
             std::vector<Partition*> parts = loadedDrives.at(i)->GetPartitions();
@@ -294,17 +303,8 @@ void DeviceViewer::LoadDrives()
                 nameFile.SetPosition(0);
 
                 // make sure that it starts with 0xFEFF
-                if (nameFile.ReadWord() != 0xFEFF)
-                {
-                    ui->txtDriveName->setText("Hard Drive");
-                    driveItem->setText(0, "Hard Drive");
-                }
-                else
-                {
-                    QString driveName = QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 : (nameEntry->fileSize - 2) / 2));
-                    ui->txtDriveName->setText(driveName);
-                    driveItem->setText(0, driveName);
-                }
+                if (nameFile.ReadWord() == 0xFEFF)
+                    driveItem->setText(0, QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 : (nameEntry->fileSize - 2) / 2)));
             }
             else
             {
