@@ -354,7 +354,15 @@ void DeviceViewer::on_treeWidget_doubleClicked(const QModelIndex &index)
         // set the current parent
         FatxFileEntry *currentParent = GetFatxFileEntry(item);
 
-        if ((currentParent->fileAttributes & FatxDirectory) == 0)
+        if (item->data(1, Qt::UserRole).toString() == "STFS")
+        {
+            FatxIO io = currentDrive->GetFatxIO(currentParent);
+            StfsPackage package(&io);
+
+            PackageViewer viewer(statusBar, &package, QList<QAction*>(), QList<QAction*>(), this, false);
+            viewer.exec();
+        }
+        else if ((currentParent->fileAttributes & FatxDirectory) == 0)
             return;
 
         parentEntry = currentParent;

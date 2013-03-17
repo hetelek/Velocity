@@ -22,6 +22,7 @@
 #include "fatxfiledialog.h"
 #include "partitiondialog.h"
 #include "singleprogressdialog.h"
+#include "packageviewer.h"
 
 // xbox
 #include "Fatx/FatxDriveDetection.h"
@@ -62,7 +63,6 @@ private slots:
     void onDragDropped(QDropEvent *event);
     void onDragEntered(QDragEnterEvent *event);
     void onDragLeft(QDragLeaveEvent *event);
-
     void on_btnBackup_clicked();
 
 private:
