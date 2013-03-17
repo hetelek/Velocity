@@ -30,8 +30,8 @@ struct Partition;
 
 enum FatxDriveType
 {
-    FlashDrive,
-    Harddrive
+    FatxFlashDrive,
+    FatxHarddrive
 };
 
 struct SecurityInfo
@@ -130,6 +130,22 @@ struct HddOffsets
     static const INT64 SystemAuxiliary = 0x10C080000;
     static const INT64 SystemExtended = 0x118EB0000;
     static const INT64 SystemPartition = 0x120EB0000;
+};
+
+struct UsbOffsets
+{
+    static const INT64 SystemAuxiliary = 0x8115200;
+    static const INT64 SystemExtended = 0x12000400;
+    static const INT64 Cache = 0x8000400;
+    static const INT64 Data = 0x20000000;
+};
+
+struct UsbSizes
+{
+    static const INT64 CacheNoSystem = 0x4000000;
+    static const INT64 Cache = 0x47FF000;
+    static const INT64 SystemAuxiliary = 0x8000000;
+    static const INT64 SystemExtended = 0xDFFFC00;
 };
 
 #endif // FATXCONSTANTS_H
