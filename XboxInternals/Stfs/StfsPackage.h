@@ -78,7 +78,7 @@ public:
     XContentHeader *metaData;
 
     // Description: initialize a stfs package from an already opened io
-    StfsPackage(BaseIO *io, DWORD flags);
+    StfsPackage(BaseIO *io, DWORD flags = 0);
 
     // Description: initialize a stfs package
     StfsPackage(string packgePath, DWORD flags = 0);
