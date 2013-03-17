@@ -304,6 +304,7 @@ void DeviceViewer::LoadDrives()
 
             // load the name of the drive
             FatxFileEntry *nameEntry = loadedDrives.at(i)->GetFileEntry("Drive:\\Content\\name.txt");
+            QString name = (currentDrive->GetFatxDriveType() == FatxHarddrive) ? "Hard Drive" : "Flash Drive";
             if (nameEntry)
             {
                 FatxIO nameFile = loadedDrives.at(i)->GetFatxIO(nameEntry);
@@ -311,12 +312,10 @@ void DeviceViewer::LoadDrives()
 
                 // make sure that it starts with 0xFEFF
                 if (nameFile.ReadWord() == 0xFEFF)
-                    driveItem->setText(0, QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 : (nameEntry->fileSize - 2) / 2)));
+                    name = QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 : (nameEntry->fileSize - 2) / 2));
             }
-            else
-            {
-                ui->txtDriveName->setText("Hard Drive");
-            }
+            ui->txtDriveName->setText(name);
+            driveItem->setText(0, name);
 
             LoadPartitions();
         }
@@ -361,8 +360,12 @@ void DeviceViewer::on_treeWidget_doubleClicked(const QModelIndex &index)
 
             PackageViewer viewer(statusBar, &package, QList<QAction*>(), QList<QAction*>(), this, false);
             viewer.exec();
+
+            package.Close();
+            io.Close();
         }
-        else if ((currentParent->fileAttributes & FatxDirectory) == 0)
+
+        if ((currentParent->fileAttributes & FatxDirectory) == 0)
             return;
 
         parentEntry = currentParent;
