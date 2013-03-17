@@ -25,6 +25,7 @@ UINT64 FileIO::GetPosition()
 
 UINT64 FileIO::Length()
 {
+    return length;
 }
 
 void FileIO::Close()
