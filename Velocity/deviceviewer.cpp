@@ -8,6 +8,9 @@ DeviceViewer::DeviceViewer(QStatusBar *statusBar, QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->splitter->setStretchFactor(0, 1);
+    ui->splitter->setStretchFactor(1, 3);
+
     ui->treeWidget->header()->setDefaultSectionSize(100);
     ui->treeWidget->header()->resizeSection(0, 250);
 
@@ -117,7 +120,11 @@ void DeviceViewer::showContextMenu(QPoint point)
         contextMenu.addAction(QPixmap(":/Images/delete.png"), "Delete Selected");
         contextMenu.addSeparator();
 
-        contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
+        if (items.size() == 1)
+        {
+            contextMenu.addAction(QPixmap(":/Images/rename.png"), "Rename");
+            contextMenu.addAction(QPixmap(":/Images/properties.png"), "View Properties");
+        }
     }
     else
     {
