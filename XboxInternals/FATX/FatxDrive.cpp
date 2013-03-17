@@ -431,7 +431,9 @@ void FatxDrive::CreateBackup(std::string outPath, void (*progress)(void *, DWORD
         outBackup.WriteBytes(buffer, 0x100000);
 
         if (progress)
-            progress(arg, i++, driveLen & 0xFFFFF);
+            progress(arg, i, driveLen / 0x100000);
+
+        i++;
     }
 
     // read the crap at the end
@@ -439,7 +441,9 @@ void FatxDrive::CreateBackup(std::string outPath, void (*progress)(void *, DWORD
     outBackup.WriteBytes(buffer, 0x100000);
 
     if (progress)
-        progress(arg, driveLen & 0xFFFFF, driveLen & 0xFFFFF);
+        progress(arg, driveLen / 0x100000, driveLen / 0x100000);
+
+    outBackup.Close();
 
     delete buffer;
 }
