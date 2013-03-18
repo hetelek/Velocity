@@ -52,6 +52,13 @@ void FatxIO::Close()
 
 int FatxIO::AllocateMemory(DWORD byteAmount)
 {
+    if (byteAmount == 0)
+    {
+        entry->clusterChain.push_back(0);
+        entry->startingCluster = 0;
+        return 0;
+    }
+
     // calcualte how many clusters to allocate
     DWORD clusterCount = (byteAmount + ((entry->partition->clusterSize - (entry->fileSize % entry->partition->clusterSize)) - 1)) / entry->partition->clusterSize;
     bool fileIsNull = (entry->fileSize == 0);
@@ -305,6 +312,14 @@ void FatxIO::ReplaceFile(std::string sourcePath, void (*progress)(void *, DWORD,
     inFile.SetPosition(0, std::ios_base::end);
     UINT64 fileSize = inFile.GetPosition();
 
+    if (fileSize == 0)
+    {
+        inFile.Close();
+        if (progress)
+            progress(arg, 1, 1);
+        return;
+    }
+
     // reset the position
     inFile.SetPosition(0);
 
@@ -544,6 +559,14 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
 
     // open the new file
     FileIO outFile(savePath, true);
+
+    if (entry->fileSize == 0)
+    {
+        outFile.Close();
+        if (progress)
+            progress(arg, 1, 1);
+        return;
+    }
 
     // read all the data in
     for (DWORD i = 0; i < readRanges.size(); i++)
