@@ -633,3 +633,16 @@ void DeviceViewer::on_btnBackup_clicked()
     dialog->show();
     dialog->start();
 }
+
+void DeviceViewer::on_btnRestore_clicked()
+{
+    QString openPath = QFileDialog::getOpenFileName(this, "Choose a backup to restore from", QtHelpers::DesktopLocation() + "/Drive Backup.bin");
+
+    if (openPath == "")
+        return;
+
+    SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemFATX, currentDrive, OpRestore, "", openPath, NULL, this);
+    dialog->setModal(true);
+    dialog->show();
+    dialog->start();
+}

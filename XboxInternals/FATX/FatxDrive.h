@@ -70,6 +70,9 @@ public:
     // write the entire contents of the drive to the local disk
     void CreateBackup(std::string outPath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
+    // re-write the entire contents of the drive using a backup from the local disk
+    void RestoreFromBackup(std::string backupPath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+
     // get the amount of free bytes on the device
     UINT64 GetFreeMemory(Partition *part, void(*progress)(void*, bool) = NULL, void *arg = NULL);
 

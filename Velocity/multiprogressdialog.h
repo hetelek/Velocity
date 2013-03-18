@@ -19,7 +19,8 @@ enum Operation
     OpExtract,
     OpReplace,
     OpInject,
-    OpBackup
+    OpBackup,
+    OpRestore
 };
 
 namespace Ui {

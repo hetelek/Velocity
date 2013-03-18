@@ -7,20 +7,24 @@ SingleProgressDialog::SingleProgressDialog(FileSystem system, void *device, Oper
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
-    if (op == OpInject)
+    switch (op)
     {
-        setWindowTitle("Injecting File");
-        ui->lblIcon->setPixmap(QPixmap(":/Images/add.png"));
-    }
-    else if (op == OpReplace)
-    {
-        setWindowTitle("Replacing File");
-        ui->lblIcon->setPixmap(QPixmap(":/Images/replace.png"));
-    }
-    else if (op == OpBackup)
-    {
-        setWindowTitle("Creating Backup");
-        ui->lblIcon->setPixmap(QPixmap(":/Images/save.png"));
+        case OpInject:
+            setWindowTitle("Injecting File");
+            ui->lblIcon->setPixmap(QPixmap(":/Images/add.png"));
+            break;
+        case OpReplace:
+            setWindowTitle("Replacing File");
+            ui->lblIcon->setPixmap(QPixmap(":/Images/replace.png"));
+            break;
+        case OpBackup:
+            setWindowTitle("Creating Backup");
+            ui->lblIcon->setPixmap(QPixmap(":/Images/save.png"));
+            break;
+        case OpRestore:
+            setWindowTitle("Restoring from Backup");
+            ui->lblIcon->setPixmap(QPixmap(":/Images/restore.png"));
+            break;
     }
 }
 
@@ -80,6 +84,18 @@ void SingleProgressDialog::start()
                     catch (string error)
                     {
                         QMessageBox::critical(this, "", "An error occurred while creating a backup for your device.\n\n" + QString::fromStdString(error));
+                    }
+                }
+                else if (op == OpRestore)
+                {
+                    try
+                    {
+                        FatxDrive *drive = reinterpret_cast<FatxDrive*>(device);
+                        drive->RestoreFromBackup(externalPath.toStdString(), UpdateProgress, this);
+                    }
+                    catch (string error)
+                    {
+                        QMessageBox::critical(this, "", "An error occurred while restoring your device from a backup.\n\n" + QString::fromStdString(error));
                     }
                 }
                 break;
