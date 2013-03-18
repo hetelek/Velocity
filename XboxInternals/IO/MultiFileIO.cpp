@@ -51,6 +51,29 @@ UINT64 MultiFileIO::Length()
 
 void MultiFileIO::WriteBytes(BYTE *buffer, DWORD len)
 {
+    if (len > lengthOfFiles - pos)
+        throw std::string("MultiFileIO: Requested write length is too large.\n");
+
+    DWORD offset = 0;
+
+    // check to see if we can write straight from the current stream
+    if (files.at(currentIOIndex)->GetPosition() + len > files.at(currentIOIndex)->Length())
+    {
+        // if we can't, we must calculate how much we should read each time
+        while (len > 0)
+        {
+            DWORD writeCount = (files.at(currentIOIndex)->Length() > files.at(currentIOIndex)->GetPosition() + len) ? len : files.at(currentIOIndex)->Length();
+            files.at(currentIOIndex)->WriteBytes(buffer + offset, writeCount);
+            offset += writeCount;
+            len -= writeCount;
+            SetPosition(pos + writeCount);
+        }
+    }
+    else
+    {
+        files.at(currentIOIndex)->WriteBytes(buffer, len);
+        pos += len;
+    }
 }
 
 void MultiFileIO::Flush()
