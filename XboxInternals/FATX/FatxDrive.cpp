@@ -433,28 +433,75 @@ void FatxDrive::CreateBackup(std::string outPath, void (*progress)(void *, DWORD
 
     // start writing the drive contents to the local disk
     DWORD i = 0;
+    UINT64 totalProgress = driveLen / 0x100000;
     while (driveLen >= 0x100000)
     {
         io->ReadBytes(buffer, 0x100000);
         outBackup.WriteBytes(buffer, 0x100000);
 
         if (progress)
-            progress(arg, i, driveLen / 0x100000);
+            progress(arg, i, totalProgress);
 
         driveLen -= 0x100000;
         i++;
     }
 
-    // read the crap at the end
-    io->ReadBytes(buffer, 0x100000);
-    outBackup.WriteBytes(buffer, 0x100000);
+    if (driveLen > 0)
+    {
+        // read the crap at the end
+        io->ReadBytes(buffer, driveLen);
+        outBackup.WriteBytes(buffer, driveLen);
+    }
 
     if (progress)
-        progress(arg, driveLen / 0x100000, driveLen / 0x100000);
+        progress(arg, totalProgress, totalProgress);
 
     outBackup.Close();
 
     delete buffer;
+}
+
+void FatxDrive::RestoreFromBackup(std::string backupPath, void (*progress)(void *, DWORD, DWORD), void *arg)
+{
+    FileIO backupIO(backupPath);
+    backupIO.SetPosition(0, std::ios_base::end);
+    UINT64 test = backupIO.GetPosition();
+
+    // verify the length of the backup
+    if (backupIO.Length() != (securityBlob.userAddressableSectors * 0x200))
+        throw std::string("FATX: Error restoring device. The backup provided is not the correct size");
+
+    BYTE *buffer = new BYTE[0x100000];
+    UINT64 bytesLeft = backupIO.Length();
+
+    // seek to the beginning of both streams
+    backupIO.SetPosition(0);
+    io->SetPosition(0);
+
+    UINT64 totalProgress = bytesLeft / 0x100000;
+    DWORD i = 0;
+    while (bytesLeft >= 0x100000)
+    {
+        backupIO.ReadBytes(buffer, 0x100000);
+        io->WriteBytes(buffer, 0x100000);
+        bytesLeft -= 0x100000;
+
+        if (progress)
+            progress(arg, i++, totalProgress);
+    }
+
+    if (bytesLeft > 0)
+    {
+        backupIO.ReadBytes(buffer, bytesLeft);
+        io->WriteBytes(buffer, bytesLeft);
+    }
+
+
+    if (progress)
+        progress(arg, totalProgress, totalProgress);
+
+    backupIO.Close();
+    delete[] buffer;
 }
 
 BYTE FatxDrive::cntlzw(DWORD x)
