@@ -354,6 +354,9 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry, void(*progress)(void*,
 
             // read the rest of the entry information
             newEntry.startingCluster = io->ReadDword();
+            if (newEntry.startingCluster == entry->startingCluster)
+                throw std::string("FATX: FAT has circular link.\n");
+
             newEntry.fileSize = io->ReadDword();
             newEntry.creationDate = io->ReadDword();
             newEntry.lastWriteDate = io->ReadDword();
