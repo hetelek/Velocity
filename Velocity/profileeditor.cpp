@@ -361,6 +361,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     else if (!pecExists)
     {
         ui->tabAvatarAwards->setEnabled(false);
+        statusBar->showMessage("Profile loaded successfully", 3000);
         return;
     }
 
