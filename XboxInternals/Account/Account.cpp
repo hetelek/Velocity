@@ -284,6 +284,7 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
     // begin writing the payload
     if (outPath == NULL)
         *outPath = std::string(tmpnam(NULL));
+    decIo.Close();
     FileIO encrypted(*outPath, true);
     encrypted.Write(hmacHash, 0x10);
 
@@ -304,7 +305,6 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
 
     // clean up
     encrypted.Close();
-    decIo.Close();
 }
 
 void Account::writeFile()
