@@ -82,10 +82,7 @@ SettingEntry GpdBase::readSettingEntry(XdbfEntry entry)
     // read the setting entry type
     toReturn.type = (SettingEntryType)io->ReadByte();
     if (toReturn.type <= 0 || toReturn.type > 7)
-    {
-        printf("%llX\n", entry.id);
         throw string("Xdbf: Error reading setting entry. Invalid setting entry type.\n");
-    }
 
     // skip past the nonsense
     io->SetPosition(entryAddr + 0x10);
