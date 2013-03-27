@@ -463,26 +463,44 @@ void FatxDrive::CreateBackup(std::string outPath, void (*progress)(void *, DWORD
 
 void FatxDrive::RestoreFromBackup(std::string backupPath, void (*progress)(void *, DWORD, DWORD), void *arg)
 {
-    FileIO backupIO(backupPath);
-    backupIO.SetPosition(0, std::ios_base::end);
-    UINT64 test = backupIO.GetPosition();
-
-    // verify the length of the backup
-    if (backupIO.Length() != (securityBlob.userAddressableSectors * 0x200))
-        throw std::string("FATX: Error restoring device. The backup provided is not the correct size");
+    /* Here's the thing... fstream is trash. It will only handle files up to 2GB or 4GB,
+       at least on my windows 7 machine. That's a huge problem because drive backups will
+       most likely be a lot larger than that. SOOOOOO it looks like I'll have to use OS
+       specific functions in order to get this to work properly. It makes more sense
+       to just make the FileIO class use the OS specific functions to begin with, but
+       the ReadFile/WriteFile functions are slower than fstream functions, probably because
+       they don't cache a bunch of stuff.
+    */
 
     BYTE *buffer = new BYTE[0x100000];
-    UINT64 bytesLeft = backupIO.Length();
 
-    // seek to the beginning of both streams
-    backupIO.SetPosition(0);
+#ifdef __WIN32
+    std::wstring wBackupPath;
+    wBackupPath.assign(backupPath.begin(), backupPath.end());
+    HANDLE hFile = CreateFile(wBackupPath.c_str(), GENERIC_READ, NULL, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+        throw std::string("FATX: Could not open drive backup.");
+
+    DWORD high;
+    DWORD low = GetFileSize(hFile, &high);
+    UINT64 bytesLeft = ((UINT64)high << 32) | low;
+
+    SetFilePointer(hFile, 0, 0, FILE_BEGIN);
+#endif
+
     io->SetPosition(0);
 
     UINT64 totalProgress = bytesLeft / 0x100000;
     DWORD i = 0;
     while (bytesLeft >= 0x100000)
     {
-        backupIO.ReadBytes(buffer, 0x100000);
+#ifdef __WIN32
+        high = (i * (UINT64)0x100000) >> 32;
+        SetFilePointer(hFile, (i * (UINT64)0x100000) & 0xFFFFFFFF, &high, FILE_BEGIN);
+
+        ReadFile(hFile, buffer, 0x100000, &high, NULL);
+#endif
         io->WriteBytes(buffer, 0x100000);
         bytesLeft -= 0x100000;
 
@@ -492,7 +510,9 @@ void FatxDrive::RestoreFromBackup(std::string backupPath, void (*progress)(void 
 
     if (bytesLeft > 0)
     {
-        backupIO.ReadBytes(buffer, bytesLeft);
+#ifdef __WIN32
+        ReadFile(hFile, buffer, bytesLeft, &high, NULL);
+#endif
         io->WriteBytes(buffer, bytesLeft);
     }
 
@@ -500,7 +520,9 @@ void FatxDrive::RestoreFromBackup(std::string backupPath, void (*progress)(void 
     if (progress)
         progress(arg, totalProgress, totalProgress);
 
-    backupIO.Close();
+#ifdef __WIN32
+        CloseHandle(hFile);
+#endif
     delete[] buffer;
 }
 
