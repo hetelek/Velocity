@@ -14,15 +14,15 @@ void FatxIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios
     if (dir == std::ios_base::cur)
         position += pos;
     else if (dir == std::ios_base::end)
-        position = (device->Length() - position);
+        position = (Length() - position);
 
     pos = position;
 
     if (pos == entry->fileSize && !(entry->fileAttributes & FatxDirectory))
         return;
 
-    // calculate the actual offset on disk
-    DWORD clusterIndex = position / entry->partition->clusterSize;
+    // calculate the cluster index to look at
+    DWORD clusterIndex =  position / entry->partition->clusterSize;
 
     if (clusterIndex >= entry->clusterChain.size())
         throw std::string("FATX: Cluster chain not sufficient enough for file size.\n");
