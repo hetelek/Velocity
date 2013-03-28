@@ -79,8 +79,9 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
         #else
                 read(device, lastReadData, 0x200);
         #endif
+
+        lastReadOffset = pos;
     }
-    lastReadOffset = pos;
 
     // copy over the data requested
     WORD bytesLeftInSector = 0x200 - (originalPos & 0x1FF);
@@ -142,6 +143,8 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
             read(device, lastReadData, 0x200);
     #endif
 
+    lastReadOffset = pos;
+
     // copy over the requested data
     memcpy(outBuffer, lastReadData, len);
 
@@ -178,7 +181,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
 
     // We can't write beyond the end of the stream
     if (pos + len > Length())
-        throw std::string("Can not write beyond end of stream! At xDeviceStream::Write");
+        throw std::string("DeviceIO: Cannot write beyond the end of the stream.\n");
 
 
     UINT64 originalPos = pos;
@@ -187,6 +190,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
     // write the bytes up to the next sector
     SetPosition(currentSector);
     ReadBytes(lastReadData, 0x200);
+    lastReadOffset = currentSector;
     WORD bytesLeftInSector = 0x200 - (originalPos - currentSector);
     WORD bytesToWrite = (len >= bytesLeftInSector) ? bytesLeftInSector : len;
     memcpy(lastReadData + (originalPos - currentSector), buffer, bytesToWrite);
@@ -214,6 +218,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
     while (len > 0)
     {
         SetPosition(currentSector);
+        lastReadOffset = DOWN_TO_NEAREST_SECTOR(pos);
         ReadBytes(lastReadData, 0x200);
         bytesToWrite = (len >= 0x200) ? 0x200 : len;
         memcpy(lastReadData, buffer, bytesToWrite);
@@ -237,8 +242,6 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
             write(device, buffer, len);
         #endif
     }
-
-    lastReadOffset = (pos == 0) ? 0 : pos - 0x200;
 
     // set the position
     SetPosition(endingPos);
