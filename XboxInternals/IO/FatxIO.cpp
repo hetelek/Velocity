@@ -7,14 +7,17 @@ FatxIO::FatxIO(DeviceIO *device, FatxFileEntry *entry) : device(device), entry(e
 
 void FatxIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios_base::beg)
 {
-    // we can't seek past the file
-    if (position > entry->fileSize && !(entry->fileAttributes & FatxDirectory))
-        throw std::string("FATX: Cannot seek past the file size.\n");
-
     if (dir == std::ios_base::cur)
         position += pos;
     else if (dir == std::ios_base::end)
-        position = (Length() - position);
+        position = (Length() + position);
+
+    // if they seek beyond the end of the stream, then we need to allocate memory
+    if (position > entry->fileSize && !(entry->fileAttributes & FatxDirectory))
+    {
+        // calculate how far beyond the stream the caller is seeking
+        AllocateMemory(position - entry->fileSize);
+    }
 
     pos = position;
 
@@ -63,10 +66,10 @@ int FatxIO::AllocateMemory(DWORD byteAmount)
     DWORD clusterCount = (byteAmount + ((entry->partition->clusterSize - (entry->fileSize % entry->partition->clusterSize)) - 1)) / entry->partition->clusterSize;
     bool fileIsNull = (entry->fileSize == 0);
 
-    if (fileIsNull && entry->fileAttributes & FatxDirectory)
+    if (fileIsNull && entry->fileAttributes & FatxDirectory || clusterCount == 0)
     {
-        WriteEntryToDisk(entry);
         entry->fileSize += byteAmount;
+        WriteEntryToDisk(entry);
         return 0;
     }
 
