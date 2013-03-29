@@ -599,8 +599,15 @@ ProfileEditor::~ProfileEditor()
 {
     if (*ok)
     {
-        saveAll();
-        statusBar->showMessage("Saved all changes", 3000);
+        try
+        {
+            saveAll();
+            statusBar->showMessage("Saved all changes", 3000);
+        }
+        catch (string error)
+        {
+            QMessageBox::critical(this, "Error", "An error occurred while saving the profile.\n\n" + QString::fromStdString(error));
+        }
     }
 
     // free all the game gpd memory
