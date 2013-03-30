@@ -141,7 +141,10 @@ void FatxIO::ReadBytes(BYTE *outBuffer, DWORD len)
     }
 
     if (len > 0)
+    {
         device->ReadBytes(outBuffer + (origLen - len), len);
+        SetPosition(pos + len);
+    }
 }
 
 void FatxIO::WriteBytes(BYTE *buffer, DWORD len)
