@@ -13,7 +13,7 @@ YtgrDialog::YtgrDialog(Ytgr *ytgr, QStatusBar *statusBar, QWidget *parent) :
     ui->lblXSignerMinimumVersion->setText(QString::number(ytgr->XSignerMinimumVersion.major) + "." +
                                           QString::number(ytgr->XSignerMinimumVersion.minor) + "." +
                                           QString::number(ytgr->XSignerMinimumVersion.build) + "." +
-                                          QString::number(ytgr->XSignerMinimumVersion.revision) + ".");
+                                          QString::number(ytgr->XSignerMinimumVersion.revision));
     ui->lblAddedToServer->setText(QDateTime::fromTime_t(ytgr->dateAddedToServer).toString());
     ui->lblContentLength->setText("0x" + QString::number(ytgr->contentLength, 16).toUpper());
     ui->lblValid->setText((ytgr->valid) ? "Yes" : "No");
