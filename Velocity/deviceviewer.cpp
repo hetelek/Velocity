@@ -333,6 +333,8 @@ void DeviceViewer::LoadDrives()
         ui->imgPiechart->setEnabled(true);
         ui->btnBackup->setEnabled(true);
         ui->btnRestore->setEnabled(true);
+        ui->btnShowAll->setEnabled(true);
+        ui->txtSearch->setEnabled(true);
 
         drivesLoaded = true;
         statusBar->showMessage("Drive(s) loaded successfully", 3000);
@@ -645,4 +647,17 @@ void DeviceViewer::on_btnRestore_clicked()
     dialog->setModal(true);
     dialog->show();
     dialog->start();
+}
+
+void DeviceViewer::on_txtSearch_textChanged(const QString &arg1)
+{
+    QtHelpers::SearchTreeWidget(ui->treeWidget, ui->txtSearch, arg1);
+}
+
+void DeviceViewer::on_btnShowAll_clicked()
+{
+    ui->txtSearch->setText("");
+    for (int i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
+        ui->treeWidget->topLevelItem(i)->setHidden(false);
+    ui->txtSearch->setStyleSheet("");
 }

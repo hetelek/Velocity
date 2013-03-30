@@ -64,8 +64,9 @@ private slots:
     void onDragEntered(QDragEnterEvent *event);
     void onDragLeft(QDragLeaveEvent *event);
     void on_btnBackup_clicked();
-
     void on_btnRestore_clicked();
+    void on_txtSearch_textChanged(const QString &arg1);
+    void on_btnShowAll_clicked();
 
 private:
     Ui::DeviceViewer *ui;
