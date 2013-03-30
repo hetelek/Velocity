@@ -1,4 +1,5 @@
 #include "FatxDriveDetection.h"
+#include <Windows.h>
 
 std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
 {
@@ -68,9 +69,9 @@ std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
     return drives;
 }
 
-std::vector<HANDLE> FatxDriveDetection::getPhysicalDisks()
+std::vector<void*> FatxDriveDetection::getPhysicalDisks()
 {
-    std::vector<HANDLE> physicalDiskPaths;
+    std::vector<void*> physicalDiskPaths;
     std::wstringstream ss;
 
     for (int i = 0; i < 16; i++)
@@ -79,7 +80,7 @@ std::vector<HANDLE> FatxDriveDetection::getPhysicalDisks()
 
         HANDLE drive = CreateFile(ss.str().c_str(), GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
         if (drive != INVALID_HANDLE_VALUE)
-            physicalDiskPaths.push_back(drive);
+            physicalDiskPaths.push_back((void*)drive);
 
         ss.str(std::wstring());
     }

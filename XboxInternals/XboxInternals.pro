@@ -27,7 +27,8 @@ win32 {
     LIBS += C:/botan/libbotan-1.10.a
     PRE_TARGETDEPS += C:/botan/libbotan-1.10.a
     INCLUDEPATH += C:/botan/include
-} else macx|unix {
+}
+macx|unix {
     INCLUDEPATH += /usr/local/include/botan-1.10
     LIBS += /usr/local/lib/libbotan-1.10.a
 }

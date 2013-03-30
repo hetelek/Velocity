@@ -9,25 +9,25 @@ bool XeKeys::VerifyRSASignature(XeKeysRsaKeys key, BYTE *pbMessage, DWORD cbMess
     switch (key)
     {
         case PIRSKey:
-            modulus1 = PirsModulus1;
+            modulus1 = const_cast<BYTE*>(PirsModulus1);
             modulus2 = NULL;
             exponent1 = 3;
             exponent2 = 0;
             break;
         case LIVEKey:
-            modulus1 = LiveModulus1;
-            modulus2 = LiveDeviceModulus;
+            modulus1 = const_cast<BYTE*>(LiveModulus1);
+            modulus2 = const_cast<BYTE*>(LiveDeviceModulus);
             exponent1 = 0x10001;
             exponent2 = 3;
             break;
         case DeviceKey:
-            modulus1 = DeviceModulus1;
-            modulus2 = LiveDeviceModulus;
+            modulus1 = const_cast<BYTE*>(DeviceModulus1);
+            modulus2 = const_cast<BYTE*>(LiveDeviceModulus);
             exponent1 = exponent2 = 3;
             break;
         case UnknownKey:
-            modulus1 = UnknownModulus1;
-            modulus2 = UnknownModulus2;
+            modulus1 = const_cast<BYTE*>(UnknownModulus1);
+            modulus2 = const_cast<BYTE*>(UnknownModulus2);
             exponent1 = exponent2 = 3;
             break;
         default:

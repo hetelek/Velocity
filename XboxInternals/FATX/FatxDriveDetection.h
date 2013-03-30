@@ -1,7 +1,6 @@
 #ifndef FATXDRIVEDETECTION_H
 #define FATXDRIVEDETECTION_H
 
-#include <windows.h>
 #include <iostream>
 #include <vector>
 #include <sstream>
@@ -15,7 +14,7 @@ public:
     static std::vector<FatxDrive*> GetAllFatxDrives();
 
 private:
-    static std::vector<HANDLE> getPhysicalDisks();
+    static std::vector<void*> getPhysicalDisks();
     static std::vector<std::wstring> getLogicalDrives();
 };
 
