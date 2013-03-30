@@ -70,7 +70,7 @@ string LicenseTypeToString(LicenseType type)
     }
 }
 
-XBOXINTERNALSSHARED_EXPORT string ByteSizeToString(UINT64 bytes)
+string ByteSizeToString(UINT64 bytes)
 {
     DWORD B = 1; //byte
     DWORD KB = 1024 * B; //kilobyte
@@ -105,7 +105,7 @@ DWORD MSTimeToDWORD(MSTime time)
     return toReturn;
 }
 
-XBOXINTERNALSSHARED_EXPORT MSTime DWORDToMSTime(DWORD winTime)
+MSTime DWORDToMSTime(DWORD winTime)
 {
     MSTime time;
 
@@ -224,7 +224,7 @@ void WriteCertificateEx(Certificate *cert, BaseIO *io, DWORD address)
     io->Write(cert->signature, 0x80);
 }
 
-XBOXINTERNALSSHARED_EXPORT string MagicToString(Magic magic)
+string MagicToString(Magic magic)
 {
     switch (magic)
     {
@@ -252,7 +252,7 @@ string ConsoleTypeToString(ConsoleType type)
     }
 }
 
-XBOXINTERNALSSHARED_EXPORT string ContentTypeToString(ContentType type)
+string ContentTypeToString(ContentType type)
 {
     switch (type)
     {

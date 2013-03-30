@@ -4,7 +4,6 @@
 #include "IO/FileIO.h"
 #include <iostream>
 #include <vector>
-#include "dirent.h"
 #include "BaseIO.h"
 #include "XboxInternals_global.h"
 
