@@ -252,6 +252,14 @@ void DeviceViewer::InjectFiles(QList<void*> files)
     QMessageBox::information(this, "Copied Files", "All files have been successfully copied to the harddrive.");
 }
 
+void DeviceViewer::DrawHeader(QString driveName)
+{
+    DrawMemoryGraph();
+    ui->txtDriveName->setText(driveName);
+
+    ui->imgDrive->setPixmap(((currentDrive->GetFatxDriveType() == FatxHarddrive) ? QPixmap(":/Images/harddrive.png") : QPixmap(":/Images/usb drive.png")));
+}
+
 void DeviceViewer::LoadDrives()
 {
     // clear all the items
@@ -271,11 +279,10 @@ void DeviceViewer::LoadDrives()
 
         for (int i = 0; i < loadedDrives.size(); i++)
         {
-            currentDrive = loadedDrives.at(i);
-
             QTreeWidgetItem *driveItem = new QTreeWidgetItem(ui->treeWidget_2);
+            driveItem->setData(0, Qt::UserRole, QVariant::fromValue(loadedDrives.at(i)));
 
-            if (currentDrive->GetFatxDriveType() == FatxHarddrive)
+            if (loadedDrives.at(i)->GetFatxDriveType() == FatxHarddrive)
             {
                 driveItem->setIcon(0, QIcon(":/Images/harddrive.png"));
                 driveItem->setText(0, "Hard Drive");
@@ -285,7 +292,6 @@ void DeviceViewer::LoadDrives()
                 driveItem->setIcon(0, QIcon(":/Images/usb drive.png"));
                 driveItem->setText(0, "Flash Drive");
             }
-
 
             // load the partion information
             std::vector<Partition*> parts = loadedDrives.at(i)->GetPartitions();
@@ -300,11 +306,9 @@ void DeviceViewer::LoadDrives()
                 secondItem->setData(4, Qt::UserRole, QVariant::fromValue(-1));
             }
 
-            DrawMemoryGraph();
-
             // load the name of the drive
             FatxFileEntry *nameEntry = loadedDrives.at(i)->GetFileEntry("Drive:\\Content\\name.txt");
-            QString name = (currentDrive->GetFatxDriveType() == FatxHarddrive) ? "Hard Drive" : "Flash Drive";
+            QString name = (loadedDrives.at(i)->GetFatxDriveType() == FatxHarddrive) ? "Hard Drive" : "Flash Drive";
             if (nameEntry)
             {
                 FatxIO nameFile = loadedDrives.at(i)->GetFatxIO(nameEntry);
@@ -314,11 +318,13 @@ void DeviceViewer::LoadDrives()
                 if (nameFile.ReadWord() == 0xFEFF)
                     name = QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 : (nameEntry->fileSize - 2) / 2));
             }
-            ui->txtDriveName->setText(name);
-            driveItem->setText(0, name);
 
-            LoadPartitions();
+            driveItem->setText(0, name);
         }
+
+        currentDrive = loadedDrives.at(0);
+        DrawHeader(ui->treeWidget_2->topLevelItem(0)->text(0));
+        LoadPartitions();
 
         ui->btnPartitions->setEnabled(true);
         ui->btnSecurityBlob->setEnabled(true);
@@ -407,7 +413,13 @@ void DeviceViewer::LoadFolderAll(FatxFileEntry *folder)
         progressBar->setMaximum(0);
 
         ui->treeWidget->clear();
+        FatxDrive *prevDrive = currentDrive;
         currentDrive = folder->partition->drive;
+
+        // reload the header if the drive changed
+        if (currentDrive != prevDrive)
+            DrawHeader(ui->treeWidget_2->currentItem()->parent()->text(0));
+
         currentDrive->GetChildFileEntries(folder, updateUI);
 
         for (int i = 0; i < folder->cachedFiles.size(); i++)
@@ -570,7 +582,11 @@ void DeviceViewer::on_treeWidget_2_itemExpanded(QTreeWidgetItem *item)
 void DeviceViewer::on_treeWidget_2_itemClicked(QTreeWidgetItem *item, int column)
 {
     if (!item->parent())
+    {
+        currentDrive = item->data(0, Qt::UserRole).value<FatxDrive*>();
+        DrawHeader(item->text(0));
         return;
+    }
 
     FatxFileEntry *entry = GetFatxFileEntry(item);
     LoadFolderAll(entry);

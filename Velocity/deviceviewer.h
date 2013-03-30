@@ -13,6 +13,7 @@
 #include <QStatusBar>
 #include <QInputDialog>
 #include <QProgressBar>
+#include <QPixmap>
 #include "qthelpers.h"
 
 // forms
@@ -34,6 +35,7 @@
 #include "dragdroptreewidget.h"
 
 Q_DECLARE_METATYPE( FatxFileEntry* )
+Q_DECLARE_METATYPE( FatxDrive* )
 Q_DECLARE_METATYPE( Partition* )
 
 namespace Ui {
@@ -79,18 +81,13 @@ private:
     bool drivesLoaded;
 
     void LoadFolderAll(FatxFileEntry *folder);
-
     void LoadFolderTree(QTreeWidgetItem *item);
-
     void LoadPartitions();
-
     void GetSubFiles(FatxFileEntry *parent, QList<void*> &entries);
-
     FatxFileEntry* GetFatxFileEntry(QTreeWidgetItem *item);
-
     void DrawMemoryGraph();
-
     void InjectFiles(QList<void *> files);
+    void DrawHeader(QString driveName);
 
     friend void updateUI(void *arg, bool finished);
 };
