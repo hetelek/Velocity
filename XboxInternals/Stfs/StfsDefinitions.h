@@ -93,20 +93,20 @@ void ReadCertificateEx(Certificate *cert, BaseIO *io, DWORD address);
 
 void WriteCertificateEx(Certificate *cert, BaseIO *io, DWORD address);
 
-string MagicToString(Magic magic);
+XBOXINTERNALSSHARED_EXPORT string MagicToString(Magic magic);
 
-string ContentTypeToString(ContentType type);
+XBOXINTERNALSSHARED_EXPORT string ContentTypeToString(ContentType type);
 
-string ConsoleTypeToString(ConsoleType type);
+XBOXINTERNALSSHARED_EXPORT string ConsoleTypeToString(ConsoleType type);
 
-string ByteSizeToString(UINT64 bytes);
+XBOXINTERNALSSHARED_EXPORT string ByteSizeToString(UINT64 bytes);
 
-string LicenseTypeToString(LicenseType type);
+XBOXINTERNALSSHARED_EXPORT string LicenseTypeToString(LicenseType type);
 
-MSTime DWORDToMSTime(DWORD winTime);
+XBOXINTERNALSSHARED_EXPORT MSTime DWORDToMSTime(DWORD winTime);
 
-DWORD MSTimeToDWORD(MSTime time);
+XBOXINTERNALSSHARED_EXPORT DWORD MSTimeToDWORD(MSTime time);
 
-MSTime TimetToMSTime(time_t time);
+XBOXINTERNALSSHARED_EXPORT MSTime TimetToMSTime(time_t time);
 
 #endif // STFSDEFINITIONS_H
