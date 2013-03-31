@@ -1,4 +1,5 @@
 #include "XContentHeader.h"
+#include "IO/MemoryIO.h"
 #include <iostream>
 #include <sstream>
 
@@ -442,6 +443,17 @@ void XContentHeader::WriteVolumeDescriptor()
 void XContentHeader::ResignHeader(string kvPath)
 {
     FileIO kvIo(kvPath);
+    ResignHeader(kvIo);
+}
+
+void XContentHeader::ResignHeader(BYTE* kvData, size_t length)
+{
+    MemoryIO kvIo(kvData, length);
+    ResignHeader(kvIo);
+}
+
+void XContentHeader::ResignHeader(BaseIO& kvIo)
+{
     kvIo.SetPosition(0, ios_base::end);
 
     DWORD adder = 0;
