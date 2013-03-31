@@ -43,7 +43,7 @@ void ReadSvodVolumeDescriptorEx(SvodVolumeDescriptor *descriptor, BaseIO *io)
     io->ReadBytes(descriptor->reserved, 0x05);
 }
 
-string LicenseTypeToString(LicenseType type)
+XBOXINTERNALSSHARED_EXPORT string LicenseTypeToString(LicenseType type)
 {
     switch (type)
     {
@@ -70,7 +70,7 @@ string LicenseTypeToString(LicenseType type)
     }
 }
 
-string ByteSizeToString(UINT64 bytes)
+XBOXINTERNALSSHARED_EXPORT string ByteSizeToString(UINT64 bytes)
 {
     DWORD B = 1; //byte
     DWORD KB = 1024 * B; //kilobyte
@@ -92,7 +92,7 @@ string ByteSizeToString(UINT64 bytes)
     return result.str();
 }
 
-DWORD MSTimeToDWORD(MSTime time)
+XBOXINTERNALSSHARED_EXPORT DWORD MSTimeToDWORD(MSTime time)
 {
     DWORD toReturn = 0;
     toReturn |= ((time.year - 1980) & 0xEF) << 25;
@@ -105,7 +105,7 @@ DWORD MSTimeToDWORD(MSTime time)
     return toReturn;
 }
 
-MSTime DWORDToMSTime(DWORD winTime)
+XBOXINTERNALSSHARED_EXPORT MSTime DWORDToMSTime(DWORD winTime)
 {
     MSTime time;
 
@@ -119,7 +119,7 @@ MSTime DWORDToMSTime(DWORD winTime)
     return time;
 }
 
-MSTime TimetToMSTime(time_t time)
+XBOXINTERNALSSHARED_EXPORT MSTime TimetToMSTime(time_t time)
 {
     struct tm *timeInfo = localtime(&time);
 
@@ -224,7 +224,7 @@ void WriteCertificateEx(Certificate *cert, BaseIO *io, DWORD address)
     io->Write(cert->signature, 0x80);
 }
 
-string MagicToString(Magic magic)
+XBOXINTERNALSSHARED_EXPORT string MagicToString(Magic magic)
 {
     switch (magic)
     {
@@ -239,7 +239,7 @@ string MagicToString(Magic magic)
     }
 }
 
-string ConsoleTypeToString(ConsoleType type)
+XBOXINTERNALSSHARED_EXPORT string ConsoleTypeToString(ConsoleType type)
 {
     switch (type)
     {
@@ -252,7 +252,7 @@ string ConsoleTypeToString(ConsoleType type)
     }
 }
 
-string ContentTypeToString(ContentType type)
+XBOXINTERNALSSHARED_EXPORT string ContentTypeToString(ContentType type)
 {
     switch (type)
     {
