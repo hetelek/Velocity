@@ -656,8 +656,15 @@ void ProfileEditor::onSaveAvatarAwardThumbnail(QPoint p)
 
 void ProfileEditor::on_gamesList_itemSelectionChanged()
 {
-    loadGameInfo(ui->gamesList->currentIndex().row());
-    loadAchievementInfo(ui->gamesList->currentIndex().row(), 0);
+    try
+    {
+        loadGameInfo(ui->gamesList->currentIndex().row());
+        loadAchievementInfo(ui->gamesList->currentIndex().row(), 0);
+    }
+    catch (std::string error)
+    {
+        QMessageBox::critical(this, "Error", "An error occurred while loading a game.\n\n" + QString::fromStdString(error));
+    }
 }
 
 void ProfileEditor::loadGameInfo(int index)

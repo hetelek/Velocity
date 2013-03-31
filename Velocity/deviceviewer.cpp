@@ -573,6 +573,14 @@ void DeviceViewer::GetSubFiles(FatxFileEntry *parent, QList<void *> &entries)
 
 void DeviceViewer::on_treeWidget_2_itemExpanded(QTreeWidgetItem *item)
 {
+    if (!item->parent())
+    {
+        currentDrive = item->data(0, Qt::UserRole).value<FatxDrive*>();
+        DrawHeader(item->text(0));
+        LoadPartitions();
+        return;
+    }
+
     if (item->childCount() > 0)
         return;
 
@@ -585,6 +593,7 @@ void DeviceViewer::on_treeWidget_2_itemClicked(QTreeWidgetItem *item, int column
     {
         currentDrive = item->data(0, Qt::UserRole).value<FatxDrive*>();
         DrawHeader(item->text(0));
+        LoadPartitions();
         return;
     }
 
