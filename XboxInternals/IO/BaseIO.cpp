@@ -1,4 +1,5 @@
 #include "BaseIO.h"
+#include <vector>
 
 using namespace std;
 
@@ -148,7 +149,9 @@ string BaseIO::ReadString(int len, char nullTerminator, bool forceInclude0, int 
     }
     else
     {
-        char str[len + 1];
+        std::vector<char> strVec;
+        strVec.reserve(len + 1);
+        char* str = strVec.data();
         str[len] = 0;
 
         ReadBytes((BYTE*)str, len);
@@ -241,7 +244,7 @@ void BaseIO::Write(UINT64 u64)
 
 void BaseIO::Write(string s, int forceLen, bool nullTerminating, BYTE nullTerminator)
 {
-    WriteBytes(s.c_str(), s.length() + nullTerminating);
+    WriteBytes((BYTE*)s.c_str(), s.length() + nullTerminating);
 
     if (forceLen > 0)
     {

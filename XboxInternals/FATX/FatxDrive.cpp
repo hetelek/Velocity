@@ -3,6 +3,12 @@
 
 #include "FatxDrive.h"
 
+#ifdef _WIN32
+#include <Windows.h>
+#undef DeleteFile
+#undef ReplaceFile
+#endif
+
 FatxDrive::FatxDrive(std::string drivePath, FatxDriveType type)  : type(type)
 {
     // convert it to a wstring
@@ -23,7 +29,7 @@ FatxDrive::FatxDrive(std::wstring drivePath, FatxDriveType type) : type(type)
     loadFatxDrive(drivePath);
 }
 
-FatxDrive::FatxDrive(HANDLE deviceHandle, FatxDriveType type) : type(type)
+FatxDrive::FatxDrive(void* deviceHandle, FatxDriveType type) : type(type)
 {
     loadFatxDrive(deviceHandle);
 }
@@ -44,7 +50,7 @@ FatxIO FatxDrive::GetFatxIO(FatxFileEntry *entry)
     if (entry->clusterChain.size() == 0)
         ReadClusterChain(entry);
 
-    return FatxIO(io, entry);
+    return FatxIO(static_cast<DeviceIO*>(io), entry);
 }
 
 void FatxDrive::processBootSector(Partition *part)
@@ -242,7 +248,7 @@ void FatxDrive::DeleteFile(FatxFileEntry *entry)
 
     // set all the clusters to available
     entry->clusterChain.push_back(entry->startingCluster);
-    FatxIO::SetAllClusters(io, entry->partition, entry->clusterChain, FAT_CLUSTER_AVAILABLE);
+    FatxIO::SetAllClusters(static_cast<DeviceIO*>(io), entry->partition, entry->clusterChain, FAT_CLUSTER_AVAILABLE);
 
     entry->partition->freeClusters.resize(entry->partition->freeClusters.size() + entry->clusterChain.size());
 
@@ -497,7 +503,7 @@ void FatxDrive::RestoreFromBackup(std::string backupPath, void (*progress)(void 
     {
 #ifdef __WIN32
         high = (i * (UINT64)0x100000) >> 32;
-        SetFilePointer(hFile, (i * (UINT64)0x100000) & 0xFFFFFFFF, &high, FILE_BEGIN);
+        SetFilePointer(hFile, (i * (UINT64)0x100000) & 0xFFFFFFFF, (PLONG)&high, FILE_BEGIN);
 
         ReadFile(hFile, buffer, 0x100000, &high, NULL);
 #endif
@@ -645,7 +651,7 @@ void FatxDrive::loadFatxDrive(std::wstring drivePath)
     loadFatxDrive();
 }
 
-void FatxDrive::loadFatxDrive(HANDLE deviceHandle)
+void FatxDrive::loadFatxDrive(void* deviceHandle)
 {
     // open the device io
     io = new DeviceIO(deviceHandle);

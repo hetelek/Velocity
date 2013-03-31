@@ -5,7 +5,7 @@ FatxIO::FatxIO(DeviceIO *device, FatxFileEntry *entry) : device(device), entry(e
     SetPosition(0);
 }
 
-void FatxIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios_base::beg)
+void FatxIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir)
 {
     if (dir == std::ios_base::cur)
         position += pos;
@@ -516,7 +516,7 @@ void FatxIO::getConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRan
     }
 }
 
-void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL)
+void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD), void *arg)
 {
     // get the current position
     INT64 pos;

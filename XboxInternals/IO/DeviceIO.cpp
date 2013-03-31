@@ -1,16 +1,45 @@
 #include "DeviceIO.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#include <WinIoCtl.h>
+#else
+#define _FILE_OFFSET_BITS 64
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include <sys/disk.h>
+#include <unistd.h>
+#endif
 
-DeviceIO::DeviceIO(HANDLE deviceHandle) :
-    lastReadOffset(-1)
+#ifndef _WIN32
+#include <sys/stat.h>
+#endif
+
+
+class DeviceIO::Impl
+{
+public:
+#ifdef _WIN32
+    HANDLE deviceHandle;
+    OVERLAPPED offset;
+#else
+    int device;
+    INT64 offset;
+#endif
+};
+
+
+DeviceIO::DeviceIO(void* deviceHandle) :
+    lastReadOffset(-1), impl(new Impl)
 {
     #ifdef __WIN32
         pos = 0;
-        if (deviceHandle == INVALID_HANDLE_VALUE)
+        if ((HANDLE)deviceHandle == INVALID_HANDLE_VALUE)
             throw std::string("DeviceIO: Invalid device handle.\n");
 
-        this->deviceHandle = deviceHandle;
-        memset(&offset, 0, sizeof(OVERLAPPED));
+        this->impl->deviceHandle = (HANDLE)deviceHandle;
+        memset(&impl->offset, 0, sizeof(OVERLAPPED));
     #endif
 }
 
@@ -34,7 +63,10 @@ DeviceIO::DeviceIO(std::wstring devicePath) :
 
 DeviceIO::~DeviceIO()
 {
-
+    if (impl)
+    {
+        delete impl;
+    }
 }
 
 void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
@@ -44,11 +76,11 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
     {
         #ifdef _WIN32
             bool success = ReadFile(
-                deviceHandle,	// Device to read from
-                outBuffer,      // Output buffer
-                len,			// Length to read
-                NULL,           // Pointer to the number of bytes read
-                &offset);		// OVERLAPPED structure containing the offset to read from
+                impl->deviceHandle,   // Device to read from
+                outBuffer,            // Output buffer
+                len,                  // Length to read
+                NULL,                 // Pointer to the number of bytes read
+                &impl->offset);       // OVERLAPPED structure containing the offset to read from
 
             if (!success)
                 throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
@@ -68,11 +100,11 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
     {
         #ifdef _WIN32
                 bool success = ReadFile(
-                    deviceHandle,	// Device to read from
-                    lastReadData,	// Output buffer
-                    0x200,			// Length to read
-                    NULL,           // Pointer to the number of bytes read
-                    &offset);		// OVERLAPPED structure containing the offset to read from
+                    impl->deviceHandle,   // Device to read from
+                    lastReadData,         // Output buffer
+                    0x200,                // Length to read
+                    NULL,                 // Pointer to the number of bytes read
+                    &impl->offset);       // OVERLAPPED structure containing the offset to read from
 
                 if (!success)
                     throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
@@ -105,11 +137,11 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
     // read the consecutive sectors
     #ifdef _WIN32
             bool success = ReadFile(
-                deviceHandle,                       // Device to read from
+                impl->deviceHandle,                 // Device to read from
                 outBuffer,                          // Output buffer
                 downTo,                             // Length to read
                 NULL,                               // Pointer to the number of bytes read
-                &offset);                           // OVERLAPPED structure containing the offset to read from
+                &impl->offset);                     // OVERLAPPED structure containing the offset to read from
 
             if (!success)
                 throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
@@ -131,11 +163,11 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
     // read the stragglers
     #ifdef _WIN32
             success = ReadFile(
-                deviceHandle,                       // Device to read from
+                impl->deviceHandle,                 // Device to read from
                 lastReadData,                       // Output buffer
                 0x200,                              // Length to read
                 NULL,                               // Pointer to the number of bytes read
-                &offset);                           // OVERLAPPED structure containing the offset to read from
+                &impl->offset);                     // OVERLAPPED structure containing the offset to read from
 
             if (!success)
                 throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
@@ -158,11 +190,11 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
     {
         #ifdef _WIN32
             bool success = WriteFile(
-                deviceHandle,	// Device to read from
-                buffer,      // Output buffer
-                len,			// Length to read
-                NULL,           // Pointer to the number of bytes read
-                &offset);		// OVERLAPPED structure containing the offset to read from
+                impl->deviceHandle,     // Device to read from
+                buffer,                 // Output buffer
+                len,                    // Length to read
+                NULL,                   // Pointer to the number of bytes read
+                &impl->offset);         // OVERLAPPED structure containing the offset to read from
 
             if (!success)
                 throw std::string("DeviceIO: Error writing to the device, may be disconnected.\n");
@@ -200,11 +232,11 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
     SetPosition(currentSector);
     #ifdef _WIN32
         WriteFile(
-            deviceHandle,		// Device to read from
-            lastReadData,       // Data to write
-            0x200,              // Amount of data to write
-            &bytesWritten,      // Pointer to number of bytes written
-            &offset);			// OVERLAPPED structure containing the offset to write from
+            impl->deviceHandle,   // Device to read from
+            lastReadData,         // Data to write
+            0x200,                // Amount of data to write
+            &bytesWritten,        // Pointer to number of bytes written
+            &impl->offset);       // OVERLAPPED structure containing the offset to write from
     #else
         write(device, lastReadData, len);
     #endif
@@ -233,11 +265,11 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
 
         #ifdef _WIN32
             WriteFile(
-                deviceHandle,		// Device to read from
-                lastReadData,       // Data to write
-                0x200,              // Amount of data to write
-                &bytesWritten,      // Pointer to number of bytes written
-                &offset);			// OVERLAPPED structure containing the offset to write from
+                impl->deviceHandle,   // Device to read from
+                lastReadData,         // Data to write
+                0x200,                // Amount of data to write
+                &bytesWritten,        // Pointer to number of bytes written
+                &impl->offset);       // OVERLAPPED structure containing the offset to write from
         #else
             write(device, buffer, len);
         #endif
@@ -256,7 +288,7 @@ UINT64 DeviceIO::Length()
 
         memset(&geometry, 0, sizeof(DISK_GEOMETRY));
         DeviceIoControl(
-            deviceHandle,					// Device to get the geometry from
+            impl->deviceHandle,			// Device to get the geometry from
             IOCTL_DISK_GET_DRIVE_GEOMETRY,	// Action we're taking (getting the geometry)
             NULL,							// Not used since this requires no input data
             0,								// No data
@@ -299,10 +331,10 @@ void DeviceIO::SetPosition(UINT64 address, std::ios_base::seek_dir dir)
     address = DOWN_TO_NEAREST_SECTOR(address); // Round the position down to the nearest sector offset
 
     #ifdef _WIN32
-        offset.Offset = (DWORD)address;
-        offset.OffsetHigh = (DWORD)(address >> 32);
+        impl->offset.Offset = (DWORD)address;
+        impl->offset.OffsetHigh = (DWORD)(address >> 32);
     #else
-        offset = address;
+        impl->offset = address;
         lseek(device, address, SEEK_SET);
     #endif
 }
@@ -310,9 +342,9 @@ void DeviceIO::SetPosition(UINT64 address, std::ios_base::seek_dir dir)
 UINT64 DeviceIO::realPosition()
 {
     #ifdef _WIN32
-        return (UINT64)(((UINT64)offset.OffsetHigh << 32) | offset.Offset);
+        return (UINT64)(((UINT64)impl->offset.OffsetHigh << 32) | impl->offset.Offset);
     #else
-        return offset;
+        return impl->offset;
     #endif
 }
 
@@ -324,8 +356,8 @@ UINT64 DeviceIO::GetPosition()
 void DeviceIO::Close()
 {
     #if defined _WIN32
-        if (deviceHandle != INVALID_HANDLE_VALUE)
-            CloseHandle(deviceHandle);
+        if (impl->deviceHandle != INVALID_HANDLE_VALUE)
+            CloseHandle(impl->deviceHandle);
     #else
         close(device);
         device = NULL;
@@ -336,10 +368,10 @@ void DeviceIO::loadDevice(std::wstring devicePath)
 {
     #ifdef _WIN32
         pos = 0;
-        memset(&offset, 0, sizeof(OVERLAPPED));
+        memset(&impl->offset, 0, sizeof(OVERLAPPED));
 
         // Attempt to get a handle to the device
-        deviceHandle = CreateFile(
+        impl->deviceHandle = CreateFile(
                 devicePath.c_str(),// File name (device path)
                 GENERIC_READ | GENERIC_WRITE,		// Read/write access
                 FILE_SHARE_READ | FILE_SHARE_WRITE,	// Read/write share
@@ -348,7 +380,7 @@ void DeviceIO::loadDevice(std::wstring devicePath)
                 FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH | FILE_ATTRIBUTE_DEVICE,	// Flags and attributes
                 NULL);								// Ignored
 
-        if (deviceHandle == INVALID_HANDLE_VALUE)
+        if (impl->deviceHandle == INVALID_HANDLE_VALUE)
             throw std::string("DeviceIO: Could not open HANDLE for device.\n");
     #else
         // Open the device
@@ -361,6 +393,6 @@ void DeviceIO::loadDevice(std::wstring devicePath)
 void DeviceIO::Flush()
 {
     #ifdef __WIN32
-        FlushFileBuffers(deviceHandle);
+        FlushFileBuffers(impl->deviceHandle);
     #endif
 }

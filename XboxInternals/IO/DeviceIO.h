@@ -8,27 +8,11 @@
 #include "../FATX/fatxhelpers.h"
 #include "XboxInternals_global.h"
 
-#ifdef _WIN32
-    #include <windows.h>
-    #include <WinIoCtl.h>
-#else
-    #define _FILE_OFFSET_BITS 64
-    #include <fcntl.h>
-    #include <sys/types.h>
-    #include <sys/ioctl.h>
-    #include <sys/disk.h>
-    #include <unistd.h>
-#endif
-
-#ifndef _WIN32
-    #include <sys/stat.h>
-#endif
-
 
 class XBOXINTERNALSSHARED_EXPORT DeviceIO : public BaseIO
 {
 public:
-    DeviceIO(HANDLE deviceHandle);
+    DeviceIO(void* deviceHandle);
     DeviceIO(std::string devicePath);
     DeviceIO(std::wstring devicePath);
     ~DeviceIO();
@@ -52,13 +36,8 @@ private:
 
     UINT64 realPosition();
 
-    #ifdef _WIN32
-        HANDLE deviceHandle;
-        OVERLAPPED offset;
-    #else
-        int device;
-        INT64 offset;
-    #endif
+    class Impl;
+    Impl* impl;
 
     UINT64 pos;
     BYTE lastReadData[0x200];

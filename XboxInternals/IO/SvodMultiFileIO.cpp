@@ -1,4 +1,5 @@
 #include "SvodMultiFileIO.h"
+#include <dirent.h>
 
 using namespace std;
 
@@ -37,7 +38,8 @@ void SvodMultiFileIO::loadDirectories(string path)
         // load only the files, don't want the folders
         while ((ent = readdir(dir)) != NULL)
         {
-            string fullName = path + string(ent->d_name);
+            string fullName(path);
+            fullName += ent->d_name;
             if (opendir(fullName.c_str()) == NULL)
                 files.push_back(fullName);
         }

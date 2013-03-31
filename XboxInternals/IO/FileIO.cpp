@@ -1,11 +1,18 @@
 #include "IO/FileIO.h"
+#include <vector>
 
 FileIO::FileIO(string path, bool truncate) :
     BaseIO(), filePath(path)
 {
-    fstr = new fstream(path.c_str(), (std::_Ios_Openmode)(fstream::in | fstream::out | fstream::binary | (fstream::trunc * truncate)));
+    fstr = new fstream(path.c_str(), fstream::in | fstream::out | fstream::binary | (truncate ? fstream::trunc : 0));
     if (!fstr->is_open())
-        throw std::string("FileIO: Error opening the file. " + string(strerror(errno)) + "\n");
+    {
+        std::string ex("FileIO: Error opening the file. ");
+        ex += strerror(errno);
+        ex += "\n";
+        throw ex;
+    }
+
 	endian = BigEndian;
 
     fstr->seekp(0, std::ios_base::end);
@@ -15,7 +22,7 @@ FileIO::FileIO(string path, bool truncate) :
 
 void FileIO::SetPosition(UINT64 pos, ios_base::seek_dir dir)
 {
-    fstr->seekp(pos, (std::_Ios_Seekdir)dir);
+    fstr->seekp(pos, dir);
 }
 
 UINT64 FileIO::GetPosition()
@@ -40,7 +47,9 @@ void FileIO::Flush()
 
 void FileIO::ReverseGenericArray(void *arr, int elemSize, int len)
 {
-    char temp[elemSize];
+	std::vector<char> tempVec;
+	tempVec.reserve(elemSize);
+	char* temp = tempVec.data();
 
 	for (int i = 0; i < (len / 2); i++)
 	{
@@ -57,12 +66,12 @@ string FileIO::GetFilePath()
 
 void FileIO::ReadBytes(BYTE *outBuffer, DWORD len)
 {
-    fstr->read((BYTE*)outBuffer, len);
+    fstr->read((fstream::char_type*)outBuffer, len);
 }
 
 void FileIO::WriteBytes(BYTE *buffer, DWORD len)
 {
-    fstr->write((BYTE*)buffer, len);
+    fstr->write((fstream::char_type*)buffer, len);
 }
 
 FileIO::~FileIO(void)
