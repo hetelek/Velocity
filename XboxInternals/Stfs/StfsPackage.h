@@ -110,6 +110,9 @@ public:
     // Description: resign the file
     void Resign(string kvPath);
 
+    // Description: resign the file
+    void Resign(BYTE* kvData, size_t length);
+
     // Description: remove a file entry from the file listing
     void RemoveFile(StfsFileEntry entry);
 

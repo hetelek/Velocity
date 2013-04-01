@@ -56,6 +56,12 @@ public:
     // fix the signature in the header
     void ResignHeader(string kvPath);
 
+    // fix the signature in the header
+    void ResignHeader(BYTE* kvData, size_t length);
+
+    // fix the signature in the header
+    void ResignHeader(BaseIO& kvIo);
+
     // fix the sha1 hash of the header data
     void FixHeaderHash();
 

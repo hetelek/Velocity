@@ -1078,6 +1078,11 @@ void StfsPackage::Resign(string kvPath)
     metaData->ResignHeader(kvPath);
 }
 
+void StfsPackage::Resign(BYTE* kvData, size_t length)
+{
+    metaData->ResignHeader(kvData, length);
+}
+
 void StfsPackage::SetBlockStatus(DWORD blockNum, BlockStatusLevelZero status)
 {
     if (blockNum >= metaData->stfsVolumeDescriptor.allocatedBlockCount)
