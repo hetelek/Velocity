@@ -25,6 +25,8 @@ public:
 private slots:
     void on_btnExtractSecuritySector_clicked();
 
+    void on_btnReplaceSecuritySector_clicked();
+
 private:
     Ui::SecuritySectorDialog *ui;
     FatxDrive *drive;

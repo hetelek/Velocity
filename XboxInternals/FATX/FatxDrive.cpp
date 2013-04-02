@@ -158,6 +158,34 @@ void FatxDrive::ExtractSecurityBlob(string path)
     io->SetPosition(originalPos);
 }
 
+void FatxDrive::ReplaceSecurityBlob(std::string path)
+{
+    INT64 originalPos = io->GetPosition();
+
+    // open the security blob
+    FileIO inFile(path);
+
+    // verify the file size
+    if (inFile.Length() != (securityBlob.msLogoSize + 0x204))
+        throw std::string("FATX: Invalid security blob, size mismatch.\n");
+
+    // seek to the beginning of the security blob
+    io->SetPosition(0x2000);
+
+    // allocate memory for the data
+    BYTE *buffer = new BYTE[securityBlob.msLogoSize + 0x204];
+    inFile.SetPosition(0);
+    inFile.ReadBytes(buffer, securityBlob.msLogoSize + 0x204);
+
+    io->WriteBytes(buffer, securityBlob.msLogoSize + 0x204);
+    io->Flush();
+
+    // cleanup
+    delete[] buffer;
+    inFile.Close();
+    io->SetPosition(originalPos);
+}
+
 void FatxDrive::createFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
 {
     if (!(parent->fileAttributes & FatxDirectory))

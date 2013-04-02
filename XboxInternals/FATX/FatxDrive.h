@@ -43,6 +43,9 @@ public:
     // save the security blob to local disk
     void ExtractSecurityBlob(std::string path);
 
+    // replace the existing security blob
+    void ReplaceSecurityBlob(std::string path);
+
     // writes the a folder named 'folderName', in the 'parent' folder
     void CreateFolder(FatxFileEntry *parent, std::string folderName);
 
