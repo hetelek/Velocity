@@ -7,11 +7,19 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QDateTime>
+#include <QtAlgorithms>
 #include "json.h"
 
 namespace Ui {
 class GitHubCommitsDialog;
 }
+
+struct Commit
+{
+    QString author;
+    QString message;
+    QDateTime timestamp;
+};
 
 class GitHubCommitsDialog : public QDialog
 {
@@ -22,12 +30,20 @@ public:
     ~GitHubCommitsDialog();
     
 private slots:
-    void onReply(QNetworkReply *reply);
+    void onCommitsReply(QNetworkReply *reply);
+    void onBrachesReply(QNetworkReply *reply);
 
 private:
     Ui::GitHubCommitsDialog *ui;
-    QNetworkAccessManager *manager;
+    QNetworkAccessManager *commitsManager;
+    QNetworkAccessManager *branchesManager;
     QLabel *label;
+    QList<Commit> allCommits;
+
+    int branchCount;
+    int retrievedCount;
 };
+
+bool commitCompare(Commit a, Commit b);
 
 #endif // GITHUBCOMMITSDIALOG_H
