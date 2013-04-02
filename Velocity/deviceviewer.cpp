@@ -644,6 +644,15 @@ void DeviceViewer::onDragLeft(QDragLeaveEvent *event)
     statusBar->showMessage("");
 }
 
+void DeviceViewer::on_txtPath_returnPressed()
+{
+    FatxFileEntry *parent = currentDrive->GetFileEntry(ui->txtPath->text().toStdString());
+    if (parent == NULL || !(parent->fileAttributes & FatxDirectory))
+        QMessageBox::critical(this, "Error", "Velocity can't find " + ui->txtPath->text() + ". Check the spelling and try again.");
+    else
+        LoadFolderAll(parent);
+}
+
 void updateUI(void *arg, bool finished)
 {
     QApplication::processEvents();
