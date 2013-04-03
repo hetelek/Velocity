@@ -22,8 +22,25 @@ Xdbf::Xdbf(FileIO *io) : ioPassedIn(true), io(io)
 void Xdbf::Clean()
 {
     // create a temporary file to write the old Gpd's used memory to
-    char *tempFileName = tmpnam(NULL);
-    FileIO tempFile(string((char*)tempFileName), true);
+    string tempFileName;
+
+#ifdef _WIN32
+    // Opening a file using the path returned by tmpnam() may result in a "permission denied" error on Windows.
+    // Not sure why it happens but tweaking the manifest/UAC properties makes a difference.
+    char *tempFileName_c = _tempnam(NULL, NULL);
+    if (!tempFileName_c)
+        throw string("Xdbf: Failed to generate temporary file name.\n");
+    tempFileName = string(tempFileName_c);
+    free(tempFileName_c);
+    tempFileName_c = NULL;
+#else
+    char tempFileName_c[L_tmpnam];
+    if (!tmpnam(tempFileName_c))
+        throw string("Xdbf: Failed to generate temporary file name.\n");
+    tempFileName = string(tempFileName_c);
+#endif
+
+    FileIO tempFile(tempFileName.c_str(), true);
 
     // write the old header
     tempFile.SetPosition(0);
@@ -65,7 +82,7 @@ void Xdbf::Clean()
     remove(io->GetFilePath().c_str());
 
     // move the temp file to the old file's location
-    rename(tempFileName, io->GetFilePath().c_str());
+    rename(tempFileName.c_str(), io->GetFilePath().c_str());
 
     string path = io->GetFilePath();
     delete io;
