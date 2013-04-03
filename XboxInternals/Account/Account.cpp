@@ -245,7 +245,22 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
 
 
     // write the payload
-    *outPath = std::string(tmpnam(NULL));
+#ifdef _WIN32
+    // Opening a file using the path returned by tmpnam() may result in a "permission denied" error on Windows.
+    // Not sure why it happens but tweaking the manifest/UAC properties makes a difference.
+    char *outPath_c = _tempnam(NULL, NULL);
+    if (!outPath_c)
+        throw string("Account: Failed to generate temporary file name.\n");
+    *outPath = string(outPath_c);
+    free(outPath_c);
+    outPath_c = NULL;
+#else
+    char outPath_c[L_tmpnam];
+    if (!tmpnam(outPath_c))
+        throw string("Account: Failed to generate temporary file name.\n");
+    *outPath = string(outPath_c);
+#endif
+
     FileIO decrypted(*outPath, true);
     decrypted.Write(payload, 0x17C);
     decrypted.Flush();
@@ -283,7 +298,24 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
 
     // begin writing the payload
     if (outPath == NULL)
-        *outPath = std::string(tmpnam(NULL));
+    {
+#ifdef _WIN32
+        // Opening a file using the path returned by tmpnam() may result in a "permission denied" error on Windows.
+        // Not sure why it happens but tweaking the manifest/UAC properties makes a difference.
+        char *outPath_c = _tempnam(NULL, NULL);
+        if (!outPath_c)
+            throw string("Account: Failed to generate temporary file name.\n");
+        *outPath = string(outPath_c);
+        free(outPath_c);
+        outPath_c = NULL;
+#else
+        char outPath_c[L_tmpnam];
+        if (!tmpnam(outPath_c))
+            throw string("Account: Failed to generate temporary file name.\n");
+        *outPath = string(outPath_c);
+#endif
+    }
+
     decIo.Close();
     FileIO encrypted(*outPath, true);
     encrypted.Write(hmacHash, 0x10);
