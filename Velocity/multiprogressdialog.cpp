@@ -153,9 +153,30 @@ void MultiProgressDialog::extractNextFile()
 
                     QString *fileName = reinterpret_cast<QString*>(internalFiles.at(fileIndex++));
                     QFileInfo fileInfo(*fileName);
+                    QString cleanName = *fileName;
+
+                    // set up the parent entry
+                    FatxFileEntry *pEntry = parentEntry;
+                    if (rootPath != "")
+                    {
+                        // fix the path seperators
+                        rootPath = rootPath.replace("/", "\\");
+                        *fileName = fileName->replace("/", "\\");
+
+                        // get the FATX file path
+                        QString fatxPath = QString::fromStdString(parentEntry->path + parentEntry->name) + fileName->replace(rootPath, "").mid(0, fileName->replace(rootPath, "").lastIndexOf("\\"));
+                        pEntry = drive->GetFileEntry(fatxPath.toStdString());
+
+                        // if the directory on the device doesn't exist, then we need to create it
+                        if (pEntry == NULL)
+                        {
+                            drive->CreateFolder(drive->GetFileEntry(fatxPath.mid(0, fatxPath.lastIndexOf("\\")).toStdString()), fatxPath.mid(fatxPath.lastIndexOf("\\") + 1).toStdString());
+                            pEntry = drive->GetFileEntry(fatxPath.toStdString());
+                        }
+                    }
 
                     // check if the file already exists
-                    if (drive->FileExists(parentEntry, fileInfo.fileName().toStdString()))
+                    if (drive->FileExists(pEntry, fileInfo.fileName().toStdString()))
                     {
                         int button = QMessageBox::question(this, "File Alread Exists", "The file " + fileInfo.fileName() +
                                               " already exists in this directory. Would you like to replace the current one?",
@@ -163,18 +184,18 @@ void MultiProgressDialog::extractNextFile()
 
                         if (button == QMessageBox::Yes)
                         {
-                            FatxIO file = drive->GetFatxIO(drive->GetFileEntry(parentEntry->path + parentEntry->name + "\\" + fileInfo.fileName().toStdString()));
-                            file.ReplaceFile(fileName->toStdString(), updateProgress, this);
+                            FatxIO file = drive->GetFatxIO(drive->GetFileEntry(pEntry->path + pEntry->name + "\\" + fileInfo.fileName().toStdString()));
+                            file.ReplaceFile(cleanName.toStdString(), updateProgress, this);
                         }
                     }
                     else
                     {
-                        drive->InjectFile(parentEntry, fileInfo.fileName().toStdString(), fileName->toStdString(), updateProgress, this);
+                        drive->InjectFile(pEntry, fileInfo.fileName().toStdString(), cleanName.toStdString(), updateProgress, this);
                     }
                 }
                 catch (string error)
                 {
-                    QMessageBox::critical(this, "", "An error occurred while extracting files.\n\n" + QString::fromStdString(error));
+                    QMessageBox::critical(this, "", "An error occurred while copying files to the xbox drive.\n\n" + QString::fromStdString(error));
                 }
             }
 

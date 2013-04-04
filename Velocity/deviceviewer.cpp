@@ -114,6 +114,7 @@ void DeviceViewer::showContextMenu(QPoint point)
     {
         contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
         contextMenu.addAction(QPixmap(":/Images/add.png"), "Copy File(s) Here");
+        contextMenu.addAction(QPixmap(":/Images/NewFolder.png"), "Copy Folder Here");
         contextMenu.addAction(QPixmap(":/Images/FolderFileIcon.png"), "Create Folder Here");
 
         contextMenu.addSeparator();
@@ -129,6 +130,7 @@ void DeviceViewer::showContextMenu(QPoint point)
     else
     {
         contextMenu.addAction(QPixmap(":/Images/add.png"), "Copy File(s) Here");
+        contextMenu.addAction(QPixmap(":/Images/NewFolder.png"), "Copy Folder Here");
         contextMenu.addAction(QPixmap(":/Images/FolderFileIcon.png"), "Create Folder Here");
     }
 
@@ -147,7 +149,7 @@ void DeviceViewer::showContextMenu(QPoint point)
             {
                 FatxFileEntry *entry = items.at(i)->data(0, Qt::UserRole).value<FatxFileEntry*>();
                 if (entry->fileAttributes & FatxDirectory)
-                    GetSubFiles(entry, filesToExtract);
+                    GetSubFilesFATX(entry, filesToExtract);
                 else
                     filesToExtract.push_back(entry);
             }
@@ -180,7 +182,18 @@ void DeviceViewer::showContextMenu(QPoint point)
             for (DWORD i = 0; i < toInjectPaths.size(); i++)
                 files.push_back(const_cast<void*>((void*)&toInjectPaths.at(i)));
 
-            InjectFiles(files);
+            InjectFiles(files, "");
+        }
+        else if (selectedItem->text() == "Copy Folder Here")
+        {
+            QString folder = QFileDialog::getExistingDirectory(this, "Choose a folder to copy...", QtHelpers::DesktopLocation());
+            if (folder == "")
+                return;
+
+            QList<void*> files;
+            GetSubFilesLocal(folder, files);
+
+            InjectFiles(files, QFileInfo(folder).path());
         }
         else if (selectedItem->text() == "Delete Selected")
         {
@@ -238,9 +251,9 @@ void DeviceViewer::showContextMenu(QPoint point)
     }
 }
 
-void DeviceViewer::InjectFiles(QList<void*> files)
+void DeviceViewer::InjectFiles(QList<void*> files, QString rootPath)
 {
-    MultiProgressDialog *dialog = new MultiProgressDialog(OpInject, FileSystemFATX, currentDrive, "", files, this, "", parentEntry);
+    MultiProgressDialog *dialog = new MultiProgressDialog(OpInject, FileSystemFATX, currentDrive, "", files, this, rootPath, parentEntry);
     dialog->setModal(true);
     dialog->show();
     dialog->start();
@@ -556,7 +569,7 @@ void DeviceViewer::LoadPartitions()
     directoryChain.push_back(entry);
 }
 
-void DeviceViewer::GetSubFiles(FatxFileEntry *parent, QList<void *> &entries)
+void DeviceViewer::GetSubFilesFATX(FatxFileEntry *parent, QList<void *> &entries)
 {
     if ((parent->fileAttributes & FatxDirectory) == 0)
     {
@@ -568,7 +581,18 @@ void DeviceViewer::GetSubFiles(FatxFileEntry *parent, QList<void *> &entries)
 
     for (DWORD i = 0; i < parent->cachedFiles.size(); i++)
         if (parent->cachedFiles.at(i).nameLen != FATX_ENTRY_DELETED)
-            GetSubFiles(&parent->cachedFiles.at(i), entries);
+            GetSubFilesFATX(&parent->cachedFiles.at(i), entries);
+}
+
+void DeviceViewer::GetSubFilesLocal(QString parent, QList<void*> &files)
+{
+    QDir dir(parent);
+    foreach (QFileInfo file, dir.entryInfoList(QDir::Files))
+        files.push_back(new QString(file.filePath()));
+
+    QFileInfoList dirs = dir.entryInfoList(QDir::Dirs);
+    for (int i = 2; i < dirs.size(); i++)
+        GetSubFilesLocal(dirs.at(i).filePath(), files);
 }
 
 void DeviceViewer::on_treeWidget_2_itemExpanded(QTreeWidgetItem *item)
@@ -636,7 +660,7 @@ void DeviceViewer::onDragDropped(QDropEvent *event)
     for (int i = 0; i < filePaths.size(); i++)
         files.push_back(new QString(filePaths.at(i).toString().mid(8)));
 
-    InjectFiles(files);
+    InjectFiles(files, "");
 }
 
 void DeviceViewer::onDragLeft(QDragLeaveEvent *event)

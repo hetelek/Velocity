@@ -85,10 +85,11 @@ private:
     void LoadFolderAll(FatxFileEntry *folder);
     void LoadFolderTree(QTreeWidgetItem *item);
     void LoadPartitions();
-    void GetSubFiles(FatxFileEntry *parent, QList<void*> &entries);
+    void GetSubFilesFATX(FatxFileEntry *parent, QList<void*> &entries);
+    void GetSubFilesLocal(QString parent, QList<void *> &files);
     FatxFileEntry* GetFatxFileEntry(QTreeWidgetItem *item);
     void DrawMemoryGraph();
-    void InjectFiles(QList<void *> files);
+    void InjectFiles(QList<void *> files, QString rootPath);
     void DrawHeader(QString driveName);
 
     friend void updateUI(void *arg, bool finished);

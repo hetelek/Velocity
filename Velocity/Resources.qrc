@@ -94,5 +94,6 @@
         <file>Images/harddrive.png</file>
         <file>Images/usb drive.png</file>
         <file>Images/restore.png</file>
+        <file>Images/NewFolder.png</file>
     </qresource>
 </RCC>
