@@ -2,7 +2,9 @@
 
 FatxIO::FatxIO(DeviceIO *device, FatxFileEntry *entry) : device(device), entry(entry)
 {
-    SetPosition(0);
+    // if it's a new file, then don't do any seeking yet
+    if (entry->startingCluster != 0)
+        SetPosition(0);
 }
 
 void FatxIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir)
@@ -55,6 +57,9 @@ void FatxIO::Close()
 
 int FatxIO::AllocateMemory(DWORD byteAmount)
 {
+    // preserve the position
+    UINT64 pos = device->GetPosition();
+
     if (byteAmount == 0)
     {
         entry->clusterChain.push_back(0);
@@ -64,19 +69,33 @@ int FatxIO::AllocateMemory(DWORD byteAmount)
 
     // calcualte how many clusters to allocate
     DWORD clusterCount = (byteAmount + ((entry->partition->clusterSize - (entry->fileSize % entry->partition->clusterSize)) - 1)) / entry->partition->clusterSize;
-    bool fileIsNull = (entry->fileSize == 0);
+    bool fileIsNull = (entry->fileSize == 0 || entry->startingCluster == 0);
 
-    if (fileIsNull && entry->fileAttributes & FatxDirectory || clusterCount == 0)
+    if (fileIsNull && entry->fileAttributes & FatxDirectory)
     {
         entry->fileSize += byteAmount;
         WriteEntryToDisk(entry);
-        return 0;
     }
 
     // get the free clusters
     std::vector<DWORD> freeClusters = getFreeClusters(entry->partition, clusterCount);
     if (freeClusters.size() != clusterCount)
         throw std::string("FATX: Cannot find requested amount of free clusters.\n");
+
+    // if it's a folder, then we need to 0xFF out all of the clusters allocated so that it doesn't pick up fake entries
+    if (entry->fileAttributes & FatxDirectory)
+    {
+        BYTE *ffBuff = new BYTE[entry->partition->clusterSize];
+        memset(ffBuff, 0xFF, entry->partition->clusterSize);
+
+        for (int i = 0; i < freeClusters.size(); i++)
+        {
+            device->SetPosition(ClusterToOffset(entry->partition, freeClusters.at(i)));
+            device->WriteBytes(ffBuff, entry->partition->clusterSize);
+        }
+
+        delete[] ffBuff;
+    }
 
     // add the free clusters to the cluster chain
     for (int i = 0; i < freeClusters.size(); i++)
@@ -95,6 +114,10 @@ int FatxIO::AllocateMemory(DWORD byteAmount)
         entry->fileSize += byteAmount;
         WriteEntryToDisk(entry);
     }
+
+    // preserve the position
+    device->SetPosition(pos);
+
     return clusterCount;
 }
 

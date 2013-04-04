@@ -199,6 +199,7 @@ void FatxDrive::createFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
 
     // set the address to null
     newEntry->address = 0;
+    newEntry->startingCluster = 0;
 
     // get the child entries
     GetChildFileEntries(parent);
@@ -221,16 +222,6 @@ void FatxDrive::createFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
         UINT64 freeEntryAddress = parent->cachedFiles.size() * FATX_ENTRY_SIZE;
         FatxIO parentIO = GetFatxIO(parent);
 
-        // check to make sure this address is the correct one
-        if (freeEntryAddress != 0)
-        {
-            parentIO.SetPosition(freeEntryAddress - FATX_ENTRY_SIZE);
-
-            BYTE prevNameLength = parentIO.ReadByte();
-            if (prevNameLength == 0xFF || prevNameLength == 0)
-                throw std::string("FATX: Could not calculate correct entry address.\n");
-        }
-
         if (parentIO.AllocateMemory(FATX_ENTRY_SIZE) != 0)
         {
             parentIO.SetPosition(parent->fileSize);
@@ -245,7 +236,7 @@ void FatxDrive::createFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
     newEntry->fileSize = 0;
     newEntry->partition = parent->partition;
 
-    FatxIO childIO = GetFatxIO(newEntry);
+    FatxIO childIO(static_cast<DeviceIO*>(io), newEntry);
     newEntry->clusterChain.clear();
     childIO.AllocateMemory(fileSize);
 
@@ -917,7 +908,12 @@ FatxFileEntry *FatxDrive::GetFileEntry(std::string filePath)
 
     // get the partition
     std::string partitionName = filePath.substr(0, filePath.find('\\'));
-    filePath = filePath.substr(filePath.find('\\') + 1);
+
+    if (filePath.find('\\') == -1)
+        filePath = "";
+    else
+        filePath = filePath.substr(filePath.find('\\') + 1);
+
     Partition *part = NULL;
     for (DWORD i = 0; i < partitions.size(); i++)
     {
@@ -933,10 +929,10 @@ FatxFileEntry *FatxDrive::GetFileEntry(std::string filePath)
         return false;
 
     FatxFileEntry *parent = &part->root;
-    while (filePath.find('\\') >= 0 && filePath.size() > 0)
+    while ((int)filePath.find('\\') >= 0 || filePath.size() > 0)
     {
         // load all the entries children (not recursively)
-        GetChildFileEntries(parent);
+        //GetChildFileEntries(parent);
 
         // get the next file name
         std::string fileName = filePath.substr(0, filePath.find('\\'));
@@ -950,7 +946,7 @@ FatxFileEntry *FatxDrive::GetFileEntry(std::string filePath)
         FatxFileEntry *foundEntry = NULL;
         for (DWORD i = 0; i < parent->cachedFiles.size(); i++)
         {
-            if (parent->cachedFiles.at(i).name == fileName)
+            if (parent->cachedFiles.at(i).name == fileName && parent->cachedFiles.at(i).nameLen != FATX_ENTRY_DELETED)
             {
                 foundEntry = &parent->cachedFiles.at(i);
                 break;
