@@ -67,11 +67,15 @@ string FileIO::GetFilePath()
 void FileIO::ReadBytes(BYTE *outBuffer, DWORD len)
 {
     fstr->read((fstream::char_type*)outBuffer, len);
+    if (fstr->fail())
+        throw string("FileIO: Error reading from file.\n");
 }
 
 void FileIO::WriteBytes(BYTE *buffer, DWORD len)
 {
     fstr->write((fstream::char_type*)buffer, len);
+    if (fstr->fail())
+        throw string("FileIO: Error writing to file.\n");
 }
 
 FileIO::~FileIO(void)
