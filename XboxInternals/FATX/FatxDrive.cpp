@@ -617,7 +617,10 @@ bool FatxDrive::validFileChar(char c)
 
 FatxDrive::~FatxDrive()
 {
-    delete[] securityBlob.msLogo;
+    if (type == FatxHarddrive)
+    {
+        delete[] securityBlob.msLogo;
+    }
 
     io->Close();
     delete io;
