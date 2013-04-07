@@ -11,6 +11,8 @@ class XBOXINTERNALSSHARED_EXPORT SvodIO : public BaseIO
 public:
     SvodIO(XContentHeader *metadata, GdfxFileEntry entry, SvodMultiFileIO *io);
 
+    virtual ~SvodIO();
+
     void ReadBytes(BYTE *outBuffer, DWORD len);
 
     void WriteBytes(BYTE *buffer, DWORD len);

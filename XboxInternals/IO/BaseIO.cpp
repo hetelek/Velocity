@@ -9,6 +9,11 @@ BaseIO::BaseIO() :
     // should be implemented by derived class
 }
 
+BaseIO::~BaseIO()
+{
+
+}
+
 void BaseIO::SetEndian(EndianType byteOrder)
 {
     this->byteOrder = byteOrder;
