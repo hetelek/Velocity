@@ -622,6 +622,11 @@ FatxDrive::~FatxDrive()
         delete[] securityBlob.msLogo;
     }
 
+    for (int i = 0, count = partitions.size(); i < count; i++)
+    {
+        delete partitions[i];
+    }
+
     io->Close();
     delete io;
 }
