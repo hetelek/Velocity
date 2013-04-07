@@ -1,5 +1,6 @@
 #include "FatxDriveDetection.h"
 #include <Windows.h>
+#include <algorithm>
 
 std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
 {
@@ -55,6 +56,8 @@ std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
 
                 if (dataFiles.size() >= 3)
                 {
+                    // Make sure the data files are loaded in the right order
+                    std::sort(dataFiles.begin(), dataFiles.end());
                     MultiFileIO *io = new MultiFileIO(dataFiles);
                     FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
                     drives.push_back(usbDrive);
