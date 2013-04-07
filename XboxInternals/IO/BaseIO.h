@@ -20,6 +20,7 @@ class XBOXINTERNALSSHARED_EXPORT BaseIO
 {
 public:
     BaseIO();
+    virtual ~BaseIO();
 
     // set the byte order in which to read the bytes
     void SetEndian(EndianType byteOrder);

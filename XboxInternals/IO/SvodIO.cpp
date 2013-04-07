@@ -11,6 +11,11 @@ SvodIO::SvodIO(XContentHeader *metadata, GdfxFileEntry entry, SvodMultiFileIO *i
     io->SetPosition(addr, index);
 }
 
+SvodIO::~SvodIO()
+{
+
+}
+
 void SvodIO::SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *dataFileIndex)
 {
     DWORD trueSector = (sector - (metadata->svodVolumeDescriptor.dataBlockOffset * 2)) % 0x14388;

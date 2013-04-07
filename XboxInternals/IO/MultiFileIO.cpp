@@ -16,6 +16,11 @@ MultiFileIO::MultiFileIO(std::vector<BaseIO*> files) : files(files), currentIOIn
     calcualteLengthOfAllFiles();
 }
 
+MultiFileIO::~MultiFileIO()
+{
+    Close();
+}
+
 void MultiFileIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir)
 {
     if (dir == std::ios_base::end)
