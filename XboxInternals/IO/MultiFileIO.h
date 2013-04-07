@@ -12,6 +12,7 @@ class XBOXINTERNALSSHARED_EXPORT MultiFileIO : public BaseIO
 public:
     MultiFileIO(std::vector<std::string> filePaths);
     MultiFileIO(std::vector<BaseIO*> files);
+    virtual ~MultiFileIO();
 
     // seek to a position in a file
     void SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios_base::beg);

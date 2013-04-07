@@ -15,7 +15,7 @@ public:
     DeviceIO(void* deviceHandle);
     DeviceIO(std::string devicePath);
     DeviceIO(std::wstring devicePath);
-    ~DeviceIO();
+    virtual ~DeviceIO();
 
     void ReadBytes(BYTE *outBuffer, DWORD len);
 

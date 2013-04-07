@@ -21,6 +21,7 @@ class XBOXINTERNALSSHARED_EXPORT FatxIO : public BaseIO
 {
 public:
     FatxIO(DeviceIO *device, FatxFileEntry *entry);
+    virtual ~FatxIO();
 
     // get the current file entry
     FatxFileEntry *GetFatxFileEntry();

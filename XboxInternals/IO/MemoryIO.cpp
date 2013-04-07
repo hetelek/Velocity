@@ -6,6 +6,11 @@ MemoryIO::MemoryIO(BYTE *data, size_t length) :
 
 }
 
+MemoryIO::~MemoryIO()
+{
+
+}
+
 void MemoryIO::SetPosition(UINT64 pos, std::ios_base::seek_dir dir)
 {
     DWORD newPos;

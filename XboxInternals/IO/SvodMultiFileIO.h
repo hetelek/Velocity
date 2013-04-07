@@ -15,7 +15,7 @@ class XBOXINTERNALSSHARED_EXPORT SvodMultiFileIO : public BaseIO
 {
 public:
     SvodMultiFileIO(string fileDirectory);
-    ~SvodMultiFileIO();
+    virtual ~SvodMultiFileIO();
 
     // seek to a certain address in the file, index of -1 for current file
     void SetPosition(DWORD addressInFile, int fileIndex = -1);
