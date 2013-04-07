@@ -30,7 +30,7 @@ public:
     string GetFilePath();
 
     static void ReverseGenericArray(void *arr, int elemSize, int len);
-	~FileIO();
+	virtual ~FileIO();
 private:
 	EndianType endian;
     UINT64 length;
