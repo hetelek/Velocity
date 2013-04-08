@@ -7,6 +7,11 @@ FatxIO::FatxIO(DeviceIO *device, FatxFileEntry *entry) : device(device), entry(e
         SetPosition(0);
 }
 
+FatxIO::~FatxIO()
+{
+
+}
+
 void FatxIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir)
 {
     if (dir == std::ios_base::cur)

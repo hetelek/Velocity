@@ -617,7 +617,15 @@ bool FatxDrive::validFileChar(char c)
 
 FatxDrive::~FatxDrive()
 {
-    delete[] securityBlob.msLogo;
+    if (type == FatxHarddrive)
+    {
+        delete[] securityBlob.msLogo;
+    }
+
+    for (int i = 0, count = partitions.size(); i < count; i++)
+    {
+        delete partitions[i];
+    }
 
     io->Close();
     delete io;
