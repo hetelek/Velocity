@@ -590,8 +590,8 @@ void DeviceViewer::GetSubFilesLocal(QString parent, QList<void*> &files)
     foreach (QFileInfo file, dir.entryInfoList(QDir::Files))
         files.push_back(new QString(file.filePath()));
 
-    QFileInfoList dirs = dir.entryInfoList(QDir::Dirs);
-    for (int i = 2; i < dirs.size(); i++)
+    QFileInfoList dirs = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs);
+    for (int i = 0; i < dirs.size(); i++)
         GetSubFilesLocal(dirs.at(i).filePath(), files);
 }
 
