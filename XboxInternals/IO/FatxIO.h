@@ -20,6 +20,8 @@ struct Range
 class XBOXINTERNALSSHARED_EXPORT FatxIO : public BaseIO
 {
 public:
+    FatxFileEntry *entry;
+
     FatxIO(DeviceIO *device, FatxFileEntry *entry);
     virtual ~FatxIO();
 
@@ -79,7 +81,6 @@ private:
     void getConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges);
 
     DeviceIO *device;
-    FatxFileEntry *entry;
     UINT64 pos;
     DWORD maxReadConsecutive;
 };

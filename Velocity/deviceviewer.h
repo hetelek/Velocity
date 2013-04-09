@@ -72,6 +72,8 @@ private slots:
 
     void on_txtPath_returnPressed();
 
+    void on_txtDriveName_editingFinished();
+
 private:
     Ui::DeviceViewer *ui;
     std::vector<FatxDrive*> loadedDrives;

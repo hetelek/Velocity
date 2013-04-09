@@ -186,6 +186,15 @@ void FatxDrive::ReplaceSecurityBlob(std::string path)
     io->SetPosition(originalPos);
 }
 
+void FatxDrive::CreateFileX(FatxFileEntry *parent, std::string name)
+{
+    FatxFileEntry newEntry;
+    newEntry.name = name;
+    newEntry.fileSize = 0xFFFFFFFF;
+
+    createFileEntry(parent, &newEntry);
+}
+
 void FatxDrive::createFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
 {
     if (!(parent->fileAttributes & FatxDirectory))
@@ -238,7 +247,15 @@ void FatxDrive::createFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
 
     FatxIO childIO(static_cast<DeviceIO*>(io), newEntry);
     newEntry->clusterChain.clear();
-    childIO.AllocateMemory(fileSize);
+    if (fileSize == 0xFFFFFFFF)
+    {
+        childIO.AllocateMemory(1);
+        newEntry->fileSize = 0;
+        childIO.entry->fileSize = 0;
+        childIO.WriteEntryToDisk(childIO.entry);
+    }
+    else
+        childIO.AllocateMemory(fileSize);
 
     parent->cachedFiles.push_back(*newEntry);
 }
@@ -940,7 +957,7 @@ FatxFileEntry *FatxDrive::GetFileEntry(std::string filePath)
     while ((int)filePath.find('\\') >= 0 || filePath.size() > 0)
     {
         // load all the entries children (not recursively)
-        //GetChildFileEntries(parent);
+        GetChildFileEntries(parent);
 
         // get the next file name
         std::string fileName = filePath.substr(0, filePath.find('\\'));

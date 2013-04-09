@@ -720,3 +720,22 @@ void DeviceViewer::on_btnShowAll_clicked()
         ui->treeWidget->topLevelItem(i)->setHidden(false);
     ui->txtSearch->setStyleSheet("");
 }
+
+void DeviceViewer::on_txtDriveName_editingFinished()
+{
+    FatxFileEntry *nameEntry = currentDrive->GetFileEntry("Drive:\\Content\\name.txt");
+
+    // if the file doesn't exist, then we need to create it
+    if (nameEntry == NULL)
+    {
+        currentDrive->CreateFileX(currentDrive->GetFileEntry("Drive:\\Content"), "name.txt");
+        nameEntry = currentDrive->GetFileEntry("Drive:\\Content\\name.txt");
+    }
+
+    FatxIO nameIO = currentDrive->GetFatxIO(nameEntry);
+    nameIO.SetPosition(0);
+
+    // the xbox requires that these 2 bytes are at the beginning of the file for whatever reason
+    nameIO.Write((WORD)0xFEFF);
+    nameIO.Write(ui->txtDriveName->text().toStdWString());
+}

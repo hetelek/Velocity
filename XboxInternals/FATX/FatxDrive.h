@@ -46,6 +46,9 @@ public:
     // replace the existing security blob
     void ReplaceSecurityBlob(std::string path);
 
+    // create a new file
+    void CreateFileX(FatxFileEntry *parent, std::string name);
+
     // writes the a folder named 'folderName', in the 'parent' folder
     void CreateFolder(FatxFileEntry *parent, std::string folderName);
 
