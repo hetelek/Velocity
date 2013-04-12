@@ -14,7 +14,11 @@
 #include "../Cryptography/XeKeys.h"
 #include "../Cryptography/XeCrypt.h"
 
-#include <ctype.h>
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
 
 class XBOXINTERNALSSHARED_EXPORT FatxDrive
 {
@@ -50,7 +54,10 @@ public:
     void CreateFileX(FatxFileEntry *parent, std::string name);
 
     // writes the a folder named 'folderName', in the 'parent' folder
-    void CreateFolder(FatxFileEntry *parent, std::string folderName);
+    FatxFileEntry* CreateFolder(FatxFileEntry *parent, std::string folderName);
+
+    // creates the specified path (even if multiple folders don't exist in it)
+    void CreatePath(std::string folderPath);
 
     // get the first 4 bytes of a file
     void GetFileEntryMagic(FatxFileEntry *entry);
@@ -99,7 +106,7 @@ public:
 
 private:
     // writes the 'newEntry' to disk, in the 'parent' folder
-    void createFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry);
+    FatxFileEntry* createFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry, bool errorIfAlreadyExists = true);
 
     // open up a physical drive
     void loadFatxDrive(std::wstring drivePath);

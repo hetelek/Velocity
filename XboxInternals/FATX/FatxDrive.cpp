@@ -195,10 +195,12 @@ void FatxDrive::CreateFileX(FatxFileEntry *parent, std::string name)
     createFileEntry(parent, &newEntry);
 }
 
-void FatxDrive::createFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
+FatxFileEntry* FatxDrive::createFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry, bool errorIfAlreadyExists)
 {
     if (!(parent->fileAttributes & FatxDirectory))
         throw std::string("FATX: Parent file entry is not a directory.\n");
+
+    newEntry->path = parent->path + parent->name + "\\";
 
     // set the times
     DWORD currentTime = MSTimeToDWORD(TimetToMSTime(time(NULL)));
@@ -218,7 +220,12 @@ void FatxDrive::createFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
         {
             // if it's deleted, it's okay!
             if (parent->cachedFiles.at(i).nameLen != FATX_ENTRY_DELETED)
-                throw std::string("FATX: Entry already exists.\n");
+            {
+                if (errorIfAlreadyExists)
+                    throw std::string("FATX: Entry already exists.\n");
+                else
+                    return;
+            }
 
             newEntry->address = parent->cachedFiles.at(i).address;
         }
@@ -241,26 +248,20 @@ void FatxDrive::createFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry)
         newEntry->address = parentIO.GetDrivePosition();
     }
 
-    DWORD fileSize = newEntry->fileSize;
-    newEntry->fileSize = 0;
     newEntry->partition = parent->partition;
 
+    DWORD fileSize = newEntry->fileSize;
+    newEntry->fileSize = 0;
+
     FatxIO childIO(static_cast<DeviceIO*>(io), newEntry);
-    newEntry->clusterChain.clear();
-    if (fileSize == 0xFFFFFFFF)
-    {
-        childIO.AllocateMemory(1);
-        newEntry->fileSize = 0;
-        childIO.entry->fileSize = 0;
-        childIO.WriteEntryToDisk(childIO.entry);
-    }
-    else
-        childIO.AllocateMemory(fileSize);
+    childIO.AllocateMemory(fileSize);
+    childIO.WriteEntryToDisk();
 
     parent->cachedFiles.push_back(*newEntry);
+    return &parent->cachedFiles.at(parent->cachedFiles.size() - 1);
 }
 
-void FatxDrive::CreateFolder(FatxFileEntry *parent, std::string folderName)
+FatxFileEntry* FatxDrive::CreateFolder(FatxFileEntry *parent, std::string folderName)
 {
     if (this->FileExists(parent, folderName))
         throw std::string("FATX: The folder already exists.");
@@ -270,7 +271,35 @@ void FatxDrive::CreateFolder(FatxFileEntry *parent, std::string folderName)
     newEntry.name = folderName;
     newEntry.fileAttributes = FatxDirectory;
 
-    this->createFileEntry(parent, &newEntry);
+    return this->createFileEntry(parent, &newEntry);
+}
+
+void FatxDrive::CreatePath(std::string folderPath)
+{
+    if (this->FileExists(folderPath))
+        throw std::string("FATX: The folder already exists.");
+
+    std::vector<std::string> elems;
+    std::stringstream ss(folderPath);
+    std::string item;
+    while (std::getline(ss, item, '\\'))
+        elems.push_back(item);
+
+    if (elems.size() < 3)
+        throw std::string("FATX: Invalid folder path given.");
+
+    std::string currentPath = elems.at(0) + "\\" + elems.at(1);
+
+    for (int i = 2; i < elems.size(); i++)
+    {
+        FatxFileEntry newEntry;
+        newEntry.fileSize = FATX_ENTRY_SIZE;
+        newEntry.name = elems.at(i);
+        newEntry.fileAttributes = FatxDirectory;
+
+        this->createFileEntry(GetFileEntry(currentPath), &newEntry, false);
+        currentPath += "\\" + elems.at(i);
+    }
 }
 
 void FatxDrive::DeleteFile(FatxFileEntry *entry)
@@ -922,7 +951,7 @@ bool FatxDrive::FileExists(FatxFileEntry *folder, std::string fileName, bool che
     return false;
 }
 
-FatxFileEntry *FatxDrive::GetFileEntry(std::string filePath)
+FatxFileEntry* FatxDrive::GetFileEntry(std::string filePath)
 {
     // make sure the path starts with "Drive:\\"
     if (filePath.size() < 7 || filePath.substr(0, 7) != "Drive:\\")
