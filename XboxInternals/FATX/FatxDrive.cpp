@@ -238,8 +238,9 @@ FatxFileEntry* FatxDrive::createFileEntry(FatxFileEntry *parent, FatxFileEntry *
         UINT64 freeEntryAddress = parent->cachedFiles.size() * FATX_ENTRY_SIZE;
         FatxIO parentIO = GetFatxIO(parent);
 
-        if (parentIO.AllocateMemory(FATX_ENTRY_SIZE) != 0)
+        if (parent->clusterChain.size() < 1 || parent->cachedFiles.size() * FATX_ENTRY_SIZE >= parent->partition->clusterSize)
         {
+            parentIO.AllocateMemory(FATX_ENTRY_SIZE);
             parentIO.SetPosition(parent->fileSize);
             parentIO.Write((BYTE)0xFF);
         }
