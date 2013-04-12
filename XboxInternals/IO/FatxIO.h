@@ -59,7 +59,7 @@ public:
     int AllocateMemory(DWORD byteAmount);
 
     // write the entry to disk
-    void WriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> *clusterChain = NULL);
+    void WriteEntryToDisk(std::vector<DWORD> *clusterChain = NULL);
 
     // replace the file with one from a local disk
     void ReplaceFile(std::string sourcePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);

@@ -76,10 +76,9 @@ int FatxIO::AllocateMemory(DWORD byteAmount)
     DWORD clusterCount = (byteAmount + ((entry->partition->clusterSize - (entry->fileSize % entry->partition->clusterSize)) - 1)) / entry->partition->clusterSize;
     bool fileIsNull = (entry->fileSize == 0 || entry->startingCluster == 0);
 
-    if (fileIsNull && entry->fileAttributes & FatxDirectory)
+    if (fileIsNull && !(entry->fileAttributes & FatxDirectory))
     {
         entry->fileSize += byteAmount;
-        WriteEntryToDisk(entry);
     }
 
     // get the free clusters
@@ -115,10 +114,10 @@ int FatxIO::AllocateMemory(DWORD byteAmount)
 
     // update the file size, only if it's not a directory
     if (!(entry->fileAttributes & FatxDirectory))
-    {
         entry->fileSize += byteAmount;
-        WriteEntryToDisk(entry);
-    }
+
+    if (entry->address != -1)
+        WriteEntryToDisk();
 
     // preserve the position
     device->SetPosition(pos);
@@ -302,7 +301,7 @@ void FatxIO::SetAllClusters(DeviceIO *device, Partition *part, std::vector<DWORD
     device->Flush();
 }
 
-void FatxIO::WriteEntryToDisk(FatxFileEntry *entry, std::vector<DWORD> *clusterChain)
+void FatxIO::WriteEntryToDisk(std::vector<DWORD> *clusterChain)
 {
     bool isDeleted = (entry->nameLen == FATX_ENTRY_DELETED);
     BYTE nameLen;
@@ -385,7 +384,7 @@ void FatxIO::ReplaceFile(std::string sourcePath, void (*progress)(void *, DWORD,
     }
 
     entry->fileSize = fileSize;
-    WriteEntryToDisk(entry, NULL);
+    WriteEntryToDisk();
 
     ///////////////////
     // START WRITING //
