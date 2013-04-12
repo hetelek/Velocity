@@ -219,7 +219,27 @@ void DeviceViewer::showContextMenu(QPoint point)
                 if (text.length() > FATX_ENTRY_MAX_NAME_LENGTH)
                     QMessageBox::critical(this, "Invalid Filename", "The inputted name is invalid.");
                 else
-                    currentDrive->CreateFolder(parentEntry, text.toStdString());
+                {
+                    FatxFileEntry *entry = currentDrive->CreateFolder(parentEntry, text.toStdString());
+
+                    // setup the tree widget item
+                    QTreeWidgetItem *entryItem = new QTreeWidgetItem(ui->treeWidget);
+                    entryItem->setData(0, Qt::UserRole, QVariant::fromValue(entry));
+                    entryItem->setData(5, Qt::UserRole, QVariant(false));
+
+                    // show the directory indicator
+                    entryItem->setIcon(0, QIcon(":/Images/FolderFileIcon.png"));
+
+                    // setup the text
+                    entryItem->setText(0, QString::fromStdString(entry->name));
+
+                    MSTime createdtime = DWORDToMSTime(entry->creationDate);
+
+                    QDate date;
+                    date.setDate(createdtime.year, createdtime.month, createdtime.monthDay);
+
+                    entryItem->setText(2, date.toString(Qt::DefaultLocaleShortDate));
+                }
             }
         }
         else if (selectedItem->text() == "Rename")
@@ -240,7 +260,7 @@ void DeviceViewer::showContextMenu(QPoint point)
             FatxIO io = currentDrive->GetFatxIO(fileEntry);
 
             fileEntry->name = name.toStdString();
-            io.WriteEntryToDisk(fileEntry);
+            io.WriteEntryToDisk();
 
             items.at(0)->setText(0, name);
         }
