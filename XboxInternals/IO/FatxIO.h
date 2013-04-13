@@ -70,15 +70,15 @@ public:
     // sets all the clusters equal to value
     static void SetAllClusters(DeviceIO *device, Partition *part, std::vector<DWORD> &clusters, DWORD value);
 
+    // get the ranges of consecutive numbers in list where it's sorted
+    static void GetConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges);
+
 private:
     // find count amount of free custers
     std::vector<DWORD> getFreeClusters(Partition *part, DWORD count);
 
     // writes the cluster chain (and links them correctly) starting from startingCluster
     void writeClusterChain(Partition *part, DWORD startingCluster, std::vector<DWORD> clusterChain);
-
-    // get the ranges of consecutive numbers in list where it's sorted
-    void getConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges);
 
     DeviceIO *device;
     UINT64 pos;

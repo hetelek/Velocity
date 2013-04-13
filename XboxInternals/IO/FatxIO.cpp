@@ -207,7 +207,7 @@ std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
     std::vector<Range> usedRanges;
 
     // get the consecutive clusters
-    getConsecutive(part->freeClusters, consecutiveClusters);
+    GetConsecutive(part->freeClusters, consecutiveClusters);
 
     // sort the consecutive clusters so that the longest ranges are at the beginning
     std::sort(consecutiveClusters.begin(), consecutiveClusters.end(), compareRanges);
@@ -525,7 +525,7 @@ void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vect
     }*/
 }
 
-void FatxIO::getConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges)
+void FatxIO::GetConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges)
 {
     for (int i = 0; i < list.size(); i++)
     {

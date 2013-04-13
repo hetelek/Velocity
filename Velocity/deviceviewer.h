@@ -69,9 +69,7 @@ private slots:
     void on_btnRestore_clicked();
     void on_txtSearch_textChanged(const QString &arg1);
     void on_btnShowAll_clicked();
-
     void on_txtPath_returnPressed();
-
     void on_txtDriveName_editingFinished();
 
 private:

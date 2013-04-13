@@ -123,6 +123,9 @@ private:
     // load all the profiles on the device
     void loadProfiles();
 
+    // inject a range of clustes into the chain
+    void injectRange(vector<DWORD> &clusters, Range &range);
+
     // counts the largest amount of consecutive unset bits
     static BYTE cntlzw(DWORD x);
 

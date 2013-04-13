@@ -318,12 +318,13 @@ void FatxDrive::DeleteFile(FatxFileEntry *entry)
 
     entry->partition->freeClusters.resize(entry->partition->freeClusters.size() + entry->clusterChain.size());
 
-    // add all of the clusters to the free memory since they're now unused
-    std::copy(entry->clusterChain.begin(), entry->clusterChain.end(), entry->partition->freeClusters.end());
+    // generate cluster ranges for fast insertion into the cluster chain
+    std::vector<Range> clusterRanges;
+    FatxIO::GetConsecutive(entry->clusterChain, clusterRanges);
 
-    // insertion sort makes the most sense here since the vast majority of the free cluster vector will
-    // be sorted, and the insertion sort algorithm has very good performance on mostly sorted lists
-    XeCrypt::InsertionSort(entry->partition->freeClusters.begin(), entry->partition->freeClusters.end());
+    // inject all of the ranges back into the cluster chain
+    for (DWORD i = 0; i < clusterRanges.size(); i++)
+        injectRange(entry->partition->freeClusters, clusterRanges.at(i));
 
     // update the entry
     entry->clusterChain.clear();
@@ -697,6 +698,28 @@ void FatxDrive::loadProfiles()
 
     // get the content folder in the content partition
     GetChildFileEntries(contentRoot);
+}
+
+void FatxDrive::injectRange(vector<DWORD> &clusters, Range &range)
+{
+    // do a binary search to find the position to inject the clusters
+    int start = 0, end = clusters.size() - 1, pos = 0;
+    while (start < end)
+    {
+        pos = (start + end) / 2;
+        if (clusters.at(pos) < range.start)
+            start = pos + 1;
+        else if (clusters.at(pos) > range.start)
+            end = pos - 1;
+    }
+
+    // generate the range of clusters to inject
+    vector<DWORD> sillyRange;
+    for (DWORD i = 0; i < range.len; i++)
+        sillyRange.push_back(range.start + i);
+
+    // insert that range, yo
+    clusters.insert(clusters.begin() + start, sillyRange.begin(), sillyRange.end());
 }
 
 void FatxDrive::loadFatxDrive(std::wstring drivePath)
