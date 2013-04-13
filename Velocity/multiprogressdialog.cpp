@@ -170,7 +170,7 @@ void MultiProgressDialog::extractNextFile()
                         // if the directory on the device doesn't exist, then we need to create it
                         if (pEntry == NULL)
                         {
-                            drive->CreateFolder(drive->GetFileEntry(fatxPath.mid(0, fatxPath.lastIndexOf("\\")).toStdString()), fatxPath.mid(fatxPath.lastIndexOf("\\") + 1).toStdString());
+                            drive->CreatePath(fatxPath.toStdString());
                             pEntry = drive->GetFileEntry(fatxPath.toStdString());
                         }
                     }
