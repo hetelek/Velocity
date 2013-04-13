@@ -65,21 +65,16 @@ int FatxIO::AllocateMemory(DWORD byteAmount)
     // preserve the position
     UINT64 pos = device->GetPosition();
 
-    if (byteAmount == 0)
-    {
-        entry->clusterChain.push_back(0);
-        entry->startingCluster = 0;
-        return 0;
-    }
+    bool wasZero = (byteAmount == 0);
+    if (wasZero)
+        byteAmount++;
 
     // calcualte how many clusters to allocate
     DWORD clusterCount = (byteAmount + ((entry->partition->clusterSize - (entry->fileSize % entry->partition->clusterSize)) - 1)) / entry->partition->clusterSize;
     bool fileIsNull = (entry->fileSize == 0 || entry->startingCluster == 0);
 
-    if (fileIsNull && !(entry->fileAttributes & FatxDirectory))
-    {
+    if (!(entry->fileAttributes & FatxDirectory) && !wasZero)
         entry->fileSize += byteAmount;
-    }
 
     // get the free clusters
     std::vector<DWORD> freeClusters = getFreeClusters(entry->partition, clusterCount);
@@ -111,10 +106,6 @@ int FatxIO::AllocateMemory(DWORD byteAmount)
     // write the cluster chain (only if it's changed)
     if (clusterCount != 0)
         writeClusterChain(entry->partition, entry->startingCluster, entry->clusterChain);
-
-    // update the file size, only if it's not a directory
-    if (!(entry->fileAttributes & FatxDirectory))
-        entry->fileSize += byteAmount;
 
     if (entry->address != -1)
         WriteEntryToDisk();
