@@ -59,14 +59,30 @@ void MultiProgressDialog::extractNextFile()
         {
 
             // get the file entry
-            FileEntry *entry = reinterpret_cast<FileEntry*>(filesToExtract.at(fileIndex++));
+            StfsExtractEntry *entry = reinterpret_cast<StfsExtractEntry*>(filesToExtract.at(fileIndex++));
 
-            setWindowTitle("Extracting " + QString::fromStdString(entry->name));
+            setWindowTitle("Extracting " + QString::fromStdString(entry->entry->name));
 
             try
             {
+                // make all the directories needed
+                QString dirPath = QDir::toNativeSeparators(outDir + entry->path).replace("\\", "/");
+                std::string dirPathStd = dirPath.toStdString();
+
+                if (filesToExtract.size() != 1)
+                {
+                    QDir saveDir(dirPath);
+
+                    if (!saveDir.exists())
+                        saveDir.mkpath(dirPath);
+
+                    dirPathStd += entry->entry->name;
+                }
+
                 StfsPackage *package = reinterpret_cast<StfsPackage*>(device);
-                package->ExtractFile(entry, ((filesToExtract.size() != 1) ? (outDir.replace("\\", "/").toStdString() + entry->name) : outDir.toStdString()), updateProgress, this);
+                package->ExtractFile(entry->entry, dirPathStd, updateProgress, this);
+
+                delete entry;
             }
             catch (string error)
             {

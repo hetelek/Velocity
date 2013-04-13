@@ -4,6 +4,7 @@
 // qt
 #include <QDialog>
 #include <QMessageBox>
+#include <QDir>
 
 // xbox
 #include "Stfs/XContentHeader.h"
@@ -14,6 +15,12 @@
 namespace Ui {
 class MultiProgressDialog;
 }
+
+struct StfsExtractEntry
+{
+    FileEntry *entry;
+    QString path;
+};
 
 void updateProgress(void *form, DWORD curProgress, DWORD total);
 

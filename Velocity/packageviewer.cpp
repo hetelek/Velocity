@@ -352,12 +352,29 @@ void PackageViewer::aboutToShow()
         gameActions.at(i)->setProperty("fromPackageViewer", QVariant(true));
 }
 
+void PackageViewer::GetSubFilesStfs(FileListing *parent, QList<void *> &entries, QString currentPath)
+{
+    for (int i = 0; i < parent->fileEntries.size(); i++)
+    {
+        StfsExtractEntry *exEntry = new StfsExtractEntry;
+        exEntry->entry = &parent->fileEntries.at(i);
+        exEntry->path = currentPath;
+        entries.push_back(exEntry);
+    }
+
+    for (int i = 0; i < parent->folderEntries.size(); i++)
+        GetSubFilesStfs(&parent->folderEntries.at(i), entries, currentPath + QString::fromStdString(parent->folderEntries.at(i).folder.name) + "/");
+}
+
 void PackageViewer::showRemoveContextMenu(QPoint point)
 {
     int amount = ui->treeWidget->selectedItems().length();
 
     QPoint globalPos = ui->treeWidget->mapToGlobal(point);
     QMenu contextMenu;
+
+    contextMenu.addAction(QPixmap(":/Images/extract.png"), "Extract All");
+    contextMenu.addSeparator();
 
     bool isFolder = false;
     if (amount == 0)
@@ -419,8 +436,13 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         {
             QString packagePath;
             GetPackagePath(items.at(i), &packagePath);
+
+            StfsExtractEntry *entry = new StfsExtractEntry;
+            entry->path = "";
+
             sillyNess.append(package->GetFileEntry(packagePath.toStdString()));
-            outFiles.append(&sillyNess.at(i));
+            entry->entry = &sillyNess.at(i);
+            outFiles.append(entry);
         }
 
         try
@@ -440,6 +462,28 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
         statusBar->showMessage("Selected files extracted successfully", 3000);
 
+    }
+    else if (selectedItem->text() == "Extract All")
+    {
+        QString path = QFileDialog::getExistingDirectory(this, "Save Location", QtHelpers::DesktopLocation()) + "/";
+
+        QList<void*> entries;
+        GetSubFilesStfs(&listing, entries);
+
+        try
+        {
+            MultiProgressDialog *dialog = new MultiProgressDialog(FileSystemSTFS, package, path.replace("\\", "/"), entries, this);
+            dialog->setModal(true);
+            dialog->show();
+            dialog->start();
+        }
+        catch (string error)
+        {
+            QMessageBox::critical(this, "Error", "Failed to extract file.\n\n" + QString::fromStdString(error));
+            return;
+        }
+
+        statusBar->showMessage("All files extracted successfully", 3000);
     }
     else if (selectedItem->text() == "Remove Selected")
     {
@@ -522,6 +566,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         if (totalCount == 1)
         {
             GetPackagePath(items.at(0), &packagePath, true);
+            packagePath += "\\";
 
             if (isFolder && items.at(0)->parent() == NULL)
                 packagePath.append(items.at(0)->text(0) + "\\");

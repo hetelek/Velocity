@@ -48,7 +48,7 @@ class PackageViewer : public QDialog
 public:
     explicit PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<QAction*> gpdActions, QList<QAction*> gameActions, QWidget *parent = NULL, bool disposePackage = true);
     ~PackageViewer();
-    
+
 private slots:
     void on_btnFix_clicked();
 
@@ -75,6 +75,8 @@ private:
     void PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *parent = NULL);
     void GetPackagePath(QTreeWidgetItem *item, QString *out, bool folderOnly = false);
     void SetIcon(string name, FileEntry *entry, QTreeWidgetItem *item);
+    void GetSubFilesStfs(FileListing *parent, QList<void *> &entries, QString currentPath = "");
+
     StfsPackage *package;
     bool disposePackage;
     FileListing listing;
