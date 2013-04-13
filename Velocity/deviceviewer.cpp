@@ -743,19 +743,12 @@ void DeviceViewer::on_btnShowAll_clicked()
 
 void DeviceViewer::on_txtDriveName_editingFinished()
 {
-    FatxFileEntry *nameEntry = currentDrive->GetFileEntry("Drive:\\Content\\name.txt");
-
-    // if the file doesn't exist, then we need to create it
-    if (nameEntry == NULL)
+    try
     {
-        currentDrive->CreateFileX(currentDrive->GetFileEntry("Drive:\\Content"), "name.txt");
-        nameEntry = currentDrive->GetFileEntry("Drive:\\Content\\name.txt");
+        currentDrive->SetDriveName(ui->txtDriveName->text().toStdWString());
     }
-
-    FatxIO nameIO = currentDrive->GetFatxIO(nameEntry);
-    nameIO.SetPosition(0);
-
-    // the xbox requires that these 2 bytes are at the beginning of the file for whatever reason
-    nameIO.Write((WORD)0xFEFF);
-    nameIO.Write(ui->txtDriveName->text().toStdWString());
+    catch (std::string error)
+    {
+        QMessageBox::warning(this, "Problem Renaming", "The drive could not be renamed.\n\n" + QString::fromStdString(error));
+    }
 }

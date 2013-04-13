@@ -77,6 +77,9 @@ public:
     // get the FatxFileEntry from its path
     FatxFileEntry* GetFileEntry(std::string filePath);
 
+    // sets the drive name
+    void SetDriveName(std::wstring name);
+
     // close the underlying io
     void Close();
 

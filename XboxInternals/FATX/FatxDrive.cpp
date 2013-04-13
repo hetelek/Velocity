@@ -190,7 +190,7 @@ void FatxDrive::CreateFileX(FatxFileEntry *parent, std::string name)
 {
     FatxFileEntry newEntry;
     newEntry.name = name;
-    newEntry.fileSize = 0xFFFFFFFF;
+    newEntry.fileSize = 0;
 
     createFileEntry(parent, &newEntry);
 }
@@ -1038,6 +1038,36 @@ FatxFileEntry* FatxDrive::GetFileEntry(std::string filePath)
     }
 
     return parent;
+}
+
+void FatxDrive::SetDriveName(std::wstring name)
+{
+    FatxFileEntry *nameEntry = GetFileEntry("Drive:\\Content\\name.txt");
+
+    // if the file doesn't exist, then we need to create it
+    if (nameEntry == NULL)
+    {
+        CreateFileX(GetFileEntry("Drive:\\Content"), "name.txt");
+        nameEntry = GetFileEntry("Drive:\\Content\\name.txt");
+    }
+
+    FatxIO nameIO = GetFatxIO(nameEntry);
+
+    // update the entry size
+    int count = (name.length() * 2) + 2;
+
+    if (count > 0x36)
+        throw std::string("FATX: Drive name cannot be larger than 26 characters.\n");
+
+    nameIO.entry->fileSize = count;
+    nameIO.WriteEntryToDisk();
+
+    // set the postition
+    nameIO.SetPosition(0);
+
+    // the xbox requires that these 2 bytes are at the beginning of the file for whatever reason
+    nameIO.Write((WORD)0xFEFF);
+    nameIO.Write(name);
 }
 
 bool FatxDrive::ValidFileName(std::string fileName)
