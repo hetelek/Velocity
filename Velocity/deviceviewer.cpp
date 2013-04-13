@@ -134,6 +134,9 @@ void DeviceViewer::showContextMenu(QPoint point)
         contextMenu.addAction(QPixmap(":/Images/FolderFileIcon.png"), "Create Folder Here");
     }
 
+    contextMenu.addSeparator();
+    contextMenu.addAction(QPixmap(":/Images/refresh.png"), "Refresh");
+
     QAction *selectedItem = contextMenu.exec(globalPos);
     if(selectedItem == NULL)
         return;
@@ -263,6 +266,10 @@ void DeviceViewer::showContextMenu(QPoint point)
             io.WriteEntryToDisk();
 
             items.at(0)->setText(0, name);
+        }
+        else if (selectedItem->text() == "Refresh")
+        {
+            LoadFolderAll(parentEntry);
         }
     }
     catch (std::string error)
@@ -637,6 +644,7 @@ void DeviceViewer::on_treeWidget_2_itemClicked(QTreeWidgetItem *item, int column
     {
         ui->imgPiechart->setPixmap(QPixmap());
         currentDrive = item->data(0, Qt::UserRole).value<FatxDrive*>();
+        parentEntry = NULL;
         DrawHeader(item->text(0));
         LoadPartitions();
         return;
