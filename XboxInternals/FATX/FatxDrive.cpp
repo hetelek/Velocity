@@ -275,10 +275,11 @@ FatxFileEntry* FatxDrive::CreateFolder(FatxFileEntry *parent, std::string folder
     return this->createFileEntry(parent, &newEntry);
 }
 
-void FatxDrive::CreatePath(std::string folderPath)
+FatxFileEntry* FatxDrive::CreatePath(std::string folderPath)
 {
-    if (this->FileExists(folderPath))
-        throw std::string("FATX: The folder already exists.");
+    FatxFileEntry *lastEntry = GetFileEntry(folderPath);
+    if (lastEntry != NULL)
+        return lastEntry;
 
     std::vector<std::string> elems;
     std::stringstream ss(folderPath);
@@ -298,9 +299,11 @@ void FatxDrive::CreatePath(std::string folderPath)
         newEntry.name = elems.at(i);
         newEntry.fileAttributes = FatxDirectory;
 
-        this->createFileEntry(GetFileEntry(currentPath), &newEntry, false);
+        lastEntry = this->createFileEntry(GetFileEntry(currentPath), &newEntry, false);
         currentPath += "\\" + elems.at(i);
     }
+
+    return lastEntry;
 }
 
 void FatxDrive::DeleteFile(FatxFileEntry *entry)

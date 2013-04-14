@@ -57,7 +57,7 @@ public:
     FatxFileEntry* CreateFolder(FatxFileEntry *parent, std::string folderName);
 
     // creates the specified path (even if multiple folders don't exist in it)
-    void CreatePath(std::string folderPath);
+    FatxFileEntry *CreatePath(std::string folderPath);
 
     // get the first 4 bytes of a file
     void GetFileEntryMagic(FatxFileEntry *entry);
