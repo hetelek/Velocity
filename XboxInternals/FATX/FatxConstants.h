@@ -55,7 +55,6 @@ struct FlashDriveConfigurationData
 {
     // type1
     Certificate certificate;
-    BYTE conSignature[0x80];
 
     // type2
     BYTE deviceSignature[0x100];
