@@ -165,20 +165,13 @@ void MultiProgressDialog::extractNextFile()
 
                         // get the FATX file path
                         QString fatxPath = QString::fromStdString(parentEntry->path + parentEntry->name) + fileName->replace(rootPath, "").mid(0, fileName->replace(rootPath, "").lastIndexOf("\\"));
-                        pEntry = drive->GetFileEntry(fatxPath.toStdString());
-
-                        // if the directory on the device doesn't exist, then we need to create it
-                        if (pEntry == NULL)
-                        {
-                            drive->CreatePath(fatxPath.toStdString());
-                            pEntry = drive->GetFileEntry(fatxPath.toStdString());
-                        }
+                        pEntry = drive->CreatePath(fatxPath.toStdString());
                     }
 
                     // check if the file already exists
                     if (drive->FileExists(pEntry, fileInfo.fileName().toStdString()))
                     {
-                        int button = QMessageBox::question(this, "File Alread Exists", "The file " + fileInfo.fileName() +
+                        int button = QMessageBox::question(this, "File Already Exists", "The file " + fileInfo.fileName() +
                                               " already exists in this directory. Would you like to replace the current one?",
                                               QMessageBox::Yes, QMessageBox::No);
 
@@ -195,7 +188,7 @@ void MultiProgressDialog::extractNextFile()
                 }
                 catch (string error)
                 {
-                    QMessageBox::critical(this, "", "An error occurred while copying files to the xbox drive.\n\n" + QString::fromStdString(error));
+                    QMessageBox::critical(this, "", "An error occurred while copying files to the drive.\n\n" + QString::fromStdString(error));
                 }
             }
 
@@ -220,8 +213,8 @@ void updateProgress(void *form, DWORD curProgress, DWORD total)
         dialog->prevProgress = curProgress;
     }
 
+    QApplication::processEvents();
+
     if (curProgress == total)
         dialog->extractNextFile();
-
-    QApplication::processEvents();
 }
