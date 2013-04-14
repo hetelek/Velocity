@@ -297,6 +297,10 @@ void DeviceViewer::InjectFiles(QList<void*> files, QString rootPath)
 void DeviceViewer::DrawHeader(QString driveName)
 {
     DrawMemoryGraph();
+    if (currentDrive->GetFatxDriveType() == FatxHarddrive)
+        ui->btnSecurityBlob->setText("Security Blob");
+    else
+        ui->btnSecurityBlob->setText("Config Data");
     ui->txtDriveName->setText(driveName);
 
     ui->imgDrive->setPixmap(((currentDrive->GetFatxDriveType() == FatxHarddrive) ? QPixmap(":/Images/harddrive.png") : QPixmap(":/Images/usb drive.png")));
@@ -658,8 +662,16 @@ void DeviceViewer::on_treeWidget_2_itemClicked(QTreeWidgetItem *item, int column
 
 void DeviceViewer::on_btnSecurityBlob_clicked()
 {
-    SecuritySectorDialog dialog(currentDrive, this);
-    dialog.exec();
+    if (currentDrive->GetFatxDriveType() == FatxHarddrive)
+    {
+        SecuritySectorDialog dialog(currentDrive, this);
+        dialog.exec();
+    }
+    else
+    {
+        FlashDriveConfigDataDialog dialog(&currentDrive->configurationData, statusBar, this);
+        dialog.exec();
+    }
 }
 
 void DeviceViewer::on_btnPartitions_clicked()
