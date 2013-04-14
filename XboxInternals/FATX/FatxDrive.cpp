@@ -800,8 +800,8 @@ void FatxDrive::loadFatxDrive()
         io->ReadBytes(configurationData.deviceID, 0x14);
         configurationData.securityLength = io->ReadDword();
         configurationData.deviceLength = io->ReadUInt64();
-        configurationData.readSpeed = io->ReadDword();
-        configurationData.writeSpeed = io->ReadDword();
+        configurationData.readSpeed = io->ReadWord();
+        configurationData.writeSpeed = io->ReadWord();
 
         // check for type 1/2
         io->SetPosition(0);

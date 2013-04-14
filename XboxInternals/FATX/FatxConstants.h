@@ -62,8 +62,8 @@ struct FlashDriveConfigurationData
     BYTE deviceID[0x14];
     DWORD securityLength; // must be 0x228 or 0x100
     UINT64 deviceLength;
-    DWORD readSpeed;
-    DWORD writeSpeed;
+    WORD readSpeed;
+    WORD writeSpeed;
 };
 
 struct FatxFileEntry
