@@ -1,11 +1,14 @@
 #include "certificatedialog.h"
 #include "ui_certificatedialog.h"
 
-CertificateDialog::CertificateDialog(QStatusBar *statusBar, Certificate *cert, QWidget *parent) :
+CertificateDialog::CertificateDialog(QStatusBar *statusBar, Certificate *cert, QWidget *parent, bool readOnly) :
     QDialog(parent), ui(new Ui::CertificateDialog), cert(cert), statusBar(statusBar)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+
+    if (readOnly)
+        ui->pushButton->setEnabled(false);
 
     ui->tableWidget->setItem(0, 0, new QTableWidgetItem("0x" + QString::number(cert->publicKeyCertificateSize, 16).toUpper()));
 
