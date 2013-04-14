@@ -172,8 +172,10 @@ void DeviceViewer::showContextMenu(QPoint point)
         else if (selectedItem->text() == "View Properties")
         {
             FatxFileEntry *entry = items.at(0)->data(0, Qt::UserRole).value<FatxFileEntry*>();
-            FatxFileDialog dialog(entry, entry->partition->clusterSize, items.at(0)->data(1, Qt::UserRole).toString(), this);
+            FatxFileDialog dialog(currentDrive, entry, entry->partition->clusterSize, items.at(0)->data(1, Qt::UserRole).toString(), this);
             dialog.exec();
+
+            items.at(0)->setText(0, QString::fromStdString(entry->name));
         }
         else if (selectedItem->text() == "Copy File(s) Here")
         {

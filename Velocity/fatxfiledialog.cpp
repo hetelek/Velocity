@@ -1,11 +1,19 @@
 #include "fatxfiledialog.h"
 #include "ui_fatxfiledialog.h"
 
-FatxFileDialog::FatxFileDialog(FatxFileEntry *entry, DWORD clusterSize, QString type, QWidget *parent) :
-    QDialog(parent), ui(new Ui::FatxFileDialog), entry(entry), type(type)
+FatxFileDialog::FatxFileDialog(FatxDrive *drive, FatxFileEntry *entry, DWORD clusterSize, QString type, QWidget *parent) :
+    QDialog(parent), ui(new Ui::FatxFileDialog), entry(entry), type(type), drive(drive)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+
+    connect(ui->chArchive, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged()));
+    connect(ui->chDevice, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged()));
+    connect(ui->chDirectory, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged()));
+    connect(ui->chHidden, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged()));
+    connect(ui->chNormal, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged()));
+    connect(ui->chReadOnly, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged()));
+    connect(ui->chSystem, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged()));
 
     ui->txtName->setText(QString::fromStdString(entry->name));
     ui->lblCluster->setText("0x" + QString::number(entry->startingCluster, 16).toUpper());
@@ -99,4 +107,48 @@ QString FatxFileDialog::getFileType(QString fileName)
         ui->imgIcon->setPixmap(QPixmap(":/Images/DefaultFileIcon.png"));
         return extension.toUpper() + " (." + extension + ")";
     }
+}
+
+void FatxFileDialog::writeEntryBack()
+{
+    entry->name = ui->txtName->text().toStdString();
+    entry->fileAttributes = 0;
+
+    if (ui->chArchive->checkState() == Qt::Checked)
+        entry->fileAttributes |= FatxArchive;
+    if (ui->chDevice->checkState() == Qt::Checked)
+        entry->fileAttributes |= FatxDevice;
+    if (ui->chDirectory->checkState() == Qt::Checked)
+        entry->fileAttributes |= FatxDirectory;
+    if (ui->chHidden->checkState() == Qt::Checked)
+        entry->fileAttributes |= FatxHidden;
+    if (ui->chNormal->checkState() == Qt::Checked)
+        entry->fileAttributes |= FatxNormal;
+    if (ui->chReadOnly->checkState() == Qt::Checked)
+        entry->fileAttributes |= FatxReadOnly;
+    if (ui->chSystem->checkState() == Qt::Checked)
+        entry->fileAttributes |= FatxSystem;
+
+    FatxIO io = drive->GetFatxIO(entry);
+
+    io.entry = entry;
+    io.WriteEntryToDisk();
+
+    io.Close();
+}
+
+void FatxFileDialog::on_btnOK_clicked()
+{
+    writeEntryBack();
+    close();
+}
+
+void FatxFileDialog::on_txtName_textChanged(const QString &arg1)
+{
+    ui->btnApply->setEnabled(true);
+}
+
+void FatxFileDialog::onStateChanged()
+{
+    ui->btnApply->setEnabled(true);
 }
