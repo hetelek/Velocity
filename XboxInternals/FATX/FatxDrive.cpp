@@ -804,11 +804,9 @@ void FatxDrive::loadFatxDrive()
         configurationData.writeSpeed = io->ReadDword();
 
         // check for type 1/2
+        io->SetPosition(0);
         if (configurationData.securityLength == 0x228)
-        {
             ReadCertificateEx(&configurationData.certificate, io, 0);
-            io->ReadBytes(configurationData.conSignature, 0x80);
-        }
         else if (configurationData.securityLength == 0x100)
             io->ReadBytes(configurationData.deviceSignature, 0x100);
         else
