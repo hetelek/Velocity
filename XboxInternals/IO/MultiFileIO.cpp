@@ -67,7 +67,7 @@ void MultiFileIO::WriteBytes(BYTE *buffer, DWORD len)
         // if we can't, we must calculate how much we should read each time
         while (len > 0)
         {
-            DWORD writeCount = (files.at(currentIOIndex)->Length() > files.at(currentIOIndex)->GetPosition() + len) ? len : files.at(currentIOIndex)->Length();
+            DWORD writeCount = (files.at(currentIOIndex)->Length() > files.at(currentIOIndex)->GetPosition() + len) ? len : (files.at(currentIOIndex)->Length() - files.at(currentIOIndex)->GetPosition());
             files.at(currentIOIndex)->WriteBytes(buffer + offset, writeCount);
             offset += writeCount;
             len -= writeCount;
@@ -96,7 +96,7 @@ void MultiFileIO::ReadBytes(BYTE *outBuffer, DWORD len)
         // if we can't, we must calculate how much we should read each time
         while (len > 0)
         {
-            DWORD readCount = (files.at(currentIOIndex)->Length() > files.at(currentIOIndex)->GetPosition() + len) ? len : files.at(currentIOIndex)->Length();
+            DWORD readCount = (files.at(currentIOIndex)->Length() > files.at(currentIOIndex)->GetPosition() + len) ? len : (files.at(currentIOIndex)->Length() - files.at(currentIOIndex)->GetPosition());
             files.at(currentIOIndex)->ReadBytes(outBuffer + offset, readCount);
             offset += readCount;
             len -= readCount;
