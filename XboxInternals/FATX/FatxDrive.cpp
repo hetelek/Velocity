@@ -898,7 +898,7 @@ UINT64 FatxDrive::GetFreeMemory(Partition *part, void(*progress)(void*, bool), v
     // check if it's FAT16
     bool clusterSizeIs2 = (part->clusterEntrySize == FAT16);
 
-    DWORD bytesLeft = part->clusterCount * part->clusterEntrySize;
+    UINT64 bytesLeft = (UINT64)part->clusterCount * (UINT64)part->clusterEntrySize;
     DWORD readSize;
     DWORD x = 0;
     while (bytesLeft > 0)
@@ -938,7 +938,7 @@ UINT64 FatxDrive::GetFreeMemory(Partition *part, void(*progress)(void*, bool), v
     }
 
     // calculate the amount of free memory
-    part->freeMemory = part->freeClusters.size() * part->clusterSize;
+    part->freeMemory = (UINT64)part->freeClusters.size() * (UINT64)part->clusterSize;
 
     // cleanup
     delete[] buffer;
