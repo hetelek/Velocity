@@ -930,7 +930,7 @@ UINT64 FatxDrive::GetFreeMemory(Partition *part, void(*progress)(void*, bool), v
         {
             for (DWORD i = 0; i < (readSize / 4); i++)
             {
-                if (memory.ReadWord() == FAT_CLUSTER_AVAILABLE)
+                if (memory.ReadDword() == FAT_CLUSTER_AVAILABLE)
                     part->freeClusters.push_back(x + i);
             }
             x += 0x14000;
