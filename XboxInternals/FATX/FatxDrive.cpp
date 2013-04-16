@@ -307,14 +307,14 @@ FatxFileEntry* FatxDrive::CreatePath(std::string folderPath)
     return lastEntry;
 }
 
-void FatxDrive::DeleteFile(FatxFileEntry *entry)
+void FatxDrive::DeleteFile(FatxFileEntry *entry, void(*progress)(void*), void *arg)
 {
     // read the data
     GetChildFileEntries(entry);
     ReadClusterChain(entry);
 
     for (int i = 0; i < entry->cachedFiles.size(); i++)
-        DeleteFile(&entry->cachedFiles.at(i));
+        DeleteFile(&entry->cachedFiles.at(i), progress, arg);
 
     // set all the clusters to available
     entry->clusterChain.push_back(entry->startingCluster);
@@ -328,7 +328,10 @@ void FatxDrive::DeleteFile(FatxFileEntry *entry)
 
     // inject all of the ranges back into the cluster chain
     for (DWORD i = 0; i < clusterRanges.size(); i++)
+    {
+        clusterRanges.at(i).start = entry->clusterChain.at(clusterRanges.at(i).start);
         injectRange(entry->partition->freeClusters, clusterRanges.at(i));
+    }
 
     // update the entry
     entry->clusterChain.clear();
@@ -337,6 +340,9 @@ void FatxDrive::DeleteFile(FatxFileEntry *entry)
     // update the entry file name lenght to deleted
     io->SetPosition(entry->address);
     io->Write((BYTE)FATX_ENTRY_DELETED);
+
+    if (progress)
+        progress(arg);
 }
 
 void FatxDrive::InjectFile(FatxFileEntry *parent, std::string name, std::string filePath, void (*progress)(void *, DWORD, DWORD), void *arg)
@@ -715,6 +721,8 @@ void FatxDrive::injectRange(vector<DWORD> &clusters, Range &range)
             start = pos + 1;
         else if (clusters.at(pos) > range.start)
             end = pos - 1;
+        else if (clusters.at(pos) == range.start)
+            throw std::string("FATX: Error freeing cluster, cluster already free.\n");
     }
 
     // generate the range of clusters to inject
