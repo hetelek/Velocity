@@ -27,6 +27,8 @@ private slots:
     void on_txtName_textChanged(const QString &arg1);
     void onStateChanged();
 
+    void on_btnCancel_clicked();
+
 private:
     Ui::FatxFileDialog *ui;
     FatxFileEntry *entry;

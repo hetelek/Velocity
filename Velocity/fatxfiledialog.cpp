@@ -143,12 +143,7 @@ void FatxFileDialog::on_btnOK_clicked()
     close();
 }
 
-void FatxFileDialog::on_txtName_textChanged(const QString &arg1)
+void FatxFileDialog::on_btnCancel_clicked()
 {
-    ui->btnApply->setEnabled(true);
-}
-
-void FatxFileDialog::onStateChanged()
-{
-    ui->btnApply->setEnabled(true);
+    close();
 }
