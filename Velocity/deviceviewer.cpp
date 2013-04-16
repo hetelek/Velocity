@@ -13,6 +13,7 @@ DeviceViewer::DeviceViewer(QStatusBar *statusBar, QWidget *parent) :
 
     ui->treeWidget->header()->setDefaultSectionSize(100);
     ui->treeWidget->header()->resizeSection(0, 250);
+    ui->treeWidget->sortItems(1, Qt::AscendingOrder);
 
     // setup the context menus
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
