@@ -71,7 +71,7 @@ public:
     static void SetAllClusters(DeviceIO *device, Partition *part, std::vector<DWORD> &clusters, DWORD value);
 
     // get the ranges of consecutive numbers in list where it's sorted
-    static void GetConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges);
+    static void GetConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges, bool includeNonConsec = false);
 
 private:
     // find count amount of free custers

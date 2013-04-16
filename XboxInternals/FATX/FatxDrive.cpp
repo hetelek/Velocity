@@ -320,14 +320,12 @@ void FatxDrive::DeleteFile(FatxFileEntry *entry, void(*progress)(void*), void *a
     entry->clusterChain.push_back(entry->startingCluster);
     FatxIO::SetAllClusters(static_cast<DeviceIO*>(io), entry->partition, entry->clusterChain, FAT_CLUSTER_AVAILABLE);
 
-    entry->partition->freeClusters.resize(entry->partition->freeClusters.size() + entry->clusterChain.size());
-
     // generate cluster ranges for fast insertion into the cluster chain
     std::vector<Range> clusterRanges;
-    FatxIO::GetConsecutive(entry->clusterChain, clusterRanges);
+    FatxIO::GetConsecutive(entry->clusterChain, clusterRanges, true);
 
     // inject all of the ranges back into the cluster chain
-    for (DWORD i = 0; i < clusterRanges.size(); i++)
+    for (DWORD i = 1; i < clusterRanges.size(); i++)
     {
         clusterRanges.at(i).start = entry->clusterChain.at(clusterRanges.at(i).start);
         injectRange(entry->partition->freeClusters, clusterRanges.at(i));

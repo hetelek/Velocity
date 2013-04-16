@@ -516,7 +516,7 @@ void FatxIO::writeClusterChain(Partition *part, DWORD startingCluster, std::vect
     }*/
 }
 
-void FatxIO::GetConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges)
+void FatxIO::GetConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges, bool includeNonConsec)
 {
     for (int i = 0; i < list.size(); i++)
     {
@@ -530,7 +530,7 @@ void FatxIO::GetConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRan
         }
         i--;
 
-        if (streak > 1)
+        if (includeNonConsec || streak > 1)
         {
             Range range = { start, streak };
             outRanges.push_back(range);
