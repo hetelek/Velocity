@@ -5,7 +5,6 @@
 #include <QDialog>
 #include <QMessageBox>
 #include <QDir>
-#include <QDebug>
 
 // xbox
 #include "Stfs/XContentHeader.h"
@@ -54,7 +53,7 @@ private:
     Operation op;
     FatxFileEntry *parentEntry;
 
-    void extractNextFile();
+    void operateOnNextFile();
 
     friend void updateProgress(void *form, DWORD curProgress, DWORD total);
 };

@@ -54,10 +54,10 @@ void MultiProgressDialog::start()
     }
 
     ui->progressBar_2->setMaximum(overallProgressTotal);
-    extractNextFile();
+    operateOnNextFile();
 }
 
-void MultiProgressDialog::extractNextFile()
+void MultiProgressDialog::operateOnNextFile()
 {
     // make sure there's another file to extract
     if (fileIndex == internalFiles.size())
@@ -120,93 +120,109 @@ void MultiProgressDialog::extractNextFile()
         }
         case FileSystemFATX:
         {
-            // update groupbox text
-            ui->groupBox_2->setTitle("Overall Progress - " + QString::number(fileIndex + 1) + " of " + QString::number(internalFiles.size()));
-
             if (op == OpExtract)
             {
-                // get the file entry
-                FatxFileEntry *entry = reinterpret_cast<FatxFileEntry*>(internalFiles.at(fileIndex++));
-
-                if (entry->fileAttributes & FatxDirectory)
-                    extractNextFile();
-
-                setWindowTitle("Copying " + QString::fromStdString(entry->name));
-
-                // get the file from the device
-                FatxDrive *drive = reinterpret_cast<FatxDrive*>(device);
-                FatxIO io = drive->GetFatxIO(entry);
-
-                try
+                for (int i = 0; i < internalFiles.size(); i++)
                 {
-                    // make all the directories needed
-                    QString temp = QString::fromStdString(entry->path);
-                    QString dirPath = QDir::toNativeSeparators(outDir + temp.replace(rootPath, ""));
-                    QDir saveDir(dirPath);
+                    // update groupbox text
+                    ui->groupBox_2->setTitle("Overall Progress - " + QString::number(i + 1) + " of " + QString::number(internalFiles.size()));
 
-                    if (!saveDir.exists())
-                        saveDir.mkpath(dirPath);
+                    // get the file entry
+                    FatxFileEntry *entry = reinterpret_cast<FatxFileEntry*>(internalFiles.at(i));
 
-                    // extract the file
-                    io.SaveFile(dirPath.toStdString() + entry->name, updateProgress, this);
-                }
-                catch (string error)
-                {
-                    QMessageBox::critical(this, "", "An error occurred while extracting files.\n\n" + QString::fromStdString(error));
+                    if (entry->fileAttributes & FatxDirectory)
+                        continue;
+
+                    setWindowTitle("Copying " + QString::fromStdString(entry->name));
+
+                    // get the file from the device
+                    FatxDrive *drive = reinterpret_cast<FatxDrive*>(device);
+                    FatxIO io = drive->GetFatxIO(entry);
+
+                    try
+                    {
+                        // make all the directories needed
+                        QString temp = QString::fromStdString(entry->path);
+                        QString dirPath = QDir::toNativeSeparators(outDir + temp.replace(rootPath, ""));
+                        QDir saveDir(dirPath);
+
+                        if (!saveDir.exists())
+                            saveDir.mkpath(dirPath);
+
+                        // extract the file
+                        io.SaveFile(dirPath.toStdString() + entry->name, updateProgress, this);
+                    }
+                    catch (string error)
+                    {
+                        QMessageBox::critical(this, "", "An error occurred while extracting files.\n\n" + QString::fromStdString(error));
+                    }
+
+                    // reset the progress
+                    prevProgress = 0;
                 }
             }
             else if (op == OpInject)
             {
-                try
+                for (int i = 0; i < internalFiles.size(); i++)
                 {
-                    // get the file from the device
-                    FatxDrive *drive = reinterpret_cast<FatxDrive*>(device);
-
-                    QString *fileName = reinterpret_cast<QString*>(internalFiles.at(fileIndex++));
-                    QFileInfo fileInfo(*fileName);
-                    QString cleanName = *fileName;
-
-                    qDebug() << fileInfo.filePath();
-                    setWindowTitle("Copying " + fileInfo.fileName());
-
-                    // set up the parent entry
-                    FatxFileEntry *pEntry = parentEntry;
-                    if (rootPath != "")
+                    try
                     {
-                        // fix the path seperators
-                        rootPath = rootPath.replace("/", "\\");
-                        *fileName = fileName->replace("/", "\\");
+                        // update groupbox text
+                        ui->groupBox_2->setTitle("Overall Progress - " + QString::number(i + 1) + " of " + QString::number(internalFiles.size()));
 
-                        // get the FATX file path
-                        QString fatxPath = QString::fromStdString(parentEntry->path + parentEntry->name) + fileName->replace(rootPath, "").mid(0, fileName->replace(rootPath, "").lastIndexOf("\\"));
-                        pEntry = drive->CreatePath(fatxPath.toStdString());
-                    }
+                        // get the file from the device
+                        FatxDrive *drive = reinterpret_cast<FatxDrive*>(device);
 
-                    // check if the file already exists
-                    if (drive->FileExists(pEntry, fileInfo.fileName().toStdString()))
-                    {
-                        int button = QMessageBox::question(this, "File Already Exists", "The file " + fileInfo.fileName() +
-                                              " already exists in this directory. Would you like to replace the current one?",
-                                              QMessageBox::Yes, QMessageBox::No);
+                        QString *fileName = reinterpret_cast<QString*>(internalFiles.at(i));
+                        QFileInfo fileInfo(*fileName);
+                        QString cleanName = *fileName;
 
-                        if (button == QMessageBox::Yes)
+                        setWindowTitle("Copying " + fileInfo.fileName());
+
+                        // set up the parent entry
+                        FatxFileEntry *pEntry = parentEntry;
+                        if (rootPath != "")
                         {
-                            FatxIO file = drive->GetFatxIO(drive->GetFileEntry(pEntry->path + pEntry->name + "\\" + fileInfo.fileName().toStdString()));
-                            file.ReplaceFile(cleanName.toStdString(), updateProgress, this);
+                            // fix the path seperators
+                            rootPath = rootPath.replace("/", "\\");
+                            *fileName = fileName->replace("/", "\\");
+
+                            // get the FATX file path
+                            QString fatxPath = QString::fromStdString(parentEntry->path + parentEntry->name) + fileName->replace(rootPath, "").mid(0, fileName->replace(rootPath, "").lastIndexOf("\\"));
+                            pEntry = drive->CreatePath(fatxPath.toStdString());
+                        }
+
+                        // check if the file already exists
+                        if (drive->FileExists(pEntry, fileInfo.fileName().toStdString()))
+                        {
+                            int button = QMessageBox::question(this, "File Already Exists", "The file " + fileInfo.fileName() +
+                                                  " already exists in this directory. Would you like to replace the current one?",
+                                                  QMessageBox::Yes, QMessageBox::No);
+
+                            if (button == QMessageBox::Yes)
+                            {
+                                FatxIO file = drive->GetFatxIO(drive->GetFileEntry(pEntry->path + pEntry->name + "\\" + fileInfo.fileName().toStdString()));
+                                file.ReplaceFile(cleanName.toStdString(), updateProgress, this);
+                            }
+                        }
+                        else
+                        {
+                            drive->InjectFile(pEntry, fileInfo.fileName().toStdString(), cleanName.toStdString(), updateProgress, this);
                         }
                     }
-                    else
+                    catch (string error)
                     {
-                        drive->InjectFile(pEntry, fileInfo.fileName().toStdString(), cleanName.toStdString(), updateProgress, this);
+                        QMessageBox::critical(this, "", "An error occurred while copying files to the drive.\n\n" + QString::fromStdString(error));
                     }
-                }
-                catch (string error)
-                {
-                    QMessageBox::critical(this, "", "An error occurred while copying files to the drive.\n\n" + QString::fromStdString(error));
+
+                    // reset the progress
+                    prevProgress = 0;
                 }
             }
 
-            break;
+            // cleanup
+            close();
+            return;
         }
     }
 }
@@ -225,10 +241,10 @@ void updateProgress(void *form, DWORD curProgress, DWORD total)
         dialog->overallProgress += (curProgress - dialog->prevProgress);
         dialog->ui->progressBar_2->setValue(dialog->overallProgress);
         dialog->prevProgress = curProgress;
+
+        if (curProgress == total)
+            dialog->operateOnNextFile();
     }
 
     QApplication::processEvents();
-
-    if (curProgress == total)
-        dialog->extractNextFile();
 }
