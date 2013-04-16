@@ -44,6 +44,7 @@ class DeviceViewer;
 }
 
 void updateUI(void *arg, bool finished);
+void updateUIDelete(void *arg);
 
 class DeviceViewer : public QDialog
 {
@@ -92,8 +93,10 @@ private:
     void DrawMemoryGraph();
     void InjectFiles(QList<void *> files, QString rootPath);
     void DrawHeader(QString driveName);
+    void SetWidgetsEnabled(bool enabled);
 
     friend void updateUI(void *arg, bool finished);
+    friend void updateUIDelete(void *arg);
 };
 
 #endif // DEVICEVIEWER_H

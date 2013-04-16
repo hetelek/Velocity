@@ -63,7 +63,7 @@ public:
     void GetFileEntryMagic(FatxFileEntry *entry);
 
     // deletes the entry and all of it's children
-    void DeleteFile(FatxFileEntry *entry);
+    void DeleteFile(FatxFileEntry *entry, void(*progress)(void*) = NULL, void *arg = NULL);
 
     // inject the file
     void InjectFile(FatxFileEntry *parent, std::string name, std::string filePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);

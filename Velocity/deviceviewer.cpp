@@ -203,18 +203,31 @@ void DeviceViewer::showContextMenu(QPoint point)
         }
         else if (selectedItem->text() == "Delete Selected")
         {
+            // we don't want the user doing anything else while this operation is being completed
+            SetWidgetsEnabled(false);
+
+            // start the progress bar
+            progressBar->setVisible(true);
+            progressBar->setMaximum(0);
+
+
             // delete the entries
             for (int i = 0; i < items.size(); i++)
             {
                 FatxFileEntry *entry = items.at(i)->data(0, Qt::UserRole).value<FatxFileEntry*>();
-                currentDrive->DeleteFile(entry);
+                currentDrive->DeleteFile(entry, updateUIDelete, this);
 
                 QApplication::processEvents();
-
                 DrawMemoryGraph();
 
                 delete items.at(i);
             }
+
+            // hide the progress bar
+            progressBar->setVisible(false);
+            progressBar->setMaximum(1);
+
+            SetWidgetsEnabled(true);
         }
         else if (selectedItem->text() == "Create Folder Here")
         {
@@ -277,6 +290,10 @@ void DeviceViewer::showContextMenu(QPoint point)
     }
     catch (std::string error)
     {
+        SetWidgetsEnabled(true);
+        progressBar->setVisible(false);
+        progressBar->setMaximum(1);
+
         QMessageBox::warning(this, "Problem", "The operation failed.\n\n" + QString::fromStdString(error));
     }
 }
@@ -373,21 +390,7 @@ void DeviceViewer::LoadDrives()
         DrawHeader(ui->treeWidget_2->topLevelItem(0)->text(0));
         LoadPartitions();
 
-        ui->btnPartitions->setEnabled(true);
-        ui->btnSecurityBlob->setEnabled(true);
-        ui->txtDriveName->setEnabled(true);
-        ui->txtPath->setEnabled(true);
-        ui->treeWidget->setEnabled(true);
-        ui->treeWidget_2->setEnabled(true);
-        ui->lblFeeMemory->setEnabled(true);
-        ui->lblUsedSpace->setEnabled(true);
-        ui->imgFreeMem->setEnabled(true);
-        ui->imgUsedMem->setEnabled(true);
-        ui->imgPiechart->setEnabled(true);
-        ui->btnBackup->setEnabled(true);
-        ui->btnRestore->setEnabled(true);
-        ui->btnShowAll->setEnabled(true);
-        ui->txtSearch->setEnabled(true);
+        SetWidgetsEnabled(true);
 
         drivesLoaded = true;
         statusBar->showMessage("Drive(s) loaded successfully", 3000);
@@ -396,6 +399,25 @@ void DeviceViewer::LoadDrives()
     {
         QMessageBox::warning(this, "Problem Loading", "The drive failed to load.\n\n" + QString::fromStdString(error));
     }
+}
+
+void DeviceViewer::SetWidgetsEnabled(bool enabled)
+{
+    ui->btnPartitions->setEnabled(enabled);
+    ui->btnSecurityBlob->setEnabled(enabled);
+    ui->txtDriveName->setEnabled(enabled);
+    ui->txtPath->setEnabled(enabled);
+    ui->treeWidget->setEnabled(enabled);
+    ui->treeWidget_2->setEnabled(enabled);
+    ui->lblFeeMemory->setEnabled(enabled);
+    ui->lblUsedSpace->setEnabled(enabled);
+    ui->imgFreeMem->setEnabled(enabled);
+    ui->imgUsedMem->setEnabled(enabled);
+    ui->imgPiechart->setEnabled(enabled);
+    ui->btnBackup->setEnabled(enabled);
+    ui->btnRestore->setEnabled(enabled);
+    ui->btnShowAll->setEnabled(enabled);
+    ui->txtSearch->setEnabled(enabled);
 }
 
 void DeviceViewer::on_treeWidget_doubleClicked(const QModelIndex &index)
@@ -722,6 +744,14 @@ void DeviceViewer::on_txtPath_returnPressed()
 
 void updateUI(void *arg, bool finished)
 {
+    QApplication::processEvents();
+}
+
+void updateUIDelete(void *arg)
+{
+    DeviceViewer *viewer = reinterpret_cast<DeviceViewer*>(arg);
+    viewer->DrawMemoryGraph();
+
     QApplication::processEvents();
 }
 
