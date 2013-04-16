@@ -96,5 +96,6 @@
         <file>Images/restore.png</file>
         <file>Images/NewFolder.png</file>
         <file>Images/refresh.png</file>
+        <file>Images/inject.png</file>
     </qresource>
 </RCC>

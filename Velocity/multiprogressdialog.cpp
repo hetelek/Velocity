@@ -7,6 +7,17 @@ MultiProgressDialog::MultiProgressDialog(Operation op, FileSystem fileSystem, vo
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+
+
+    switch (op)
+    {
+        case OpInject:
+            ui->lblIcon->setPixmap(QPixmap(":/Images/inject.png"));
+            break;
+        case OpExtract:
+            ui->lblIcon->setPixmap(QPixmap(":/Images/extract.png"));
+            break;
+    }
 }
 
 MultiProgressDialog::~MultiProgressDialog()
@@ -120,7 +131,7 @@ void MultiProgressDialog::extractNextFile()
                 if (entry->fileAttributes & FatxDirectory)
                     extractNextFile();
 
-                setWindowTitle("Extracting " + QString::fromStdString(entry->name));
+                setWindowTitle("Copying " + QString::fromStdString(entry->name));
 
                 // get the file from the device
                 FatxDrive *drive = reinterpret_cast<FatxDrive*>(device);
@@ -154,6 +165,9 @@ void MultiProgressDialog::extractNextFile()
                     QString *fileName = reinterpret_cast<QString*>(internalFiles.at(fileIndex++));
                     QFileInfo fileInfo(*fileName);
                     QString cleanName = *fileName;
+
+                    qDebug() << fileInfo.filePath();
+                    setWindowTitle("Copying " + fileInfo.fileName());
 
                     // set up the parent entry
                     FatxFileEntry *pEntry = parentEntry;

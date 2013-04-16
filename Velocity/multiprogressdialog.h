@@ -5,6 +5,7 @@
 #include <QDialog>
 #include <QMessageBox>
 #include <QDir>
+#include <QDebug>
 
 // xbox
 #include "Stfs/XContentHeader.h"
