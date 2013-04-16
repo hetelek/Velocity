@@ -205,6 +205,7 @@ void DeviceViewer::showContextMenu(QPoint point)
         {
             // we don't want the user doing anything else while this operation is being completed
             SetWidgetsEnabled(false);
+            ui->btnBack->setEnabled(false);
 
             // start the progress bar
             progressBar->setVisible(true);
@@ -227,6 +228,7 @@ void DeviceViewer::showContextMenu(QPoint point)
             progressBar->setVisible(false);
             progressBar->setMaximum(1);
 
+            ui->btnBack->setEnabled(true);
             SetWidgetsEnabled(true);
         }
         else if (selectedItem->text() == "Create Folder Here")
