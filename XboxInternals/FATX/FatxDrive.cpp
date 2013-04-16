@@ -888,7 +888,7 @@ void FatxDrive::loadFatxDrive()
 UINT64 FatxDrive::GetFreeMemory(Partition *part, void(*progress)(void*, bool), void *arg)
 {
     if (part->freeMemory != 0)
-        return part->freeClusters.size() * part->clusterSize;
+        return (UINT64)part->freeClusters.size() * (UINT64)part->clusterSize;
 
     // allocate memory for a buffer to minimize the amount of reads
     BYTE *buffer = new BYTE[0x50000];
