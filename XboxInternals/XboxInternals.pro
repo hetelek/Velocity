@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       -= gui core
+QT       -= gui
 
 TARGET = XboxInternals
 TEMPLATE = lib
@@ -100,4 +100,8 @@ HEADERS +=\
     IO/FatxIO.h \
     Fatx/FatxDriveDetection.h \
     IO/SvodMultiFileIO.h \
-    IO/MultiFileIO.h
+    IO/MultiFileIO.h \
+    Fatx/FatxHelpers.h \
+    Fatx/FatxDriveDetection.h \
+    Fatx/FatxDrive.h \
+    Fatx/FatxConstants.h
