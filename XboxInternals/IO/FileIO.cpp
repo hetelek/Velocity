@@ -4,7 +4,7 @@
 FileIO::FileIO(string path, bool truncate) :
     BaseIO(), filePath(path)
 {
-    fstr = new fstream(path.c_str(), fstream::in | fstream::out | fstream::binary | (truncate ? fstream::trunc : 0));
+    fstr = new fstream(path.c_str(), fstream::in | fstream::out | fstream::binary | (truncate ? fstream::trunc : static_cast<std::ios_base::openmode>(0)));
     if (!fstr->is_open())
     {
         std::string ex("FileIO: Error opening the file. ");
@@ -22,7 +22,7 @@ FileIO::FileIO(string path, bool truncate) :
 
 void FileIO::SetPosition(UINT64 pos, ios_base::seek_dir dir)
 {
-    fstr->seekp(pos, dir);
+    fstr->seekp(pos, static_cast<std::_Ios_Seekdir>(dir));
 }
 
 UINT64 FileIO::GetPosition()

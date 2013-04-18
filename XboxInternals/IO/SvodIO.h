@@ -1,7 +1,7 @@
 #ifndef SVODIO_H
 #define SVODIO_H
 
-#include "../Disc/gdfx.h"
+#include "../Disc/Gdfx.h"
 #include "BaseIO.h"
 #include "../Stfs/XContentHeader.h"
 #include "XboxInternals_global.h"

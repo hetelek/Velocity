@@ -5,7 +5,7 @@
 #define DEVICEIO_H
 
 #include "BaseIO.h"
-#include "../FATX/fatxhelpers.h"
+#include "../Fatx/FatxHelpers.h"
 #include "XboxInternals_global.h"
 
 

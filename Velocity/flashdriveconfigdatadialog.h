@@ -7,7 +7,7 @@
 #include "qthelpers.h"
 
 // xbox
-#include "FATX/FatxConstants.h"
+#include "Fatx/FatxConstants.h"
 
 // forms
 #include "certificatedialog.h"

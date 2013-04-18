@@ -8,8 +8,13 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
-#include <sys/disk.h>
 #include <unistd.h>
+#include <string.h>
+
+// on my linux mint machine sys/disk doesn't exist so...
+#define DKIOCGETBLOCKSIZE   0x40046418
+#define DKIOCGETBLOCKCOUNT  0x40086419
+
 #endif
 
 #ifndef _WIN32
@@ -85,7 +90,7 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
             if (!success)
                 throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
         #else
-            read(device, lastReadData, 0x200);
+            read(impl->device, lastReadData, 0x200);
         #endif
 
         SetPosition(endingPos);
@@ -109,7 +114,7 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
                 if (!success)
                     throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
         #else
-                read(device, lastReadData, 0x200);
+                read(impl->device, lastReadData, 0x200);
         #endif
 
         lastReadOffset = pos;
@@ -146,7 +151,7 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
             if (!success)
                 throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
     #else
-            read(device, lastReadData, 0x200);
+            read(impl->device, lastReadData, 0x200);
     #endif
 
     // update all our values
@@ -172,7 +177,7 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
             if (!success)
                 throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
     #else
-            read(device, lastReadData, 0x200);
+            read(impl->device, lastReadData, 0x200);
     #endif
 
     lastReadOffset = pos;
@@ -199,7 +204,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
             if (!success)
                 throw std::string("DeviceIO: Error writing to the device, may be disconnected.\n");
         #else
-            write(device, lastReadData, 0x200);
+            write(impl->device, lastReadData, 0x200);
         #endif
 
         SetPosition(endingPos);
@@ -238,7 +243,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
             &bytesWritten,        // Pointer to number of bytes written
             &impl->offset);       // OVERLAPPED structure containing the offset to write from
     #else
-        write(device, lastReadData, len);
+        write(impl->device, lastReadData, len);
     #endif
 
     // update the values
@@ -271,7 +276,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
                 &bytesWritten,        // Pointer to number of bytes written
                 &impl->offset);       // OVERLAPPED structure containing the offset to write from
         #else
-            write(device, buffer, len);
+            write(impl->device, buffer, len);
         #endif
     }
 
@@ -302,14 +307,14 @@ UINT64 DeviceIO::Length()
     #else
         DWORD *numberOfSectors = new DWORD;
         *numberOfSectors = 0;
-        int _device = device;
+        int _device = impl->device;
 
         // Queue number of sectors
         ioctl(_device, DKIOCGETBLOCKCOUNT, numberOfSectors);
 
         DWORD *sectorSize = new DWORD;
         *sectorSize = 0;
-        ioctl(device, DKIOCGETBLOCKSIZE, sectorSize);
+        ioctl(impl->device, DKIOCGETBLOCKSIZE, sectorSize);
 
         qDebug("#S: 0x%X, SS: 0x%X", *numberOfSectors, *sectorSize);
 
@@ -335,7 +340,7 @@ void DeviceIO::SetPosition(UINT64 address, std::ios_base::seek_dir dir)
         impl->offset.OffsetHigh = (DWORD)(address >> 32);
     #else
         impl->offset = address;
-        lseek(device, address, SEEK_SET);
+        lseek(impl->device, address, SEEK_SET);
     #endif
 }
 
@@ -359,8 +364,8 @@ void DeviceIO::Close()
         if (impl->deviceHandle != INVALID_HANDLE_VALUE)
             CloseHandle(impl->deviceHandle);
     #else
-        close(device);
-        device = NULL;
+        close(impl->device);
+        impl->device = NULL;
     #endif
 }
 
@@ -375,7 +380,7 @@ void DeviceIO::loadDevice(std::wstring devicePath)
                 devicePath.c_str(),// File name (device path)
                 GENERIC_READ | GENERIC_WRITE,		// Read/write access
                 FILE_SHARE_READ | FILE_SHARE_WRITE,	// Read/write share
-                NULL,								// Not used
+                NULL,								// Not usedC
                 OPEN_EXISTING,						// Open the existing device -- fails if it's fucked
                 FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH | FILE_ATTRIBUTE_DEVICE,	// Flags and attributes
                 NULL);								// Ignored
@@ -383,9 +388,13 @@ void DeviceIO::loadDevice(std::wstring devicePath)
         if (impl->deviceHandle == INVALID_HANDLE_VALUE)
             throw std::string("DeviceIO: Could not open HANDLE for device.\n");
     #else
+
+        // need to convert this into a regular string, since open takes a char*
+        std::string tempPath(devicePath.begin(), devicePath.end());
+
         // Open the device
-        device = open(devicePath.c_str(), O_RDWR);
-        if (device == -1)
+        impl->device = open(tempPath.c_str(), O_RDWR);
+        if (impl->device == -1)
             throw std::string("DeviceIO: Error opening device.\n");
     #endif
 }

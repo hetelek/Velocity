@@ -6,8 +6,8 @@
 #include "qthelpers.h"
 
 // xbox
-#include "Disc/gdfx.h"
-#include "Disc/svod.h"
+#include "Disc/Gdfx.h"
+#include "Disc/Svod.h"
 #include "Stfs/StfsDefinitions.h"
 
 namespace Ui {

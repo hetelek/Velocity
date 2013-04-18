@@ -49,9 +49,9 @@
 #include "Stfs/StfsPackage.h"
 #include "Gpd/GpdBase.h"
 #include "IO/SvodMultiFileIO.h"
-#include "Disc/svod.h"
+#include "Disc/Svod.h"
 #include "AvatarAsset/Ytgr.h"
-#include "Disc/svod.h"
+#include "Disc/Svod.h"
 #include "IO/DeviceIO.h"
 
 using namespace std;

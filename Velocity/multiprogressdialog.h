@@ -8,7 +8,7 @@
 
 // xbox
 #include "Stfs/XContentHeader.h"
-#include "Disc/svod.h"
+#include "Disc/Svod.h"
 #include "IO/SvodIO.h"
 #include "Stfs/StfsPackage.h"
 #include "Fatx/FatxConstants.h"

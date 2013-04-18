@@ -18,7 +18,7 @@
  * Please contact gordos.kund@gmail.com with any questions on this license.
  */
 #include "nightcharts.h"
-#include <qgraphicsscene>
+#include <QGraphicsScene>
 
 Nightcharts::Nightcharts()//QPainter *painter)
 

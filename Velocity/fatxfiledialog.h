@@ -7,7 +7,7 @@
 
 #include "Fatx/FatxConstants.h"
 #include "IO/FatxIO.h"
-#include "FATX/FatxDrive.h"
+#include "Fatx/FatxDrive.h"
 #include "Stfs/StfsDefinitions.h"
 
 namespace Ui {
