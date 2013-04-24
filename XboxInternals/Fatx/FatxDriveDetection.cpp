@@ -4,8 +4,14 @@
 #endif
 #include <algorithm>
 #include <dirent.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
+#include <linux/hdreg.h>
 #include <QDebug>
+#include <QRegExp>
 
 std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
 {
@@ -14,24 +20,23 @@ std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
 
     getPhysicalDisks();
 
-#ifdef _WIN32
-    std::vector<HANDLE> devices = getPhysicalDisks();
+
+    std::vector<DeviceIO*> devices = getPhysicalDisks();
 
     for (int i = 0; i < devices.size(); i++)
     {
         try
         {
-            DeviceIO io(devices.at(i));
-            if (io.Length() > HddOffsets::Data)
+            if (devices.at(i)->Length() > HddOffsets::Data)
             {
-                io.SetPosition(HddOffsets::Data);
-                if (io.ReadDword() == FATX_MAGIC)
+                devices.at(i)->SetPosition(HddOffsets::Data);
+                if (devices.at(i)->ReadDword() == FATX_MAGIC)
                 {
-                    FatxDrive *drive = new FatxDrive(devices.at(i));
+                    FatxDrive *drive = new FatxDrive(static_cast<BaseIO*>(devices.at(i)), FatxHarddrive);
                     drives.push_back(drive);
                 }
                 else
-                    io.Close();
+                    devices.at(i)->Close();
             }
         }
         catch (...)
@@ -39,6 +44,7 @@ std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
         }
     }
 
+#ifdef _WIN32
     for (int i = 0; i < logicalDrivePaths.size(); i++)
     {
         try
@@ -83,9 +89,9 @@ std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
     return drives;
 }
 
-std::vector<void*> FatxDriveDetection::getPhysicalDisks()
+std::vector<DeviceIO*> FatxDriveDetection::getPhysicalDisks()
 {
-    std::vector<void*> physicalDiskPaths;
+    std::vector<DeviceIO*> physicalDiskPaths;
     std::wstringstream ss;
 
 #ifdef _WIN32
@@ -95,24 +101,48 @@ std::vector<void*> FatxDriveDetection::getPhysicalDisks()
 
         HANDLE drive = CreateFile(ss.str().c_str(), GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
         if (drive != INVALID_HANDLE_VALUE)
-            physicalDiskPaths.push_back((void*)drive);
+        {
+            CloseHandle(drive);
+
+            DeviceIO *io = new DeviceIO(ss.str());
+            physicalDiskPaths.push_back(io);
+        }
 
         ss.str(std::wstring());
     }
-#endif
-
-    DIR *dir = opendir("/dev/");
-    dirent *entry;
-
-    if (dir == NULL)
-        return physicalDiskPaths;
-
-    while ((entry = readdir(dir)) != NULL)
+#else
+    DIR *dir = NULL;
+    dirent *ent = NULL;
+    dir = opendir("/dev/");
+    if (dir != NULL)
     {
-        std::string driveName = std::string(entry->d_name);
-        if (driveName.substr(0, 4) == "disk")
-            qDebug() << QString::fromStdString(driveName);
+        // search for valid drives
+        while ((ent = readdir(dir)) != NULL)
+        {
+            // the disks start with 'sd'
+            if (std::string(ent->d_name).substr(0, 2) == "sd")
+            {
+                std::ostringstream ss;
+                ss << "/dev/";
+                ss << ent->d_name;
+                std::string diskPath = ss.str();
+
+                int device;
+                if ((device = open(diskPath.c_str(), O_RDONLY)) > 0)
+                {
+                    close(device);
+
+                    DeviceIO *io = new DeviceIO(diskPath);
+                    physicalDiskPaths.push_back(io);
+                }
+            }
+        }
     }
+    if (dir)
+        closedir(dir);
+    if (ent)
+        delete ent;
+#endif
 
     return physicalDiskPaths;
 }

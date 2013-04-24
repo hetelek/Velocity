@@ -39,6 +39,8 @@ private:
     class Impl;
     Impl* impl;
 
+    std::string yolo;
+
     UINT64 pos;
     BYTE lastReadData[0x200];
     UINT64 lastReadOffset;

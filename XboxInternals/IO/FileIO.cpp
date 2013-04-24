@@ -15,6 +15,7 @@ FileIO::FileIO(string path, bool truncate) :
 
 	endian = BigEndian;
 
+    fstr->rdbuf()->pubsetbuf(0, 0);
     fstr->seekp(0, std::ios_base::end);
     length = fstr->tellp();
     fstr->seekp(0);

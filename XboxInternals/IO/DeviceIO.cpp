@@ -1,24 +1,19 @@
 #include "DeviceIO.h"
-
-#ifdef _WIN32
-#include <windows.h>
-#include <WinIoCtl.h>
-#else
-#define _FILE_OFFSET_BITS 64
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
 #include <string.h>
 
-// on my linux mint machine sys/disk doesn't exist so...
-#define DKIOCGETBLOCKSIZE   0x40046418
-#define DKIOCGETBLOCKCOUNT  0x40086419
-
-#endif
-
-#ifndef _WIN32
-#include <sys/stat.h>
+#ifdef _WIN32
+    #include <windows.h>
+    #include <WinIoCtl.h>
+#else
+    #include <fcntl.h>
+    #include <sys/types.h>
+    #include <sys/ioctl.h>
+    #if __APPLE__
+        #include <sys/disk.h>
+    #elif __linux
+        #include <linux/fs.h>
+    #endif
+    #include <unistd.h>
 #endif
 
 
@@ -49,7 +44,7 @@ DeviceIO::DeviceIO(void* deviceHandle) :
 }
 
 DeviceIO::DeviceIO(std::string devicePath) :
-    lastReadOffset(-1)
+    lastReadOffset(-1), impl(new Impl)
 {
     // convert it to a wstring
     std::wstring wsDevicePath;
@@ -60,7 +55,7 @@ DeviceIO::DeviceIO(std::string devicePath) :
 }
 
 DeviceIO::DeviceIO(std::wstring devicePath) :
-    lastReadOffset(-1)
+    lastReadOffset(-1), impl(new Impl)
 {
     // load the device
     loadDevice(devicePath);
@@ -304,27 +299,20 @@ UINT64 DeviceIO::Length()
 
         UINT64 cylinders = (UINT64)((UINT64)geometry.Cylinders.HighPart << 32) | geometry.Cylinders.LowPart; // Convert the BIG_INTEGER to UINT64
         length = cylinders * (UINT64)geometry.TracksPerCylinder	* (UINT64)geometry.SectorsPerTrack * (UINT64)geometry.BytesPerSector;
-    #else
-        DWORD *numberOfSectors = new DWORD;
-        *numberOfSectors = 0;
-        int _device = impl->device;
+    #elif __linux
+        unsigned int numberOfSectors = 0;
+        int device = impl->device;
 
-        // Queue number of sectors
-        ioctl(_device, DKIOCGETBLOCKCOUNT, numberOfSectors);
+        ioctl(device, BLKGETSIZE, &numberOfSectors);
 
-        DWORD *sectorSize = new DWORD;
-        *sectorSize = 0;
-        ioctl(impl->device, DKIOCGETBLOCKSIZE, sectorSize);
+        unsigned int sectorSize = 0;
+        ioctl(device, BLKSSZGET, &sectorSize);
 
-        qDebug("#S: 0x%X, SS: 0x%X", *numberOfSectors, *sectorSize);
-
-        length = (UINT64)*numberOfSectors * (UINT64)*sectorSize;
-
-        delete numberOfSectors;
-        delete sectorSize;
+        // calculate the length in bytes
+        length = (UINT64)numberOfSectors * (UINT64)sectorSize;
     #endif
 
-        return length;
+    return length;
 }
 
 void DeviceIO::SetPosition(UINT64 address, std::ios_base::seek_dir dir)

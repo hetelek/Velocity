@@ -14,7 +14,7 @@ public:
     static std::vector<FatxDrive*> GetAllFatxDrives();
 
 private:
-    static std::vector<void*> getPhysicalDisks();
+    static std::vector<DeviceIO*> getPhysicalDisks();
     static std::vector<std::wstring> getLogicalDrives();
 };
 
