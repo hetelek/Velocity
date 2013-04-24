@@ -15,7 +15,7 @@ unix {
 }
 
 # flags
-QMAKE_CXXFLAGS += -std=c++11
+#QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CFLAGS_RELEASE = -O3
 
 # library version
