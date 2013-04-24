@@ -307,14 +307,14 @@ FatxFileEntry* FatxDrive::CreatePath(std::string folderPath)
     return lastEntry;
 }
 
-void FatxDrive::DeleteFile(FatxFileEntry *entry, void(*progress)(void*), void *arg)
+void FatxDrive::RemoveFile(FatxFileEntry *entry, void(*progress)(void*), void *arg)
 {
     // read the data
     GetChildFileEntries(entry);
     ReadClusterChain(entry);
 
     for (int i = 0; i < entry->cachedFiles.size(); i++)
-        DeleteFile(&entry->cachedFiles.at(i), progress, arg);
+        RemoveFile(&entry->cachedFiles.at(i), progress, arg);
 
     // set all the clusters to available
     entry->clusterChain.push_back(entry->startingCluster);

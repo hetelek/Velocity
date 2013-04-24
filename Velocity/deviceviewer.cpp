@@ -216,7 +216,7 @@ void DeviceViewer::showContextMenu(QPoint point)
             for (int i = 0; i < items.size(); i++)
             {
                 FatxFileEntry *entry = items.at(i)->data(0, Qt::UserRole).value<FatxFileEntry*>();
-                currentDrive->DeleteFile(entry, updateUIDelete, this);
+                currentDrive->RemoveFile(entry, updateUIDelete, this);
 
                 QApplication::processEvents();
                 DrawMemoryGraph();
