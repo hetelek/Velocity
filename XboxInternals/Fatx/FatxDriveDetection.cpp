@@ -1,17 +1,21 @@
 #include "FatxDriveDetection.h"
 #ifdef _WIN32
-    #include <Windows.h>
-#endif
-#include <algorithm>
-#include <dirent.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
+    #include <windows.h>
+#else
+    #include <dirent.h>
+    #include <fcntl.h>
+    #include <unistd.h>
+    #include <sys/stat.h>
 
-#include <linux/hdreg.h>
-#include <QDebug>
-#include <QRegExp>
+    #ifdef __APPLE__
+        #include <sys/disk.h>
+        #include <sys/ioctl.h>
+    #endif
+
+    #ifdef __linux
+        #include <linux/hdreg.h>
+    #endif
+#endif
 
 std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
 {
