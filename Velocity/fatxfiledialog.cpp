@@ -7,14 +7,6 @@ FatxFileDialog::FatxFileDialog(FatxDrive *drive, FatxFileEntry *entry, DWORD clu
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
-    connect(ui->chArchive, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged()));
-    connect(ui->chDevice, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged()));
-    connect(ui->chDirectory, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged()));
-    connect(ui->chHidden, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged()));
-    connect(ui->chNormal, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged()));
-    connect(ui->chReadOnly, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged()));
-    connect(ui->chSystem, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged()));
-
     ui->txtName->setText(QString::fromStdString(entry->name));
     ui->lblCluster->setText("0x" + QString::number(entry->startingCluster, 16).toUpper());
     ui->lblCreated->setText(msTimeToString(entry->creationDate));
