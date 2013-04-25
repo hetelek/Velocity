@@ -85,7 +85,7 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
             if (!success)
                 throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
         #else
-            read(impl->device, lastReadData, 0x200);
+            read(impl->device, outBuffer, len);
         #endif
 
         SetPosition(endingPos);
@@ -146,7 +146,7 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
             if (!success)
                 throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
     #else
-            read(impl->device, lastReadData, 0x200);
+            read(impl->device, outBuffer, downTo);
     #endif
 
     // update all our values
@@ -199,7 +199,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
             if (!success)
                 throw std::string("DeviceIO: Error writing to the device, may be disconnected.\n");
         #else
-            write(impl->device, lastReadData, 0x200);
+            write(impl->device, buffer, len);
         #endif
 
         SetPosition(endingPos);
@@ -238,7 +238,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
             &bytesWritten,        // Pointer to number of bytes written
             &impl->offset);       // OVERLAPPED structure containing the offset to write from
     #else
-        write(impl->device, lastReadData, len);
+        write(impl->device, lastReadData, 0x200);
     #endif
 
     // update the values
@@ -271,7 +271,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
                 &bytesWritten,        // Pointer to number of bytes written
                 &impl->offset);       // OVERLAPPED structure containing the offset to write from
         #else
-            write(impl->device, buffer, len);
+            write(impl->device, buffer, 0x200);
         #endif
     }
 
