@@ -180,26 +180,14 @@ wstring BaseIO::ReadWString(int len)
     }
     else
     {
-        wchar_t *str = new wchar_t[len + 1];
-        str[len] = 0;
-
-        ReadBytes((BYTE*)str, len * 2);
-
-        // swap the byte order if needed
-        if (byteOrder == BigEndian)
+        for (int i = 0; i < len; i++)
         {
-            BYTE temp;
-            BYTE *rawString = (BYTE*)str;
-            for (DWORD i = 0; i < len; i++)
-            {
-                temp = rawString[i * 2];
-                rawString[i * 2] = rawString[i * 2 + 1];
-                rawString[i * 2 + 1] = temp;
-            }
+            wchar_t c = static_cast<wchar_t>(ReadWord());
+            if (c != 0)
+                toReturn += c;
+            else
+                break;
         }
-
-        toReturn = wstring(str);
-        delete[] str;
     }
 
     return toReturn;
