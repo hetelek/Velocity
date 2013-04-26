@@ -14,6 +14,7 @@
 
     #ifdef __linux
         #include <linux/hdreg.h>
+        #include <pwd.h>
     #endif
 #endif
 
@@ -132,7 +133,7 @@ std::vector<DeviceIO*> FatxDriveDetection::getPhysicalDisks()
                 std::string diskPath = ss.str();
 
                 int device;
-                if ((device = open(diskPath.c_str(), O_RDONLY)) > 0)
+                if ((device = open(diskPath.c_str(), O_RDWR)) > 0)
                 {
                     close(device);
 
