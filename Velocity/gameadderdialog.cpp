@@ -568,7 +568,6 @@ void GameAdderDialog::showAllItems()
 void GameAdderDialog::getListing()
 {
     ui->treeWidgetAllGames->clear();
-    ui->treeWidgetQueue->clear();
     ui->tabWidget->setEnabled(false);
     manager->get(QNetworkRequest(QUrl("http://velocity.expetelek.com/gameadder/listing.php" + getParams)));
 }
