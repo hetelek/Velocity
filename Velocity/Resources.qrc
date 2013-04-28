@@ -35,7 +35,6 @@
         <file>Images/information.png</file>
         <file>Images/undo.png</file>
         <file>Images/lock.png</file>
-        <file>Images/profile creator.jpg</file>
         <file>Images/avatarJumping.png</file>
         <file>Images/2000A.png</file>
         <file>Images/2000B.png</file>
@@ -97,5 +96,6 @@
         <file>Images/NewFolder.png</file>
         <file>Images/refresh.png</file>
         <file>Images/inject.png</file>
+        <file>Images/profile creator.png</file>
     </qresource>
 </RCC>
