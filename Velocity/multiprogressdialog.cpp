@@ -163,9 +163,10 @@ void MultiProgressDialog::operateOnNextFile()
             }
             else if (op == OpInject)
             {
-                for (int i = 0; i < internalFiles.size(); i++)
+                bool failed = false;
+                try
                 {
-                    try
+                    for (int i = 0; i < internalFiles.size(); i++)
                     {
                         // update groupbox text
                         ui->groupBox_2->setTitle("Overall Progress - " + QString::number(i + 1) + " of " + QString::number(internalFiles.size()));
@@ -209,15 +210,20 @@ void MultiProgressDialog::operateOnNextFile()
                         {
                             drive->InjectFile(pEntry, fileInfo.fileName().toStdString(), cleanName.toStdString(), updateProgress, this);
                         }
-                    }
-                    catch (string error)
-                    {
-                        QMessageBox::critical(this, "", "An error occurred while copying files to the drive.\n\n" + QString::fromStdString(error));
-                    }
 
-                    // reset the progress
-                    prevProgress = 0;
+
+                        // reset the progress
+                        prevProgress = 0;
+                    }
                 }
+                catch (string error)
+                {
+                    failed = true;
+                    QMessageBox::critical(this, "", "An error occurred while copying files to the drive.\n\n" + QString::fromStdString(error));
+                }
+
+                if (!failed)
+                    QMessageBox::information(this, "Copied Files", "All files have been successfully copied to the harddrive.");
             }
 
             // cleanup

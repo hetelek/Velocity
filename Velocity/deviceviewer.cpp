@@ -310,8 +310,6 @@ void DeviceViewer::InjectFiles(QList<void*> files, QString rootPath)
     DrawMemoryGraph();
 
     LoadFolderAll(parentEntry);
-
-    QMessageBox::information(this, "Copied Files", "All files have been successfully copied to the harddrive.");
 }
 
 void DeviceViewer::DrawHeader(QString driveName)
