@@ -83,7 +83,7 @@ std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
                         drives.push_back(usbDrive);
                     }
                 }
-            #elif __APPLE__
+            #else
                 DIR *dir = NULL;
                 dirent *ent = NULL;
                 dir = opendir(directory.c_str());
@@ -239,6 +239,60 @@ std::vector<std::wstring> FatxDriveDetection::getLogicalDrives()
             closedir(dir);
         if (ent)
             delete ent;
+    }
+#elif __linux
+    DIR *dir = NULL, *dir2 = NULL;
+    dirent *ent = NULL, *ent2 = NULL;
+    dir = opendir("/media/");
+    if (dir != NULL)
+    {
+        std::stringstream path;
+
+        // search for valid flash drives
+        while ((ent = readdir(dir)) != NULL)
+        {
+            if (ent->d_type != DT_DIR)
+                continue;
+
+            path.str(std::string());
+            path << "/media/" << ent->d_name;
+            dir2 = opendir(path.str().c_str());
+            if (dir2 == NULL)
+                continue;
+
+            // search for valid flash drives
+            while ((ent2 = readdir(dir2)) != NULL)
+            {
+                try
+                {
+                    // initialize the path
+                    path << "/" << ent2->d_name << "/Xbox360/";
+
+                    // get the xbox360 folder path
+                    std::string xboxDirPath = path.str();
+
+                    // add it to our list of drives
+                    std::wstring widePathStr;
+                    widePathStr.assign(xboxDirPath.begin(), xboxDirPath.end());
+                    driveStrings.push_back(widePathStr);
+                }
+                catch(...)
+                {
+                    // something bad happened
+                    // skip this device, and try the next one
+                }
+
+                // clear the stringstream
+                path.str(std::string());
+                path << "/media/" << ent->d_name;
+            }
+        }
+        if (dir)
+            closedir(dir);
+        if (ent)
+            delete ent;
+        if (ent2)
+            delete ent2;
     }
 #endif
     return driveStrings;
