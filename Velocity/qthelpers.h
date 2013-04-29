@@ -16,6 +16,7 @@
 #include <QPlainTextEdit>
 #include <QHeaderView>
 #include <QCheckBox>
+#include <QProgressBar>
 
 // other
 #include "winnames.h"

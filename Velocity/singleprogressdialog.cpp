@@ -6,6 +6,7 @@ SingleProgressDialog::SingleProgressDialog(FileSystem system, void *device, Oper
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+    QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
     switch (op)
     {

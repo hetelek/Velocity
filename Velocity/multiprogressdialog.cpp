@@ -7,7 +7,7 @@ MultiProgressDialog::MultiProgressDialog(Operation op, FileSystem fileSystem, vo
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
-
+    QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
     switch (op)
     {

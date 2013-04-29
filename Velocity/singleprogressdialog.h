@@ -3,6 +3,7 @@
 
 // qt
 #include <QDialog>
+#include "qthelpers.h"
 #include "multiprogressdialog.h"
 
 // xbox360

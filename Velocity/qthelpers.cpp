@@ -185,6 +185,7 @@ void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
                         QTreeWidget *tree = qobject_cast<QTreeWidget *>(child);
                         QPlainTextEdit *plain = qobject_cast<QPlainTextEdit *>(child);
                         QCheckBox *check = qobject_cast<QCheckBox *>(child);
+                        QProgressBar *progress = qobject_cast<QProgressBar *>(child);
                         if (button != NULL)
                         {
                             button->setMinimumHeight(ButtonHeight); // Win
@@ -208,6 +209,8 @@ void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
                             plain->setFont(txtFont);
                         else if (check != NULL)
                             check->setFont(txtFont);
+                        else if (progress != NULL)
+                            progress->setMinimumHeight(20);
                     }
                 }
             }
