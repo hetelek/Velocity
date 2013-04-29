@@ -387,6 +387,7 @@ void DeviceViewer::LoadDrives()
         }
 
         currentDrive = loadedDrives.at(0);
+        currentDriveItem = ui->treeWidget_2->topLevelItem(0);
         DrawHeader(ui->treeWidget_2->topLevelItem(0)->text(0));
         LoadPartitions();
 
@@ -487,7 +488,10 @@ void DeviceViewer::LoadFolderAll(FatxFileEntry *folder)
 
         // reload the header if the drive changed
         if (currentDrive != prevDrive)
+        {
             DrawHeader(ui->treeWidget_2->currentItem()->parent()->text(0));
+            currentDriveItem = ui->treeWidget_2->currentItem()->parent();
+        }
 
         currentDrive->GetChildFileEntries(folder, updateUI);
 
@@ -656,6 +660,7 @@ void DeviceViewer::on_treeWidget_2_itemExpanded(QTreeWidgetItem *item)
     if (!item->parent())
     {
         currentDrive = item->data(0, Qt::UserRole).value<FatxDrive*>();
+        currentDriveItem = item;
         DrawHeader(item->text(0));
         LoadPartitions();
         return;
@@ -674,6 +679,7 @@ void DeviceViewer::on_treeWidget_2_itemClicked(QTreeWidgetItem *item, int column
         ui->imgPiechart->setPixmap(QPixmap());
         currentDrive = item->data(0, Qt::UserRole).value<FatxDrive*>();
         parentEntry = NULL;
+        currentDriveItem = item;
         DrawHeader(item->text(0));
         LoadPartitions();
         return;
@@ -805,6 +811,7 @@ void DeviceViewer::on_txtDriveName_editingFinished()
     try
     {
         currentDrive->SetDriveName(ui->txtDriveName->text().toStdWString());
+        currentDriveItem->setText(0, ui->txtDriveName->text());
     }
     catch (std::string error)
     {
