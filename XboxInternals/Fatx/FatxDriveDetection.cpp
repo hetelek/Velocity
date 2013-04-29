@@ -46,47 +46,72 @@ std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
         }
     }
 
-#ifdef _WIN32
+    std::vector<std::string> dataFiles;
     for (int i = 0; i < logicalDrivePaths.size(); i++)
     {
+        // clear data files from the previous drive
+        dataFiles.clear();
+
         try
         {
-            std::vector<std::string> dataFiles;
-            WIN32_FIND_DATA fi;
+            std::string directory;
+            directory.assign(logicalDrivePaths.at(i).begin(), logicalDrivePaths.at(i).end());
 
-            HANDLE h = FindFirstFile((logicalDrivePaths.at(i) + L"\\Data*").c_str(), &fi);
-            if (h != INVALID_HANDLE_VALUE)
-            {
-                std::string directory;
-                directory.assign(logicalDrivePaths.at(i).begin(), logicalDrivePaths.at(i).end());
 
-                dataFiles.clear();
-                do
+            #ifdef _WIN32
+                WIN32_FIND_DATA fi;
+
+                HANDLE h = FindFirstFile((logicalDrivePaths.at(i) + L"\\Data*").c_str(), &fi);
+                if (h != INVALID_HANDLE_VALUE)
                 {
-                    char path[9];
-                    wcstombs(path, fi.cFileName, wcslen(fi.cFileName) + 1);
-                    dataFiles.push_back(directory + "\\" + std::string(path));
+                    do
+                    {
+                        char path[9];
+                        wcstombs(path, fi.cFileName, wcslen(fi.cFileName) + 1);
+                        dataFiles.push_back(directory + "\\" + std::string(path));
+                    }
+                    while (FindNextFile(h, &fi));
+
+                    FindClose(h);
+
+                    if (dataFiles.size() >= 3)
+                    {
+                        // make sure the data files are loaded in the right order
+                        std::sort(dataFiles.begin(), dataFiles.end());
+                        MultiFileIO *io = new MultiFileIO(dataFiles);
+                        FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
+                        drives.push_back(usbDrive);
+                    }
                 }
-                while (FindNextFile(h, &fi));
-
-                FindClose(h);
-
-                if (dataFiles.size() >= 3)
+            #elif __APPLE__
+                DIR *dir = NULL;
+                dirent *ent = NULL;
+                dir = opendir(directory.c_str());
+                if (dir != NULL)
                 {
-                    // Make sure the data files are loaded in the right order
-                    std::sort(dataFiles.begin(), dataFiles.end());
-                    MultiFileIO *io = new MultiFileIO(dataFiles);
-                    FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
-                    drives.push_back(usbDrive);
+                    // search for valid data files
+                    while ((ent = readdir(dir)) != NULL)
+                    {
+                        // the disks start with 'data'
+                        if (std::string(ent->d_name).substr(0, 4) == "Data")
+                            dataFiles.push_back(directory + std::string(ent->d_name));
+                    }
+
+                    if (dataFiles.size() >= 3)
+                    {
+                        // make sure the data files are loaded in the right order
+                        std::sort(dataFiles.begin(), dataFiles.end());
+                        MultiFileIO *io = new MultiFileIO(dataFiles);
+                        FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
+                        drives.push_back(usbDrive);
+                    }
                 }
-            }
+            #endif
         }
         catch (...)
         {
         }
     }
-
-#endif
 
     return drives;
 }
@@ -174,6 +199,46 @@ std::vector<std::wstring> FatxDriveDetection::getLogicalDrives()
 
         drives >>= 1;
         currentChar++;
+    }
+#elif __APPLE__
+    DIR *dir = NULL;
+    dirent *ent = NULL;
+    dir = opendir("/Volumes/");
+    if (dir != NULL)
+    {
+        std::stringstream path;
+
+        // search for valid flash drives
+        while ((ent = readdir(dir)) != NULL)
+        {
+            try
+            {
+                // initialize the path
+                path << "/Volumes/";
+                path << ent->d_name;
+                path << "/Xbox360/";
+
+                // get the xbox360 folder path
+                std::string xboxDirPath = path.str();
+
+                // add it to our list of drives
+                std::wstring widePathStr;
+                widePathStr.assign(xboxDirPath.begin(), xboxDirPath.end());
+                driveStrings.push_back(widePathStr);
+            }
+            catch(...)
+            {
+                // something bad happened
+                // skip this device, and try the next one
+            }
+
+            // clear the stringstream
+            path.str(std::string());
+        }
+        if (dir)
+            closedir(dir);
+        if (ent)
+            delete ent;
     }
 #endif
     return driveStrings;
