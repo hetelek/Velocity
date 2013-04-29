@@ -1,5 +1,6 @@
 #include "DeviceIO.h"
 #include <string.h>
+#include <errno.h>
 
 #ifdef _WIN32
     #include <windows.h>
@@ -300,15 +301,26 @@ UINT64 DeviceIO::Length()
         UINT64 cylinders = (UINT64)((UINT64)geometry.Cylinders.HighPart << 32) | geometry.Cylinders.LowPart; // Convert the BIG_INTEGER to UINT64
         length = cylinders * (UINT64)geometry.TracksPerCylinder	* (UINT64)geometry.SectorsPerTrack * (UINT64)geometry.BytesPerSector;
     #elif __linux
-        unsigned int numberOfSectors = 0;
+        DWORD numberOfSectors = 0;
         int device = impl->device;
 
         ioctl(device, BLKGETSIZE, &numberOfSectors);
 
-        unsigned int sectorSize = 0;
+        DWORD sectorSize = 0;
         ioctl(device, BLKSSZGET, &sectorSize);
 
         // calculate the length in bytes
+        length = (UINT64)numberOfSectors * (UINT64)sectorSize;
+    #else
+        DWORD numberOfSectors = 0;
+        int device = impl->device;
+
+        // queue number of sectors
+        ioctl(device, DKIOCGETBLOCKCOUNT, numberOfSectors);
+
+        DWORD sectorSize = 0;
+        ioctl(device, DKIOCGETBLOCKSIZE, sectorSize);
+
         length = (UINT64)numberOfSectors * (UINT64)sectorSize;
     #endif
 
@@ -383,7 +395,7 @@ void DeviceIO::loadDevice(std::wstring devicePath)
         // Open the device
         impl->device = open(tempPath.c_str(), O_RDWR);
         if (impl->device == -1)
-            throw std::string("DeviceIO: Error opening device.\n");
+            throw std::string("DeviceIO: Error opening device.\n" + std::string(strerror(errno)));
     #endif
 }
 

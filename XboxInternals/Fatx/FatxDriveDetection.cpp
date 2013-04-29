@@ -124,11 +124,16 @@ std::vector<DeviceIO*> FatxDriveDetection::getPhysicalDisks()
         // search for valid drives
         while ((ent = readdir(dir)) != NULL)
         {
+#ifdef __APPLE__
+            // the disks start with 'disk'
+            if (std::string(ent->d_name).substr(0, 4) == "disk")
+#elif __linux
             // the disks start with 'sd'
             if (std::string(ent->d_name).substr(0, 2) == "sd")
+#endif
             {
                 std::ostringstream ss;
-                ss << "/dev/";
+                ss << "/dev/r";
                 ss << ent->d_name;
                 std::string diskPath = ss.str();
 

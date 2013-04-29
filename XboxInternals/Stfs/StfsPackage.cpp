@@ -425,7 +425,7 @@ void StfsPackage::ExtractFile(StfsFileEntry *entry, string outPath, void (*extra
     if (entry->nameLen == 0)
     {
         except.str(std::string());
-        except << "STFS: File '" << entry->name << "' doesn't exist in the package.\n";
+        except << "STFS: File '" << entry->name.c_str() << "' doesn't exist in the package.\n";
         throw except.str();
     }
 
@@ -601,7 +601,7 @@ StfsFileEntry StfsPackage::GetFileEntry(string pathInPackage, bool checkFolders,
     if (entry.nameLen == 0)
     {
         except.str(std::string());
-        except << "STFS: File entry '" << pathInPackage << "' cannot be found in the package.\n";
+        except << "STFS: File entry '" << pathInPackage.c_str() << "' cannot be found in the package.\n";
         throw except.str();
     }
 

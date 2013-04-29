@@ -101,7 +101,7 @@ string AvatarAwardGpd::getAwardImageURL(struct AvatarAward *award, bool little)
     url << "http://avatar.xboxlive.com/global/t.";
     url << std::hex << award->titleID << "/avataritem/";
 
-    url << GetGUID(award) << ((little) ? "/64" : "/128");
+    url << GetGUID(award).c_str() << ((little) ? "/64" : "/128");
 
     return url.str();
 }
