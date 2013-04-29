@@ -23,9 +23,6 @@ std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
     std::vector<std::wstring> logicalDrivePaths = getLogicalDrives();
     std::vector<FatxDrive*> drives;
 
-    getPhysicalDisks();
-
-
     std::vector<DeviceIO*> devices = getPhysicalDisks();
 
     for (int i = 0; i < devices.size(); i++)
