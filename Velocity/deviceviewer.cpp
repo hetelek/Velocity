@@ -716,6 +716,12 @@ void DeviceViewer::onDragEntered(QDragEnterEvent *event)
 
 void DeviceViewer::onDragDropped(QDropEvent *event)
 {
+#ifdef _WIN32
+    int removeSize = 8;
+#else
+    int removeSize = 7;
+#endif
+
     statusBar->showMessage("");
 
     QList<QUrl> filePaths = event->mimeData()->urls();
@@ -723,7 +729,7 @@ void DeviceViewer::onDragDropped(QDropEvent *event)
     // fix the file name to remove the "file:///" at the beginning
     QList<void*> files;
     for (int i = 0; i < filePaths.size(); i++)
-        files.push_back(new QString(filePaths.at(i).toString().mid(8)));
+        files.push_back(new QString(filePaths.at(i).toString().mid(removeSize)));
 
     InjectFiles(files, "");
 }
