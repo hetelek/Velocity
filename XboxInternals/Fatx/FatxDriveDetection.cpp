@@ -155,7 +155,11 @@ std::vector<DeviceIO*> FatxDriveDetection::getPhysicalDisks()
 #endif
             {
                 std::ostringstream ss;
+#ifdef __APPLE__
                 ss << "/dev/r";
+#elif __linux
+                ss << "/dev/";
+#endif
                 ss << ent->d_name;
                 std::string diskPath = ss.str();
 
