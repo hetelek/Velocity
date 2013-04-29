@@ -8,6 +8,14 @@
 #include "../Fatx/FatxHelpers.h"
 #include "XboxInternals_global.h"
 
+#ifdef __linux
+    #define SECTOR_COUNT BLKGETSIZE
+    #define SECTOR_SIZE BLKSSZGET
+#elif __APPLE__
+    #define SECTOR_COUNT DKIOCGETBLOCKCOUNT
+    #define SECTOR_SIZE DKIOCGETBLOCKSIZE
+#endif
+
 
 class XBOXINTERNALSSHARED_EXPORT DeviceIO : public BaseIO
 {

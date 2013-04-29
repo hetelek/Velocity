@@ -300,27 +300,16 @@ UINT64 DeviceIO::Length()
 
         UINT64 cylinders = (UINT64)((UINT64)geometry.Cylinders.HighPart << 32) | geometry.Cylinders.LowPart; // Convert the BIG_INTEGER to UINT64
         length = cylinders * (UINT64)geometry.TracksPerCylinder	* (UINT64)geometry.SectorsPerTrack * (UINT64)geometry.BytesPerSector;
-    #elif __linux
-        DWORD numberOfSectors = 0;
-        int device = impl->device;
-
-        ioctl(device, BLKGETSIZE, &numberOfSectors);
-
-        DWORD sectorSize = 0;
-        ioctl(device, BLKSSZGET, &sectorSize);
-
-        // calculate the length in bytes
-        length = (UINT64)numberOfSectors * (UINT64)sectorSize;
     #else
         DWORD numberOfSectors = 0;
         int device = impl->device;
 
-        // queue number of sectors
-        ioctl(device, DKIOCGETBLOCKCOUNT, numberOfSectors);
+        ioctl(device, SECTOR_COUNT, &numberOfSectors);
 
         DWORD sectorSize = 0;
-        ioctl(device, DKIOCGETBLOCKSIZE, sectorSize);
+        ioctl(device, SECTOR_SIZE, &sectorSize);
 
+        // calculate the length in bytes
         length = (UINT64)numberOfSectors * (UINT64)sectorSize;
     #endif
 
