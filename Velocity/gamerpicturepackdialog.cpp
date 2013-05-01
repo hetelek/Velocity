@@ -396,18 +396,17 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
         for (int i = 0; i < ui->listPack->count(); i++)
         {
             // inject the 64x64 image
-            QByteArray large;
-            QBuffer buffLrg(&large);
+            QByteArray largeImage;
+            QBuffer buffLrg(&largeImage);
             buffLrg.open(QIODevice::WriteOnly);
             ui->listPack->item(i)->icon().pixmap(64, 64).save(&buffLrg, "PNG");
-            picturePack.InjectData((BYTE*)large.data(), large.length(), getImageName(addedIDs->at(i), true).toStdString() + ".png");
+            picturePack.InjectData((BYTE*)largeImage.data(), largeImage.length(), getImageName(addedIDs->at(i), true).toStdString() + ".png");
 
-            // inject the 32x32 image
-            QByteArray small;
-            QBuffer buffSm(&small);
+            QByteArray smallImage;
+            QBuffer buffSm(&smallImage);
             buffSm.open(QIODevice::WriteOnly);
             ui->listPack->item(i)->icon().pixmap(32, 32).save(&buffSm, "PNG");
-            picturePack.InjectData((BYTE*)small.data(), small.length(), getImageName(addedIDs->at(i), false).toStdString() + ".png");
+            picturePack.InjectData((BYTE*)smallImage.data(), smallImage.length(), getImageName(addedIDs->at(i), false).toStdString() + ".png");
 
             statusBar->showMessage("Creating picture pack, " + QString::number(((float)i / (float)ui->listPack->count()) * 100, 'f', 0) + "% complete");
             QApplication::processEvents();
