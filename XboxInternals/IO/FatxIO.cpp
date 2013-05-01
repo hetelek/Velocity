@@ -197,6 +197,10 @@ std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
     std::vector<Range> consecutiveClusters;
     std::vector<Range> usedRanges;
 
+    // check to see if we have enough free clusters left
+    if (count > part->freeClusters.size())
+        throw std::string("FATX: Out of memory.\n");
+
     // get the consecutive clusters
     GetConsecutive(part->freeClusters, consecutiveClusters);
 
@@ -225,10 +229,6 @@ std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
     // remove all of the used clusters
     for (DWORD i = 0; i < usedRanges.size(); i++)
         part->freeClusters.erase(part->freeClusters.begin() + usedRanges.at(i).start, part->freeClusters.begin() + usedRanges.at(i).start + usedRanges.at(i).len);
-
-    // check to see if we have enough free clusters left
-    if (count > part->freeClusters.size())
-        throw std::string("FATX: Out of memory.\n");
 
     // if we still need more clusters, then we'll just copy over non-consecutive ones that are left
     std::copy(part->freeClusters.begin(), part->freeClusters.begin() + count, freeClusters.begin() + currentIndex);
