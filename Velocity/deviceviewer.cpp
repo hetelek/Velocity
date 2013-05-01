@@ -731,13 +731,23 @@ void DeviceViewer::onDragDropped(QDropEvent *event)
     statusBar->showMessage("");
 
     QList<QUrl> filePaths = event->mimeData()->urls();
+    if (filePaths.size() == 0)
+        return;
+
+    QString rootPath = QFileInfo(filePaths.at(0).toString().mid(removeSize)).absolutePath();
 
     // fix the file name to remove the "file:///" at the beginning
     QList<void*> files;
     for (int i = 0; i < filePaths.size(); i++)
-        files.push_back(new QString(filePaths.at(i).toString().mid(removeSize)));
+    {
+        QString rawPath = filePaths.at(i).toString().mid(removeSize);
+        if (QFileInfo(rawPath).isDir())
+            GetSubFilesLocal(rawPath, files);
+        else
+            files.push_back(new QString(rawPath));
+    }
 
-    InjectFiles(files, "");
+    InjectFiles(files, rootPath);
 }
 
 void DeviceViewer::onDragLeft(QDragLeaveEvent *event)
