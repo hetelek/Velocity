@@ -864,6 +864,12 @@ void FatxDrive::loadFatxDrive()
             this->partitions.push_back(systemPartition);
         }
 
+        // system cache partition initialization
+        Partition *systemCache = new Partition;
+        systemCache->address = (type == FatxHarddrive) ? +HddOffsets::SystemCache : +UsbOffsets::SystemCache;
+        systemCache->size = (type == FatxHarddrive) ? +HddSizes::SystemCache : +UsbSizes::SystemCache;
+        systemCache->name = "System Cache";
+
         // content partition initialization
         Partition *content = new Partition;
         content->address = (type == FatxHarddrive) ? +HddOffsets::Data : +UsbOffsets::Data;
@@ -873,6 +879,7 @@ void FatxDrive::loadFatxDrive()
         // add the partitions to the vector
         this->partitions.push_back(systemExtended);
         this->partitions.push_back(systemAuxiliary);
+        this->partitions.push_back(systemCache);
         this->partitions.push_back(content);
     }
 
