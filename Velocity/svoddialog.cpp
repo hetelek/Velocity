@@ -37,7 +37,7 @@ SvodDialog::~SvodDialog()
     delete ui;
 }
 
-void SvodDialog::loadListing(QTreeWidgetItem *parent, vector<GDFXFileEntry> *files)
+void SvodDialog::loadListing(QTreeWidgetItem *parent, vector<GdfxFileEntry> *files)
 {
     DWORD addr, index;
 
@@ -76,7 +76,7 @@ void SvodDialog::showFileContextMenu(QPoint pos)
     if (ui->treeWidget->currentIndex().row() == -1)
         return;
 
-    GDFXFileEntry *entry = ui->treeWidget->currentItem()->data(0, Qt::UserRole).value<GDFXFileEntry*>();
+    GdfxFileEntry *entry = ui->treeWidget->currentItem()->data(0, Qt::UserRole).value<GdfxFileEntry*>();
 
     if (entry->attributes & GdfxDirectory)
         return;
@@ -110,11 +110,11 @@ void SvodDialog::showFileContextMenu(QPoint pos)
         QList<void*> list;
         foreach (QTreeWidgetItem *item, ui->treeWidget->selectedItems())
         {
-            GDFXFileEntry *entry = item->data(0, Qt::UserRole).value<GDFXFileEntry*>();
+            GdfxFileEntry *entry = item->data(0, Qt::UserRole).value<GdfxFileEntry*>();
             list.push_back(entry);
         }
 
-        MultiProgressDialog *dialog = new MultiProgressDialog(FileSystemSVOD, svod, savePath + "/", list, this);
+        MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemSVOD, svod, savePath + "/", list, this);
         dialog->setModal(true);
         dialog->show();
         dialog->start();
@@ -129,7 +129,7 @@ void SvodDialog::showFileContextMenu(QPoint pos)
         SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSVOD, svod, OpReplace, QString::fromStdString(entry->filePath + entry->name), filePath, NULL, this);
         dialog->setModal(true);
         dialog->show();
-        dialog->startJob();
+        dialog->start();
     }
 }
 
@@ -184,7 +184,7 @@ void UpdateProgress(DWORD cur, DWORD total, void *arg)
 
 void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    GDFXFileEntry *entry = ui->treeWidget->currentItem()->data(0, Qt::UserRole).value<GDFXFileEntry*>();
+    GdfxFileEntry *entry = ui->treeWidget->currentItem()->data(0, Qt::UserRole).value<GdfxFileEntry*>();
     QString tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", ""));
 
     // the other file types that are supported have no buisness being in an SVOD system, so we'll just leave those out
@@ -211,7 +211,7 @@ void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
 
             package.Close();
 
-            io.OverwriteFile(tempName.toStdString());
+            io.OverWriteFile(tempName.toStdString());
         }
         catch (string error)
         {
@@ -230,21 +230,21 @@ void SvodDialog::on_btnResign_clicked()
 
     // open kv
     FileIO kvIO(kvPath.toStdString());
-    kvIO.setPosition(0, ios_base::end);
+    kvIO.SetPosition(0, ios_base::end);
 
     // read in the console id of the certificate in the kv
     DWORD adder = 0;
-    if (kvIO.getPosition() == 0x4000)
+    if (kvIO.GetPosition() == 0x4000)
         adder = 0x10;
-    kvIO.setPosition(0x9BA + adder);
+    kvIO.SetPosition(0x9BA + adder);
     BYTE consoleID[5];
-    kvIO.readBytes(consoleID, 5);
-    kvIO.close();
+    kvIO.ReadBytes(consoleID, 5);
+    kvIO.Close();
 
     // make sure the console ids match
     if (memcmp(consoleID, svod->metadata->certificate.ownerConsoleID, 5) != 0)
     {
-        QMessageBox::StandardButton btn = QMessageBox::question(this, "Continue?",
+        QMessageBox::StandardButton btn = (QMessageBox::StandardButton)QMessageBox::question(this, "Continue?",
                                                                 "The KeyVault provided is not from the console where this SVOD system was signed. This system will show up as corrupt on the original console. Unless you know what you're doing, choose no.\n\nAre you sure that you want to contiure?",
                                                                 QMessageBox::No, QMessageBox::Yes);
         if (btn != QMessageBox::Yes)

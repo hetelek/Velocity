@@ -10,8 +10,8 @@
 
 // xbox360
 #include "Stfs/StfsPackage.h"
-#include "GPD/DashboardGPD.h"
-#include "GPD/GameGPD.h"
+#include "Gpd/DashboardGpd.h"
+#include "Gpd/GameGpd.h"
 
 enum CleanOperation
 {
@@ -54,7 +54,7 @@ private:
     CleanOperation op;
 
     void clean();
-    void extractAll(FileListing *f, QString parentDirectory);
+    void extractAll(StfsFileListing *f, QString parentDirectory);
     void deleteAllRecursive(QDir directory);
     void injectAll(StfsPackage *profile, QDir currentDirectory, QString currentStfsDir);
 };

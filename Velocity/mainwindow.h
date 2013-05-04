@@ -38,18 +38,21 @@
 #include "profilecleanerwizard.h"
 #include "svoddialog.h"
 #include "ytgrdialog.h"
+#include "deviceviewer.h"
 
 // other
 #include "PluginInterfaces/igamemodder.h"
 #include "PluginInterfaces/igpdmodder.h"
 #include "qthelpers.h"
-#include "FileIO.h"
+#include "IO/FileIO.h"
 #include "json.h"
 #include "Stfs/StfsPackage.h"
-#include "GPD/GPDBase.h"
-#include "IO/MultiFileIO.h"
-#include "Disc/svod.h"
-#include "AvatarAsset/YTGR.h"
+#include "Gpd/GpdBase.h"
+#include "IO/SvodMultiFileIO.h"
+#include "Disc/Svod.h"
+#include "AvatarAsset/Ytgr.h"
+#include "Disc/Svod.h"
+#include "IO/DeviceIO.h"
 
 using namespace std;
 
@@ -79,6 +82,7 @@ public:
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *);
 
 private slots:
     void on_actionAbout_triggered();
@@ -126,6 +130,8 @@ private slots:
     void on_actionSVOD_System_triggered();
 
     void on_actionYTGR_triggered();
+
+    void on_actionDevice_Viewer_triggered();
 
 private:
     Ui::MainWindow *ui;

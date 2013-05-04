@@ -61,7 +61,7 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="Resources.qrc">:/Images/profile creator.jpg</pixmap>
+         <pixmap resource="Resources.qrc">:/Images/profile creator.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>

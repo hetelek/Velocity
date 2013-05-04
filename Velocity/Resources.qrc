@@ -35,7 +35,6 @@
         <file>Images/information.png</file>
         <file>Images/undo.png</file>
         <file>Images/lock.png</file>
-        <file>Images/profile creator.jpg</file>
         <file>Images/avatarJumping.png</file>
         <file>Images/2000A.png</file>
         <file>Images/2000B.png</file>
@@ -88,5 +87,15 @@
         <file>Images/StrbFileIcon.png</file>
         <file>Images/strb.png</file>
         <file>Images/ytgr.png</file>
+        <file>Images/partition.png</file>
+        <file>Images/back.png</file>
+        <file>Images/forward.png</file>
+        <file>Images/harddrive.png</file>
+        <file>Images/usb drive.png</file>
+        <file>Images/restore.png</file>
+        <file>Images/NewFolder.png</file>
+        <file>Images/refresh.png</file>
+        <file>Images/inject.png</file>
+        <file>Images/profile creator.png</file>
     </qresource>
 </RCC>

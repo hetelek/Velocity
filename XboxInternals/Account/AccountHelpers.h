@@ -1,10 +1,11 @@
 #pragma once
 
 #include "AccountDefinitions.h"
-#include "GPD/XDBFHelpers.h"
-#include "GPD/XDBFDefininitions.h"
-#include "FileIO.h"
+#include "Gpd/XdbfHelpers.h"
+#include "Gpd/XdbfDefininitions.h"
+#include "IO/FileIO.h"
 #include <iostream>
+#include <stdlib.h>
 
 #include "XboxInternals_global.h"
 

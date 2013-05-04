@@ -1,14 +1,16 @@
 #ifndef WINNAMES_H
 #define WINNAMES_H
 
-typedef unsigned int INT24;
+#ifdef _WIN32
+    #include <windows.h>
+#else
 typedef unsigned char BYTE;
-typedef short INT16;
 typedef unsigned short WORD;
-typedef unsigned long DWORD;
+typedef unsigned int DWORD;
 typedef int INT32;
 typedef long long INT64;
 typedef unsigned long long UINT64;
+#endif
 
 typedef struct _WINFILETIME
 {
@@ -16,5 +18,8 @@ typedef struct _WINFILETIME
     DWORD dwLowDateTime;
 
 } WINFILETIME;
+
+typedef short INT16;
+typedef signed int INT24;
 
 #endif

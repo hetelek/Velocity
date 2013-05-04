@@ -15,7 +15,8 @@ unix {
 }
 
 # flags
-QMAKE_CXXFLAGS += -fpermissive
+#QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CFLAGS_RELEASE = -O3
 
 # library version
 #VERSION = 0.1.0.0
@@ -26,36 +27,42 @@ win32 {
     LIBS += C:/botan/libbotan-1.10.a
     PRE_TARGETDEPS += C:/botan/libbotan-1.10.a
     INCLUDEPATH += C:/botan/include
-} else macx|unix {
+}
+macx|unix {
     INCLUDEPATH += /usr/local/include/botan-1.10
     LIBS += /usr/local/lib/libbotan-1.10.a
 }
 
 SOURCES += \
     AvatarAsset/AssetHelpers.cpp \
-    GPD/XDBFHelpers.cpp \
+    Gpd/XdbfHelpers.cpp \
     AvatarAsset/AvatarAsset.cpp \
-    FileIO.cpp \
-    GPD/AvatarAwardGPD.cpp \
+    Gpd/AvatarAwardGpd.cpp \
     Account/Account.cpp \
-    Disc/gdfx.cpp \
-    Disc/svod.cpp \
+    Disc/Gdfx.cpp \
+    Disc/Svod.cpp \
     IO/BaseIO.cpp \
     IO/SvodIO.cpp \
     Stfs/StfsDefinitions.cpp \
     Stfs/StfsPackage.cpp \
     Stfs/XContentHeader.cpp \
-    IO/MultiFileIO.cpp \
     Account/AccountHelpers.cpp \
-    GPD/DashboardGPD.cpp \
-    GPD/GPDBase.cpp \
-    GPD/XDBF.cpp \
-    GPD/GameGPD.cpp \
+    Gpd/DashboardGpd.cpp \
+    Gpd/GpdBase.cpp \
+    Gpd/Xdbf.cpp \
+    Gpd/GameGpd.cpp \
     IO/MemoryIO.cpp \
     IO/DeviceIO.cpp \
     Cryptography/XeKeys.cpp \
     Cryptography/XeCrypt.cpp \
-    AvatarAsset/YTGR.cpp
+    AvatarAsset/Ytgr.cpp \
+    Fatx/FatxHelpers.cpp \
+    Fatx/FatxDrive.cpp \
+    IO/FileIO.cpp \
+    IO/FatxIO.cpp \
+    Fatx/FatxDriveDetection.cpp \
+    IO/SvodMultiFileIO.cpp \
+    IO/MultiFileIO.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -63,28 +70,38 @@ HEADERS +=\
     AvatarAsset/AssetHelpers.h \
     AvatarAsset/AvatarAssetDefinintions.h \
     AvatarAsset/AvatarAsset.h \
-    GPD/AvatarAwardGPD.h \
-    GPD/DashboardGPD.h \
-    GPD/XDBFHelpers.h \
-    GPD/XDBFDefininitions.h \
+    Gpd/AvatarAwardGpd.h \
+    Gpd/DashboardGpd.h \
+    Gpd/XdbfHelpers.h \
+    Gpd/XdbfDefininitions.h \
     Account/Account.h \
     winnames.h \
-    GPD/GPDBase.h \
-    GPD/XDBF.h \
-    Disc/gdfx.h \
-    Disc/svod.h \
-    FileIO.h \
-    GPD/GameGPD.h \
+    Gpd/GpdBase.h \
+    Gpd/Xdbf.h \
+    Disc/Gdfx.h \
+    Disc/Svod.h \
+    Gpd/GameGpd.h \
     IO/BaseIO.h \
     IO/SvodIO.h \
     Stfs/StfsConstants.h \
     Stfs/StfsDefinitions.h \
     Stfs/StfsPackage.h \
     Stfs/XContentHeader.h \
-    IO/MultiFileIO.h \
     Account/AccountDefinitions.h \
     IO/MemoryIO.h \
     IO/DeviceIO.h \
     Cryptography/XeKeys.h \
     Cryptography/XeCrypt.h \
-    AvatarAsset/YTGR.h
+    AvatarAsset/Ytgr.h \
+    Fatx/FatxHelpers.h \
+    Fatx/FatxDrive.h \
+    Fatx/FatxConstants.h \
+    IO/FileIO.h \
+    IO/FatxIO.h \
+    Fatx/FatxDriveDetection.h \
+    IO/SvodMultiFileIO.h \
+    IO/MultiFileIO.h \
+    Fatx/FatxHelpers.h \
+    Fatx/FatxDriveDetection.h \
+    Fatx/FatxDrive.h \
+    Fatx/FatxConstants.h

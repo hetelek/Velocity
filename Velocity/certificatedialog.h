@@ -20,7 +20,7 @@ class CertificateDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit CertificateDialog(QStatusBar *statusBar, Certificate *cert, QWidget *parent);
+    explicit CertificateDialog(QStatusBar *statusBar, Certificate *cert, QWidget *parent, bool readOnly = false);
     ~CertificateDialog();
     
 private slots:

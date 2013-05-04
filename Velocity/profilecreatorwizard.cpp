@@ -94,10 +94,10 @@ void ProfileCreatorWizard::onFinished(int status)
         FileIO accountIo(accountTempPath.toStdString(), true);
 
         BYTE tempBuffer[380] = {0};
-        accountIo.write(tempBuffer, 380);
-        accountIo.close();
+        accountIo.Write(tempBuffer, 380);
+        accountIo.Close();
 
-        // write the gamertag, and encrypt the file
+        // Write the gamertag, and encrypt the file
         Account account(accountTempPath.toStdString(), false, newProfile.metaData->certificate.ownerConsoleType);
         account.SetGamertag(ui->txtGamertag->text().toStdWString());
         account.Save(newProfile.metaData->certificate.ownerConsoleType);
@@ -106,16 +106,16 @@ void ProfileCreatorWizard::onFinished(int status)
         newProfile.InjectFile(accountTempPath.toStdString(), "Account");
 
         // make a temporary copy of the dashboard gpd
-        QString dashGPDTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
-        QFile::copy(QtHelpers::ExecutingDirectory() + "/FFFE07D1.gpd", dashGPDTempPath);
+        QString dashGpdTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+        QFile::copy(QtHelpers::ExecutingDirectory() + "/FFFE07D1.gpd", dashGpdTempPath);
 
-        // parse the GPD
-        DashboardGPD dashGPD(dashGPDTempPath.toStdString());
+        // parse the Gpd
+        DashboardGpd dashGpd(dashGpdTempPath.toStdString());
 
         // change the gamerpicture key
         wstring picKey = L"fffe07d10002000" + QString::number(ui->listWidget->currentIndex().row()).toStdWString() + L"0001000" + QString::number(ui->listWidget->currentIndex().row()).toStdWString();
-        dashGPD.gamerPictureKey.str = &picKey;
-        dashGPD.WriteSettingEntry(dashGPD.gamerPictureKey);
+        dashGpd.gamerPictureKey.str = &picKey;
+        dashGpd.WriteSettingEntry(dashGpd.gamerPictureKey);
 
         // if the avatar type is female, then we must change the avatar info setting
         if (ui->rdiFemale->isChecked())
@@ -123,11 +123,11 @@ void ProfileCreatorWizard::onFinished(int status)
             // read in the setting
             FileIO io((QtHelpers::ExecutingDirectory() + "/femaleAvatar.bin").toStdString());
             BYTE settingBuffer[0x3E8];
-            io.readBytes(settingBuffer, 0x3E8);
+            io.ReadBytes(settingBuffer, 0x3E8);
 
-            dashGPD.avatarInformation.binaryData.data = settingBuffer;
-            dashGPD.avatarInformation.binaryData.length = 0x3E8;
-            dashGPD.WriteSettingEntry(dashGPD.avatarInformation);
+            dashGpd.avatarInformation.binaryData.data = settingBuffer;
+            dashGpd.avatarInformation.binaryData.length = 0x3E8;
+            dashGpd.WriteSettingEntry(dashGpd.avatarInformation);
         }
 
         // inject the image of the avatar
@@ -139,25 +139,25 @@ void ProfileCreatorWizard::onFinished(int status)
 
         FileIO io(imagePath.toStdString());
 
-        io.setPosition(0, ios_base::end);
-        DWORD fileLen = io.getPosition();
+        io.SetPosition(0, ios_base::end);
+        DWORD fileLen = io.GetPosition();
         BYTE *imageBuff = new BYTE[fileLen];
 
-        io.setPosition(0);
-        io.readBytes(imageBuff, fileLen);
-        io.close();
+        io.SetPosition(0);
+        io.ReadBytes(imageBuff, fileLen);
+        io.Close();
 
         // inject the image
         ImageEntry image;
         image.image = imageBuff;
         image.length = fileLen;
 
-        dashGPD.CreateImageEntry(&image, AvatarImage);
+        dashGpd.CreateImageEntry(&image, AvatarImage);
 
-        dashGPD.Close();
+        dashGpd.Close();
 
         // inject the dash gpd into the profile
-        newProfile.InjectFile(dashGPDTempPath.toStdString(), "FFFE07D1.gpd");
+        newProfile.InjectFile(dashGpdTempPath.toStdString(), "FFFE07D1.gpd");
 
         // create/inject the 64x64 image
         QString img64Path = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
@@ -180,7 +180,7 @@ void ProfileCreatorWizard::onFinished(int status)
 
         // delete the temp files
         QFile::remove(accountTempPath);
-        QFile::remove(dashGPDTempPath);
+        QFile::remove(dashGpdTempPath);
         QFile::remove(img64Path);
         QFile::remove(img32Path);
 

@@ -21,29 +21,29 @@ Account::Account(std::string path, bool decrypt, ConsoleType type) : ioPassedIn(
 void Account::parseFile()
 {
 	// seek to the begining of the file
-	io->setPosition(0);
+    io->SetPosition(0);
 
 	// read the data
-	account.reservedFlags = io->readDword();
-	account.liveFlags = io->readDword();
-	account.gamertag = io->readWString(16);
+    account.reservedFlags = io->ReadDword();
+    account.liveFlags = io->ReadDword();
+    account.gamertag = io->ReadWString(16);
 
-	io->setPosition(0x28);
-	account.xuid = io->readUInt64();
-	account.cachedUserFlags = io->readDword();
-	account.serviceProvider = (XboxLiveServiceProvider)io->readDword();
+    io->SetPosition(0x28);
+    account.xuid = io->ReadUInt64();
+    account.cachedUserFlags = io->ReadDword();
+    account.serviceProvider = (XboxLiveServiceProvider)io->ReadDword();
 
-    io->setPosition(0x38);
-	account.passcode[0] = io->readByte();
-	account.passcode[1] = io->readByte();
-	account.passcode[2] = io->readByte();
-	account.passcode[3] = io->readByte();
+    io->SetPosition(0x38);
+    account.passcode[0] = io->ReadByte();
+    account.passcode[1] = io->ReadByte();
+    account.passcode[2] = io->ReadByte();
+    account.passcode[3] = io->ReadByte();
 
-	account.onlineDomain = io->readString(20);
-	io->setPosition(0x50);
-	account.kerbrosRealm = io->readString(24);
+    account.onlineDomain = io->ReadString(20);
+    io->SetPosition(0x50);
+    account.kerbrosRealm = io->ReadString(24);
 	
-	io->readBytes(account.onlineKey, 0x10);
+    io->ReadBytes(account.onlineKey, 0x10);
 }
 
 bool Account::IsPasscodeEnabled()
@@ -189,8 +189,8 @@ void Account::SetOnlineServiceProvider(XboxLiveServiceProvider provider)
 
 void Account::Save(ConsoleType type)
 {
-    writeFile();
-    io->close();
+    WriteFile();
+    io->Close();
     encryptAccount(outPath, type, &path);
 }
 
@@ -202,7 +202,7 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
     BYTE rc4Key[0x14];
 
     // read the hash
-    encIo.readBytes(hmacHash, 0x10);
+    encIo.ReadBytes(hmacHash, 0x10);
 
     Botan::SHA_160 *sha1 = new Botan::SHA_160;
     Botan::HMAC hmacSha1(sha1);
@@ -222,7 +222,7 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
     BYTE payload[0x17C];
 
     // read the rest of the file
-    encIo.readBytes(restOfFile, 0x184);
+    encIo.ReadBytes(restOfFile, 0x184);
 
     // decrypt using rc4
     Botan::ARC4 rc4;
@@ -244,15 +244,30 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
         throw string("Account: Account decryption failed.\n");
 
 
-    // write the payload
-    *outPath = std::string(tmpnam(NULL));
+    // Write the payload
+#ifdef _WIN32
+    // Opening a file using the path returned by tmpnam() may result in a "permission denied" error on Windows.
+    // Not sure why it happens but tweaking the manifest/UAC properties makes a difference.
+    char *outPath_c = _tempnam(NULL, NULL);
+    if (!outPath_c)
+        throw string("Account: Failed to generate temporary file name.\n");
+    *outPath = string(outPath_c);
+    free(outPath_c);
+    outPath_c = NULL;
+#else
+    char outPath_c[L_tmpnam];
+    if (!tmpnam(outPath_c))
+        throw string("Account: Failed to generate temporary file name.\n");
+    *outPath = string(outPath_c);
+#endif
+
     FileIO decrypted(*outPath, true);
-    decrypted.write(payload, 0x17C);
-    decrypted.flush();
+    decrypted.Write(payload, 0x17C);
+    decrypted.Flush();
 
     // cleanup
-    decrypted.close();
-    encIo.close();
+    decrypted.Close();
+    encIo.Close();
 }
 
 void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::string *outPath)
@@ -264,7 +279,7 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
     memcpy(decryptedData, CONFOUNDER, 8);
 
     // read the decrypted data
-    decIo.readBytes(&decryptedData[8], 0x17C);
+    decIo.ReadBytes(&decryptedData[8], 0x17C);
 
     // initialization
     Botan::SHA_160 *sha1 = new Botan::SHA_160;
@@ -283,9 +298,27 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
 
     // begin writing the payload
     if (outPath == NULL)
-        *outPath = std::string(tmpnam(NULL));
+    {
+#ifdef _WIN32
+        // Opening a file using the path returned by tmpnam() may result in a "permission denied" error on Windows.
+        // Not sure why it happens but tweaking the manifest/UAC properties makes a difference.
+        char *outPath_c = _tempnam(NULL, NULL);
+        if (!outPath_c)
+            throw string("Account: Failed to generate temporary file name.\n");
+        *outPath = string(outPath_c);
+        free(outPath_c);
+        outPath_c = NULL;
+#else
+        char outPath_c[L_tmpnam];
+        if (!tmpnam(outPath_c))
+            throw string("Account: Failed to generate temporary file name.\n");
+        *outPath = string(outPath_c);
+#endif
+    }
+
+    decIo.Close();
     FileIO encrypted(*outPath, true);
-    encrypted.write(hmacHash, 0x10);
+    encrypted.Write(hmacHash, 0x10);
 
     // generate the rc4 key
     BYTE rc4Key[0x14];
@@ -298,49 +331,48 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
 
     rc4.cipher1(decryptedData, 0x184);
 
-    // write the confounder and encrypted data
-    encrypted.write(decryptedData, 0x184);
-    encrypted.flush();
+    // Write the confounder and encrypted data
+    encrypted.Write(decryptedData, 0x184);
+    encrypted.Flush();
 
     // clean up
-    encrypted.close();
-    decIo.close();
+    encrypted.Close();
 }
 
-void Account::writeFile()
+void Account::WriteFile()
 {
 	// seek to the beginning of the file
-	io->setPosition(0);
+    io->SetPosition(0);
 
-	// write the information
-	io->write(account.reservedFlags);
-	io->write(account.liveFlags);
-	io->write(account.gamertag);
+	// Write the information
+    io->Write(account.reservedFlags);
+    io->Write(account.liveFlags);
+    io->Write(account.gamertag);
 
     // null the bytes out after the gamertag
-    io->setPosition(8 + (account.gamertag.length() * 2));
+    io->SetPosition(8 + (account.gamertag.length() * 2));
     BYTE temp[0x20] = {0};
-    io->write(temp, 0x20 - (account.gamertag.length() * 2));
+    io->Write(temp, 0x20 - (account.gamertag.length() * 2));
 
-	io->setPosition(0x28);
-	io->write(account.xuid);
-	io->write(account.cachedUserFlags);
-	io->write(account.serviceProvider);
+    io->SetPosition(0x28);
+    io->Write(account.xuid);
+    io->Write(account.cachedUserFlags);
+    io->Write((DWORD)account.serviceProvider);
 
-    io->setPosition(0x38);
+    io->SetPosition(0x38);
 
-	io->write(account.passcode[0]);
-	io->write(account.passcode[1]);
-	io->write(account.passcode[2]);
-	io->write(account.passcode[3]);
+    io->Write(account.passcode[0]);
+    io->Write(account.passcode[1]);
+    io->Write(account.passcode[2]);
+    io->Write(account.passcode[3]);
 
-	io->write(account.onlineDomain);
+    io->Write(account.onlineDomain);
 
-	io->setPosition(0x50);
-	io->write(account.kerbrosRealm);
+    io->SetPosition(0x50);
+    io->Write(account.kerbrosRealm);
 
-	io->setPosition(0x68);
-	io->write(account.onlineKey, 0x10);
+    io->SetPosition(0x68);
+    io->Write(account.onlineKey, 0x10);
 }
 
 SubscriptionTeir Account::GetSubscriptionTeir()
@@ -395,7 +427,7 @@ wstring Account::GetGamertag()
 
 Account::~Account(void)
 {
-    io->close();
+    io->Close();
     delete io;
     remove(outPath.c_str());
 }

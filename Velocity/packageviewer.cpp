@@ -130,7 +130,7 @@ PackageViewer::~PackageViewer()
     delete ui;
 }
 
-void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *parent)
+void PackageViewer::PopulateTreeWidget(StfsFileListing *entry, QTreeWidgetItem *parent)
 {
     bool isRootEntry = entry->folder.entryIndex == 0xFFFF;
 
@@ -174,7 +174,7 @@ void PackageViewer::PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *pare
         {
             for (int x = 0; x < gpdActions.size(); x++)
             {
-                if (QString::number(gpdActions.at(x)->property("titleid").toUInt(), 16).toUpper() + ".GPD" == name.toUpper())
+                if (QString::number(gpdActions.at(x)->property("titleid").toUInt(), 16).toUpper() + ".Gpd" == name.toUpper())
                 {
                     gpdActions.at(x)->setProperty("package", QVariant::fromValue(package));
                     openInMenu->addAction(gpdActions.at(x));
@@ -201,13 +201,13 @@ void PackageViewer::GetPackagePath(QTreeWidgetItem *item, QString *out, bool fol
         GetPackagePath(item->parent(), out);
 }
 
-void PackageViewer::SetIcon(string name, FileEntry *entry, QTreeWidgetItem *item)
+void PackageViewer::SetIcon(string name, StfsFileEntry *entry, QTreeWidgetItem *item)
 {
     try
     {
-    QIcon toSet;
-    QtHelpers::GetFileIcon(package->GetFileMagic(*entry), QString::fromStdString(name), toSet, *item);
-    item->setIcon(0, toSet);
+        QIcon toSet;
+        QtHelpers::GetFileIcon(package->GetFileMagic(*entry), QString::fromStdString(name), toSet, *item);
+        item->setIcon(0, toSet);
     }
     catch (string error)
     {
@@ -352,7 +352,7 @@ void PackageViewer::aboutToShow()
         gameActions.at(i)->setProperty("fromPackageViewer", QVariant(true));
 }
 
-void PackageViewer::GetSubFilesStfs(FileListing *parent, QList<void *> &entries, QString currentPath)
+void PackageViewer::GetSubFilesStfs(StfsFileListing *parent, QList<void *> &entries, QString currentPath)
 {
     for (int i = 0; i < parent->fileEntries.size(); i++)
     {
@@ -431,7 +431,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
 
         QList<void*> outFiles;
-        QList<FileEntry> sillyNess;
+        QList<StfsFileEntry> sillyNess;
         for (int i = 0; i < totalCount; i++)
         {
             QString packagePath;
@@ -441,13 +441,13 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             entry->path = "";
 
             sillyNess.append(package->GetFileEntry(packagePath.toStdString()));
-            entry->entry = &sillyNess.at(i);
-            outFiles.append(entry);
+            entry->entry = const_cast<StfsFileEntry*>(&sillyNess.at(i));
+            outFiles.append(const_cast<void*>((void*)entry));
         }
 
         try
         {
-            MultiProgressDialog *dialog = new MultiProgressDialog(FileSystemSTFS, package, path.replace("\\", "/"), outFiles, this);
+            MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemSTFS, package, path.replace("\\", "/"), outFiles, this);
             dialog->setModal(true);
             dialog->show();
             dialog->start();
@@ -472,7 +472,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
         try
         {
-            MultiProgressDialog *dialog = new MultiProgressDialog(FileSystemSTFS, package, path.replace("\\", "/"), entries, this);
+            MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemSTFS, package, path.replace("\\", "/"), entries, this);
             dialog->setModal(true);
             dialog->show();
             dialog->start();
@@ -545,7 +545,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSTFS, package, OpReplace, packagePath, path, NULL, this);
             dialog->setModal(true);
             dialog->show();
-            dialog->startJob();
+            dialog->start();
 
         }
         catch(string error)
@@ -577,11 +577,11 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
         try
         {
-            FileEntry *injectedEntry = new FileEntry;
+            StfsFileEntry *injectedEntry = new StfsFileEntry;
             SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSTFS, package, OpInject, packagePath, path, injectedEntry, this);
             dialog->setModal(true);
             dialog->show();
-            dialog->startJob();
+            dialog->start();
 
             listing = package->GetFileListing();
 
@@ -614,7 +614,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             QString packagePath;
             GetPackagePath(items.at(0), &packagePath);
 
-            FileEntry entry = package->GetFileEntry(packagePath.toStdString(), true);
+            StfsFileEntry entry = package->GetFileEntry(packagePath.toStdString(), true);
             bool folder = entry.flags & 2;
 
             bool changed = false;
@@ -670,7 +670,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
     if (index != string::npos)
         extension = item->text(0).mid(index).toLower();
 
-    if (item->data(1, Qt::UserRole).toString() == "XDBF")
+    if (item->data(1, Qt::UserRole).toString() == "Xdbf")
     {
         try
         {
@@ -681,7 +681,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
             // verify the magic
             if (package->GetFileMagic(packagePath.toStdString()) != 0x58444246)
             {
-                statusBar->showMessage("Invalid GPD", 3000);
+                statusBar->showMessage("Invalid Gpd", 3000);
                 return;
             }
 
@@ -693,8 +693,8 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
             package->ExtractFile(packagePath.toStdString(), tempNameStd);
 
             // parse the gpd
-            GPDBase *gpd = new GPDBase(tempNameStd);
-            statusBar->showMessage("GPD parsed successfully", 3000);
+            GpdBase *gpd = new GpdBase(tempNameStd);
+            statusBar->showMessage("Gpd parsed successfully", 3000);
 
             bool changed;
             XdbfDialog dialog(statusBar, gpd, &changed, this);
@@ -710,7 +710,7 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
         }
         catch(string error)
         {
-            QMessageBox::critical(this, "Error", "Failed to open the GPD.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error", "Failed to open the Gpd.\n\n" + QString::fromStdString(error));
         }
     }
     else if (item->data(1, Qt::UserRole).toString() == "STRB")

@@ -84,7 +84,7 @@ void ProfileCleanerWizard::clean()
     directory = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "") + "/";
     QDir d(directory);
     d.mkdir(directory);
-    FileListing f = profile->GetFileListing();
+    StfsFileListing f = profile->GetFileListing();
     extractAll(&f, directory);
     qDebug() << "Extraction complete";
 
@@ -93,7 +93,7 @@ void ProfileCleanerWizard::clean()
     exceptions.push_back("FFFE07DE.gpd");
     exceptions.push_back("584D07D1.gpd");
 
-    // iterate through all of the GPDs in the profile
+    // iterate through all of the Gpds in the profile
     QFileInfoList files = d.entryInfoList();
     for (DWORD i = 0; i < files.size(); i++)
     {
@@ -101,7 +101,7 @@ void ProfileCleanerWizard::clean()
         {
             try
             {
-                GPDBase gpd(files.at(i).absoluteFilePath().toStdString());
+                GpdBase gpd(files.at(i).absoluteFilePath().toStdString());
 
                 if (op == Purify && !exceptions.contains(files.at(i).fileName()))
                 {
@@ -231,7 +231,7 @@ void ProfileCleanerWizard::clean()
     button(QWizard::FinishButton)->setEnabled(true);
 }
 
-void ProfileCleanerWizard::extractAll(FileListing *f, QString parentDirectory)
+void ProfileCleanerWizard::extractAll(StfsFileListing *f, QString parentDirectory)
 {
     // extract all files
     for (DWORD i = 0; i < f->fileEntries.size(); i++)

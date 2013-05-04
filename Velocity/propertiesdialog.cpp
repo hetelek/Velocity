@@ -1,7 +1,7 @@
 #include "propertiesdialog.h"
 #include "ui_propertiesdialog.h"
 
-PropertiesDialog::PropertiesDialog(FileEntry *entry, QString location, bool *changed, QIcon icon, bool hasChildren, QWidget *parent) :
+PropertiesDialog::PropertiesDialog(StfsFileEntry *entry, QString location, bool *changed, QIcon icon, bool hasChildren, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::PropertiesDialog),
     changed(changed),

@@ -9,38 +9,34 @@ bool XeKeys::VerifyRSASignature(XeKeysRsaKeys key, BYTE *pbMessage, DWORD cbMess
     switch (key)
     {
         case PIRSKey:
-            modulus1 = PirsModulus1;
+            modulus1 = const_cast<BYTE*>(PirsModulus1);
             modulus2 = NULL;
             exponent1 = 3;
             exponent2 = 0;
             break;
         case LIVEKey:
-            modulus1 = LiveModulus1;
-            modulus2 = LiveDeviceModulus;
+            modulus1 = const_cast<BYTE*>(LiveModulus1);
+            modulus2 = const_cast<BYTE*>(LiveDeviceModulus);
             exponent1 = 0x10001;
             exponent2 = 3;
             break;
         case DeviceKey:
-            modulus1 = DeviceModulus1;
-            modulus2 = LiveDeviceModulus;
+            modulus1 = const_cast<BYTE*>(DeviceModulus1);
+            modulus2 = const_cast<BYTE*>(LiveDeviceModulus);
             exponent1 = exponent2 = 3;
             break;
         case UnknownKey:
-            modulus1 = UnknownModulus1;
-            modulus2 = UnknownModulus2;
+            modulus1 = const_cast<BYTE*>(UnknownModulus1);
+            modulus2 = const_cast<BYTE*>(UnknownModulus2);
             exponent1 = exponent2 = 3;
             break;
         default:
             throw std::string("XeKeys: Invalid key.\n");
     }
 
-    // format the keys
-    XeCrypt::BnQw_SwapDwQwLeBe(modulus1, 0x100);
-    XeCrypt::BnQw_SwapDwQwLeBe(modulus2, 0x100);
-
     // format the signature
     for (int i = 0; i < 0x20; i++)
-        FileIO::swapEndian(&signature[i * 8], 1, 8);
+        FileIO::ReverseGenericArray(&signature[i * 8], 1, 8);
     XeCrypt::BnQw_SwapDwQwLeBe(signature, 0x100);
 
     // check with the first key

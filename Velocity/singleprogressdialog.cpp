@@ -6,20 +6,30 @@ SingleProgressDialog::SingleProgressDialog(FileSystem system, void *device, Oper
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+    QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
-    if (op == OpInject)
+    switch (op)
     {
-        setWindowTitle("Injecting File");
-        ui->lblIcon->setPixmap(QPixmap(":/Images/add.png"));
-    }
-    else if (op == OpReplace)
-    {
-        setWindowTitle("Replacing File");
-        ui->lblIcon->setPixmap(QPixmap(":/Images/replace.png"));
+        case OpInject:
+            setWindowTitle("Injecting File");
+            ui->lblIcon->setPixmap(QPixmap(":/Images/add.png"));
+            break;
+        case OpReplace:
+            setWindowTitle("Replacing File");
+            ui->lblIcon->setPixmap(QPixmap(":/Images/replace.png"));
+            break;
+        case OpBackup:
+            setWindowTitle("Creating Backup");
+            ui->lblIcon->setPixmap(QPixmap(":/Images/save.png"));
+            break;
+        case OpRestore:
+            setWindowTitle("Restoring from Backup");
+            ui->lblIcon->setPixmap(QPixmap(":/Images/restore.png"));
+            break;
     }
 }
 
-void SingleProgressDialog::startJob()
+void SingleProgressDialog::start()
 {
     try
     {
@@ -32,7 +42,7 @@ void SingleProgressDialog::startJob()
                     package->ReplaceFile(externalPath.toStdString(), internalPath.toStdString(), UpdateProgress, this);
                 else if (op == OpInject)
                 {
-                    FileEntry *entry = reinterpret_cast<FileEntry*>(outEntry);
+                    StfsFileEntry *entry = reinterpret_cast<StfsFileEntry*>(outEntry);
                     *entry = package->InjectFile(externalPath.toStdString(), internalPath.toStdString(), UpdateProgress, this);
                 }
                 break;
@@ -46,7 +56,48 @@ void SingleProgressDialog::startJob()
                     SVOD *svod = reinterpret_cast<SVOD*>(device);
                     SvodIO io = svod->GetSvodIO(internalPath.toStdString());
 
-                    io.OverwriteFile(externalPath.toStdString(), UpdateProgress, this);
+                    io.OverWriteFile(externalPath.toStdString(), UpdateProgress, this);
+                }
+                break;
+            }
+            case FileSystemFATX:
+            {
+                FatxDrive *drive = reinterpret_cast<FatxDrive*>(device);
+                if (op == OpInject)
+                {
+                    try
+                    {
+                        FatxFileEntry *parent = reinterpret_cast<FatxFileEntry*>(outEntry);
+                        drive->InjectFile(parent, internalPath.toStdString(), externalPath.toStdString(), UpdateProgress, this);
+                    }
+                    catch (string error)
+                    {
+                        QMessageBox::critical(this, "", "An error occurred while copy the file to your device.\n\n" + QString::fromStdString(error));
+                    }
+                }
+                else if (op == OpBackup)
+                {
+                    try
+                    {
+                        FatxDrive *drive = reinterpret_cast<FatxDrive*>(device);
+                        drive->CreateBackup(externalPath.toStdString(), UpdateProgress, this);
+                    }
+                    catch (string error)
+                    {
+                        QMessageBox::critical(this, "", "An error occurred while creating a backup for your device.\n\n" + QString::fromStdString(error));
+                    }
+                }
+                else if (op == OpRestore)
+                {
+                    try
+                    {
+                        FatxDrive *drive = reinterpret_cast<FatxDrive*>(device);
+                        drive->RestoreFromBackup(externalPath.toStdString(), UpdateProgress, this);
+                    }
+                    catch (string error)
+                    {
+                        QMessageBox::critical(this, "", "An error occurred while restoring your device from a backup.\n\n" + QString::fromStdString(error));
+                    }
                 }
                 break;
             }

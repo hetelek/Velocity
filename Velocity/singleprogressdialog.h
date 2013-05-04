@@ -3,16 +3,11 @@
 
 // qt
 #include <QDialog>
+#include "qthelpers.h"
 #include "multiprogressdialog.h"
 
 // xbox360
 #include "Stfs/StfsPackage.h"
-
-enum Operation
-{
-    OpReplace,
-    OpInject
-};
 
 void UpdateProgress(void *arg, DWORD cur, DWORD total);
 
@@ -26,7 +21,7 @@ class SingleProgressDialog : public QDialog
     
 public:
     explicit SingleProgressDialog(FileSystem system, void *device, Operation op, QString internalPath, QString externalPath, void *outEntry = NULL, QWidget *parent = 0);
-    void startJob();
+    void start();
     ~SingleProgressDialog();
     
 private:

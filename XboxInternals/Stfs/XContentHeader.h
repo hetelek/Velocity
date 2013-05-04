@@ -1,12 +1,14 @@
 #pragma once
 
-#include "FileIO.h"
+#include "winnames.h"
+
 #include "StfsConstants.h"
 #include "StfsDefinitions.h"
+#include "IO/FileIO.h"
 #include "../AvatarAsset/AvatarAssetDefinintions.h"
-#include "../GPD/XDBFHelpers.h"
-#include "winnames.h"
+#include "../Gpd/XdbfHelpers.h"
 #include "../Cryptography/XeCrypt.h"
+
 #include <iostream>
 
 #include <botan/botan.h>
@@ -41,28 +43,35 @@ enum OnlineContentResumeState
 enum FileSystem
 {
     FileSystemSTFS = 0,
-    FileSystemSVOD
+    FileSystemSVOD,
+    FileSystemFATX
 };
 
 class XBOXINTERNALSSHARED_EXPORT XContentHeader
 {
 public:
 	// Description: read in all of the metadata for the package
-    XContentHeader(FileIO *io, DWORD flags = 0);
+    XContentHeader(BaseIO *io, DWORD flags = 0);
 
     // fix the signature in the header
     void ResignHeader(string kvPath);
 
+    // fix the signature in the header
+    void ResignHeader(BYTE* kvData, size_t length);
+
+    // fix the signature in the header
+    void ResignHeader(BaseIO& kvIo);
+
     // fix the sha1 hash of the header data
     void FixHeaderHash();
 
-    // Description: write the console certificate
+    // Description: Write the console certificate
     void WriteCertificate();
 
-    // Description: write the volume descriptor
+    // Description: Write the volume descriptor
 	void WriteVolumeDescriptor();
 
-    // Description: write all of the metadata
+    // Description: Write all of the metadata
     void WriteMetaData();
 	~XContentHeader();
 
@@ -142,7 +151,7 @@ public:
 	BYTE *titleThumbnailImage;
 
 private:
-	FileIO *io;
+    BaseIO *io;
     DWORD flags;
 
     void readMetadata();

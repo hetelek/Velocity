@@ -16,7 +16,7 @@
 // other
 #include "json.h"
 #include "qthelpers.h"
-#include "GPD/DashboardGPD.h"
+#include "Gpd/DashboardGpd.h"
 #include "gpddownloader.h"
 #include "Stfs/StfsPackage.h"
 
@@ -37,7 +37,7 @@ private slots:
     void gameReplyFinished(QNetworkReply*);
     void showRemoveContextMenu_QueuedGames(QPoint point);
     void showRemoveContextMenu_AllGames(QPoint point);
-    void finishedDownloadingGPD(QString gamePath, QString awardPath, TitleEntry entry, bool error);
+    void finishedDownloadingGpd(QString gamePath, QString awardPath, TitleEntry entry, bool error);
     void thumbnailReplyFinished(QNetworkReply *aReply);
     void on_pushButton_2_clicked();
     void on_pushButton_clicked();
@@ -50,8 +50,8 @@ private slots:
 private:
     Ui::GameAdderDialog *ui;
     QNetworkAccessManager *manager, *imageManager;
-    DashboardGPD *dashGPD;
-    QString dashGPDTempPath, pecTempPath, getParams;
+    DashboardGpd *dashGpd;
+    QString dashGpdTempPath, pecTempPath, getParams;
     QStringList notSuccessful;
     StfsPackage *package, *pecPackage;
 

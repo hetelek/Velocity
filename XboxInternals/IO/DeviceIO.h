@@ -1,56 +1,57 @@
 /* Most parts of this class were originally developed by Lander Griffith (https://github.com/landr0id/).
-   Much of his code is used throughout this class */
+   Much of his code is used throughout this class or very slightly modified */
 
-#ifndef SVODIO_H
-#define SVODIO_H
+#ifndef DEVICEIO_H
+#define DEVICEIO_H
 
-#include "../Disc/gdfx.h"
 #include "BaseIO.h"
-#include "../Stfs/XContentHeader.h"
+#include "../Fatx/FatxHelpers.h"
 #include "XboxInternals_global.h"
 
-#ifdef _WIN32
-    #include <windows.h>
-    #include <WinIoCtl.h>
-#else
-#define _FILE_OFFSET_BITS 64
-    #include <fcntl.h>
-    #include <sys/types.h>
-    #include <sys/ioctl.h>
-    #include <unistd.h>
-#endif
-
-#ifndef _WIN32
-    #include <sys/stat.h>
+#ifdef __linux
+    #define SECTOR_COUNT BLKGETSIZE
+    #define SECTOR_SIZE BLKSSZGET
+#elif __APPLE__
+    #define SECTOR_COUNT DKIOCGETBLOCKCOUNT
+    #define SECTOR_SIZE DKIOCGETBLOCKSIZE
 #endif
 
 
 class XBOXINTERNALSSHARED_EXPORT DeviceIO : public BaseIO
 {
 public:
-    DeviceIO();
+    DeviceIO(void* deviceHandle);
+    DeviceIO(std::string devicePath);
+    DeviceIO(std::wstring devicePath);
+    virtual ~DeviceIO();
 
     void ReadBytes(BYTE *outBuffer, DWORD len);
 
     void WriteBytes(BYTE *buffer, DWORD len);
 
-    void SetPosition(DWORD address);
+    void SetPosition(UINT64 address, std::ios_base::seek_dir dir = std::ios_base::beg);
 
-    UINT64 DriveLength();
+    UINT64 GetPosition();
+
+    UINT64 Length();
 
     void Close();
 
-private:
-    #ifdef _WIN32
-        HANDLE deviceHandle;
-        OVERLAPPED offset;
-    #else
-        int device;
-        INT64 offset;
-    #endif
+    void Flush();
 
-    INT64 userOffset;
-    INT64 realPosition();
+private:
+    void loadDevice(std::wstring devicePath);
+
+    UINT64 realPosition();
+
+    class Impl;
+    Impl* impl;
+
+    std::string yolo;
+
+    UINT64 pos;
+    BYTE lastReadData[0x200];
+    UINT64 lastReadOffset;
 };
 
-#endif // SVODIO_H
+#endif // DEVICEIO_H

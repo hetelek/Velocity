@@ -4,7 +4,7 @@
 #include <QDialog>
 #include "qthelpers.h"
 
-#include "GPD/XDBF.h"
+#include "Gpd/Xdbf.h"
 
 namespace Ui {
 class AddressConverterDialog;
@@ -15,7 +15,7 @@ class AddressConverterDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit AddressConverterDialog(XDBF *xdbf, QWidget *parent = 0);
+    explicit AddressConverterDialog(Xdbf *xdbf, QWidget *parent = 0);
     ~AddressConverterDialog();
     
 private slots:
@@ -25,7 +25,7 @@ private slots:
 
 private:
     Ui::AddressConverterDialog *ui;
-    XDBF *xdbf;
+    Xdbf *xdbf;
 };
 
 #endif // ADDRESSCONVERTERDIALOG_H

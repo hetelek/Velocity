@@ -5,7 +5,7 @@
 #include <QWidget>
 
 // xbox360
-#include "GPD/GameGPD.h"
+#include "Gpd/GameGpd.h"
 
 class IGPDModder
 {
@@ -15,7 +15,7 @@ public:
     IGPDModder() { }
     virtual ~IGPDModder() { }
 
-    virtual void LoadGPD(GameGPD * /* gpd*/, bool */*ok */= NULL, void * /*args*/ = NULL) { }
+    virtual void LoadGPD(GameGpd * /* gpd*/, bool */*ok */= NULL, void * /*args*/ = NULL) { }
     virtual QWidget* GetDialog() { return NULL; }
     virtual QString Version() const = 0;
     virtual QString ToolAuthor() const = 0;

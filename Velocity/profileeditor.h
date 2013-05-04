@@ -19,9 +19,9 @@
 
 // xbox360
 #include "Stfs/StfsPackage.h"
-#include "GPD/DashboardGPD.h"
-#include "GPD/GameGPD.h"
-#include "GPD/AvatarAwardGPD.h"
+#include "Gpd/DashboardGpd.h"
+#include "Gpd/GameGpd.h"
+#include "Gpd/AvatarAwardGpd.h"
 #include "AvatarAsset/AvatarAssetDefinintions.h"
 #include "Account/Account.h"
 #include "Account/AccountHelpers.h"
@@ -161,7 +161,7 @@ const RegionStr regions[] =
 
 struct GameEntry
 {
-    GameGPD *gpd;
+    GameGpd *gpd;
     TitleEntry *titleEntry;
     bool updated;
     string tempFileName;
@@ -170,9 +170,9 @@ struct GameEntry
 
 struct AvatarAwardGameEntry
 {
-    GameGPD *gameGPD;
+    GameGpd *gameGpd;
     TitleEntry *titleEntry;
-    AvatarAwardGPD *gpd;
+    AvatarAwardGpd *gpd;
     bool updated;
     string tempFileName;
     string gpdName;
@@ -263,8 +263,8 @@ private:
     QNetworkAccessManager *awardBoxArtManager;
     QNetworkAccessManager *awardThumbnailManager;
 
-    GPDUploader *uploader;
-    DashboardGPD *dashGPD;
+    GpdUploader *uploader;
+    DashboardGpd *dashGpd;
     Account *account;
     AvatarAssetDownloader *downloader;
 
@@ -273,7 +273,7 @@ private:
     vector<AvatarAwardGameEntry> aaGames;
 
     string pecTempPath;
-    string dashGPDTempPath;
+    string dashGpdTempPath;
     string accountTempPath;
 
     bool dispose;
@@ -286,9 +286,9 @@ private:
     QString v1TempPath, v2TempPath;
     QString assetSavePath;
 
-    void addToDashGPD(SettingEntry *entry, SettingEntryType type, UINT64 id);
-    void updateAvatarAward(TitleEntry *entry, AvatarAwardGPD *gpd, struct AvatarAward *award, State toSet);
-    void updateAchievement(TitleEntry *entry, AchievementEntry *chiev, State toSet, GameGPD *gpd);
+    void addToDashGpd(SettingEntry *entry, SettingEntryType type, UINT64 id);
+    void updateAvatarAward(TitleEntry *entry, AvatarAwardGpd *gpd, struct AvatarAward *award, State toSet);
+    void updateAchievement(TitleEntry *entry, AchievementEntry *chiev, State toSet, GameGpd *gpd);
     State getStateFromFlags(DWORD flags);
     void saveAll();
     void loadGameInfo(int index);

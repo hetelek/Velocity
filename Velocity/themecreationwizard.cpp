@@ -88,7 +88,7 @@ void ThemeCreationWizard::onFinished(int status)
         QFile params(paramsFilePath);
         params.open(QIODevice::Truncate | QIODevice::WriteOnly);
 
-        // write the correct information to it
+        // Write the correct information to it
         QTextStream txtStream(&params);
         txtStream << "SphereColor=" << ui->cmbxSphereColor->currentIndex() << "\r\nAvatarLightingDirectional=0,0,0,0\r\nAvatarLightingAmbient=0\r\n";
 
@@ -102,8 +102,8 @@ void ThemeCreationWizard::onFinished(int status)
         // create the dash style file
         QString dashStyleFilePath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
         FileIO ioD(dashStyleFilePath.toStdString(), true);
-        ioD.write((DWORD)0);
-        ioD.close();
+        ioD.Write((DWORD)0);
+        ioD.Close();
 
         // inject the file
         theme->InjectFile(dashStyleFilePath.toStdString(), "DashStyle");

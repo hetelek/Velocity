@@ -16,7 +16,11 @@ VERSION = 0.0.1.4
 DEFINES += VERSION=\\\"$$VERSION\\\"
 
 # flags
-QMAKE_CXXFLAGS += -fpermissive
+#QMAKE_CXXFLAGS += -std=c++11
+macx {
+    QMAKE_CFLAGS_X86_64 += -mmacosx-version-min=10.7
+    QMAKE_CXXFLAGS_X86_64 = $$QMAKE_CFLAGS_X86_64
+}
 
 # header include path
 INCLUDEPATH += $$PWD/../XboxInternals
@@ -38,14 +42,12 @@ macx:ICON = velocity.icns
 CONFIG(debug, debug|release) {
     win32:LIBS += -L$$PWD/../XboxInternals-Win/debug/ -lXboxInternals
     macx:LIBS += -L$$PWD/../XboxInternals-OSX/debug/ -lXboxInternals
-    macx:PRE_TARGETDEPS += $$PWD/../XboxInternals-OSX/debug/libXboxInternals.a
     unix:!macx:LIBS += -L$$PWD/../XboxInternals-Linux/debug/ -lXboxInternals
     unix:!macx:PRE_TARGETDEPS += $$PWD/../XboxInternals-Linux/debug/libXboxInternals.a
 }
 CONFIG(release, debug|release) {
     win32:LIBS += -L$$PWD/../XboxInternals-Win/release/ -lXboxInternals
     macx:LIBS += -L$$PWD/../XboxInternals-OSX/release/ -lXboxInternals
-    macx:PRE_TARGETDEPS += $$PWD/../XboxInternals-OSX/release/libXboxInternals.a
     unix:!macx:LIBS += -L$$PWD/../XboxInternals-Linux/release/ -lXboxInternals
     unix:!macx:PRE_TARGETDEPS += $$PWD/../XboxInternals-Linux/release/libXboxInternals.a
 }
@@ -69,8 +71,6 @@ SOURCES += main.cpp \
     propertiesdialog.cpp \
     addressconverterdialog.cpp \
     stfstoolsdialog.cpp \
-    progressdialog.cpp \
-    stfsworkerthread.cpp \
     singleprogressdialog.cpp \
     profilecreatorwizard.cpp \
     themecreationwizard.cpp \
@@ -92,7 +92,15 @@ SOURCES += main.cpp \
     svodtooldialog.cpp \
     svodvolumedescriptordialog.cpp \
     multiprogressdialog.cpp \
-    ytgrdialog.cpp
+    ytgrdialog.cpp \
+    deviceviewer.cpp \
+    clustertooldialog.cpp \
+    fatxfiledialog.cpp \
+    partitiondialog.cpp \
+    securitysectordialog.cpp \
+    nightcharts.cpp \
+    dragdroptreewidget.cpp \
+    flashdriveconfigdatadialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -112,8 +120,6 @@ HEADERS  += mainwindow.h \
     propertiesdialog.h \
     addressconverterdialog.h \
     stfstoolsdialog.h \
-    progressdialog.h \
-    stfsworkerthread.h \
     singleprogressdialog.h \
     profilecreatorwizard.h \
     themecreationwizard.h \
@@ -137,7 +143,15 @@ HEADERS  += mainwindow.h \
     multiprogressdialog.h \
     PluginInterfaces/igpdmodder.h \
     PluginInterfaces/igamemodder.h \
-    ytgrdialog.h
+    ytgrdialog.h \
+    deviceviewer.h \
+    clustertooldialog.h \
+    fatxfiledialog.h \
+    partitiondialog.h \
+    securitysectordialog.h \
+    nightcharts.h \
+    dragdroptreewidget.h \
+    flashdriveconfigdatadialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -156,7 +170,6 @@ FORMS    += mainwindow.ui \
     propertiesdialog.ui \
     addressconverterdialog.ui \
     stfstoolsdialog.ui \
-    progressdialog.ui \
     singleprogressdialog.ui \
     profilecreatorwizard.ui \
     themecreationwizard.ui \
@@ -173,7 +186,13 @@ FORMS    += mainwindow.ui \
     svodvolumedescriptordialog.ui \
     stfsvolumedescriptordialog.ui \
     multiprogressdialog.ui \
-    ytgrdialog.ui
+    ytgrdialog.ui \
+    deviceviewer.ui \
+    clustertooldialog.ui \
+    fatxfiledialog.ui \
+    partitiondialog.ui \
+    securitysectordialog.ui \
+    flashdriveconfigdatadialog.ui
 
 RESOURCES += \
     Resources.qrc

@@ -44,7 +44,7 @@ void AvatarAssetDownloader::onRequestFinished(int id, bool error)
     // verify that the file was downloaded
     DWORD fileSize = http->bytesAvailable();
 
-    // all assets have a YTGR header that's 0x140 bytes
+    // all assets have a Ytgr header that's 0x140 bytes
     if (fileSize < 0x140)
     {
         if (!v2Done)
@@ -72,7 +72,7 @@ void AvatarAssetDownloader::onRequestFinished(int id, bool error)
     // create a new temporary file
     QFile v1File(tempPath);
     v1File.open(QFile::Truncate | QFile::WriteOnly);
-    // write the STRB file to the local disk
+    // Write the STRB file to the local disk
     v1File.write(http->readAll());
 
     // clean up

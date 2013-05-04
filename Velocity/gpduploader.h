@@ -1,5 +1,5 @@
-#ifndef GPDUPLOADER_H
-#define GPDUPLOADER_H
+#ifndef GpdUPLOADER_H
+#define GpdUPLOADER_H
 
 #include <QObject>
 #include <QMessageBox>
@@ -15,20 +15,20 @@
     #include <QNetworkReply>
 //
 
-#include "GPD/GameGPD.h"
-#include "GPD/AvatarAwardGPD.h"
+#include "Gpd/GameGpd.h"
+#include "Gpd/AvatarAwardGpd.h"
 
-struct GPDPaths
+struct GpdPaths
 {
-    QString gameGPD, awardGPD;
+    QString gameGpd, awardGpd;
 };
 
-class GPDUploader : public QObject
+class GpdUploader : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit GPDUploader(QStringList gamePaths, QStringList avatarPaths, QStringList titleIDs, bool deleteGPDs, QObject *parent);
+    explicit GpdUploader(QStringList gamePaths, QStringList avatarPaths, QStringList titleIDs, bool deleteGpds, QObject *parent);
 
 signals:
     void FinishedUploading(int success, int failures);
@@ -41,11 +41,11 @@ private:
 
     QStringList gamePaths, avatarPaths, titleIDs;
     int success, failures, currentIndex;
-    bool deleteGPDs;
+    bool deleteGpds;
 
     QNetworkAccessManager *networkAccessManager;
     void sendRequest(QString filePath, QString awardFilePath, QString gameName, QString titleID, DWORD achievementCount, DWORD gamerscoreTotal, DWORD awards, DWORD mAwards, DWORD fAwards);
-    void uploadGPD(QString gamePath, QString awardPath, QString titleID);
+    void uploadGpd(QString gamePath, QString awardPath, QString titleID);
 };
 
-#endif // GPDUPLOADER_H
+#endif // GpdUPLOADER_H

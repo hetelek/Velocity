@@ -81,6 +81,9 @@ p, li { white-space: pre-wrap; }
        <property name="text">
         <string>N/A</string>
        </property>
+       <property name="textInteractionFlags">
+        <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+       </property>
       </widget>
      </item>
      <item row="2" column="0" colspan="2">
@@ -102,6 +105,9 @@ p, li { white-space: pre-wrap; }
        <property name="text">
         <string>N/A</string>
        </property>
+       <property name="textInteractionFlags">
+        <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+       </property>
       </widget>
      </item>
      <item row="4" column="0">
@@ -116,6 +122,9 @@ p, li { white-space: pre-wrap; }
        <property name="text">
         <string>N/A</string>
        </property>
+       <property name="textInteractionFlags">
+        <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+       </property>
       </widget>
      </item>
      <item row="5" column="0">
@@ -129,6 +138,9 @@ p, li { white-space: pre-wrap; }
       <widget class="QLabel" name="lblSizeOnDisk">
        <property name="text">
         <string>N/A</string>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
        </property>
       </widget>
      </item>
@@ -151,6 +163,9 @@ p, li { white-space: pre-wrap; }
        <property name="text">
         <string>N/A</string>
        </property>
+       <property name="textInteractionFlags">
+        <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+       </property>
       </widget>
      </item>
      <item row="8" column="0">
@@ -164,6 +179,9 @@ p, li { white-space: pre-wrap; }
       <widget class="QLabel" name="lblAccessed">
        <property name="text">
         <string>N/A</string>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
        </property>
       </widget>
      </item>

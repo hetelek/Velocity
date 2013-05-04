@@ -26,25 +26,25 @@ AvatarAsset::AvatarAsset(FileIO *io) : io(io), ioPassedIn(true)
 void AvatarAsset::readHeader()
 {
 	// seek to the begining of the file
-	io->setPosition(0);
+	io->SetPosition(0);
 
 	// read in the magic to verify the file
-	header.magic = io->readDword();
+    header.magic = io->ReadDword();
 	if (header.magic != 0x53545242)
 		throw string("STRB: Invalid magic.\n");
 
 	// read in the rest of the header
-	header.blockAlignmentStored = (bool)io->readByte();
-	header.littleEndian = (bool)io->readByte();
-	io->setEndian((EndianType)header.littleEndian);
+    header.blockAlignmentStored = (bool)io->ReadByte();
+    header.littleEndian = (bool)io->ReadByte();
+    io->SetEndian((EndianType)header.littleEndian);
 
-    io->readBytes(header.guid, 16);
+    io->ReadBytes(header.guid, 16);
 
 	// read the rest of the header
-	header.blockIDSize = io->readByte();
-	header.blockSpanSize = io->readByte();
-	header.unused = io->readWord();
-	header.blockAlignment = (header.blockAlignmentStored) ? io->readByte() : 1;
+    header.blockIDSize = io->ReadByte();
+    header.blockSpanSize = io->ReadByte();
+    header.unused = io->ReadWord();
+    header.blockAlignment = (header.blockAlignmentStored) ? io->ReadByte() : 1;
 
 	// calculate the stuff that needs to be calculated
 	header.blockStartAddress = roundUpToBlockAlignment((header.blockAlignmentStored) ? 30 : 0x1A);
@@ -54,14 +54,14 @@ void AvatarAsset::readHeader()
 void AvatarAsset::readBlocks()
 {
 	DWORD prevAddress = header.blockStartAddress, prevDataLen = 0;
-	io->setPosition(0, ios_base::end);
-	DWORD fileSize = io->getPosition();
+	io->SetPosition(0, ios_base::end);
+	DWORD fileSize = io->GetPosition();
 
 	for (;;)
 	{
 		// seek to the position of the next block
 		DWORD curBlockAddress = prevAddress + roundUpToBlockAlignment(prevDataLen);
-		io->setPosition(curBlockAddress);
+		io->SetPosition(curBlockAddress);
 
 		// if the io is at the end of the file, then break out
 		if ((curBlockAddress + header.blockHeaderSize) > fileSize)
@@ -72,9 +72,9 @@ void AvatarAsset::readBlocks()
 		block.data = NULL;
 
 		// read the block header
-		block.id = (STRRBBlockId)io->readMultiByte(header.blockIDSize);
-		block.dataLength = prevDataLen = (int)io->readMultiByte(header.blockSpanSize);
-		block.fieldSize = (int)io->readMultiByte(header.blockSpanSize);
+        block.id = (STRRBBlockId)io->ReadMultiByte(header.blockIDSize);
+        block.dataLength = prevDataLen = (int)io->ReadMultiByte(header.blockSpanSize);
+        block.fieldSize = (int)io->ReadMultiByte(header.blockSpanSize);
 
 		if (block.id == STRBAssetMetadata)
 			parseMetadataLegacyV1(curBlockAddress + header.blockHeaderSize);
@@ -99,48 +99,48 @@ void AvatarAsset::readBlocks()
 void AvatarAsset::parseMetadataLegacyV1(DWORD pos)
 {
 	// seek to the position of the metadata
-	io->setPosition(pos);
+	io->SetPosition(pos);
 
 	// preserve the endian
-	EndianType byteOrder = io->getEndian();
-	io->setEndian(LittleEndian);
+    EndianType byteOrder = io->GetEndian();
+    io->SetEndian(LittleEndian);
 
 	// read in the metadata
 	metadata.metadataVersion = 1;
-	metadata.gender = (AssetGender)io->readByte();
-	metadata.type = (BinaryAssetType)io->readDword();
-	metadata.assetTypeDetails = io->readDword();
-	metadata.category = (AssetSubcategory)io->readInt32();
+    metadata.gender = (AssetGender)io->ReadByte();
+    metadata.type = (BinaryAssetType)io->ReadDword();
+    metadata.assetTypeDetails = io->ReadDword();
+    metadata.category = (AssetSubcategory)io->ReadInt32();
 	metadata.skeletonVersion = Nxe;
 
 	// set the endian back
-	io->setEndian(byteOrder);
+    io->SetEndian(byteOrder);
 }
 
 void AvatarAsset::parseMetadata(DWORD pos)
 {
 	// seek to the position of the metadata
-	io->setPosition(pos);
+	io->SetPosition(pos);
 
-	switch (io->readByte())
+    switch (io->ReadByte())
 	{
 	case 1:
 		parseMetadataLegacyV1(pos + 1);
 		return;
 	case 2:
 		// preserve the endian
-		EndianType byteOrder = io->getEndian();
-		io->setEndian(LittleEndian);
+        EndianType byteOrder = io->GetEndian();
+        io->SetEndian(LittleEndian);
 
 		// read in the metadata
-		metadata.gender = (AssetGender)io->readByte();
-		metadata.type = (BinaryAssetType)io->readInt32();
-		metadata.assetTypeDetails = io->readDword();
-		metadata.category = (AssetSubcategory)io->readInt32();
-		metadata.skeletonVersion = (SkeletonVersion)io->readByte();
+        metadata.gender = (AssetGender)io->ReadByte();
+        metadata.type = (BinaryAssetType)io->ReadInt32();
+        metadata.assetTypeDetails = io->ReadDword();
+        metadata.category = (AssetSubcategory)io->ReadInt32();
+        metadata.skeletonVersion = (SkeletonVersion)io->ReadByte();
 
 		// set the endian back
-		io->setEndian(byteOrder);
+        io->SetEndian(byteOrder);
 		return;
 	}
 }
@@ -148,14 +148,14 @@ void AvatarAsset::parseMetadata(DWORD pos)
 void AvatarAsset::parseColorTable(DWORD pos)
 {
 	// seek to the color table position
-	io->setPosition(pos);
+	io->SetPosition(pos);
 
 	// preserve the endian
-	EndianType byteOrder = io->getEndian();
-	io->setEndian(LittleEndian);
+    EndianType byteOrder = io->GetEndian();
+    io->SetEndian(LittleEndian);
 
 	// read the entry count
-	customColors.count = io->readDword();
+    customColors.count = io->ReadDword();
 
 	// allocate enough memory for all the entries
 	customColors.entries = new ColorTableEntry[customColors.count];
@@ -163,27 +163,27 @@ void AvatarAsset::parseColorTable(DWORD pos)
 	// read the entries
 	for (DWORD i = 0; i < customColors.count; i++)
 	{
-        customColors.entries[i].color1.color.blue = io->readByte();
-        customColors.entries[i].color1.color.green = io->readByte();
-        customColors.entries[i].color1.color.red = io->readByte();
-        customColors.entries[i].color1.color.alpha = io->readByte();
-		customColors.entries[i].color1.unknown = io->readDword();
+        customColors.entries[i].color1.color.blue = io->ReadByte();
+        customColors.entries[i].color1.color.green = io->ReadByte();
+        customColors.entries[i].color1.color.red = io->ReadByte();
+        customColors.entries[i].color1.color.alpha = io->ReadByte();
+        customColors.entries[i].color1.unknown = io->ReadDword();
 
-        customColors.entries[i].color2.color.blue = io->readByte();
-        customColors.entries[i].color2.color.green = io->readByte();
-        customColors.entries[i].color2.color.red = io->readByte();
-        customColors.entries[i].color2.color.alpha = io->readByte();
-        customColors.entries[i].color2.unknown = io->readDword();
+        customColors.entries[i].color2.color.blue = io->ReadByte();
+        customColors.entries[i].color2.color.green = io->ReadByte();
+        customColors.entries[i].color2.color.red = io->ReadByte();
+        customColors.entries[i].color2.color.alpha = io->ReadByte();
+        customColors.entries[i].color2.unknown = io->ReadDword();
 
-        customColors.entries[i].color3.color.blue = io->readByte();
-        customColors.entries[i].color3.color.green = io->readByte();
-        customColors.entries[i].color3.color.red = io->readByte();
-        customColors.entries[i].color3.color.alpha = io->readByte();
-        customColors.entries[i].color3.unknown = io->readDword();
+        customColors.entries[i].color3.color.blue = io->ReadByte();
+        customColors.entries[i].color3.color.green = io->ReadByte();
+        customColors.entries[i].color3.color.red = io->ReadByte();
+        customColors.entries[i].color3.color.alpha = io->ReadByte();
+        customColors.entries[i].color3.unknown = io->ReadDword();
 	}
 
 	// set the endian back
-	io->setEndian(byteOrder);
+    io->SetEndian(byteOrder);
 }
 
 void AvatarAsset::ReadBlockData(STRBBlock *block)
@@ -192,26 +192,26 @@ void AvatarAsset::ReadBlockData(STRBBlock *block)
 	block->data = new BYTE[block->dataLength];
 
 	// seek to the positon of the data
-	io->setPosition(block->dataAddress);
+	io->SetPosition(block->dataAddress);
 
 	// read in the block data
-	io->readBytes(block->data, block->dataLength);
+    io->ReadBytes(block->data, block->dataLength);
 }
 
 void AvatarAsset::readAnimationInfo(DWORD pos)
 {
 	// seek to the position of the animation information
-	io->setPosition(pos);
+	io->SetPosition(pos);
 
 	// preserve the endian
-	EndianType byteOrder = io->getEndian();
-	io->setEndian(LittleEndian);
+    EndianType byteOrder = io->GetEndian();
+    io->SetEndian(LittleEndian);
 
 	// read the frame count
-    animation.frameCount = io->readDword();
+    animation.frameCount = io->ReadDword();
 
 	// read the fps
-    animation.framesPerSecond =  io->readFloat();
+    animation.framesPerSecond =  io->ReadFloat();
 
     // round dat, yo
     animation.framesPerSecond = (float)(((int)((animation.framesPerSecond + .05f) * 100)) / 100);
@@ -219,7 +219,7 @@ void AvatarAsset::readAnimationInfo(DWORD pos)
 	// calculate the duration of the animation
 	animation.duration = (float)animation.frameCount / animation.framesPerSecond;
 	
-	io->setEndian(byteOrder);
+    io->SetEndian(byteOrder);
 }
 
 DWORD AvatarAsset::roundUpToBlockAlignment(DWORD valueToRound)
@@ -260,7 +260,7 @@ AvatarAsset::~AvatarAsset(void)
 	// cleanup the io
 	if (!ioPassedIn)
 	{
-		io->close();
+		io->Close();
 		delete io;
 	}
 

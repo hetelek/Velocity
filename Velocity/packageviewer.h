@@ -12,7 +12,6 @@
 #include "imagedialog.h"
 #include "propertiesdialog.h"
 #include "stfstoolsdialog.h"
-#include "progressdialog.h"
 #include "singleprogressdialog.h"
 
 // qt
@@ -33,9 +32,9 @@
 
 // other
 #include <stdio.h>
-#include "FileIO.h"
+#include "IO/FileIO.h"
 
-Q_DECLARE_METATYPE( FileEntry* )
+Q_DECLARE_METATYPE( StfsFileEntry* )
 
 namespace Ui {
 class PackageViewer;
@@ -44,7 +43,7 @@ class PackageViewer;
 class PackageViewer : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<QAction*> gpdActions, QList<QAction*> gameActions, QWidget *parent = NULL, bool disposePackage = true);
     ~PackageViewer();
@@ -72,14 +71,14 @@ private slots:
 
 private:
     Ui::PackageViewer *ui;
-    void PopulateTreeWidget(FileListing *entry, QTreeWidgetItem *parent = NULL);
+    void PopulateTreeWidget(StfsFileListing *entry, QTreeWidgetItem *parent = NULL);
     void GetPackagePath(QTreeWidgetItem *item, QString *out, bool folderOnly = false);
-    void SetIcon(string name, FileEntry *entry, QTreeWidgetItem *item);
-    void GetSubFilesStfs(FileListing *parent, QList<void *> &entries, QString currentPath = "");
+    void SetIcon(string name, StfsFileEntry *entry, QTreeWidgetItem *item);
+    void GetSubFilesStfs(StfsFileListing *parent, QList<void *> &entries, QString currentPath = "");
 
     StfsPackage *package;
     bool disposePackage;
-    FileListing listing;
+    StfsFileListing listing;
     QWidget *parent;
     QStatusBar *statusBar;
     QMenu *openInMenu;

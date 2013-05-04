@@ -1,7 +1,7 @@
 #include <QtGui/QApplication>
 #include <QStringList>
-#include "mainwindow.h"
 #include <botan/botan.h>
+#include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {

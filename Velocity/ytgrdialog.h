@@ -1,5 +1,5 @@
-#ifndef YTGRDIALOG_H
-#define YTGRDIALOG_H
+#ifndef YtgrDIALOG_H
+#define YtgrDIALOG_H
 
 // qt
 #include <QDialog>
@@ -8,7 +8,7 @@
 #include "qthelpers.h"
 
 // xbox360
-#include "AvatarAsset/YTGR.h"
+#include "AvatarAsset/Ytgr.h"
 
 namespace Ui {
 class YtgrDialog;
@@ -19,12 +19,12 @@ class YtgrDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit YtgrDialog(YTGR *ytgr, QStatusBar *statusBar, QWidget *parent = 0);
+    explicit YtgrDialog(Ytgr *ytgr, QStatusBar *statusBar, QWidget *parent = 0);
     ~YtgrDialog();
     
 private:
     Ui::YtgrDialog *ui;
-    YTGR *ytgr;
+    Ytgr *ytgr;
 };
 
-#endif // YTGRDIALOG_H
+#endif // YtgrDIALOG_H

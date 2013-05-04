@@ -1,52 +1,46 @@
+/* Most parts of this class were originally developed by Lander Griffith (https://github.com/landr0id/).
+   Much of his code is used throughout this class or very slightly modified */
+
 #ifndef MULTIFILEIO_H
 #define MULTIFILEIO_H
 
 #include "FileIO.h"
-#include <iostream>
 #include <vector>
-#include "dirent.h"
-#include "BaseIO.h"
-#include "XboxInternals_global.h"
-
-using std::string;
-using std::wstring;
-using std::vector;
 
 class XBOXINTERNALSSHARED_EXPORT MultiFileIO : public BaseIO
 {
 public:
-    MultiFileIO(string fileDirectory);
-    ~MultiFileIO();
+    MultiFileIO(std::vector<std::string> filePaths);
+    MultiFileIO(std::vector<BaseIO*> files);
+    virtual ~MultiFileIO();
 
-    // seek to a certain address in the file, index of -1 for current file
-    void SetPosition(DWORD addressInFile, int fileIndex = -1);
+    // seek to a position in a file
+    void SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios_base::beg);
 
-    // get the current position of the io
-    void GetPosition(DWORD *addressInFile, DWORD *fileIndex);
+    // get current address in the file
+    UINT64 GetPosition();
+
+    // get the length of all the files
+    UINT64 Length();
 
     // read len bytes from the current file at the current position into buffer
     void ReadBytes(BYTE *outBuffer, DWORD len);
 
-    // write len bytes to the file at the current position
+    // Write len bytes from the current file at the current position into buffer
     void WriteBytes(BYTE *buffer, DWORD len);
 
+    // flushes the stream
+    void Flush();
+
+    // closes all the files
     void Close();
 
-    // get the number of files in the directory
-    DWORD FileCount();
-
-    // get the number of bytes in the current file
-    DWORD CurrentFileLength();
-
 private:
-    DWORD addressInFile;
-    DWORD fileIndex;
+    UINT64 pos, lengthOfFiles;
+    DWORD currentIOIndex;
+    std::vector<BaseIO*> files;
 
-    FileIO *currentIO;
-    vector<string> files;
-
-    // get all the file names in the directory
-    void loadDirectories(string path);
+    void calcualteLengthOfAllFiles();
 };
 
 #endif // MULTIFILEIO_H

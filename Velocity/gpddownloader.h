@@ -1,5 +1,5 @@
-#ifndef GPDDOWNLOADER_H
-#define GPDDOWNLOADER_H
+#ifndef GpdDOWNLOADER_H
+#define GpdDOWNLOADER_H
 
 // qt
 #include <QObject>
@@ -11,14 +11,14 @@
 
 // other
 #include "winnames.h"
-#include "GPD/DashboardGPD.h"
-#include "FileIO.h"
+#include "Gpd/DashboardGpd.h"
+#include "IO/FileIO.h"
 
-class GPDDownloader : public QObject
+class GpdDownloader : public QObject
 {
     Q_OBJECT
 public:
-    explicit GPDDownloader(TitleEntry entry, int index, bool hasAwards = false, QObject *parent = 0);
+    explicit GpdDownloader(TitleEntry entry, int index, bool hasAwards = false, QObject *parent = 0);
     void BeginDownload();
     int index();
 
@@ -31,10 +31,10 @@ public slots:
 
 private:
     QHttp *http;
-    QString gpdDirectory, titleID, awardGPD, gameGPD;
+    QString gpdDirectory, titleID, awardGpd, gameGpd;
     TitleEntry entry;
     bool hasAwards, gpdWritten;
     int indexIn;
 };
 
-#endif // GPDDOWNLOADER_H
+#endif // GpdDOWNLOADER_H
