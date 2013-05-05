@@ -200,7 +200,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
             if (!success)
                 throw std::string("DeviceIO: Error writing to the device, may be disconnected.\n");
         #else
-            Write(impl->device, buffer, len);
+            write(impl->device, buffer, len);
         #endif
 
         SetPosition(endingPos);
@@ -239,7 +239,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
             &bytesWritten,        // Pointer to number of bytes written
             &impl->offset);       // OVERLAPPED structure containing the offset to Write from
     #else
-        Write(impl->device, lastReadData, 0x200);
+        write(impl->device, lastReadData, 0x200);
     #endif
 
     // update the values
@@ -272,7 +272,7 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
                 &bytesWritten,        // Pointer to number of bytes written
                 &impl->offset);       // OVERLAPPED structure containing the offset to Write from
         #else
-            Write(impl->device, buffer, 0x200);
+            write(impl->device, buffer, 0x200);
         #endif
     }
 
