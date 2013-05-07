@@ -112,16 +112,20 @@ void MultiFileIO::ReadBytes(BYTE *outBuffer, DWORD len)
 
 void MultiFileIO::Close()
 {
+    if (isClosed)
+        return;
+
     for (int i = 0; i < files.size(); i++)
-    {
-        files.at(i)->Close();
         delete files.at(i);
-        files.erase(files.begin() + i);
-    }
+
+    files.clear();
+
+    isClosed = true;
 }
 
 void MultiFileIO::calcualteLengthOfAllFiles()
 {
+    isClosed = false;
     lengthOfFiles = 0;
 
     for (int i = 0; i < files.size(); i++)

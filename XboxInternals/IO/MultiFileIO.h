@@ -37,6 +37,7 @@ public:
 
 private:
     UINT64 pos, lengthOfFiles;
+    bool isClosed;
     DWORD currentIOIndex;
     std::vector<BaseIO*> files;
 
