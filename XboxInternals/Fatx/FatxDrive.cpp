@@ -4,9 +4,15 @@
 #include "FatxDrive.h"
 
 #ifdef _WIN32
-#include <Windows.h>
-#undef DeleteFile
-#undef ReplaceFile
+    #include <Windows.h>
+    #undef DeleteFile
+    #undef ReplaceFile
+#else
+    #include <fcntl.h>
+    #include <sys/types.h>
+    #include <sys/ioctl.h>
+    #include <sys/stat.h>
+    #include <unistd.h>
 #endif
 
 FatxDrive::FatxDrive(std::string drivePath, FatxDriveType type)  : type(type)
@@ -569,6 +575,16 @@ void FatxDrive::RestoreFromBackup(std::string backupPath, void (*progress)(void 
     bytesLeft = ((UINT64)high << 32) | low;
 
     SetFilePointer(hFile, 0, 0, FILE_BEGIN);
+#else
+    struct stat sb;
+    stat(backupPath.c_str(), &sb);
+    bytesLeft = sb.st_size;
+
+    int backupFile = open(backupPath.c_str(), O_RDWR);
+    if (backupFile == -1)
+        throw std::string("FATX: Could not open drive backup.");
+
+    lseek(backupFile, 0, SEEK_SET);
 #endif
 
     io->SetPosition(0);
@@ -582,18 +598,24 @@ void FatxDrive::RestoreFromBackup(std::string backupPath, void (*progress)(void 
         SetFilePointer(hFile, (i * (UINT64)0x100000) & 0xFFFFFFFF, (PLONG)&high, FILE_BEGIN);
 
         ReadFile(hFile, buffer, 0x100000, &high, NULL);
+#else
+        lseek(backupFile, (UINT64)i * (UINT64)0x100000, SEEK_SET);
+        read(backupFile, buffer, 0x100000);
 #endif
         io->WriteBytes(buffer, 0x100000);
         bytesLeft -= 0x100000;
 
         if (progress)
-            progress(arg, i++, totalProgress);
+            progress(arg, i, totalProgress);
+        i++;
     }
 
     if (bytesLeft > 0)
     {
 #ifdef __WIN32
         ReadFile(hFile, buffer, bytesLeft, &high, NULL);
+#else
+        read(backupFile, buffer, bytesLeft);
 #endif
         io->WriteBytes(buffer, bytesLeft);
     }
@@ -603,9 +625,14 @@ void FatxDrive::RestoreFromBackup(std::string backupPath, void (*progress)(void 
         progress(arg, totalProgress, totalProgress);
 
 #ifdef __WIN32
-        CloseHandle(hFile);
+    CloseHandle(hFile);
+#else
+    close(backupFile);
 #endif
     delete[] buffer;
+
+    // reload the entire drive
+    ReloadDrive();
 }
 
 BYTE FatxDrive::cntlzw(DWORD x)
@@ -963,6 +990,18 @@ UINT64 FatxDrive::GetFreeMemory(Partition *part, void(*progress)(void*, bool), v
         progress(arg, true);
 
     return part->freeMemory;
+}
+
+void FatxDrive::ReloadDrive()
+{
+    if (type == FatxHarddrive)
+        delete[] securityBlob.msLogo;
+
+    for (int i = 0, count = partitions.size(); i < count; i++)
+        delete partitions[i];
+    partitions.clear();
+
+    loadFatxDrive();
 }
 
 bool FatxDrive::FileExists(std::string filePath)

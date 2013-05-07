@@ -234,9 +234,6 @@ void MultiProgressDialog::operateOnNextFile()
                     failed = true;
                     QMessageBox::critical(this, "", "An error occurred while copying files to the drive.\n\n" + QString::fromStdString(error));
                 }
-
-                if (!failed)
-                    QMessageBox::information(this, "Copied Files", "All files have been successfully copied to the harddrive.");
             }
 
             // cleanup
