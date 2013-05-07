@@ -384,6 +384,7 @@ void DeviceViewer::LoadDrives()
             }
 
             driveItem->setText(0, name);
+            previousName = name;
         }
 
         currentDrive = loadedDrives.at(0);
@@ -841,13 +842,22 @@ void DeviceViewer::on_btnShowAll_clicked()
 
 void DeviceViewer::on_txtDriveName_editingFinished()
 {
+    QString newName = ui->txtDriveName->text();
+
+    // no need to update it again
+    if (previousName == newName)
+        return;
+
     try
     {
-        currentDrive->SetDriveName(ui->txtDriveName->text().toStdWString());
-        currentDriveItem->setText(0, ui->txtDriveName->text());
+        currentDrive->SetDriveName(newName.toStdWString());
+        currentDriveItem->setText(0, newName);
+        previousName = newName;
     }
     catch (std::string error)
     {
+        // restore the original name
+        ui->txtDriveName->setText(previousName);
         QMessageBox::warning(this, "Problem Renaming", "The drive could not be renamed.\n\n" + QString::fromStdString(error));
     }
 }

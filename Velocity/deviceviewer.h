@@ -83,6 +83,7 @@ private:
     QStatusBar *statusBar;
     QProgressBar *progressBar;
     QTreeWidgetItem *currentDriveItem;
+    QString previousName;
     bool drivesLoaded;
 
     void LoadFolderAll(FatxFileEntry *folder);
