@@ -801,6 +801,29 @@ void DeviceViewer::on_btnRestore_clicked()
     dialog->setModal(true);
     dialog->show();
     dialog->start();
+
+    /////////////////////////////////////////////
+    // reload the drive information in the GUI //
+    /////////////////////////////////////////////
+
+    // reload the drive name
+    FatxFileEntry *nameEntry = currentDrive->GetFileEntry("Drive:\\Content\\name.txt");
+    QString name = (currentDrive->GetFatxDriveType() == FatxHarddrive) ? "Hard Drive" : "Flash Drive";
+    if (nameEntry)
+    {
+        FatxIO nameFile = currentDrive->GetFatxIO(nameEntry);
+        nameFile.SetPosition(0);
+
+        // make sure that it starts with 0xFEFF
+        if (nameFile.ReadWord() == 0xFEFF)
+            name = QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 : (nameEntry->fileSize - 2) / 2));
+    }
+    currentDriveItem->setText(0, name);
+    DrawHeader(name);
+    directoryChain.clear();
+    LoadPartitions();
+
+    statusBar->showMessage("Successfully reloaded storage device", 3000);
 }
 
 void DeviceViewer::on_txtSearch_textChanged(const QString &arg1)

@@ -92,11 +92,14 @@ public:
     // get the amount of free bytes on the device
     UINT64 GetFreeMemory(Partition *part, void(*progress)(void*, bool) = NULL, void *arg = NULL);
 
+    // reload the entire drive, called after restoring
+    void ReloadDrive();
+
     // convert a cluster to an offset
     static INT64 ClusterToOffset(Partition *part, DWORD cluster);
 
     // check to see whether or not a file name is valid
-    static bool ValidFileName(std::string fileName);
+    static bool ValidFileName(std::string fileName);    
 
     // format recovery version, found by Eaton (only on dev kit drives)
     Version lastFormatRecoveryVersion;
