@@ -613,13 +613,14 @@ void FatxDrive::RestoreFromBackup(std::string backupPath, void (*progress)(void 
     if (bytesLeft > 0)
     {
 #ifdef __WIN32
+        SetFilePointer(hFile, (i * (UINT64)0x100000) & 0xFFFFFFFF, (PLONG)&high, FILE_BEGIN);
         ReadFile(hFile, buffer, bytesLeft, &high, NULL);
 #else
+        lseek(backupFile, (UINT64)i * (UINT64)0x100000, SEEK_SET);
         read(backupFile, buffer, bytesLeft);
 #endif
         io->WriteBytes(buffer, bytesLeft);
     }
-
 
     if (progress)
         progress(arg, totalProgress, totalProgress);
