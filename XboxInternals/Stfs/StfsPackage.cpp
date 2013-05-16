@@ -2026,5 +2026,5 @@ void StfsPackage::GenerateRawFileListing(StfsFileListing *in, vector<StfsFileEnt
 
 StfsPackage::~StfsPackage(void)
 {
-    Close();
+    Cleanup();
 }
