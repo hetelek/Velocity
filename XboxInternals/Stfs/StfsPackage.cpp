@@ -4,16 +4,32 @@
 #include <stdio.h>
 
 StfsPackage::StfsPackage(BaseIO *io, DWORD flags) :
-    io(io), ioPassedIn(true), flags(flags)
+    io(io), ioPassedIn(true), flags(flags), metaData(nullptr)
 {
-    Init();
+    try
+    {
+        Init();
+    }
+    catch (std::string&)
+    {
+        Cleanup();
+        throw;
+    }
 }
 
 StfsPackage::StfsPackage(string packagePath, DWORD flags) :
-    flags(flags), ioPassedIn(false)
+    flags(flags), ioPassedIn(false), metaData(nullptr)
 {
     io = new FileIO(packagePath, (bool)(flags & StfsPackageCreate));
-    Init();
+    try
+    {
+        Init();
+    }
+    catch (std::string&)
+    {
+        Cleanup();
+        throw;
+    }
 }
 
 
@@ -35,6 +51,16 @@ void StfsPackage::Init()
     }
 
     Parse();
+}
+
+void StfsPackage::Cleanup()
+{
+    io->Close();
+
+    if (!ioPassedIn)
+        delete io;
+    if (metaData)
+        delete metaData;
 }
 
 void StfsPackage::Parse()
@@ -2000,9 +2026,5 @@ void StfsPackage::GenerateRawFileListing(StfsFileListing *in, vector<StfsFileEnt
 
 StfsPackage::~StfsPackage(void)
 {
-    io->Close();
-
-    if (!ioPassedIn)
-        delete io;
-    delete metaData;
+    Cleanup();
 }
