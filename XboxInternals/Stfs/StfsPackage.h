@@ -267,4 +267,7 @@ private:
 
     // Description: initializes the object
     void Init();
+
+    // Description: close the io/cleanup resources
+    void Cleanup();
 };

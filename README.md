@@ -7,13 +7,13 @@ Developed mainly by Stevie Hetelekides(Hetelek) and Adam Spindler(Experiment5X).
 Velocity is a cross-platform application built using the Qt framework, that allows you to browse and edit Xbox 360 files. Velocity's backend is handled by the XboxInternals library, which currently supports the following Xbox file formats:
 
 - Xbox-specific cryptography
-- Xdbf
-- Ytgr
-- Fatx
-- Stfs
+- XDBF
+- YTGR
+- FATX
+- STFS
 - Xbox disc formats
-  - Svod
-  - Gdfx
+  - SVOD
+  - GDFX
 
 Other individual files specific to the Xbox 360 are supported, including the Account file and other minor ones.
 
