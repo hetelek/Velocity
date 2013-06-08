@@ -199,7 +199,14 @@ std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
 
     // check to see if we have enough free clusters left
     if (count > part->freeClusters.size())
-        throw std::string("FATX: Out of memory.\n");
+    {
+        std::stringstream ss;
+        ss << "FATX: Out of memory. There are only ";
+        ss << ByteSizeToString(part->freeClusters.size() * part->clusterSize);
+        ss << " of free memory remaining on this partition.\n";
+
+        throw ss.str();
+    }
 
     // get the consecutive clusters
     GetConsecutive(part->freeClusters, consecutiveClusters);
