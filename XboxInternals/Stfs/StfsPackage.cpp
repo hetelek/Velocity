@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 StfsPackage::StfsPackage(BaseIO *io, DWORD flags) :
-    io(io), ioPassedIn(true), flags(flags), metaData(nullptr)
+    io(io), ioPassedIn(true), flags(flags), metaData(NULL)
 {
     try
     {
@@ -18,7 +18,7 @@ StfsPackage::StfsPackage(BaseIO *io, DWORD flags) :
 }
 
 StfsPackage::StfsPackage(string packagePath, DWORD flags) :
-    flags(flags), ioPassedIn(false), metaData(nullptr)
+    flags(flags), ioPassedIn(false), metaData(NULL)
 {
     io = new FileIO(packagePath, (bool)(flags & StfsPackageCreate));
     try
