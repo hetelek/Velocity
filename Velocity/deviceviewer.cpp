@@ -389,12 +389,11 @@ void DeviceViewer::LoadDrives()
 
         currentDrive = loadedDrives.at(0);
         currentDriveItem = ui->treeWidget_2->topLevelItem(0);
-        DrawHeader(ui->treeWidget_2->topLevelItem(0)->text(0));
         LoadPartitions();
-
-        SetWidgetsEnabled(true);
-
         drivesLoaded = true;
+
+        DrawHeader(ui->treeWidget_2->topLevelItem(0)->text(0));
+        SetWidgetsEnabled(true);
         statusBar->showMessage("Drive(s) loaded successfully", 3000);
     }
     catch (std::string error)
