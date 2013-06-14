@@ -267,6 +267,10 @@ std::vector<std::wstring> FatxDriveDetection::getLogicalDrives()
             // search for valid flash drives
             while ((ent2 = readdir(dir2)) != NULL)
             {
+
+                if (strcmp(ent2->d_name, ".") == 0 || strcmp(ent2->d_name, "..") == 0)
+                    continue;
+
                 try
                 {
                     // initialize the path
