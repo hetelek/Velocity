@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>269</height>
+    <height>253</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -52,13 +52,6 @@
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Valid Signature:</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </item>
        <item>
@@ -95,16 +88,6 @@
          </item>
          <item>
           <widget class="QLabel" name="lblSectors">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="lblValidSignature">
            <property name="text">
             <string/>
            </property>

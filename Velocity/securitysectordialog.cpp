@@ -11,7 +11,6 @@ SecuritySectorDialog::SecuritySectorDialog(FatxDrive *drive, QWidget *parent) :
     ui->lblModelNumber->setText(QString::fromStdString(drive->securityBlob.modelNumber).trimmed());
     ui->lblSerialNumber->setText(QString::fromStdString(drive->securityBlob.serialNumber).trimmed());
     ui->lblSectors->setText("0x" + QString::number(drive->securityBlob.userAddressableSectors, 16).toUpper());
-    ui->lblValidSignature->setText(((drive->securityBlob.validSignature) ? "Yes" : "No"));
 }
 
 SecuritySectorDialog::~SecuritySectorDialog()
