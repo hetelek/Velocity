@@ -202,7 +202,7 @@ std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
     {
         std::stringstream ss;
         ss << "FATX: Out of memory. There are only ";
-        ss << ByteSizeToString(part->freeClusters.size() * part->clusterSize);
+        ss << ByteSizeToString(part->freeClusters.size() * part->clusterSize).c_str();
         ss << " of free memory remaining on this partition.\n";
 
         throw ss.str();

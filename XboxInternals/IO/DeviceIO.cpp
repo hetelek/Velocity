@@ -1,22 +1,4 @@
 #include "DeviceIO.h"
-#include <string.h>
-#include <errno.h>
-
-#ifdef _WIN32
-    #include <windows.h>
-    #include <WinIoCtl.h>
-#else
-    #include <fcntl.h>
-    #include <sys/types.h>
-    #include <sys/ioctl.h>
-    #if __APPLE__
-        #include <sys/disk.h>
-    #elif __linux
-        #include <linux/fs.h>
-    #endif
-    #include <unistd.h>
-#endif
-
 
 class DeviceIO::Impl
 {
@@ -301,12 +283,12 @@ UINT64 DeviceIO::Length()
         UINT64 cylinders = (UINT64)((UINT64)geometry.Cylinders.HighPart << 32) | geometry.Cylinders.LowPart; // Convert the BIG_INTEGER to UINT64
         length = cylinders * (UINT64)geometry.TracksPerCylinder	* (UINT64)geometry.SectorsPerTrack * (UINT64)geometry.BytesPerSector;
     #else
-        DWORD numberOfSectors = 0;
+        UINT64 numberOfSectors = 0;
         int device = impl->device;
 
         ioctl(device, SECTOR_COUNT, &numberOfSectors);
 
-        DWORD sectorSize = 0;
+        UINT64 sectorSize = 0;
         ioctl(device, SECTOR_SIZE, &sectorSize);
 
         // calculate the length in bytes
