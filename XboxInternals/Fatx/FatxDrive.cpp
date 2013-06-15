@@ -351,6 +351,20 @@ void FatxDrive::RemoveFile(FatxFileEntry *entry, void(*progress)(void*), void *a
 
 void FatxDrive::InjectFile(FatxFileEntry *parent, std::string name, std::string filePath, void (*progress)(void *, DWORD, DWORD), void *arg)
 {
+    UINT64 fileLength = 0;
+
+#if __WIN32
+    // TODO: put windows file length code here
+#else
+    struct stat64 fileInfo;
+    if (stat64(filePath.c_str(), &fileInfo) != 0)
+        throw std::string("FATX: Error opening the file.\n");
+    fileLength = fileInfo.st_size;
+#endif
+
+    if (fileLength >= 4294967296)
+        throw std::string("FATX: File too large. All files in this file system must be less than 4GB.\n");
+
     FatxFileEntry entry;
     entry.name = name;
 
