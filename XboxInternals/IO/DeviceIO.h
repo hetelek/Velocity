@@ -8,33 +8,6 @@
 #include "../Fatx/FatxHelpers.h"
 #include "XboxInternals_global.h"
 
-#include <string.h>
-#include <errno.h>
-
-#ifdef _WIN32
-    #include <windows.h>
-    #include <WinIoCtl.h>
-#else
-    #include <fcntl.h>
-    #include <sys/types.h>
-    #include <sys/ioctl.h>
-    #if __APPLE__
-        #include <sys/disk.h>
-    #elif __linux
-        #include <linux/fs.h>
-    #endif
-    #include <unistd.h>
-#endif
-
-#ifdef __linux
-    #define SECTOR_COUNT BLKGETSIZE
-    #define SECTOR_SIZE BLKSSZGET
-#elif __APPLE__
-    #define SECTOR_COUNT DKIOCGETBLOCKCOUNT
-    #define SECTOR_SIZE DKIOCGETBLOCKSIZE
-#endif
-
-
 class XBOXINTERNALSSHARED_EXPORT DeviceIO : public BaseIO
 {
 public:
