@@ -5,13 +5,14 @@ XContentDevice::XContentDevice(FatxDrive *drive) :
 {
     profiles = new std::vector<XContentDeviceProfile>();
 
+    games = new std::vector<XContentDeviceSharedItem>();
+    dlc = new std::vector<XContentDeviceSharedItem>();
     demos = new std::vector<XContentDeviceSharedItem>();
     videos = new std::vector<XContentDeviceSharedItem>();
     themes = new std::vector<XContentDeviceSharedItem>();
     gamerPictures = new std::vector<XContentDeviceSharedItem>();
     avatarItems = new std::vector<XContentDeviceSharedItem>();
     systemItems = new std::vector<XContentDeviceSharedItem>();
-    music = new std::vector<XContentDeviceSharedItem>();
 }
 
 XContentDevice::~XContentDevice()
@@ -24,13 +25,22 @@ XContentDevice::~XContentDevice()
         delete profiles->at(i).package;
     }
 
+    CleanupSharedFiles(games);
+    CleanupSharedFiles(dlc);
+    CleanupSharedFiles(videos);
+    CleanupSharedFiles(themes);
+    CleanupSharedFiles(gamerPictures);
+    CleanupSharedFiles(avatarItems);
+    CleanupSharedFiles(systemItems);
+
     delete profiles;
+    delete games;
+    delete dlc;
     delete videos;
     delete themes;
     delete gamerPictures;
     delete avatarItems;
     delete systemItems;
-    delete music;
 }
 
 bool XContentDevice::LoadDevice()
@@ -94,6 +104,77 @@ bool XContentDevice::LoadDevice()
 
 
         profiles->push_back(profile);
+    }
+
+    // get the shared items folder
+    FatxFileEntry *sharedItemsFolder = drive->GetFileEntry("Drive:\\Content\\Content\\0000000000000000");
+    if (sharedItemsFolder == NULL)
+        return true;
+
+    // check for shared items
+    drive->GetChildFileEntries(sharedItemsFolder);
+    for (int i = 0; i < sharedItemsFolder->cachedFiles.size(); i++)
+    {
+        // verify that the entry is a valid title folder, should be named with title ID
+        FatxFileEntry titleFolder = sharedItemsFolder->cachedFiles.at(i);
+        if ((titleFolder.fileAttributes & FatxDirectory) == 0 || !ValidTitleID(titleFolder.name))
+            continue;
+
+        // get all the content items in this folder
+        std::vector<XContentDeviceItem> items;
+        drive->GetChildFileEntries(&titleFolder);
+        GetAllContentItems(titleFolder, items);
+
+        // put the content items in the correct category
+        for (int x = 0; x < items.size(); x++)
+        {
+            XContentDeviceSharedItem item(items.at(x).GetPathOnDevice(), items.at(x).package);
+            if (item.package == NULL)
+                continue;
+
+            switch (item.package->metaData->contentType)
+            {
+                case ArcadeGame:
+                case CommunityGame:
+                case GameOnDemand:
+                case GamerTitle:
+                case InstalledGame:
+                case XboxOriginalGame:
+                case Xbox360Title:
+                    games->push_back(item);
+                    break;
+                case MarketPlaceContent:
+                case StorageDownload:
+                case XboxDownload:
+                    dlc->push_back(item);
+                    break;
+                case GameDemo:
+                    demos->push_back(item);
+                    break;
+                case GameTrailer:
+                case GameVideo:
+                case Movie:
+                case MusicVideo:
+                case PodcastVideo:
+                case Video:
+                case ViralVideo:
+                    videos->push_back(item);
+                    break;
+                case Theme:
+                    themes->push_back(item);
+                    break;
+                case GamerPicture:
+                    gamerPictures->push_back(item);
+                    break;
+                case AvatarAssetPack:
+                case AvatarItem:
+                    avatarItems->push_back(item);
+                    break;
+                default:
+                    systemItems->push_back(item);
+                    break;
+            }
+        }
     }
 }
 
@@ -172,4 +253,10 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
             itemsFound.push_back(item);
         }
     }
+}
+
+void XContentDevice::CleanupSharedFiles(std::vector<XContentDeviceSharedItem> *category)
+{
+    for (int i = 0; i < category->size(); i++)
+        delete category->at(i).package;
 }

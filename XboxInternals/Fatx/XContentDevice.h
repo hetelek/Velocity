@@ -21,23 +21,23 @@ public:
 
     std::vector<XContentDeviceProfile> *profiles;
 
+    std::vector<XContentDeviceSharedItem> *games;
+    std::vector<XContentDeviceSharedItem> *dlc;
     std::vector<XContentDeviceSharedItem> *demos;
     std::vector<XContentDeviceSharedItem> *videos;
     std::vector<XContentDeviceSharedItem> *themes;
     std::vector<XContentDeviceSharedItem> *gamerPictures;
     std::vector<XContentDeviceSharedItem> *avatarItems;
     std::vector<XContentDeviceSharedItem> *systemItems;
-    std::vector<XContentDeviceSharedItem> *music;
 
 
 private:
     FatxDrive *drive;
 
     bool ValidOfflineXuid(std::string xuid);
-
     bool ValidTitleID(std::string id);
-
     void GetAllContentItems(FatxFileEntry &titleFolder, vector<XContentDeviceItem> &itemsFound);
+    void CleanupSharedFiles(std::vector<XContentDeviceSharedItem> *category);
 };
 
 #endif // XCONTENTDEVICE_H

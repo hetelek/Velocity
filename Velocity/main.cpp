@@ -7,6 +7,13 @@
 #include "Fatx/XContentDevice.h"
 #include "Fatx/FatxDriveDetection.h"
 
+void printCategory(QString category, std::vector<XContentDeviceSharedItem> *items)
+{
+    qDebug() << "\t" << category;
+    for (int i = 0; i < items->size(); i++)
+        qDebug() << "\t\t" << QString::fromStdWString(items->at(i).GetName());
+}
+
 int main(int argc, char *argv[])
 {
     try
@@ -25,6 +32,16 @@ int main(int argc, char *argv[])
                     qDebug() << "\t\t" << QString::fromStdWString(title.titleSaves.at(y).GetName());
             }
         }
+
+        qDebug() << "Shared Items";
+        printCategory("Games", device.games);
+        printCategory("DLC", device.dlc);
+        printCategory("Demos", device.demos);
+        printCategory("Videos", device.videos);
+        printCategory("Themes", device.themes);
+        printCategory("Gamer Pictures", device.gamerPictures);
+        printCategory("Avatar Items", device.avatarItems);
+        printCategory("System Items", device.systemItems);
     }
     catch (std::string error)
     {
