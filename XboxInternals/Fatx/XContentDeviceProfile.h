@@ -8,7 +8,9 @@
 #include "XContentDeviceItem.h"
 #include "XContentDeviceTitle.h"
 
-class XContentDeviceProfile : public XContentDeviceItem
+#include "XboxInternals_global.h"
+
+class XBOXINTERNALSSHARED_EXPORT XContentDeviceProfile : public XContentDeviceItem
 {
 public:
     XContentDeviceProfile(std::string pathOnDevice, StfsPackage *profile);
