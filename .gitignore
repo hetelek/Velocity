@@ -1,6 +1,6 @@
 # Qt Files #
 ############
-*.pro.user
+*.pro.user*
 *.autosave
 *.5pre1
 moc_*.h
