@@ -1,7 +1,7 @@
 #include "XContentDevice.h"
 
 XContentDevice::XContentDevice(FatxDrive *drive) :
-    drive(drive)
+    drive(drive), content(NULL)
 {
     profiles = new std::vector<XContentDeviceProfile>();
 
@@ -43,10 +43,26 @@ XContentDevice::~XContentDevice()
     delete systemItems;
 }
 
-bool XContentDevice::LoadDevice()
+bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
 {
     // the generic path for content is:
     // Drive:\Content\Content\OFFLINE_XUID\TITLE_ID\CONTENT_TYPE\STFS_PACKAGE
+
+    // locate the content partition
+    std::vector<Partition*> partitions = drive->GetPartitions();
+    for (int i = 0; i < partitions.size(); i++)
+    {
+        if (partitions.at(i)->name == "Content");
+        {
+            content = partitions.at(i);
+            break;
+        }
+    }
+
+    GetFreeMemory(progress, arg);
+
+    if (content == NULL)
+        return false;
 
     FatxFileEntry *fileEntry = drive->GetFileEntry("Drive:\\Content\\Content\\");
     if (fileEntry == NULL)
@@ -102,8 +118,8 @@ bool XContentDevice::LoadDevice()
                 profile.titles.push_back(title);
         }
 
-
-        profiles->push_back(profile);
+        if (profile.titles.size() != 0)
+            profiles->push_back(profile);
     }
 
     // get the shared items folder
@@ -176,6 +192,24 @@ bool XContentDevice::LoadDevice()
             }
         }
     }
+
+    return true;
+}
+
+FatxDriveType XContentDevice::GetDeviceType()
+{
+    return drive->GetFatxDriveType();
+}
+
+UINT64 XContentDevice::GetFreeMemory(void(*progress)(void*, bool), void *arg)
+{
+    drive->GetFreeMemory(content, progress, arg);
+    return content->freeMemory;
+}
+
+UINT64 XContentDevice::GetTotalMemory()
+{
+    return (UINT64)content->clusterCount * (UINT64)content->clusterSize;
 }
 
 bool XContentDevice::ValidOfflineXuid(std::string xuid)

@@ -17,8 +17,6 @@ public:
     XContentDevice(FatxDrive *drive);
     ~XContentDevice();
 
-    bool LoadDevice();
-
     std::vector<XContentDeviceProfile> *profiles;
 
     std::vector<XContentDeviceSharedItem> *games;
@@ -30,9 +28,15 @@ public:
     std::vector<XContentDeviceSharedItem> *avatarItems;
     std::vector<XContentDeviceSharedItem> *systemItems;
 
+    bool LoadDevice(void(*progress)(void*, bool) = NULL, void *arg = NULL);
+    FatxDriveType GetDeviceType();
+    UINT64 GetFreeMemory(void(*progress)(void*, bool) = NULL, void *arg = NULL);
+    UINT64 GetTotalMemory();
+
 
 private:
     FatxDrive *drive;
+    Partition *content;
 
     bool ValidOfflineXuid(std::string xuid);
     bool ValidTitleID(std::string id);
