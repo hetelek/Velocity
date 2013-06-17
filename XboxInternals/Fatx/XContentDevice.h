@@ -11,7 +11,9 @@
 #include "XContentDeviceProfile.h"
 #include "XContentDeviceSharedItem.h"
 
-class XContentDevice
+#include "XboxInternals_global.h"
+
+class XBOXINTERNALSSHARED_EXPORT XContentDevice
 {
 public:
     XContentDevice(FatxDrive *drive);

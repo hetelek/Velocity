@@ -5,7 +5,9 @@
 #include "Stfs/StfsPackage.h"
 #include "XContentDeviceItem.h"
 
-class XContentDeviceTitle : public XContentDeviceItem
+#include "XboxInternals_global.h"
+
+class XBOXINTERNALSSHARED_EXPORT XContentDeviceTitle : public XContentDeviceItem
 {
 public:
     XContentDeviceTitle(std::string pathOnDevice);
