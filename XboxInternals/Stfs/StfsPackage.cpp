@@ -57,7 +57,7 @@ void StfsPackage::Cleanup()
 {
     io->Close();
 
-    if (!ioPassedIn)
+    if (!ioPassedIn || flags & StfsPackageDeleteIO)
         delete io;
     if (metaData)
         delete metaData;

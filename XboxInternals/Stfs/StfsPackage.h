@@ -69,7 +69,8 @@ enum StfsPackageFlags
 {
     StfsPackagePEC = 1,
     StfsPackageCreate = 2,
-    StfsPackageFemale = 4     // only used when creating a packge
+    StfsPackageFemale = 4,     // only used when creating a packge
+    StfsPackageDeleteIO = 8
 };
 
 class XBOXINTERNALSSHARED_EXPORT StfsPackage
