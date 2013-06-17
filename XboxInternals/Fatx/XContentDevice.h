@@ -9,6 +9,7 @@
 #include "FatxDrive.h"
 #include "IO/FatxIO.h"
 #include "XContentDeviceProfile.h"
+#include "XContentDeviceSharedItem.h"
 
 class XContentDevice
 {
@@ -18,7 +19,16 @@ public:
 
     bool LoadDevice();
 
-    std::vector<XContentDeviceProfile> profiles;
+    std::vector<XContentDeviceProfile> *profiles;
+
+    std::vector<XContentDeviceSharedItem> *demos;
+    std::vector<XContentDeviceSharedItem> *videos;
+    std::vector<XContentDeviceSharedItem> *themes;
+    std::vector<XContentDeviceSharedItem> *gamerPictures;
+    std::vector<XContentDeviceSharedItem> *avatarItems;
+    std::vector<XContentDeviceSharedItem> *systemItems;
+    std::vector<XContentDeviceSharedItem> *music;
+
 
 private:
     FatxDrive *drive;
@@ -26,6 +36,8 @@ private:
     bool ValidOfflineXuid(std::string xuid);
 
     bool ValidTitleID(std::string id);
+
+    void GetAllContentItems(FatxFileEntry &titleFolder, vector<XContentDeviceItem> &itemsFound);
 };
 
 #endif // XCONTENTDEVICE_H

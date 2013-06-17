@@ -3,18 +3,34 @@
 XContentDevice::XContentDevice(FatxDrive *drive) :
     drive(drive)
 {
+    profiles = new std::vector<XContentDeviceProfile>();
 
+    demos = new std::vector<XContentDeviceSharedItem>();
+    videos = new std::vector<XContentDeviceSharedItem>();
+    themes = new std::vector<XContentDeviceSharedItem>();
+    gamerPictures = new std::vector<XContentDeviceSharedItem>();
+    avatarItems = new std::vector<XContentDeviceSharedItem>();
+    systemItems = new std::vector<XContentDeviceSharedItem>();
+    music = new std::vector<XContentDeviceSharedItem>();
 }
 
 XContentDevice::~XContentDevice()
 {
-    for (int i = 0; i < profiles.size(); i++)
+    for (int i = 0; i < profiles->size(); i++)
     {
-        delete profiles.at(i).package;
-        for (int x = 0; x < profiles.at(i).titles.size(); x++)
-            for (int y = 0; y < profiles.at(i).titles.at(x).titleSaves.size(); y++)
-                delete profiles.at(i).titles.at(x).titleSaves.at(y).package;
+        for (int x = 0; x < profiles->at(i).titles.size(); x++)
+            for (int y = 0; y < profiles->at(i).titles.at(x).titleSaves.size(); y++)
+                delete profiles->at(i).titles.at(x).titleSaves.at(y).package;
+        delete profiles->at(i).package;
     }
+
+    delete profiles;
+    delete videos;
+    delete themes;
+    delete gamerPictures;
+    delete avatarItems;
+    delete systemItems;
+    delete music;
 }
 
 bool XContentDevice::LoadDevice()
@@ -39,8 +55,8 @@ bool XContentDevice::LoadDevice()
             continue;
 
         // check for a profile file
-        std::string profilePath = "Drive:\\Content\\Content\\" + profileFolderEntry.name + "\\FFFE07D1\\00010000\\";
-        FatxFileEntry* profileEntry = drive->GetFileEntry(profilePath + profileFolderEntry.name);
+        std::string profilePath = "Drive:\\Content\\Content\\" + profileFolderEntry.name + "\\FFFE07D1\\00010000\\" + profileFolderEntry.name;
+        FatxFileEntry* profileEntry = drive->GetFileEntry(profilePath);
 
         StfsPackage *profilePackage = NULL;
         if (profileEntry != NULL)
@@ -68,57 +84,16 @@ bool XContentDevice::LoadDevice()
             // load all of the sub folders
             drive->GetChildFileEntries(&titleFolder);
 
-            // iterate through all of the content types for this title
-            for (int y = 0; y < titleFolder.cachedFiles.size(); y++)
-            {
-                // verify that the entry is a folder and named with the content type as a string in hex,
-                // so for savegames the folder would be named 00000001
-                FatxFileEntry contentTypeFolder = titleFolder.cachedFiles.at(y);
-                if ((contentTypeFolder.fileAttributes & FatxDirectory) == 0 || !ValidTitleID(contentTypeFolder.name))
-                    continue;
+            // retrive all of the STFS packages in that folder
+            GetAllContentItems(titleFolder, title.titleSaves);
 
-                // load all of the content items in this directory
-                drive->GetChildFileEntries(&contentTypeFolder);
-
-                // iterate through all of the STFS packages in this content type folder
-                for (int z = 0; z < contentTypeFolder.cachedFiles.size(); z++)
-                {
-                    // we're looking for STFS packages, so make sure the entry isn't another directory
-                    FatxFileEntry contentPackage = contentTypeFolder.cachedFiles.at(z);
-                    if (contentPackage.fileAttributes & FatxDirectory)
-                        continue;
-
-                    // open an IO on this file, should be STFS package
-                    FatxIO io = drive->GetFatxIO(&contentPackage);
-                    DWORD fileMagic = io.ReadDword();
-
-                    // verify the magic
-                    if (fileMagic != CON && fileMagic != LIVE && fileMagic != PIRS)
-                        continue;
-
-                    // this might not be a valid STFS package, so we have to do try {} catch {}
-                    StfsPackage *content;
-                    try
-                    {
-                        content = new StfsPackage(new FatxIO(io), StfsPackageDeleteIO);
-                    }
-                    catch (...)
-                    {
-                        continue;
-                    }
-
-                    XContentDeviceItem item(contentPackage.path, content);
-
-                    title.titleSaves.push_back(item);
-                }
-            }
-
+            // there's no point in adding the title if it doesn't contain any content
             if (title.titleSaves.size() != 0)
                 profile.titles.push_back(title);
         }
 
 
-        profiles.push_back(profile);
+        profiles->push_back(profile);
     }
 }
 
@@ -149,4 +124,52 @@ bool XContentDevice::ValidTitleID(std::string id)
             return false;
 
     return true;
+}
+
+void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XContentDeviceItem> &itemsFound)
+{
+    // iterate through all of the content types for this title
+    for (int y = 0; y < titleFolder.cachedFiles.size(); y++)
+    {
+        // verify that the entry is a folder and named with the content type as a string in hex,
+        // so for savegames the folder would be named 00000001
+        FatxFileEntry contentTypeFolder = titleFolder.cachedFiles.at(y);
+        if ((contentTypeFolder.fileAttributes & FatxDirectory) == 0 || !ValidTitleID(contentTypeFolder.name))
+            continue;
+
+        // load all of the content items in this directory
+        drive->GetChildFileEntries(&contentTypeFolder);
+
+        // iterate through all of the STFS packages in this content type folder
+        for (int z = 0; z < contentTypeFolder.cachedFiles.size(); z++)
+        {
+            // we're looking for STFS packages, so make sure the entry isn't another directory
+            FatxFileEntry contentPackage = contentTypeFolder.cachedFiles.at(z);
+            if (contentPackage.fileAttributes & FatxDirectory)
+                continue;
+
+            // open an IO on this file, should be STFS package
+            FatxIO io = drive->GetFatxIO(&contentPackage);
+            DWORD fileMagic = io.ReadDword();
+
+            // verify the magic
+            if (fileMagic != CON && fileMagic != LIVE && fileMagic != PIRS)
+                continue;
+
+            // this might not be a valid STFS package, so we have to do try {} catch {}
+            StfsPackage *content;
+            try
+            {
+                content = new StfsPackage(new FatxIO(io), StfsPackageDeleteIO);
+            }
+            catch (...)
+            {
+                continue;
+            }
+
+            XContentDeviceItem item(contentPackage.path + contentPackage.name, content);
+
+            itemsFound.push_back(item);
+        }
+    }
 }
