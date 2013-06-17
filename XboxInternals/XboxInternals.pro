@@ -66,7 +66,8 @@ SOURCES += \
     Fatx/XContentDevice.cpp \
     Fatx/XContentDeviceProfile.cpp \
     Fatx/XContentDeviceItem.cpp \
-    Fatx/XContentDeviceTitle.cpp
+    Fatx/XContentDeviceTitle.cpp \
+    Fatx/XContentDeviceSharedItem.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -112,4 +113,5 @@ HEADERS +=\
     Fatx/XContentDevice.h \
     Fatx/XContentDeviceProfile.h \
     Fatx/XContentDeviceItem.h \
-    Fatx/XContentDeviceTitle.h
+    Fatx/XContentDeviceTitle.h \
+    Fatx/XContentDeviceSharedItem.h
