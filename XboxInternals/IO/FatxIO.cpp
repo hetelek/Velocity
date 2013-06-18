@@ -2,6 +2,9 @@
 
 FatxIO::FatxIO(DeviceIO *device, FatxFileEntry *entry) : device(device), entry(entry)
 {
+    this->entry = new FatxFileEntry;
+    memcpy(this->entry, entry, sizeof(FatxFileEntry));
+
     // if it's a new file, then don't do any seeking yet
     if (entry->startingCluster != 0)
         SetPosition(0);
