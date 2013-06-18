@@ -5,6 +5,9 @@ DeviceContentViewer::DeviceContentViewer(QStatusBar *statusBar, QWidget *parent)
     statusBar(statusBar), QDialog(parent), ui(new Ui::DeviceContentViewer)
 {
     ui->setupUi(this);
+
+    ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
 }
 
 DeviceContentViewer::~DeviceContentViewer()
@@ -46,6 +49,8 @@ void DeviceContentViewer::LoadDevices()
             profileItem->setText(0, profileName);
 
             profileItem->setData(0, Qt::UserRole, QVariant::fromValue(profile.package));
+            profileItem->setData(1, Qt::UserRole, QVariant(QString::fromStdString(profile.GetPathOnDevice())));
+            profileItem->setData(2, Qt::UserRole, QVariant(QString::fromStdString(profile.GetRawName())));
 
             // set the icon to the gamerpicture
             if (profile.GetThumbnail() != NULL)
@@ -65,7 +70,8 @@ void DeviceContentViewer::LoadDevices()
                 XContentDeviceTitle title = profile.titles.at(y);
 
                 titleItem->setText(0, QString::fromStdWString(title.GetName()));
-                titleItem->setIcon(0, QIcon(QPixmap(":/Images/FolderFileIcon.png")));
+                QByteArray imageBuff((char*)title.GetThumbnail(), title.GetThumbnailSize());
+                titleItem->setIcon(0, QIcon(QPixmap::fromImage(QImage::fromData(imageBuff))));
 
                 // load all the saves for this title
                 for (int z = 0; z < title.titleSaves.size(); z++)
@@ -74,6 +80,8 @@ void DeviceContentViewer::LoadDevices()
                     XContentDeviceItem save = title.titleSaves.at(z);
 
                     saveItem->setData(0, Qt::UserRole, QVariant::fromValue(save.package));
+                    saveItem->setData(1, Qt::UserRole, QVariant(QString::fromStdString(save.GetPathOnDevice())));
+                    saveItem->setData(2, Qt::UserRole, QVariant(QString::fromStdString(save.GetRawName())));
 
                     saveItem->setText(0, QString::fromStdWString(save.GetName()));
 
@@ -117,6 +125,8 @@ void DeviceContentViewer::LoadSharedItemCategory(QString category, std::vector<X
         item->setText(0, QString::fromStdWString(content.GetName()));
 
         item->setData(0, Qt::UserRole, QVariant::fromValue(content.package));
+        item->setData(1, Qt::UserRole, QVariant(QString::fromStdString(content.GetPathOnDevice())));
+        item->setData(2, Qt::UserRole, QVariant(QString::fromStdString(content.GetRawName())));
 
         // set the icon to the STFS package's thumbnail
         QByteArray imageBuff((char*)content.GetThumbnail(), content.GetThumbnailSize());
@@ -141,5 +151,38 @@ void DeviceContentViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item,
     {
         PackageViewer viewer(statusBar, package, QList<QAction*>(), QList<QAction*>(), this, false);
         viewer.exec();
+    }
+}
+
+void DeviceContentViewer::showContextMenu(const QPoint &pos)
+{
+    // make sure that all the items the user has selected can be extracted
+    for (int i = 0; i < ui->treeWidget->selectedItems().size(); i++)
+        if (ui->treeWidget->selectedItems().at(i)->data(1, Qt::UserRole).toString() == "")
+            return;
+
+    // if the user doesn't have any items selected, then we can't extract anything
+    if (ui->treeWidget->selectedItems().size() == 0)
+        return;
+
+    QPoint globalPos = ui->treeWidget->mapToGlobal(pos);
+    QMenu contextMenu;
+
+    contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
+
+    QAction *selectedItem = contextMenu.exec(globalPos);
+    if (selectedItem == NULL)
+        return;
+
+    if (selectedItem->text() == "Copy Selected to Local Disk")
+    {
+        // get a place to save the extracted items
+        if (ui->treeWidget->selectedItems().size() == 1)
+        {
+            QTreeWidgetItem *selectedItem = ui->treeWidget->selectedItems().at(0);
+
+            QString savePath = QFileDialog::getSaveFileName(this, "Choose a place to save the file...", QtHelpers::DesktopLocation() + "/" + selectedItem->data(2, Qt::UserRole).toString());
+            devices.at(0)->CopyFileToLocalDisk(savePath.toStdString(), selectedItem->data(1, Qt::UserRole).toString().toStdString());
+        }
     }
 }

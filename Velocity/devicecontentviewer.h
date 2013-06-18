@@ -35,6 +35,7 @@ public:
     
 private slots:
     void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
+    void showContextMenu(const QPoint &pos);
 
 private:
     Ui::DeviceContentViewer *ui;
