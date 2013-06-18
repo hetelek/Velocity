@@ -619,7 +619,8 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
     }
 
     // make sure it hits the end
-    progress(arg, readRanges.size(), readRanges.size());
+    if (progress)
+        progress(arg, readRanges.size(), readRanges.size());
 
     outFile.Flush();
     outFile.Close();
