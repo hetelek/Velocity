@@ -9,7 +9,7 @@
 class XBOXINTERNALSSHARED_EXPORT XContentDeviceItem
 {
 public:
-    XContentDeviceItem(std::string pathOnDevice, StfsPackage *package);
+    XContentDeviceItem(std::string pathOnDevice, std::string rawName, StfsPackage *package);
 
     StfsPackage *package;
 
@@ -17,9 +17,11 @@ public:
     virtual std::wstring GetName();
     virtual BYTE* GetThumbnail();
     virtual DWORD GetThumbnailSize();
+    virtual std::string GetRawName();
 
 private:
     std::string pathOnDevice;
+    std::string rawName;
 };
 
 #endif // XCONTENTDEVICEITEM_H

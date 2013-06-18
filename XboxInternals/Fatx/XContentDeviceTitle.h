@@ -10,7 +10,7 @@
 class XBOXINTERNALSSHARED_EXPORT XContentDeviceTitle : public XContentDeviceItem
 {
 public:
-    XContentDeviceTitle(std::string pathOnDevice);
+    XContentDeviceTitle(std::string pathOnDevice, std::string rawName);
 
     std::wstring GetName();
     BYTE* GetThumbnail();

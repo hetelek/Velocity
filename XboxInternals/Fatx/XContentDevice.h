@@ -36,6 +36,8 @@ public:
     UINT64 GetTotalMemory();
     std::wstring GetName();
 
+    void CopyFileToLocalDisk(std::string outPath, std::string inPath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+
 
 private:
     FatxDrive *drive;

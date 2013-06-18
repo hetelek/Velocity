@@ -9,7 +9,7 @@
 class XBOXINTERNALSSHARED_EXPORT XContentDeviceSharedItem : public XContentDeviceItem
 {
 public:
-    XContentDeviceSharedItem(std::string pathOnDevice, StfsPackage *package);
+    XContentDeviceSharedItem(std::string pathOnDevice, std::string rawName, StfsPackage *package);
 };
 
 #endif // XCONTENTDEVICESHAREDITEM_H

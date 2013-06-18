@@ -13,7 +13,7 @@
 class XBOXINTERNALSSHARED_EXPORT XContentDeviceProfile : public XContentDeviceItem
 {
 public:
-    XContentDeviceProfile(std::string pathOnDevice, StfsPackage *profile);
+    XContentDeviceProfile(std::string pathOnDevice, std::string rawName, StfsPackage *profile);
 
     std::vector<XContentDeviceTitle> titles;
 };

@@ -1,7 +1,7 @@
 #include "XContentDeviceItem.h"
 
-XContentDeviceItem::XContentDeviceItem(std::string pathOnDevice, StfsPackage *package) :
-    package(package), pathOnDevice(pathOnDevice)
+XContentDeviceItem::XContentDeviceItem(std::string pathOnDevice, std::string rawName, StfsPackage *package) :
+    package(package), pathOnDevice(pathOnDevice), rawName(rawName)
 {
 
 }
@@ -39,4 +39,9 @@ DWORD XContentDeviceItem::GetThumbnailSize()
     if (package == NULL)
         return NULL;
     return package->metaData->thumbnailImageSize;
+}
+
+std::string XContentDeviceItem::GetRawName()
+{
+    return rawName;
 }

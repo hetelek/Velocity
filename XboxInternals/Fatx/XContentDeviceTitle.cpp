@@ -1,7 +1,7 @@
 #include "XContentDeviceTitle.h"
 
-XContentDeviceTitle::XContentDeviceTitle(std::string pathOnDevice) :
-    pathOnDevice(pathOnDevice), XContentDeviceItem(pathOnDevice, NULL)
+XContentDeviceTitle::XContentDeviceTitle(std::string pathOnDevice, std::string rawName) :
+    pathOnDevice(pathOnDevice), XContentDeviceItem(pathOnDevice, rawName, NULL)
 {
 
 }

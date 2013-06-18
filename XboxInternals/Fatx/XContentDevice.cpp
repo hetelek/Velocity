@@ -85,16 +85,18 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
         FatxFileEntry* profileEntry = drive->GetFileEntry(profilePath);
 
         StfsPackage *profilePackage = NULL;
+        std::string rawName = "";
         if (profileEntry != NULL)
         {
             FatxIO io = drive->GetFatxIO(profileEntry);
             profilePackage = new StfsPackage(new FatxIO(io), StfsPackageDeleteIO);
+            rawName = profileEntry->name;
         }
         else
         {
             profilePath = "";
         }
-        XContentDeviceProfile profile(profilePath, profilePackage);
+        XContentDeviceProfile profile(profilePath, rawName, profilePackage);
 
         // get all of the game save data for this profile
         drive->GetChildFileEntries(&profileFolderEntry);
@@ -105,7 +107,7 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
             if ((titleFolder.fileAttributes & FatxDirectory) == 0 || !ValidTitleID(titleFolder.name) || titleFolder.name == "FFFE07D1")
                 continue;
 
-            XContentDeviceTitle title(titleFolder.path + "\\" + titleFolder.name);
+            XContentDeviceTitle title(titleFolder.path + "\\" + titleFolder.name, titleFolder.name);
 
             // load all of the sub folders
             drive->GetChildFileEntries(&titleFolder);
@@ -144,7 +146,7 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
         // put the content items in the correct category
         for (int x = 0; x < items.size(); x++)
         {
-            XContentDeviceSharedItem item(items.at(x).GetPathOnDevice(), items.at(x).package);
+            XContentDeviceSharedItem item(items.at(x).GetPathOnDevice(), items.at(x).GetRawName(), items.at(x).package);
             if (item.package == NULL)
                 continue;
 
@@ -229,6 +231,12 @@ std::wstring XContentDevice::GetName()
     return name;
 }
 
+void XContentDevice::CopyFileToLocalDisk(std::string outPath, std::string inPath, void (*progress)(void *, DWORD, DWORD), void *arg)
+{
+    FatxIO io = drive->GetFatxIO(drive->GetFileEntry(inPath));
+    io.SaveFile(outPath, progress, arg);
+}
+
 bool XContentDevice::ValidOfflineXuid(std::string xuid)
 {
     // offline XUIDs must be 16 hex characters long and start with E
@@ -299,7 +307,7 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
                 continue;
             }
 
-            XContentDeviceItem item(contentPackage.path + contentPackage.name, content);
+            XContentDeviceItem item(contentPackage.path + contentPackage.name, contentPackage.name, content);
 
             itemsFound.push_back(item);
         }
