@@ -39,6 +39,7 @@
 #include "svoddialog.h"
 #include "ytgrdialog.h"
 #include "deviceviewer.h"
+#include "devicecontentviewer.h"
 
 // other
 #include "PluginInterfaces/igamemodder.h"
@@ -132,6 +133,8 @@ private slots:
     void on_actionYTGR_triggered();
 
     void on_actionDevice_Viewer_triggered();
+
+    void on_actionContent_Device_Viewer_triggered();
 
 private:
     Ui::MainWindow *ui;

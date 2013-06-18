@@ -846,3 +846,12 @@ void MainWindow::on_actionYTGR_triggered()
         QMessageBox::critical(this, "Ytgr Error", "An error has occurred while parsing a Ytgr header.\n\n" + QString::fromStdString(error));
     }
 }
+
+void MainWindow::on_actionContent_Device_Viewer_triggered()
+{
+    DeviceContentViewer *viewer = new DeviceContentViewer(ui->statusBar, this);
+    viewer->setAttribute(Qt::WA_DeleteOnClose);
+    ui->mdiArea->addSubWindow(viewer);
+    viewer->show();
+    viewer->LoadDevices();
+}

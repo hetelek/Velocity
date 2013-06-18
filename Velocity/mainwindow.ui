@@ -114,6 +114,7 @@
        <normaloff>:/Images/hdd.png</normaloff>:/Images/hdd.png</iconset>
      </property>
      <addaction name="actionDevice_Viewer"/>
+     <addaction name="actionContent_Device_Viewer"/>
      <addaction name="actionFATX_File_Path"/>
     </widget>
     <addaction name="menuDevice_Tools"/>
@@ -357,6 +358,11 @@
   <action name="actionDevice_Viewer">
    <property name="text">
     <string>Raw Device Viewer</string>
+   </property>
+  </action>
+  <action name="actionContent_Device_Viewer">
+   <property name="text">
+    <string>Content Device Viewer</string>
    </property>
   </action>
  </widget>

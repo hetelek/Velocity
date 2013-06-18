@@ -34,6 +34,7 @@ public:
     FatxDriveType GetDeviceType();
     UINT64 GetFreeMemory(void(*progress)(void*, bool) = NULL, void *arg = NULL);
     UINT64 GetTotalMemory();
+    std::wstring GetName();
 
 
 private:

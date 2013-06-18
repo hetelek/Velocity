@@ -212,6 +212,23 @@ UINT64 XContentDevice::GetTotalMemory()
     return (UINT64)content->clusterCount * (UINT64)content->clusterSize;
 }
 
+std::wstring XContentDevice::GetName()
+{
+    FatxFileEntry *nameEntry = drive->GetFileEntry("Drive:\\Content\\name.txt");
+    std::wstring name = (GetDeviceType() == FatxHarddrive) ? L"Hard Drive" : L"Flash Drive";
+    if (nameEntry)
+    {
+        FatxIO nameFile = drive->GetFatxIO(nameEntry);
+        nameFile.SetPosition(0);
+
+        // make sure that it starts with 0xFEFF
+        if (nameFile.ReadWord() == 0xFEFF)
+            name = nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 : (nameEntry->fileSize - 2) / 2);
+    }
+
+    return name;
+}
+
 bool XContentDevice::ValidOfflineXuid(std::string xuid)
 {
     // offline XUIDs must be 16 hex characters long and start with E
