@@ -62,7 +62,8 @@ SOURCES += \
     IO/FatxIO.cpp \
     Fatx/FatxDriveDetection.cpp \
     IO/SvodMultiFileIO.cpp \
-    IO/MultiFileIO.cpp
+    IO/MultiFileIO.cpp \
+    IO/StfsIO.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -104,4 +105,5 @@ HEADERS +=\
     Fatx/FatxHelpers.h \
     Fatx/FatxDriveDetection.h \
     Fatx/FatxDrive.h \
-    Fatx/FatxConstants.h
+    Fatx/FatxConstants.h \
+    IO/StfsIO.h
