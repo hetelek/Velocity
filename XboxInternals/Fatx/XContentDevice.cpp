@@ -281,7 +281,7 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
                 continue;
 
             // open an IO on this file, should be STFS package
-            FatxIO io = drive->GetFatxIO(&contentPackage);
+            FatxIO io = drive->GetFatxIO(drive->GetFileEntry(contentPackage.path + contentPackage.name));
             DWORD fileMagic = io.ReadDword();
 
             // verify the magic
