@@ -1,5 +1,6 @@
 #include "StfsPackage.h"
 #include "XContentHeader.h"
+#include "IO/StfsIO.h"
 
 #include <stdio.h>
 
@@ -684,7 +685,7 @@ void StfsPackage::GetFileEntry(vector<string> locationOfFile, StfsFileListing *s
 
                     // set the out value, and break
                     if (out != NULL)
-                        *out = start->folderEntries.at(i).folder;
+                        out = &start->folderEntries.at(i).folder;
                     found = true;
                     break;
                 }
@@ -1616,7 +1617,6 @@ StfsFileEntry StfsPackage::InjectFile(string path, string pathInPackage, void(*i
     {
         block = AllocateBlock();
 
-
         if (entry.startingBlockNum == INT24_MAX)
             entry.startingBlockNum = block;
 
@@ -1957,6 +1957,18 @@ void StfsPackage::Close()
     io->Close();
 }
 
+void StfsPackage::GenerateBlockChain(StfsFileEntry *entry, bool forceRefresh)
+{
+    if (!forceRefresh && entry->blockChain.size() > 0)
+        return;
+
+    INT24 currentBlock = entry->startingBlockNum;
+    entry->blockChain.push_back(currentBlock);
+
+    while ((currentBlock = GetBlockHashEntry(currentBlock).nextBlock) != INT24_MAX)
+        entry->blockChain.push_back(currentBlock);
+}
+
 void StfsPackage::CreateFolder(string pathInPackage)
 {
     // split the string and open a io
@@ -2008,6 +2020,18 @@ void StfsPackage::CreateFolder(string pathInPackage)
     // add the entry to the listing
     folder->folderEntries.push_back(newFolder);
     WriteFileListing();
+}
+
+StfsIO* StfsPackage::GetStfsIO(string pathInPackage)
+{
+    StfsFileEntry entry = this->GetFileEntry(pathInPackage);
+    return GetStfsIO(entry);
+}
+
+StfsIO* StfsPackage::GetStfsIO(StfsFileEntry entry)
+{
+    StfsIO *stfsIO = new StfsIO(this->io, this, entry);
+    return stfsIO;
 }
 
 void StfsPackage::GenerateRawFileListing(StfsFileListing *in, vector<StfsFileEntry> *outFiles, vector<StfsFileEntry> *outFolders)

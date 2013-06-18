@@ -20,6 +20,8 @@
 
 #include "XboxInternals_global.h"
 
+class StfsIO;
+
 using std::string;
 using std::stringstream;
 using std::hex;
@@ -38,6 +40,7 @@ struct StfsFileEntry
     DWORD createdTimeStamp;
     DWORD accessTimeStamp;
     DWORD fileEntryAddress;
+    std::vector<INT24> blockChain;
 };
 
 struct StfsFileListing
@@ -146,8 +149,23 @@ public:
     // Description: close the io and all other resources used
     void Close();
 
+    // Description: loads all the blocks the file entry has allocated into the 'blockChain' vector
+    void GenerateBlockChain(StfsFileEntry *entry, bool forceRefresh = false);
+
     // Description: creates a folder in the specified directory
     void CreateFolder(string pathInPackage);
+
+    // Description: allocate a data block in the package, and return a block number
+    INT24 AllocateBlock();
+
+    // Description: set the next block of the current block
+    void SetNextBlock(DWORD blockNum, INT24 nextBlockNum);
+
+    // Description: creates an StfsIO based off of the given path
+    StfsIO* GetStfsIO(string pathInPackage);
+
+    // Description: creates an StfsIO based off of the given entry
+    StfsIO* GetStfsIO(StfsFileEntry entry);
 
     ~StfsPackage(void);
 private:
@@ -232,17 +250,11 @@ private:
     // Description: set the status of the block in the corresponding hash table
     void SetBlockStatus(DWORD blockNum, BlockStatusLevelZero status);
 
-    // Description: set the next block of the current block
-    void SetNextBlock(DWORD blockNum, INT24 nextBlockNum);
-
     // Description: discard the current file listing and reWrite it
     void WriteFileListing(bool usePassed = false, vector<StfsFileEntry> *outFis = NULL, vector<StfsFileEntry> *outFos = NULL);
 
     // Description: Write a file entry at the io's current position
     void WriteFileEntry(StfsFileEntry *entry);
-
-    // Description: allocate a data block in the package, and return a block number
-    INT24 AllocateBlock();
 
     // Description: allocate 'blockCount' consecutive data blocks
     INT24 AllocateBlocks(DWORD blockCount);
