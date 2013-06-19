@@ -48,6 +48,7 @@ void MultiProgressDialog::start()
             }
             break;
         case FileSystemFATX:
+        case FileSystemFriendlyFATX:
             overallProgressTotal = 0;
             ui->progressBar_2->setTextVisible(false);
             break;
@@ -240,6 +241,43 @@ void MultiProgressDialog::operateOnNextFile()
             close();
             return;
         }
+
+        case FileSystemFriendlyFATX:
+        {
+            if (op == OpExtract)
+            {
+                for (int i = 0; i < internalFiles.size(); i++)
+                {
+                    // update groupbox text
+                    ui->groupBox_2->setTitle("Overall Progress - " + QString::number(i + 1) + " of " + QString::number(internalFiles.size()));
+
+                    // get the file entry
+                    std::string *file = reinterpret_cast<std::string*>(internalFiles.at(i));
+                    std::string fileName = file->substr(file->find_last_of('\\') + 1);
+
+                    setWindowTitle("Copying " + QString::fromStdString(fileName));
+
+                    // get the file from the device
+                    XContentDevice *drive = reinterpret_cast<XContentDevice*>(device);
+
+                    try
+                    {
+                        // extract the file
+                        drive->CopyFileToLocalDisk(outDir.toStdString() + "/" + fileName, *file, updateProgress, this);
+                    }
+                    catch (string error)
+                    {
+                        QMessageBox::critical(this, "", "An error occurred while extracting files.\n\n" + QString::fromStdString(error));
+                    }
+
+                    // reset the progress
+                    prevProgress = 0;
+                }
+            }
+
+            close();
+            return;
+        }
     }
 }
 
@@ -252,7 +290,7 @@ void updateProgress(void *form, DWORD curProgress, DWORD total)
     dialog->ui->progressBar->setValue(curProgress);
     dialog->ui->progressBar->setMaximum(total);
 
-    if (dialog->system != FileSystemFATX)
+    if (dialog->system != FileSystemFATX && dialog->system != FileSystemFriendlyFATX)
     {
         dialog->overallProgress += (curProgress - dialog->prevProgress);
         dialog->ui->progressBar_2->setValue(dialog->overallProgress);

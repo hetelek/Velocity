@@ -14,6 +14,7 @@
 #include "Stfs/StfsPackage.h"
 #include "Fatx/FatxConstants.h"
 #include "Fatx/FatxDrive.h"
+#include "Fatx/XContentDevice.h"
 
 enum Operation
 {

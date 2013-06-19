@@ -176,13 +176,22 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
 
     if (selectedItem->text() == "Copy Selected to Local Disk")
     {
-        // get a place to save the extracted items
-        if (ui->treeWidget->selectedItems().size() == 1)
-        {
-            QTreeWidgetItem *selectedItem = ui->treeWidget->selectedItems().at(0);
+        QString saveDir = QFileDialog::getExistingDirectory(this, "Choose a place to extract the files to...", QtHelpers::DesktopLocation());
 
-            QString savePath = QFileDialog::getSaveFileName(this, "Choose a place to save the file...", QtHelpers::DesktopLocation() + "/" + selectedItem->data(2, Qt::UserRole).toString());
-            devices.at(0)->CopyFileToLocalDisk(savePath.toStdString(), selectedItem->data(1, Qt::UserRole).toString().toStdString());
+        QList<void*> filesToExtract;
+        for (int i = 0; i < ui->treeWidget->selectedItems().size(); i++)
+        {
+            QString path = ui->treeWidget->selectedItems().at(i)->data(1, Qt::UserRole).toString();
+            filesToExtract.push_back(new std::string(path.toStdString()));
         }
+
+        MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemFriendlyFATX, devices.at(0), saveDir, filesToExtract, this);
+        dialog->setModal(true);
+        dialog->show();
+        dialog->start();
+
+        // delete all of the allocated strings
+        for (int i = 0; i < filesToExtract.size(); i++)
+            delete (std::string*)filesToExtract.at(i);
     }
 }
