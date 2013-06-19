@@ -272,8 +272,6 @@ private:
     vector<GameEntry> games;
     vector<AvatarAwardGameEntry> aaGames;
 
-    string pecTempPath;
-    string dashGpdTempPath;
     string accountTempPath;
 
     bool dispose;
