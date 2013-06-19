@@ -45,7 +45,7 @@ private:
     QList<XContentDevice*> devices;
     StfsPackage *currentPackage;
 
-    void LoadSharedItemCategory(QString category, std::vector<XContentDeviceSharedItem> *items, QTreeWidgetItem *parent);
+    void LoadSharedItemCategory(QString category, std::vector<XContentDeviceSharedItem> *items, QTreeWidgetItem *parent, QString iconPath);
 };
 
 #endif // DEVICECONTENTVIEWER_H

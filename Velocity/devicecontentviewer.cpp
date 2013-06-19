@@ -97,24 +97,24 @@ void DeviceContentViewer::LoadDevices()
         sharedItemFolder->setIcon(0, QIcon(QPixmap(":/Images/FolderFileIcon.png")));
 
         // load the shared items
-        LoadSharedItemCategory("Games", device->games, sharedItemFolder);
-        LoadSharedItemCategory("DLC", device->dlc, sharedItemFolder);
-        LoadSharedItemCategory("Demos", device->demos, sharedItemFolder);
-        LoadSharedItemCategory("Videos", device->videos, sharedItemFolder);
-        LoadSharedItemCategory("Themes", device->themes, sharedItemFolder);
-        LoadSharedItemCategory("Gamer Pictures", device->gamerPictures, sharedItemFolder);
-        LoadSharedItemCategory("Avatar Items", device->avatarItems, sharedItemFolder);
-        LoadSharedItemCategory("System Items", device->systemItems, sharedItemFolder);
+        LoadSharedItemCategory("Games", device->games, sharedItemFolder, ":/Images/xboxcontroller.png");
+        LoadSharedItemCategory("DLC", device->dlc, sharedItemFolder, ":/Images/xboxglobe.png");
+        LoadSharedItemCategory("Demos", device->demos, sharedItemFolder, ":/Images/xboxcircles.png");
+        LoadSharedItemCategory("Videos", device->videos, sharedItemFolder, ":/Images/film.png");
+        LoadSharedItemCategory("Themes", device->themes, sharedItemFolder, ":/Images/thememedium.png");
+        LoadSharedItemCategory("Gamer Pictures", device->gamerPictures, sharedItemFolder, ":/Images/gamerpicture.png");
+        LoadSharedItemCategory("Avatar Items", device->avatarItems, sharedItemFolder, ":/Images/profile.png");
+        LoadSharedItemCategory("System Items", device->systemItems, sharedItemFolder, ":/Images/preferences.png");
 
         devices.push_back(device);
     }
 }
 
-void DeviceContentViewer::LoadSharedItemCategory(QString category, std::vector<XContentDeviceSharedItem> *items, QTreeWidgetItem *parent)
+void DeviceContentViewer::LoadSharedItemCategory(QString category, std::vector<XContentDeviceSharedItem> *items, QTreeWidgetItem *parent, QString iconPath)
 {
     QTreeWidgetItem *categoryItem = new QTreeWidgetItem(parent);
     categoryItem->setText(0, category);
-    categoryItem->setIcon(0, QIcon(QPixmap(":/Images/FolderFileIcon.png")));
+    categoryItem->setIcon(0, QIcon(QPixmap(iconPath)));
 
     // load all the category's items
     for (int i = 0; i < items->size(); i++)
@@ -201,12 +201,13 @@ void DeviceContentViewer::on_treeWidget_currentItemChanged(QTreeWidgetItem *curr
     StfsPackage *package = current->data(0, Qt::UserRole).value<StfsPackage*>();
     if (package == NULL)
     {
-        ui->imgTumbnail->setPixmap(QPixmap());
-        ui->imgTitleThumbnail->setPixmap(QPixmap());
+        ui->imgTumbnail->setPixmap(QPixmap(":/Images/watermark.png"));
+        ui->imgTitleThumbnail->setPixmap(QPixmap(":/Images/watermark.png"));
 
         ui->lblRawName->setText("...");
         ui->lblTitleID->setText("...");
         ui->lblTitleName->setText("...");
+        ui->lblPackageType->setText("...");
 
         ui->btnOpenIn->setEnabled(false);
         ui->btnViewPackage->setEnabled(false);

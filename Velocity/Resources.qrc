@@ -97,5 +97,10 @@
         <file>Images/refresh.png</file>
         <file>Images/inject.png</file>
         <file>Images/profile creator.png</file>
+        <file>Images/xboxcontroller.png</file>
+        <file>Images/xboxglobe.png</file>
+        <file>Images/xboxcircles.png</file>
+        <file>Images/film.png</file>
+        <file>Images/thememedium.png</file>
     </qresource>
 </RCC>

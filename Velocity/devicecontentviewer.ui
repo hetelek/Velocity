@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>972</width>
-    <height>539</height>
+    <width>917</width>
+    <height>502</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>553</width>
-    <height>432</height>
+    <width>917</width>
+    <height>502</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -26,6 +26,9 @@
   <layout class="QHBoxLayout" name="horizontalLayout_2">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout" stretch="5,2">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
      <item>
       <widget class="QTreeWidget" name="treeWidget">
        <property name="selectionMode">
@@ -93,6 +96,9 @@
               <property name="text">
                <string/>
               </property>
+              <property name="pixmap">
+               <pixmap resource="Resources.qrc">:/Images/watermark.png</pixmap>
+              </property>
              </widget>
             </item>
             <item>
@@ -127,6 +133,9 @@
               </property>
               <property name="text">
                <string/>
+              </property>
+              <property name="pixmap">
+               <pixmap resource="Resources.qrc">:/Images/watermark.png</pixmap>
               </property>
              </widget>
             </item>
