@@ -23,7 +23,12 @@ void StfsIO::SetPosition(UINT64 position, ios_base::seek_dir dir)
     if (dir == std::ios_base::cur)
         position += this->entryPosition;
     else if (dir == std::ios_base::end)
-        position = (Length() + this->entryPosition);
+    {
+        bool resizeNecessary = (position > 0);
+        position = (Length() + position);
+        if (resizeNecessary)
+            Resize(position);
+    }
 
     // preserve the virtual address
     this->entryPosition = position;
