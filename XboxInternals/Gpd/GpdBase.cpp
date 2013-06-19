@@ -9,7 +9,7 @@ GpdBase::GpdBase(string path) : ioPassedIn(false)
     init();
 }
 
-GpdBase::GpdBase(FileIO *io) : ioPassedIn(true), io(io)
+GpdBase::GpdBase(BaseIO *io) : ioPassedIn(true), io(io)
 {
     xdbf = new Xdbf(io);
 

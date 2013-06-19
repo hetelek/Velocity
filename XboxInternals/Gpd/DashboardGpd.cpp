@@ -9,7 +9,7 @@ DashboardGpd::DashboardGpd(string gpdPath) : GpdBase(gpdPath)
 	init();
 }
 
-DashboardGpd::DashboardGpd(FileIO *io) : GpdBase(io)
+DashboardGpd::DashboardGpd(BaseIO *io) : GpdBase(io)
 {
 	init();
 }
