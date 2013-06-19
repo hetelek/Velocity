@@ -16,8 +16,6 @@ FileIO::FileIO(string path, bool truncate) :
 	endian = BigEndian;
 
     fstr->rdbuf()->pubsetbuf(0, 0);
-    fstr->seekp(0, std::ios_base::end);
-    length = fstr->tellp();
     fstr->seekp(0);
 }
 
@@ -33,7 +31,8 @@ UINT64 FileIO::GetPosition()
 
 UINT64 FileIO::Length()
 {
-    return length;
+    fstr->seekp(0, std::ios_base::end);
+    return fstr->tellp();
 }
 
 void FileIO::Close()
@@ -77,6 +76,7 @@ void FileIO::Resize(UINT64 size)
         fstr->read((fstream::char_type*)buffer, size);
         newFileStream->write((fstream::char_type*)buffer, size);
     }
+    delete buffer;
 
     // close the current stream, delete the files
     fstr->close();

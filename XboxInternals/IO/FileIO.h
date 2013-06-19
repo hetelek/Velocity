@@ -34,8 +34,7 @@ public:
     static void ReverseGenericArray(void *arr, int elemSize, int len);
 	virtual ~FileIO();
 private:
-	EndianType endian;
-    UINT64 length;
+    EndianType endian;
 	void ReadBytesWithChecks(void *buffer, INT32 size);
 	fstream *fstr;
     string filePath;
