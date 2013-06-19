@@ -38,6 +38,6 @@ private:
     UINT64 length;
 	void ReadBytesWithChecks(void *buffer, INT32 size);
 	fstream *fstr;
-	const string filePath;
+    string filePath;
 };
 
