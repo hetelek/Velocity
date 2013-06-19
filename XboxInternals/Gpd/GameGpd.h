@@ -14,7 +14,7 @@ class XBOXINTERNALSSHARED_EXPORT GameGpd : public GpdBase
 {
 public:
 	GameGpd(string gpdPath);
-	GameGpd(FileIO *io);
+    GameGpd(BaseIO *io);
 
 	~GameGpd(void);
 
