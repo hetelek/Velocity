@@ -36,11 +36,14 @@ public:
 private slots:
     void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
     void showContextMenu(const QPoint &pos);
+    void on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+    void on_btnViewPackage_clicked();
 
 private:
     Ui::DeviceContentViewer *ui;
     QStatusBar *statusBar;
     QList<XContentDevice*> devices;
+    StfsPackage *currentPackage;
 
     void LoadSharedItemCategory(QString category, std::vector<XContentDeviceSharedItem> *items, QTreeWidgetItem *parent);
 };

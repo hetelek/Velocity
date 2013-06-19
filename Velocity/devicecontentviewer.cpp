@@ -2,7 +2,7 @@
 #include "ui_devicecontentviewer.h"
 
 DeviceContentViewer::DeviceContentViewer(QStatusBar *statusBar, QWidget *parent) :
-    statusBar(statusBar), QDialog(parent), ui(new Ui::DeviceContentViewer)
+    statusBar(statusBar), currentPackage(NULL), QDialog(parent), ui(new Ui::DeviceContentViewer)
 {
     ui->setupUi(this);
 
@@ -194,4 +194,51 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
         for (int i = 0; i < filesToExtract.size(); i++)
             delete (std::string*)filesToExtract.at(i);
     }
+}
+
+void DeviceContentViewer::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+{
+    StfsPackage *package = current->data(0, Qt::UserRole).value<StfsPackage*>();
+    if (package == NULL)
+    {
+        ui->imgTumbnail->setPixmap(QPixmap());
+        ui->imgTitleThumbnail->setPixmap(QPixmap());
+
+        ui->lblRawName->setText("...");
+        ui->lblTitleID->setText("...");
+        ui->lblTitleName->setText("...");
+
+        ui->btnOpenIn->setEnabled(false);
+        ui->btnViewPackage->setEnabled(false);
+
+        currentPackage = NULL;
+        return;
+    }
+
+    QByteArray thumbnailBuff((char*)package->metaData->thumbnailImage, package->metaData->thumbnailImageSize);
+    ui->imgTumbnail->setPixmap(QPixmap::fromImage(QImage::fromData(thumbnailBuff)));
+
+    QByteArray titleThumbnailBuff((char*)package->metaData->titleThumbnailImage, package->metaData->titleThumbnailImageSize);
+    ui->imgTitleThumbnail->setPixmap(QPixmap::fromImage(QImage::fromData(titleThumbnailBuff)));
+
+    ui->lblRawName->setText(current->data(2, Qt::UserRole).toString());
+    ui->lblTitleID->setText(QString::number(package->metaData->titleID, 16).toUpper());
+    ui->lblTitleName->setText(QString::fromStdWString(package->metaData->titleName));
+    ui->lblPackageType->setText(QString::fromStdString(ContentTypeToString(package->metaData->contentType)));
+
+    currentPackage = package;
+
+    ui->btnViewPackage->setEnabled(true);
+}
+
+void DeviceContentViewer::on_btnViewPackage_clicked()
+{
+    if (currentPackage == NULL)
+    {
+        ui->btnViewPackage->setEnabled(false);
+        return;
+    }
+
+    PackageViewer viewer(statusBar, currentPackage, QList<QAction*>(), QList<QAction*>(), this, false);
+    viewer.exec();
 }
