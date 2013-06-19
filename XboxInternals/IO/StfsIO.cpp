@@ -48,6 +48,7 @@ UINT64 StfsIO::Length()
 void StfsIO::ReadBytes(BYTE *outBuffer, DWORD len)
 {
     DWORD maxRead = 0x1000 - (this->entryPosition % 0x1000);
+    UINT64 endingPosition = this->entryPosition + len;
 
     while (len >= maxRead)
     {
@@ -59,6 +60,8 @@ void StfsIO::ReadBytes(BYTE *outBuffer, DWORD len)
 
     if (len != 0)
         io->ReadBytes(outBuffer, len);
+
+    SetPosition(endingPosition);
 }
 
 void StfsIO::WriteBytes(BYTE *buffer, DWORD len)
@@ -111,6 +114,8 @@ void StfsIO::WriteBytes(BYTE *buffer, DWORD len)
 
     if (len != 0)
         io->WriteBytes(buffer, len);
+
+    SetPosition(endingPosition);
 }
 
 void StfsIO::Flush()
