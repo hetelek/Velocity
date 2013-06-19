@@ -23,18 +23,17 @@ void StfsIO::SetPosition(UINT64 position, ios_base::seek_dir dir)
     if (dir == std::ios_base::cur)
         position += this->entryPosition;
     else if (dir == std::ios_base::end)
-    {
-        bool resizeNecessary = (position > 0);
         position = (Length() + position);
-        if (resizeNecessary)
-            Resize(position);
-    }
+
+    bool resizeNecessary = (position > Length());
+    if (resizeNecessary)
+        Resize(position);
 
     // preserve the virtual address
     this->entryPosition = position;
 
     // calculate at which block index the data will appear
-    DWORD blockNum = entry.blockChain.at(position / 0x1000);
+    DWORD blockNum = (position == Length()) ? entry.blockChain.back() : entry.blockChain.at(position / 0x1000);
     UINT64 packagePosition = this->package->BlockToAddress(blockNum) + (position % 0x1000);
 
     io->SetPosition(packagePosition);
