@@ -36,6 +36,9 @@ public:
     // does nothing, required implementation
     void Close();
 
+    // resize the current entry by cutting off any remaining data and allocating random data
+    void Resize(UINT64 size);
+
 private:
     BaseIO *io;
     StfsPackage *package;

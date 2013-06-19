@@ -40,11 +40,14 @@ public:
     // get the byte order in which to read the bytes
     EndianType GetEndian();
 
-    // read len bytes from the current file at the current position into buffer
+    // read 'len' bytes from the current file at the current position into buffer
     virtual void ReadBytes(BYTE *outBuffer, DWORD len) = 0;
 
-    // Write len bytes from the current file at the current position into buffer
+    // write 'len' bytes from the current file at the current position into buffer
     virtual void WriteBytes(BYTE *buffer, DWORD len) = 0;
+
+    // resize the current object (if supported)
+    virtual void Resize(UINT64 size) { throw std::string("Resizing not supported."); }
 
     // all the read functions
     BYTE ReadByte();

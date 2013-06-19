@@ -43,7 +43,11 @@ void FileIO::Close()
 
 void FileIO::Flush()
 {
-	fstr->flush();
+    fstr->flush();
+}
+
+void FileIO::Resize(UINT64 size)
+{
 }
 
 void FileIO::ReverseGenericArray(void *arr, int elemSize, int len)

@@ -27,6 +27,8 @@ public:
     void Close();
     void Flush();
 
+    void Resize(UINT64 size);
+
     string GetFilePath();
 
     static void ReverseGenericArray(void *arr, int elemSize, int len);
