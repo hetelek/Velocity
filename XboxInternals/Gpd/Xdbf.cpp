@@ -11,7 +11,7 @@ Xdbf::Xdbf(string gpdPath) : ioPassedIn(false)
     readFreeMemoryTable();
 }
 
-Xdbf::Xdbf(FileIO *io) : ioPassedIn(true), io(io)
+Xdbf::Xdbf(BaseIO *io) : ioPassedIn(true), io(io)
 {
     init();
     readHeader();
@@ -21,7 +21,7 @@ Xdbf::Xdbf(FileIO *io) : ioPassedIn(true), io(io)
 
 void Xdbf::Clean()
 {
-    // create a temporary file to Write the old Gpd's used memory to
+    /* create a temporary file to Write the old Gpd's used memory to
     string tempFileName;
 
 #ifdef _WIN32
@@ -40,42 +40,45 @@ void Xdbf::Clean()
     tempFileName = string(tempFileName_c);
 #endif
 
-    FileIO tempFile(tempFileName.c_str(), true);
+    FileIO tempFile(tempFileName.c_str(), true);*/
+
+    // resize the io
+    io->Resize(0x18);
 
     // Write the old header
-    tempFile.SetPosition(0);
-    tempFile.Write(header.magic);
-    tempFile.Write(header.version);
-    tempFile.Write(header.entryTableLength);
-    tempFile.Write(header.entryCount);
-    tempFile.Write(header.freeMemTableLength);
-    tempFile.Write((DWORD)1);
+    io->SetPosition(0);
+    io->Write(header.magic);
+    io->Write(header.version);
+    io->Write(header.entryTableLength);
+    io->Write(header.entryCount);
+    io->Write(header.freeMemTableLength);
+    io->Write((DWORD)1);
 
     // seek to the first position in the file where data can be written
-    tempFile.SetPosition(GetRealAddress(0) - 1);
-    tempFile.Write((BYTE)0);
+    io->SetPosition(GetRealAddress(0) - 1);
+    io->Write((BYTE)0);
 
-    tempFile.Flush();
+    io->Flush();
 
     // Write all of the achievements
-    WriteNewEntryGroup(&achievements, &tempFile);
+    WriteNewEntryGroup(&achievements, io);
 
     // Write all of the images
-    WriteNewEntryGroup(&images, &tempFile);
+    WriteNewEntryGroup(&images, io);
 
     // Write all of the settings
-    WriteNewEntryGroup(&settings, &tempFile);
+    WriteNewEntryGroup(&settings, io);
 
     // Write all of the title entries
-    WriteNewEntryGroup(&titlesPlayed, &tempFile);
+    WriteNewEntryGroup(&titlesPlayed, io);
 
     // Write all of the strings
-    WriteNewEntryGroup(&strings, &tempFile);
+    WriteNewEntryGroup(&strings, io);
 
     // Write all of the achievements
-    WriteNewEntryGroup(&avatarAwards, &tempFile);
+    WriteNewEntryGroup(&avatarAwards, io);
 
-    tempFile.Close();
+    /*tempFile.Close();
     io->Close();
 
     // delete the original file
@@ -86,7 +89,7 @@ void Xdbf::Clean()
 
     string path = io->GetFilePath();
     delete io;
-    io = new FileIO(path);
+    io = new FileIO(path);*/
 
     // Write the updated entry table
     WriteEntryListing();
@@ -102,8 +105,7 @@ void Xdbf::Clean()
     // clear the free memory
     freeMemory.clear();
 
-    io->SetPosition(0, ios_base::end);
-    XdbfFreeMemEntry  entry = { GetSpecifier(io->GetPosition()), 0xFFFFFFFF - GetSpecifier(io->GetPosition()) };
+    XdbfFreeMemEntry  entry = { GetSpecifier(io->Length()), 0xFFFFFFFF - GetSpecifier(io->Length()) };
     freeMemory.push_back(entry);
 
     WriteFreeMemTable();
@@ -112,7 +114,7 @@ void Xdbf::Clean()
     readEntryTable();
 }
 
-void Xdbf::WriteNewEntryGroup(XdbfEntryGroup *group, FileIO *newIO)
+void Xdbf::WriteNewEntryGroup(XdbfEntryGroup *group, BaseIO *newIO)
 {
     // iterate through all of the entries
     for (DWORD i = 0; i < group->entries.size(); i++)
@@ -123,14 +125,14 @@ void Xdbf::WriteNewEntryGroup(XdbfEntryGroup *group, FileIO *newIO)
     WriteNewEntry(&group->syncData.entry, newIO);
 }
 
-void Xdbf::WriteNewEntryGroup(vector<XdbfEntry> *group, FileIO *newIO)
+void Xdbf::WriteNewEntryGroup(vector<XdbfEntry> *group, BaseIO *newIO)
 {
     // iterate through all of the entries
     for (DWORD i = 0; i < group->size(); i++)
         WriteNewEntry(&group->at(i), newIO);
 }
 
-void Xdbf::WriteNewEntry(XdbfEntry *entry, FileIO *newIO)
+void Xdbf::WriteNewEntry(XdbfEntry *entry, BaseIO *newIO)
 {
     // read in the entry data
     BYTE *buffer = new BYTE[entry->length];

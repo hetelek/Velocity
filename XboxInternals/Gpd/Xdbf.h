@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+
 #include "IO/FileIO.h"
 #include "XdbfDefininitions.h"
 #include "XdbfHelpers.h"
@@ -16,7 +17,7 @@ class XBOXINTERNALSSHARED_EXPORT Xdbf
 {
 public:
     Xdbf(string gpdPath);
-    Xdbf(FileIO *io);
+    Xdbf(BaseIO *io);
     ~Xdbf();
 
     XdbfEntryGroup achievements;
@@ -55,7 +56,7 @@ public:
 
     // Description: re-Write an entry
     void ReWriteEntry(XdbfEntry entry, BYTE *entryBuffer);
-    FileIO *io;
+    BaseIO *io;
 
 private:
     bool ioPassedIn;
@@ -114,13 +115,13 @@ private:
     void WriteEntry(XdbfEntry *entry);
 
     // Description: Write an entry group to the file that has syncs, used when cleaning
-    void WriteNewEntryGroup(XdbfEntryGroup *group, FileIO *newIO);
+    void WriteNewEntryGroup(XdbfEntryGroup *group, BaseIO *newIO);
 
     // Description: Write an entry group that doesn't have syncs, used when cleaning
-    void WriteNewEntryGroup(vector<XdbfEntry> *group, FileIO *newIO);
+    void WriteNewEntryGroup(vector<XdbfEntry> *group, BaseIO *newIO);
 
     // Description: Write entry to the new file, used when cleaing
-    void WriteNewEntry(XdbfEntry *entry, FileIO *newIO);
+    void WriteNewEntry(XdbfEntry *entry, BaseIO *newIO);
 };
 
 bool compareEntries(XdbfEntry a, XdbfEntry b);
