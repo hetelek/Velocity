@@ -4,6 +4,11 @@
 #include <iostream>
 #include <vector>
 #include <ctype.h>
+#include <iomanip>
+
+#ifndef __WIN32
+    #include <libgen.h>
+#endif
 
 #include "Stfs/StfsPackage.h"
 #include "FatxDrive.h"
@@ -37,7 +42,7 @@ public:
     std::wstring GetName();
 
     void CopyFileToLocalDisk(std::string outPath, std::string inPath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
-
+    void CopyFileToDevice(std::string outPath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
 private:
     FatxDrive *drive;
@@ -47,6 +52,7 @@ private:
     bool ValidTitleID(std::string id);
     void GetAllContentItems(FatxFileEntry &titleFolder, vector<XContentDeviceItem> &itemsFound);
     void CleanupSharedFiles(std::vector<XContentDeviceSharedItem> *category);
+    std::string ToUpper(std::string str);
 };
 
 #endif // XCONTENTDEVICE_H

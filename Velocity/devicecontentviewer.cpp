@@ -169,6 +169,7 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
     QMenu contextMenu;
 
     contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
+    contextMenu.addAction(QPixmap(":/Images/add.png"), "Copy File(s) Here");
 
     QAction *selectedItem = contextMenu.exec(globalPos);
     if (selectedItem == NULL)
@@ -193,6 +194,21 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
         // delete all of the allocated strings
         for (int i = 0; i < filesToExtract.size(); i++)
             delete (std::string*)filesToExtract.at(i);
+    }
+    else if (selectedItem->text() == "Copy File(s) Here")
+    {
+        QString fileName = QFileDialog::getOpenFileName(this, "", QtHelpers::DesktopLocation());
+        if (fileName == "")
+            return;
+
+        try
+        {
+        devices.at(0)->CopyFileToDevice(fileName.toStdString());
+        }
+        catch (std::string error)
+        {
+            QMessageBox::critical(this, "Error", QString::fromStdString(error));
+        }
     }
 }
 

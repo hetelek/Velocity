@@ -301,12 +301,8 @@ FatxFileEntry* FatxDrive::CreatePath(std::string folderPath)
 
     for (int i = 2; i < elems.size(); i++)
     {
-        FatxFileEntry newEntry;
-        newEntry.fileSize = FATX_ENTRY_SIZE;
-        newEntry.name = elems.at(i);
-        newEntry.fileAttributes = FatxDirectory;
-
-        lastEntry = this->createFileEntry(GetFileEntry(currentPath), &newEntry, false);
+        if (GetFileEntry(currentPath + "\\" + elems.at(i)) == NULL)
+            lastEntry = CreateFolder(GetFileEntry(currentPath), elems.at(i));
         currentPath += "\\" + elems.at(i);
     }
 

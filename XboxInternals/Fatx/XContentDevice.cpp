@@ -52,17 +52,17 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
     std::vector<Partition*> partitions = drive->GetPartitions();
     for (int i = 0; i < partitions.size(); i++)
     {
-        if (partitions.at(i)->name == "Content");
+        if (partitions.at(i)->name == "Content")
         {
             content = partitions.at(i);
             break;
         }
     }
 
-    GetFreeMemory(progress, arg);
-
     if (content == NULL)
         return false;
+
+    GetFreeMemory(progress, arg);
 
     FatxFileEntry *fileEntry = drive->GetFileEntry("Drive:\\Content\\Content\\");
     if (fileEntry == NULL)
@@ -237,6 +237,51 @@ void XContentDevice::CopyFileToLocalDisk(std::string outPath, std::string inPath
     io.SaveFile(outPath, progress, arg);
 }
 
+void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void *, DWORD, DWORD), void *arg)
+{
+    StfsPackage package(outPath);
+
+    std::ostringstream ss;
+    ss << std::hex << std::uppercase << std::setfill('0');
+    for (int i = 0; i < 8; i++)
+        ss << std::setw(2) << (int)package.metaData->profileID[i];
+    std::string profileID = ss.str();
+
+    ss.str("");
+    ss << std::hex << std::uppercase << package.metaData->titleID;
+    std::string titleID = ToUpper(ss.str());
+
+    ss.str("");
+    ss << std::hex << package.metaData->contentType;
+    std::string contentType = ToUpper(ss.str());
+
+    // the content type is padded with zeros at the beginning
+    while (contentType.size() < 8)
+        contentType = "0" + contentType;
+
+    // get the path of the file on the device
+    std::string devicePath = "Drive:\\Content\\Content\\" + profileID + "\\" + titleID + "\\" + contentType + "\\";
+
+    // close the package so we can open the file again to copy it to the device
+    package.Close();
+
+    // if the parent entry doesn't exist, then we need to create it
+    FatxFileEntry *parent = drive->GetFileEntry(devicePath);
+    if (parent == NULL)
+        parent = drive->CreatePath(devicePath);
+
+#ifdef __WIN32
+    // TODO: get file name from path on windows
+#else
+    char *tmp = new char[outPath.size() + 1];
+    memcpy(tmp, outPath.c_str(), outPath.size() + 1);
+    std::string fileName(basename(tmp));
+    delete tmp;
+#endif
+
+    drive->InjectFile(parent, fileName, outPath, progress, arg);
+}
+
 bool XContentDevice::ValidOfflineXuid(std::string xuid)
 {
     // offline XUIDs must be 16 hex characters long and start with E
@@ -318,4 +363,12 @@ void XContentDevice::CleanupSharedFiles(std::vector<XContentDeviceSharedItem> *c
 {
     for (int i = 0; i < category->size(); i++)
         delete category->at(i).package;
+}
+
+std::string XContentDevice::ToUpper(std::string str)
+{
+    std::string toReturn;
+    for (int i = 0; i < str.size(); i++)
+        toReturn += toupper(str.at(i));
+    return toReturn;
 }
