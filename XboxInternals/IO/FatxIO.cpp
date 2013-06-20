@@ -447,7 +447,8 @@ void FatxIO::ReplaceFile(std::string sourcePath, void (*progress)(void *, DWORD,
     delete[] buffer;
 
     // make sure it hits the end
-    progress(arg, WriteRanges.size(), WriteRanges.size());
+    if (progress)
+        progress(arg, WriteRanges.size(), WriteRanges.size());
 }
 
 void FatxIO::WriteClusterChain(Partition *part, DWORD startingCluster, std::vector<DWORD> clusterChain)
