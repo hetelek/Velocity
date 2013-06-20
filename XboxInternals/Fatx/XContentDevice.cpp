@@ -120,7 +120,7 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
                 profile.titles.push_back(title);
         }
 
-        if (profile.titles.size() != 0)
+        if (profile.titles.size() != 0 || profile.package != NULL)
             profiles->push_back(profile);
     }
 
