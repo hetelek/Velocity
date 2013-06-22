@@ -184,18 +184,18 @@ void DeviceContentViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item,
 void DeviceContentViewer::showContextMenu(const QPoint &pos)
 {
     // make sure that all the items the user has selected can be extracted
+    bool canExtract = true;
     for (int i = 0; i < ui->treeWidget->selectedItems().size(); i++)
         if (ui->treeWidget->selectedItems().at(i)->data(1, Qt::UserRole).toString() == "")
-            return;
-
-    // if the user doesn't have any items selected, then we can't extract anything
-    if (ui->treeWidget->selectedItems().size() == 0)
-        return;
+            canExtract = false;
 
     QPoint globalPos = ui->treeWidget->mapToGlobal(pos);
     QMenu contextMenu;
 
-    contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
+    // if the user doesn't have any items selected, then we can't extract anything
+    if (ui->treeWidget->selectedItems().size() != 0 && canExtract)
+        contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
+
     contextMenu.addAction(QPixmap(":/Images/add.png"), "Copy File(s) Here");
 
     QAction *selectedItem = contextMenu.exec(globalPos);
