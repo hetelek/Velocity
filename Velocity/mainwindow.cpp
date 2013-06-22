@@ -466,7 +466,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 
                     break;
                 }
-                case 0x58444246:    // Xdbf
+                case 'XDBF':
                 {
                     GpdBase *gpd = new GpdBase(fileName);
                     ui->statusBar->showMessage("Gpd parsed successfully", 3000);
@@ -478,7 +478,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 
                     break;
                 }
-                case 0x53545242:    // STRB
+                case 'STRB':
                 {
                     AvatarAsset *asset = new AvatarAsset(fileName);
 
@@ -491,7 +491,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                     break;
                 }
 
-                case 0x59544752:    // Ytgr
+                case 'YTGR':
                 {
                     Ytgr *ytgr = new Ytgr(fileName);
 
