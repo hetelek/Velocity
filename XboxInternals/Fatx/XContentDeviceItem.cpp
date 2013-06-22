@@ -37,11 +37,18 @@ BYTE *XContentDeviceItem::GetThumbnail()
 DWORD XContentDeviceItem::GetThumbnailSize()
 {
     if (package == NULL)
-        return NULL;
+        return 0;
     return package->metaData->thumbnailImageSize;
 }
 
 std::string XContentDeviceItem::GetRawName()
 {
     return rawName;
+}
+
+BYTE *XContentDeviceItem::GetProfileID()
+{
+    if (package == NULL)
+        return NULL;
+    return package->metaData->profileID;
 }

@@ -16,6 +16,7 @@ public:
     BYTE* GetThumbnail();
     DWORD GetThumbnailSize();
     DWORD GetTitleID();
+    BYTE* GetProfileID();
 
     vector<XContentDeviceItem> titleSaves;
 

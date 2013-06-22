@@ -16,6 +16,8 @@ public:
     XContentDeviceProfile(std::string pathOnDevice, std::string rawName, StfsPackage *profile);
 
     std::vector<XContentDeviceTitle> titles;
+
+    BYTE* GetProfileID();
 };
 
 #endif // XCONTENTDEVICEPROFILE_H

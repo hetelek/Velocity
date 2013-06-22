@@ -18,6 +18,7 @@ public:
     virtual BYTE* GetThumbnail();
     virtual DWORD GetThumbnailSize();
     virtual std::string GetRawName();
+    virtual BYTE* GetProfileID();
 
 private:
     std::string pathOnDevice;

@@ -33,3 +33,10 @@ DWORD XContentDeviceTitle::GetTitleID()
         return 0;
     return titleSaves.at(0).package->metaData->titleID;
 }
+
+BYTE *XContentDeviceTitle::GetProfileID()
+{
+    if (titleSaves.size() == 0)
+        return NULL;
+    return titleSaves.at(0).package->metaData->profileID;
+}
