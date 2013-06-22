@@ -77,7 +77,7 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
         FatxFileEntry profileFolderEntry = fileEntry->cachedFiles.at(i);
 
         // all profile folders are named the profile's offline XUID
-        if ((profileFolderEntry.fileAttributes & FatxDirectory) == 0 || !ValidOfflineXuid(profileFolderEntry.name))
+        if ((profileFolderEntry.fileAttributes & FatxDirectory) == 0 || !ValidOfflineXuid(profileFolderEntry.name) || profileFolderEntry.nameLen == 0xE5)
             continue;
 
         // check for a profile file
@@ -104,7 +104,7 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
         {
             // verify that the entry is a valid title folder, should be named with title ID
             FatxFileEntry titleFolder = profileFolderEntry.cachedFiles.at(x);
-            if ((titleFolder.fileAttributes & FatxDirectory) == 0 || !ValidTitleID(titleFolder.name) || titleFolder.name == "FFFE07D1")
+            if ((titleFolder.fileAttributes & FatxDirectory) == 0 || !ValidTitleID(titleFolder.name) || titleFolder.name == "FFFE07D1" || titleFolder.nameLen == 0xE5)
                 continue;
 
             XContentDeviceTitle title(titleFolder.path + "\\" + titleFolder.name, titleFolder.name);
@@ -135,7 +135,7 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
     {
         // verify that the entry is a valid title folder, should be named with title ID
         FatxFileEntry titleFolder = sharedItemsFolder->cachedFiles.at(i);
-        if ((titleFolder.fileAttributes & FatxDirectory) == 0 || !ValidTitleID(titleFolder.name))
+        if ((titleFolder.fileAttributes & FatxDirectory) == 0 || !ValidTitleID(titleFolder.name) || titleFolder.nameLen == 0xE5)
             continue;
 
         // get all the content items in this folder
@@ -280,6 +280,122 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
 #endif
 
     drive->InjectFile(parent, fileName, outPath, progress, arg);
+
+    // open the package on the device
+    FatxFileEntry *fileEntry = drive->GetFileEntry(devicePath + fileName);
+    StfsPackage *packageOnDevice = new StfsPackage(new FatxIO(drive->GetFatxIO(fileEntry)), StfsPackageDeleteIO);
+
+    BYTE sharedProfileID[8] = { 0 };
+
+    if (packageOnDevice->metaData->contentType == Profile)
+    {
+        // if there are already saves on this device under this profile, then we need to put it in the correct spot
+        for (int i = 0; i < profiles->size(); i++)
+        {
+            if (memcmp(profiles->at(i).GetProfileID(), packageOnDevice->metaData->profileID, 8) == 0)
+            {
+                profiles->at(i).package = packageOnDevice;
+                return;
+            }
+        }
+
+        // if the profile is entirely new, then just add it to the end
+        XContentDeviceProfile profile(devicePath + fileName, fileName, packageOnDevice);
+        profiles->push_back(profile);
+    }
+    else if (memcmp(packageOnDevice->metaData->profileID, sharedProfileID, 8) != 0)
+    {
+        XContentDeviceItem item(devicePath, fileName, packageOnDevice);
+
+        // check to see if the owner of this save's profile is already on the device
+        for (int i = 0; i < profiles->size(); i++)
+        {
+            // I'm not sure why I have to do it this way, but if I don't,
+            // I get a segmentation fault on the call to GetProfileID()
+            XContentDeviceProfile prof = profiles->at(i);
+            BYTE *tempID = prof.GetProfileID();
+
+            if (memcmp(tempID, packageOnDevice->metaData->profileID, 8) == 0)
+            {
+                // check and see if this profile already has content under this title
+                for (int x = 0; x < profiles->at(i).titles.size(); x++)
+                {
+                    XContentDeviceTitle *titleP = &profiles->at(i).titles.at(x);
+                    // if the title already exists, then just add this save to the title's list of content
+                    if (titleP->GetTitleID() == packageOnDevice->metaData->titleID)
+                    {
+                        titleP->titleSaves.push_back(item);
+                        return;
+                    }
+                }
+
+                // if the title isn't on the profile, then we need to create another title
+                XContentDeviceTitle title("Drive:\\Content\\Content\\" + profileID + "\\" + titleID + "\\", titleID);
+                title.titleSaves.push_back(item);
+                profiles->at(i).titles.push_back(title);
+
+                return;
+            }
+        }
+
+        // if the profile doesn't exist, then we need to create another one
+        XContentDeviceProfile profile("Drive:\\Content\\Content\\" + profileID + "\\", profileID, NULL);
+        XContentDeviceTitle title("Drive:\\Content\\Content\\" + profileID + "\\" + titleID + "\\", titleID);
+        title.titleSaves.push_back(item);
+        profile.titles.push_back(title);
+
+        // add the new profile to the device
+        profiles->push_back(profile);
+    }
+    // it must be a shared item
+    else
+    {
+        XContentDeviceSharedItem item(devicePath, fileName, packageOnDevice);
+
+        // put the shared item in the correct category
+        switch (item.package->metaData->contentType)
+        {
+            case ArcadeGame:
+            case CommunityGame:
+            case GameOnDemand:
+            case GamerTitle:
+            case InstalledGame:
+            case XboxOriginalGame:
+            case Xbox360Title:
+                games->push_back(item);
+                break;
+            case MarketPlaceContent:
+            case StorageDownload:
+            case XboxDownload:
+                dlc->push_back(item);
+                break;
+            case GameDemo:
+                demos->push_back(item);
+                break;
+            case GameTrailer:
+            case GameVideo:
+            case Movie:
+            case MusicVideo:
+            case PodcastVideo:
+            case Video:
+            case ViralVideo:
+                videos->push_back(item);
+                break;
+            case Theme:
+                themes->push_back(item);
+                break;
+            case GamerPicture:
+                gamerPictures->push_back(item);
+                break;
+            case AvatarAssetPack:
+            case AvatarItem:
+                avatarItems->push_back(item);
+                break;
+            default:
+                systemItems->push_back(item);
+                break;
+        }
+    }
 }
 
 bool XContentDevice::ValidOfflineXuid(std::string xuid)
@@ -319,7 +435,7 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
         // verify that the entry is a folder and named with the content type as a string in hex,
         // so for savegames the folder would be named 00000001
         FatxFileEntry contentTypeFolder = titleFolder.cachedFiles.at(y);
-        if ((contentTypeFolder.fileAttributes & FatxDirectory) == 0 || !ValidTitleID(contentTypeFolder.name))
+        if ((contentTypeFolder.fileAttributes & FatxDirectory) == 0 || !ValidTitleID(contentTypeFolder.name) || contentTypeFolder.nameLen == 0xE5)
             continue;
 
         // load all of the content items in this directory
@@ -330,7 +446,7 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
         {
             // we're looking for STFS packages, so make sure the entry isn't another directory
             FatxFileEntry contentPackage = contentTypeFolder.cachedFiles.at(z);
-            if (contentPackage.fileAttributes & FatxDirectory)
+            if (contentPackage.fileAttributes & FatxDirectory || contentPackage.nameLen == 0xE5)
                 continue;
 
             // open an IO on this file, should be STFS package

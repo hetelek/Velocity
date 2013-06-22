@@ -46,6 +46,8 @@ private:
     StfsPackage *currentPackage;
 
     void LoadSharedItemCategory(QString category, std::vector<XContentDeviceSharedItem> *items, QTreeWidgetItem *parent, QString iconPath);
+    void LoadDevicesp();
+    void ClearSidePanel();
 };
 
 #endif // DEVICECONTENTVIEWER_H

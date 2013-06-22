@@ -28,6 +28,43 @@ void DeviceContentViewer::LoadDevices()
         if (!device->LoadDevice())
             continue;
 
+        devices.push_back(device);
+    }
+
+    LoadDevicesp();
+}
+
+void DeviceContentViewer::LoadSharedItemCategory(QString category, std::vector<XContentDeviceSharedItem> *items, QTreeWidgetItem *parent, QString iconPath)
+{
+    QTreeWidgetItem *categoryItem = new QTreeWidgetItem(parent);
+    categoryItem->setText(0, category);
+    categoryItem->setIcon(0, QIcon(QPixmap(iconPath)));
+
+    // load all the category's items
+    for (int i = 0; i < items->size(); i++)
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem(categoryItem);
+        XContentDeviceItem content = items->at(i);
+
+        item->setText(0, QString::fromStdWString(content.GetName()));
+
+        item->setData(0, Qt::UserRole, QVariant::fromValue(content.package));
+        item->setData(1, Qt::UserRole, QVariant(QString::fromStdString(content.GetPathOnDevice())));
+        item->setData(2, Qt::UserRole, QVariant(QString::fromStdString(content.GetRawName())));
+
+        // set the icon to the STFS package's thumbnail
+        QByteArray imageBuff((char*)content.GetThumbnail(), content.GetThumbnailSize());
+        item->setIcon(0, QIcon(QPixmap::fromImage(QImage::fromData(imageBuff))));
+    }
+}
+
+void DeviceContentViewer::LoadDevicesp()
+{
+    ClearSidePanel();
+    for (int i = 0; i < devices.size(); i++)
+    {
+        XContentDevice *device = devices.at(i);
+
         QTreeWidgetItem *deviceItem = new QTreeWidgetItem(ui->treeWidget);
         deviceItem->setText(0, QString::fromStdWString(device->GetName()));
 
@@ -105,33 +142,23 @@ void DeviceContentViewer::LoadDevices()
         LoadSharedItemCategory("Gamer Pictures", device->gamerPictures, sharedItemFolder, ":/Images/gamerpicture.png");
         LoadSharedItemCategory("Avatar Items", device->avatarItems, sharedItemFolder, ":/Images/profile.png");
         LoadSharedItemCategory("System Items", device->systemItems, sharedItemFolder, ":/Images/preferences.png");
-
-        devices.push_back(device);
     }
 }
 
-void DeviceContentViewer::LoadSharedItemCategory(QString category, std::vector<XContentDeviceSharedItem> *items, QTreeWidgetItem *parent, QString iconPath)
+void DeviceContentViewer::ClearSidePanel()
 {
-    QTreeWidgetItem *categoryItem = new QTreeWidgetItem(parent);
-    categoryItem->setText(0, category);
-    categoryItem->setIcon(0, QIcon(QPixmap(iconPath)));
+    ui->imgTumbnail->setPixmap(QPixmap(":/Images/watermark.png"));
+    ui->imgTitleThumbnail->setPixmap(QPixmap(":/Images/watermark.png"));
 
-    // load all the category's items
-    for (int i = 0; i < items->size(); i++)
-    {
-        QTreeWidgetItem *item = new QTreeWidgetItem(categoryItem);
-        XContentDeviceItem content = items->at(i);
+    ui->lblRawName->setText("...");
+    ui->lblTitleID->setText("...");
+    ui->lblTitleName->setText("...");
+    ui->lblPackageType->setText("...");
 
-        item->setText(0, QString::fromStdWString(content.GetName()));
+    ui->btnOpenIn->setEnabled(false);
+    ui->btnViewPackage->setEnabled(false);
 
-        item->setData(0, Qt::UserRole, QVariant::fromValue(content.package));
-        item->setData(1, Qt::UserRole, QVariant(QString::fromStdString(content.GetPathOnDevice())));
-        item->setData(2, Qt::UserRole, QVariant(QString::fromStdString(content.GetRawName())));
-
-        // set the icon to the STFS package's thumbnail
-        QByteArray imageBuff((char*)content.GetThumbnail(), content.GetThumbnailSize());
-        item->setIcon(0, QIcon(QPixmap::fromImage(QImage::fromData(imageBuff))));
-    }
+    currentPackage = NULL;
 }
 
 void DeviceContentViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
@@ -178,6 +205,8 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
     if (selectedItem->text() == "Copy Selected to Local Disk")
     {
         QString saveDir = QFileDialog::getExistingDirectory(this, "Choose a place to extract the files to...", QtHelpers::DesktopLocation());
+        if (saveDir == "")
+            return;
 
         QList<void*> filesToExtract;
         for (int i = 0; i < ui->treeWidget->selectedItems().size(); i++)
@@ -197,38 +226,37 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
     }
     else if (selectedItem->text() == "Copy File(s) Here")
     {
-        QString fileName = QFileDialog::getOpenFileName(this, "", QtHelpers::DesktopLocation());
-        if (fileName == "")
+        QStringList files = QFileDialog::getOpenFileNames(this, "", QtHelpers::DesktopLocation());
+        if (files.size() == 0)
             return;
 
-        try
-        {
-        devices.at(0)->CopyFileToDevice(fileName.toStdString());
-        }
-        catch (std::string error)
-        {
-            QMessageBox::critical(this, "Error", QString::fromStdString(error));
-        }
+        QList<void*> filesToInject;
+        for (int i = 0; i < files.size(); i++)
+            filesToInject.push_back(new std::string(files.at(i).toStdString()));
+
+        MultiProgressDialog *dialog = new MultiProgressDialog(OpInject, FileSystemFriendlyFATX, devices.at(0), "", filesToInject, this);
+        dialog->setModal(true);
+        dialog->show();
+        dialog->start();
+
+        // delete all of the allocated strings
+        for (int i = 0; i < filesToInject.size(); i++)
+            delete (std::string*)filesToInject.at(i);
+
+        ui->treeWidget->clear();
+        LoadDevicesp();
     }
 }
 
 void DeviceContentViewer::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
+    if (current == NULL)
+        return;
+
     StfsPackage *package = current->data(0, Qt::UserRole).value<StfsPackage*>();
     if (package == NULL)
     {
-        ui->imgTumbnail->setPixmap(QPixmap(":/Images/watermark.png"));
-        ui->imgTitleThumbnail->setPixmap(QPixmap(":/Images/watermark.png"));
-
-        ui->lblRawName->setText("...");
-        ui->lblTitleID->setText("...");
-        ui->lblTitleName->setText("...");
-        ui->lblPackageType->setText("...");
-
-        ui->btnOpenIn->setEnabled(false);
-        ui->btnViewPackage->setEnabled(false);
-
-        currentPackage = NULL;
+        ClearSidePanel();
         return;
     }
 

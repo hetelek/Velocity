@@ -274,6 +274,30 @@ void MultiProgressDialog::operateOnNextFile()
                     prevProgress = 0;
                 }
             }
+            else if (op == OpInject)
+            {
+                try
+                {
+                    for (int i = 0; i < internalFiles.size(); i++)
+                    {
+                        // update groupbox text
+                        ui->groupBox_2->setTitle("Overall Progress - " + QString::number(i + 1) + " of " + QString::number(internalFiles.size()));
+
+                        std::string *file = reinterpret_cast<std::string*>(internalFiles.at(i));
+
+                        QFileInfo fileInfo(QString::fromStdString(*file));
+                        setWindowTitle("Copying " + fileInfo.baseName());
+
+                        // put the file on the device
+                        XContentDevice *drive = reinterpret_cast<XContentDevice*>(device);
+                        drive->CopyFileToDevice(*file, updateProgress, this);
+                    }
+                }
+                catch (string error)
+                {
+                    QMessageBox::critical(this, "", "An error occurred while copying files to the device.\n\n" + QString::fromStdString(error));
+                }
+            }
 
             close();
             return;
