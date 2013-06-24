@@ -159,6 +159,7 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
                 case InstalledGame:
                 case XboxOriginalGame:
                 case Xbox360Title:
+                case IndieGame:
                     games->push_back(item);
                     break;
                 case MarketPlaceContent:
