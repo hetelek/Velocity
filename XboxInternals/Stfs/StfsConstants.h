@@ -87,7 +87,7 @@ enum ContentType
 	XboxOriginalGame = 0x5000,
 	XboxSavedGame = 0x60000,
 	Xbox360Title = 0x1000,
-	XNA = 0xE0000
+	IndieGame = 0xE0000
 };
 
 enum BlockStatusLevelZero

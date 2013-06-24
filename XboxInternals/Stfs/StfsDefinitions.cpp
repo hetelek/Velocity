@@ -278,6 +278,8 @@ XBOXINTERNALSSHARED_EXPORT string ContentTypeToString(ContentType type)
             return string("Game Trailer");
         case GameVideo:
             return string("Game Video");
+        case IndieGame:
+            return string("Indie Game");
         case InstalledGame:
             return string("Installed Game");
         case Installer:
@@ -316,8 +318,6 @@ XBOXINTERNALSSHARED_EXPORT string ContentTypeToString(ContentType type)
             return string("Xbox Saved Game");
         case Xbox360Title:
             return string("Xbox360 Title");
-        case XNA:
-            return string("XNA");
         default:
             throw string("STFS: Invalid 'ContentType' value.\n");
     }
