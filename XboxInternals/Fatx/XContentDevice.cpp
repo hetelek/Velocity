@@ -62,7 +62,7 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
     if (content == NULL)
         return false;
 
-    GetFreeMemory(progress, arg);
+    GetFreeMemory(progress, arg, false);
 
     FatxFileEntry *fileEntry = drive->GetFileEntry("Drive:\\Content\\Content\\");
     if (fileEntry == NULL)
@@ -118,6 +118,10 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
             // there's no point in adding the title if it doesn't contain any content
             if (title.titleSaves.size() != 0)
                 profile.titles.push_back(title);
+
+            // update progress if needed
+            if (progress)
+                progress(arg, false);
         }
 
         if (profile.titles.size() != 0 || profile.package != NULL)
@@ -146,6 +150,10 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
         // put the content items in the correct category
         for (int x = 0; x < items.size(); x++)
         {
+            // update progress if needed
+            if (progress)
+                progress(arg, false);
+
             XContentDeviceSharedItem item(items.at(x).GetPathOnDevice(), items.at(x).GetRawName(), items.at(x).package);
             if (item.package == NULL)
                 continue;
@@ -196,6 +204,10 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
         }
     }
 
+    // update progress if needed
+    if (progress)
+        progress(arg, true);
+
     return true;
 }
 
@@ -204,9 +216,9 @@ FatxDriveType XContentDevice::GetDeviceType()
     return drive->GetFatxDriveType();
 }
 
-UINT64 XContentDevice::GetFreeMemory(void(*progress)(void*, bool), void *arg)
+UINT64 XContentDevice::GetFreeMemory(void(*progress)(void*, bool), void *arg, bool finish)
 {
-    drive->GetFreeMemory(content, progress, arg);
+    drive->GetFreeMemory(content, progress, arg, finish);
     return content->freeMemory;
 }
 

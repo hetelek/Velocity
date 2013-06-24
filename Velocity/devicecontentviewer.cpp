@@ -8,6 +8,13 @@ DeviceContentViewer::DeviceContentViewer(QStatusBar *statusBar, QWidget *parent)
 
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
+
+    progressBar = new QProgressBar(this);
+    progressBar->setMaximumHeight(statusBar->height() - 5);
+    progressBar->setMinimumWidth(statusBar->width());
+    progressBar->setTextVisible(false);
+    progressBar->setVisible(false);
+    statusBar->addWidget(progressBar);
 }
 
 DeviceContentViewer::~DeviceContentViewer()
@@ -25,7 +32,7 @@ void DeviceContentViewer::LoadDevices()
     for (int i = 0; i < drives.size(); i++)
     {
         XContentDevice *device = new XContentDevice(drives.at(i));
-        if (!device->LoadDevice())
+        if (!device->LoadDevice(DisplayProgress, this))
             continue;
 
         devices.push_back(device);
@@ -313,4 +320,21 @@ void DeviceContentViewer::on_btnViewPackage_clicked()
 
     PackageViewer viewer(statusBar, currentPackage, QList<QAction*>(), QList<QAction*>(), this, false);
     viewer.exec();
+}
+
+void DisplayProgress(void *arg, bool finished)
+{
+    DeviceContentViewer *contentViewer = static_cast<DeviceContentViewer*>(arg);
+    if (!finished)
+    {
+        contentViewer->progressBar->setVisible(true);
+        contentViewer->progressBar->setMinimum(0);
+        contentViewer->progressBar->setMaximum(0);
+    }
+    else
+    {
+        contentViewer->progressBar->setVisible(false);
+        contentViewer->ui->treeWidget->setEnabled(true);
+    }
+    QApplication::processEvents();
 }

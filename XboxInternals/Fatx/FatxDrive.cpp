@@ -944,7 +944,7 @@ void FatxDrive::loadFatxDrive()
     }
 }
 
-UINT64 FatxDrive::GetFreeMemory(Partition *part, void(*progress)(void*, bool), void *arg)
+UINT64 FatxDrive::GetFreeMemory(Partition *part, void(*progress)(void*, bool), void *arg, bool finish)
 {
     if (part->freeMemory != 0)
         return (UINT64)part->freeClusters.size() * (UINT64)part->clusterSize;
@@ -1005,7 +1005,7 @@ UINT64 FatxDrive::GetFreeMemory(Partition *part, void(*progress)(void*, bool), v
     delete[] buffer;
 
     if (progress)
-        progress(arg, true);
+        progress(arg, finish);
 
     return part->freeMemory;
 }
