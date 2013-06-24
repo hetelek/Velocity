@@ -8,6 +8,8 @@
 
 #ifndef __WIN32
     #include <libgen.h>
+#else
+    #include <Shlwapi.h>
 #endif
 
 #include "Stfs/StfsPackage.h"

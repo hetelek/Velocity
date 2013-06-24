@@ -270,14 +270,15 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
     if (parent == NULL)
         parent = drive->CreatePath(devicePath);
 
-#ifdef __WIN32
-    // TODO: get file name from path on windows
-#else
     char *tmp = new char[outPath.size() + 1];
     memcpy(tmp, outPath.c_str(), outPath.size() + 1);
+#ifdef __WIN32
+    PathStripPathA(tmp);
+    std::string fileName(tmp);
+#else
     std::string fileName(basename(tmp));
-    delete tmp;
 #endif
+    delete tmp;
 
     drive->InjectFile(parent, fileName, outPath, progress, arg);
 
