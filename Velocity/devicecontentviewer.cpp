@@ -53,8 +53,15 @@ void DeviceContentViewer::LoadSharedItemCategory(QString category, std::vector<X
         item->setData(2, Qt::UserRole, QVariant(QString::fromStdString(content.GetRawName())));
 
         // set the icon to the STFS package's thumbnail
-        QByteArray imageBuff((char*)content.GetThumbnail(), content.GetThumbnailSize());
-        item->setIcon(0, QIcon(QPixmap::fromImage(QImage::fromData(imageBuff))));
+        if (content.GetThumbnail() != NULL)
+        {
+            QByteArray imageBuff((char*)content.GetThumbnail(), content.GetThumbnailSize());
+            item->setIcon(0, QIcon(QPixmap::fromImage(QImage::fromData(imageBuff))));
+        }
+        else
+        {
+            item->setIcon(0, QIcon(":/Images/watermark.png"));
+        }
     }
 }
 
@@ -89,16 +96,13 @@ void DeviceContentViewer::LoadDevicesp()
             profileItem->setData(1, Qt::UserRole, QVariant(QString::fromStdString(profile.GetPathOnDevice())));
             profileItem->setData(2, Qt::UserRole, QVariant(QString::fromStdString(profile.GetRawName())));
 
-            // set the icon to the gamerpicture
-            if (profile.GetThumbnail() != NULL)
-            {
-                QByteArray imageBuff((char*)profile.GetThumbnail(), profile.GetThumbnailSize());
-                profileItem->setIcon(0, QIcon(QPixmap::fromImage(QImage::fromData(imageBuff))));
-            }
+            // set the icon to the gamerpicture as long as it isn't null
+            QByteArray imageBuff((char*)profile.GetThumbnail(), profile.GetThumbnailSize());
+            QPixmap gamerThumb = QPixmap::fromImage(QImage::fromData(imageBuff));
+            if (profile.GetThumbnail() != NULL && !gamerThumb.isNull())
+                profileItem->setIcon(0, QIcon(gamerThumb));
             else
-            {
                 profileItem->setIcon(0, QIcon(QPixmap(":/Images/HiddenAchievement.png")));
-            }
 
             // load all the titles for this profile
             for (int y = 0; y < profile.titles.size(); y++)
@@ -107,8 +111,14 @@ void DeviceContentViewer::LoadDevicesp()
                 XContentDeviceTitle title = profile.titles.at(y);
 
                 titleItem->setText(0, QString::fromStdWString(title.GetName()));
+
+                // set the title thumbnail as long as it isn't null, if it is then use a default image
                 QByteArray imageBuff((char*)title.GetThumbnail(), title.GetThumbnailSize());
-                titleItem->setIcon(0, QIcon(QPixmap::fromImage(QImage::fromData(imageBuff))));
+                QPixmap titleThumb = QPixmap::fromImage(QImage::fromData(imageBuff));
+                if (title.GetThumbnail() != NULL && !titleThumb.isNull())
+                    titleItem->setIcon(0, QIcon(titleThumb));
+                else
+                    titleItem->setIcon(0, QIcon(QPixmap(":/Images/watermark.png")));
 
                 // load all the saves for this title
                 for (int z = 0; z < title.titleSaves.size(); z++)
@@ -122,9 +132,15 @@ void DeviceContentViewer::LoadDevicesp()
 
                     saveItem->setText(0, QString::fromStdWString(save.GetName()));
 
-                    // set the icon to the STFS package's thumbnail
+                    // set the icon to the STFS package's thumbnail as long as the image isn't null
                     QByteArray imageBuff((char*)save.GetThumbnail(), save.GetThumbnailSize());
-                    saveItem->setIcon(0, QIcon(QPixmap::fromImage(QImage::fromData(imageBuff))));
+                    QPixmap saveThumb = QPixmap::fromImage(QImage::fromData(imageBuff));
+                    if (save.GetThumbnail() != NULL && !saveThumb.isNull())
+                        saveItem->setIcon(0, QIcon(saveThumb));
+                    else
+                    {
+                        profileItem->setIcon(0, QIcon(QPixmap(":/Images/watermark.png")));
+                    }
                 }
             }
         }
@@ -260,11 +276,22 @@ void DeviceContentViewer::on_treeWidget_currentItemChanged(QTreeWidgetItem *curr
         return;
     }
 
+    // load the thumbnail image, if it's null then load a default image
     QByteArray thumbnailBuff((char*)package->metaData->thumbnailImage, package->metaData->thumbnailImageSize);
-    ui->imgTumbnail->setPixmap(QPixmap::fromImage(QImage::fromData(thumbnailBuff)));
+    QPixmap thumbnailImage = QPixmap::fromImage(QImage::fromData(thumbnailBuff));
+    if (package->metaData->thumbnailImage != NULL && !thumbnailImage.isNull())
+        ui->imgTumbnail->setPixmap(thumbnailImage);
+    else
+        ui->imgTumbnail->setPixmap(QPixmap(":/Images/watermark.png"));
 
+
+    // load the title thumbnail image, if it's null then load a default image
     QByteArray titleThumbnailBuff((char*)package->metaData->titleThumbnailImage, package->metaData->titleThumbnailImageSize);
-    ui->imgTitleThumbnail->setPixmap(QPixmap::fromImage(QImage::fromData(titleThumbnailBuff)));
+    QPixmap titleThumbnailImage = QPixmap::fromImage(QImage::fromData(titleThumbnailBuff));
+    if (package->metaData->titleThumbnailImage != NULL && !titleThumbnailImage.isNull())
+        ui->imgTitleThumbnail->setPixmap(titleThumbnailImage);
+    else
+        ui->imgTitleThumbnail->setPixmap(QPixmap(":/Images/watermark.png"));
 
     ui->lblRawName->setText(current->data(2, Qt::UserRole).toString());
     ui->lblTitleID->setText(QString::number(package->metaData->titleID, 16).toUpper());
