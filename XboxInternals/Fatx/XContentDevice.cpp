@@ -113,7 +113,7 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
             drive->GetChildFileEntries(&titleFolder);
 
             // retrive all of the STFS packages in that folder
-            GetAllContentItems(titleFolder, title.titleSaves);
+            GetAllContentItems(titleFolder, title.titleSaves, progress, arg);
 
             // there's no point in adding the title if it doesn't contain any content
             if (title.titleSaves.size() != 0)
@@ -145,7 +145,7 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
         // get all the content items in this folder
         std::vector<XContentDeviceItem> items;
         drive->GetChildFileEntries(&titleFolder);
-        GetAllContentItems(titleFolder, items);
+        GetAllContentItems(titleFolder, items, progress, arg);
 
         // put the content items in the correct category
         for (int x = 0; x < items.size(); x++)
@@ -441,7 +441,7 @@ bool XContentDevice::ValidTitleID(std::string id)
     return true;
 }
 
-void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XContentDeviceItem> &itemsFound)
+void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XContentDeviceItem> &itemsFound, void(*progress)(void *, bool), void *arg)
 {
     // iterate through all of the content types for this title
     for (int y = 0; y < titleFolder.cachedFiles.size(); y++)
@@ -471,6 +471,9 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
             if (fileMagic != CON && fileMagic != LIVE && fileMagic != PIRS)
                 continue;
 
+            if (progress)
+                progress(arg, false);
+
             // this might not be a valid STFS package, so we have to do try {} catch {}
             StfsPackage *content;
             try
@@ -485,6 +488,9 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
             XContentDeviceItem item(contentPackage.path + contentPackage.name, contentPackage.name, content);
 
             itemsFound.push_back(item);
+
+            if (progress)
+                progress(arg, false);
         }
     }
 }

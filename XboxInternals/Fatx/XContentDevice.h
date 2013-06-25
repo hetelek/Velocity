@@ -52,7 +52,7 @@ private:
 
     bool ValidOfflineXuid(std::string xuid);
     bool ValidTitleID(std::string id);
-    void GetAllContentItems(FatxFileEntry &titleFolder, vector<XContentDeviceItem> &itemsFound);
+    void GetAllContentItems(FatxFileEntry &titleFolder, vector<XContentDeviceItem> &itemsFound, void(*progress)(void*, bool) = NULL, void *arg = NULL);
     void CleanupSharedFiles(std::vector<XContentDeviceSharedItem> *category);
     std::string ToUpper(std::string str);
 };
