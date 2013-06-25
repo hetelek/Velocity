@@ -88,9 +88,17 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
         std::string rawName = "";
         if (profileEntry != NULL)
         {
-            FatxIO io = drive->GetFatxIO(profileEntry);
-            profilePackage = new StfsPackage(new FatxIO(io), StfsPackageDeleteIO);
-            rawName = profileEntry->name;
+            try
+            {
+                FatxIO io = drive->GetFatxIO(profileEntry);
+                profilePackage = new StfsPackage(new FatxIO(io), StfsPackageDeleteIO);
+                rawName = profileEntry->name;
+            }
+            catch (...)
+            {
+                profilePath = "";
+                profilePackage = NULL;
+            }
         }
         else
         {
