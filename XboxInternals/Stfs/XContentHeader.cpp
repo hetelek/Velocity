@@ -48,15 +48,15 @@ void XContentHeader::readMetadata()
 
             switch (licenseData[i].type)
             {
-                case 0:
-                case 0xFFFF:
-                case 9:
-                case 3:
-                case 0xF000:
-                case 0xE000:
-                case 0xD000:
-                case 0xC000:
-                case 0xB000:
+                case Unused:
+                case Unrestricted:
+                case ConsoleProfileLicense:
+                case WindowsProfileLicense:
+                case ConsoleLicense:
+                case MediaFlags:
+                case KeyVaultPrivileges:
+                case HyperVisorFlags:
+                case UserPrivileges:
                     break;
                 default:
                     except << "XContentHeader: Invalid license type at index " << i << ".\n";
