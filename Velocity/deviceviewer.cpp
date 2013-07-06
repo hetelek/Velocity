@@ -3,8 +3,8 @@
 
 #include <QDebug>
 
-DeviceViewer::DeviceViewer(QStatusBar *statusBar, QWidget *parent) :
-    QDialog(parent), ui(new Ui::DeviceViewer), parentEntry(NULL), statusBar(statusBar), currentDrive(NULL), drivesLoaded(false)
+DeviceViewer::DeviceViewer(QStatusBar *statusBar, QList<QAction *> gpdActions, QList<QAction *> gameActions, QWidget *parent) :
+    QDialog(parent), ui(new Ui::DeviceViewer), parentEntry(NULL), statusBar(statusBar), currentDrive(NULL), drivesLoaded(false), gpdActions(gpdActions), gameActions(gameActions)
 {
     ui->setupUi(this);
 
@@ -436,7 +436,7 @@ void DeviceViewer::on_treeWidget_doubleClicked(const QModelIndex &index)
             FatxIO io = currentDrive->GetFatxIO(currentParent);
             StfsPackage package(&io);
 
-            PackageViewer viewer(statusBar, &package, QList<QAction*>(), QList<QAction*>(), this, false);
+            PackageViewer viewer(statusBar, &package, gpdActions, gameActions, this, false);
             viewer.exec();
 
             package.Close();

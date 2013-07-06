@@ -14,6 +14,7 @@
 #include <QInputDialog>
 #include <QProgressBar>
 #include <QPixmap>
+#include <QAction>
 #include "qthelpers.h"
 
 // forms
@@ -51,7 +52,7 @@ class DeviceViewer : public QDialog
     Q_OBJECT
 
 public:
-    explicit DeviceViewer(QStatusBar *statusBar, QWidget *parent = 0);
+    explicit DeviceViewer(QStatusBar *statusBar, QList<QAction *> gpdActions, QList<QAction *> gameActions, QWidget *parent = 0);
 
     void LoadDrives();
     ~DeviceViewer();
@@ -80,6 +81,7 @@ private:
     FatxDrive *currentDrive;
     FatxFileEntry *parentEntry;
     QList<FatxFileEntry*> directoryChain;
+    QList<QAction *> gpdActions, gameActions;
     QStatusBar *statusBar;
     QProgressBar *progressBar;
     QTreeWidgetItem *currentDriveItem;
