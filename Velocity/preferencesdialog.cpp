@@ -44,7 +44,7 @@ void PreferencesDialog::on_pushButton_4_clicked()
 {
     QString directory = QFileDialog::getExistingDirectory(this, "Choose the plugin path", QtHelpers::ExecutingDirectory());
 
-    if (!directory.isNull())
+    if (directory.isNull())
         return;
 
     QDir dir(QtHelpers::ExecutingDirectory());
