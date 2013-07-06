@@ -314,6 +314,9 @@ void MainWindow::PluginFinished()
 
 void MainWindow::LoadAllPlugins()
 {
+    ui->menuProfile_Modders->clear();
+    ui->menuGame_Modders->clear();
+
     QDir path(QtHelpers::ExecutingDirectory());
     QDir pluginPath(path.absoluteFilePath(settings->value("PluginPath").toString()));
     qDebug() << "Plugin Directory: " << pluginPath.absolutePath();
@@ -708,6 +711,8 @@ void MainWindow::on_actionPreferences_triggered()
 {
     PreferencesDialog dialog(this);
     dialog.exec();
+
+    LoadAllPlugins();
 }
 
 void MainWindow::on_actionFATX_File_Path_triggered()
