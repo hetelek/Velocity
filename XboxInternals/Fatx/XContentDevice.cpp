@@ -60,13 +60,21 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
     }
 
     if (content == NULL)
+    {
+        if(progress)
+            progress(arg, true);
         return false;
+    }
 
     GetFreeMemory(progress, arg, false);
 
     FatxFileEntry *fileEntry = drive->GetFileEntry("Drive:\\Content\\Content\\");
     if (fileEntry == NULL)
+    {
+        if(progress)
+            progress(arg, true);
         return false;
+    }
 
     // load all of the sub dirents in Drive:\Content\Content
     drive->GetChildFileEntries(fileEntry);
@@ -139,7 +147,11 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
     // get the shared items folder
     FatxFileEntry *sharedItemsFolder = drive->GetFileEntry("Drive:\\Content\\Content\\0000000000000000");
     if (sharedItemsFolder == NULL)
+    {
+        if(progress)
+            progress(arg, true);
         return true;
+    }
 
     // check for shared items
     drive->GetChildFileEntries(sharedItemsFolder);
@@ -212,10 +224,8 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
         }
     }
 
-    // update progress if needed
-    if (progress)
+    if(progress)
         progress(arg, true);
-
     return true;
 }
 

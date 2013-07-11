@@ -334,6 +334,7 @@ void DisplayProgress(void *arg, bool finished)
     else
     {
         contentViewer->progressBar->setVisible(false);
+        contentViewer->progressBar->setMaximum(1);
         contentViewer->ui->treeWidget->setEnabled(true);
     }
     QApplication::processEvents();
