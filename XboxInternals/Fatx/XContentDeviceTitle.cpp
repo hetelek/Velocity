@@ -17,7 +17,10 @@ BYTE *XContentDeviceTitle::GetThumbnail()
 {
     if (titleSaves.size() == 0)
         return NULL;
-    return titleSaves.at(0).package->metaData->titleThumbnailImage;
+    else if (titleSaves.at(0).package->metaData->titleThumbnailImage != NULL)
+       return titleSaves.at(0).package->metaData->titleThumbnailImage;
+    else
+        return titleSaves.at(0).package->metaData->thumbnailImage;
 }
 
 DWORD XContentDeviceTitle::GetThumbnailSize()

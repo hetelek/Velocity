@@ -10,6 +10,7 @@
 #include <QStatusBar>
 #include <QList>
 #include <QTreeWidgetItem>
+#include <QProgressBar>
 
 // std
 #include <iostream>
@@ -22,6 +23,8 @@
 namespace Ui {
 class DeviceContentViewer;
 }
+
+void DisplayProgress(void *arg, bool finished);
 
 class DeviceContentViewer : public QDialog
 {
@@ -44,10 +47,13 @@ private:
     QStatusBar *statusBar;
     QList<XContentDevice*> devices;
     StfsPackage *currentPackage;
+    QProgressBar *progressBar;
 
     void LoadSharedItemCategory(QString category, std::vector<XContentDeviceSharedItem> *items, QTreeWidgetItem *parent, QString iconPath);
     void LoadDevicesp();
     void ClearSidePanel();
+
+    friend void DisplayProgress(void *arg, bool finished);
 };
 
 #endif // DEVICECONTENTVIEWER_H

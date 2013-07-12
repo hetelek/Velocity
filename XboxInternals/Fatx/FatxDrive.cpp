@@ -454,6 +454,13 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry, void(*progress)(void*,
                 subtract = false;
             }
 
+            // if the name is invalid, then the entry must be corrupt so we'll skip to the next entry
+            if (!ValidFileName(newEntry.name))
+            {
+                io->SetPosition((io->GetPosition() + 0x3F) & 0xFFFFFFFFFFFFFFC0);
+                continue;
+            }
+
             // seek past the name
             io->SetPosition(io->GetPosition() + (FATX_ENTRY_MAX_NAME_LENGTH - newEntry.name.length()) - subtract);
 
@@ -945,7 +952,7 @@ void FatxDrive::loadFatxDrive()
     }
 }
 
-UINT64 FatxDrive::GetFreeMemory(Partition *part, void(*progress)(void*, bool), void *arg)
+UINT64 FatxDrive::GetFreeMemory(Partition *part, void(*progress)(void*, bool), void *arg, bool finish)
 {
     if (part->freeMemory != 0)
         return (UINT64)part->freeClusters.size() * (UINT64)part->clusterSize;
@@ -1006,7 +1013,7 @@ UINT64 FatxDrive::GetFreeMemory(Partition *part, void(*progress)(void*, bool), v
     delete[] buffer;
 
     if (progress)
-        progress(arg, true);
+        progress(arg, finish);
 
     return part->freeMemory;
 }

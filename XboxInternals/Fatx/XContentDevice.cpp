@@ -60,13 +60,21 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
     }
 
     if (content == NULL)
+    {
+        if(progress)
+            progress(arg, true);
         return false;
+    }
 
-    GetFreeMemory(progress, arg);
+    GetFreeMemory(progress, arg, false);
 
     FatxFileEntry *fileEntry = drive->GetFileEntry("Drive:\\Content\\Content\\");
     if (fileEntry == NULL)
+    {
+        if(progress)
+            progress(arg, true);
         return false;
+    }
 
     // load all of the sub dirents in Drive:\Content\Content
     drive->GetChildFileEntries(fileEntry);
@@ -88,9 +96,17 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
         std::string rawName = "";
         if (profileEntry != NULL)
         {
-            FatxIO io = drive->GetFatxIO(profileEntry);
-            profilePackage = new StfsPackage(new FatxIO(io), StfsPackageDeleteIO);
-            rawName = profileEntry->name;
+            try
+            {
+                FatxIO io = drive->GetFatxIO(profileEntry);
+                profilePackage = new StfsPackage(new FatxIO(io), StfsPackageDeleteIO);
+                rawName = profileEntry->name;
+            }
+            catch (...)
+            {
+                profilePath = "";
+                profilePackage = NULL;
+            }
         }
         else
         {
@@ -113,11 +129,15 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
             drive->GetChildFileEntries(&titleFolder);
 
             // retrive all of the STFS packages in that folder
-            GetAllContentItems(titleFolder, title.titleSaves);
+            GetAllContentItems(titleFolder, title.titleSaves, progress, arg);
 
             // there's no point in adding the title if it doesn't contain any content
             if (title.titleSaves.size() != 0)
                 profile.titles.push_back(title);
+
+            // update progress if needed
+            if (progress)
+                progress(arg, false);
         }
 
         if (profile.titles.size() != 0 || profile.package != NULL)
@@ -127,7 +147,11 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
     // get the shared items folder
     FatxFileEntry *sharedItemsFolder = drive->GetFileEntry("Drive:\\Content\\Content\\0000000000000000");
     if (sharedItemsFolder == NULL)
+    {
+        if(progress)
+            progress(arg, true);
         return true;
+    }
 
     // check for shared items
     drive->GetChildFileEntries(sharedItemsFolder);
@@ -141,11 +165,15 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
         // get all the content items in this folder
         std::vector<XContentDeviceItem> items;
         drive->GetChildFileEntries(&titleFolder);
-        GetAllContentItems(titleFolder, items);
+        GetAllContentItems(titleFolder, items, progress, arg);
 
         // put the content items in the correct category
         for (int x = 0; x < items.size(); x++)
         {
+            // update progress if needed
+            if (progress)
+                progress(arg, false);
+
             XContentDeviceSharedItem item(items.at(x).GetPathOnDevice(), items.at(x).GetRawName(), items.at(x).package);
             if (item.package == NULL)
                 continue;
@@ -159,6 +187,7 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
                 case InstalledGame:
                 case XboxOriginalGame:
                 case Xbox360Title:
+                case IndieGame:
                     games->push_back(item);
                     break;
                 case MarketPlaceContent:
@@ -195,6 +224,8 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
         }
     }
 
+    if(progress)
+        progress(arg, true);
     return true;
 }
 
@@ -203,9 +234,9 @@ FatxDriveType XContentDevice::GetDeviceType()
     return drive->GetFatxDriveType();
 }
 
-UINT64 XContentDevice::GetFreeMemory(void(*progress)(void*, bool), void *arg)
+UINT64 XContentDevice::GetFreeMemory(void(*progress)(void*, bool), void *arg, bool finish)
 {
-    drive->GetFreeMemory(content, progress, arg);
+    drive->GetFreeMemory(content, progress, arg, finish);
     return content->freeMemory;
 }
 
@@ -270,14 +301,15 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
     if (parent == NULL)
         parent = drive->CreatePath(devicePath);
 
-#ifdef __WIN32
-    // TODO: get file name from path on windows
-#else
     char *tmp = new char[outPath.size() + 1];
     memcpy(tmp, outPath.c_str(), outPath.size() + 1);
+#ifdef __WIN32
+    PathStripPathA(tmp);
+    std::string fileName(tmp);
+#else
     std::string fileName(basename(tmp));
-    delete tmp;
 #endif
+    delete tmp;
 
     drive->InjectFile(parent, fileName, outPath, progress, arg);
 
@@ -517,7 +549,7 @@ bool XContentDevice::ValidTitleID(std::string id)
     return true;
 }
 
-void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XContentDeviceItem> &itemsFound)
+void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XContentDeviceItem> &itemsFound, void(*progress)(void *, bool), void *arg)
 {
     // iterate through all of the content types for this title
     for (int y = 0; y < titleFolder.cachedFiles.size(); y++)
@@ -547,6 +579,9 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
             if (fileMagic != CON && fileMagic != LIVE && fileMagic != PIRS)
                 continue;
 
+            if (progress)
+                progress(arg, false);
+
             // this might not be a valid STFS package, so we have to do try {} catch {}
             StfsPackage *content;
             try
@@ -561,6 +596,9 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
             XContentDeviceItem item(contentPackage.path + contentPackage.name, contentPackage.name, content);
 
             itemsFound.push_back(item);
+
+            if (progress)
+                progress(arg, false);
         }
     }
 }

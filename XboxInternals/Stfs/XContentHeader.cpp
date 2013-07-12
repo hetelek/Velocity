@@ -155,8 +155,14 @@ void XContentHeader::readMetadata()
         io->ReadBytes(thumbnailImage, thumbnailImageSize);
         io->SetPosition(0x571A);
 
+        if (thumbnailImageSize == 0 || thumbnailImage[0] == 0)
+            thumbnailImage = NULL;
+
         io->ReadBytes(titleThumbnailImage, titleThumbnailImageSize);
         io->SetPosition(0x971A);
+
+        if (titleThumbnailImageSize == 0 || titleThumbnailImage[0] == 0)
+            thumbnailImage = NULL;
 
         if (((headerSize + 0xFFF) & 0xFFFFF000) - 0x971A < 0x15F4)
             return;

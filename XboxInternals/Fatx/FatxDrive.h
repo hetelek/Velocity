@@ -90,7 +90,7 @@ public:
     void RestoreFromBackup(std::string backupPath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
     // get the amount of free bytes on the device
-    UINT64 GetFreeMemory(Partition *part, void(*progress)(void*, bool) = NULL, void *arg = NULL);
+    UINT64 GetFreeMemory(Partition *part, void(*progress)(void*, bool) = NULL, void *arg = NULL, bool finish = true);
 
     // reload the entire drive, called after restoring
     void ReloadDrive();
