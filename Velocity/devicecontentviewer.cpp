@@ -194,7 +194,10 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
 
     // if the user doesn't have any items selected, then we can't extract anything
     if (ui->treeWidget->selectedItems().size() != 0 && canExtract)
+    {
         contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
+        contextMenu.addAction(QPixmap(":/Images/delete.png"), "Delete Selected Items");
+    }
 
     contextMenu.addAction(QPixmap(":/Images/add.png"), "Copy File(s) Here");
 
@@ -245,6 +248,28 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
 
         ui->treeWidget->clear();
         LoadDevicesp();
+    }
+    else if (selectedItem->text() == "Delete Selected Items")
+    {
+        try
+        {
+            while (ui->treeWidget->selectedItems().size() > 0)
+            {
+                QTreeWidgetItem *selectedItem = ui->treeWidget->selectedItems().at(0);
+
+                StfsPackage *package = selectedItem->data(0, Qt::UserRole).value<StfsPackage*>();
+                std::string path = selectedItem->data(1, Qt::UserRole).toString().toStdString();
+
+                devices.at(0)->DeleteFile(package, path);
+
+                // remove the item from the tree widget
+                delete selectedItem;
+            }
+        }
+        catch (std::string error)
+        {
+            QMessageBox::critical(this, "Error", "An error occurred while deleting files.\n\n" + QString::fromStdString(error));
+        }
     }
 }
 

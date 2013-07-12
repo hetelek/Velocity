@@ -305,7 +305,7 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
     }
     else if (memcmp(packageOnDevice->metaData->profileID, sharedProfileID, 8) != 0)
     {
-        XContentDeviceItem item(devicePath, fileName, packageOnDevice);
+        XContentDeviceItem item(devicePath + fileName, fileName, packageOnDevice);
 
         // check to see if the owner of this save's profile is already on the device
         for (int i = 0; i < profiles->size(); i++)
@@ -350,7 +350,7 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
     // it must be a shared item
     else
     {
-        XContentDeviceSharedItem item(devicePath, fileName, packageOnDevice);
+        XContentDeviceSharedItem item(devicePath + fileName, fileName, packageOnDevice);
 
         // put the shared item in the correct category
         switch (item.package->metaData->contentType)
@@ -396,6 +396,96 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
                 break;
         }
     }
+}
+
+void XContentDevice::DeleteFile(StfsPackage *package, std::string pathOnDevice)
+{
+    // remove the file from the hierarchy
+    BYTE nullID[8] = { 0 };
+
+    // file is from a profile, so it's not shared
+    if ((memcmp(package->metaData->profileID, nullID, 8)) != 0)
+    {
+        for (int i = 0; i < profiles->size(); i++)
+        {
+            if (profiles->at(i).GetProfileID() && memcmp(profiles->at(i).GetProfileID(), package->metaData->profileID, 8) == 0)
+            {
+                for (int x = 0; x < profiles->at(i).titles.size(); x++)
+                {
+                    if (profiles->at(i).titles.at(x).GetTitleID() == package->metaData->titleID)
+                    {
+                        for (int y = 0; y < profiles->at(i).titles.at(x).titleSaves.size(); y++)
+                        {
+                            if (profiles->at(i).titles.at(x).titleSaves.at(y).package == package)
+                            {
+                                profiles->at(i).titles.at(x).titleSaves.erase(profiles->at(i).titles.at(x).titleSaves.begin() + y);
+                                delete package;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // file is shared
+    else
+    {
+        std::vector<XContentDeviceSharedItem> *sharedItemCategory;
+        switch (package->metaData->contentType)
+        {
+            case ArcadeGame:
+            case CommunityGame:
+            case GameOnDemand:
+            case GamerTitle:
+            case InstalledGame:
+            case XboxOriginalGame:
+            case Xbox360Title:
+                sharedItemCategory = games;
+                break;
+            case MarketPlaceContent:
+            case StorageDownload:
+            case XboxDownload:
+                sharedItemCategory = dlc;
+                break;
+            case GameDemo:
+                sharedItemCategory = demos;
+                break;
+            case GameTrailer:
+            case GameVideo:
+            case Movie:
+            case MusicVideo:
+            case PodcastVideo:
+            case Video:
+            case ViralVideo:
+                sharedItemCategory = videos;
+                break;
+            case Theme:
+                sharedItemCategory = themes;
+                break;
+            case GamerPicture:
+                sharedItemCategory = gamerPictures;
+                break;
+            case AvatarAssetPack:
+            case AvatarItem:
+                sharedItemCategory = avatarItems;
+                break;
+            default:
+                sharedItemCategory = systemItems;
+                break;
+        }
+
+        for (int i = 0; i < sharedItemCategory->size(); i++)
+        {
+            if (sharedItemCategory->at(i).package == package)
+            {
+                sharedItemCategory->erase(sharedItemCategory->begin() + i);
+                delete package;
+            }
+        }
+    }
+
+    // actually delete it from the device
+    drive->RemoveFile(drive->GetFileEntry(pathOnDevice));
 }
 
 bool XContentDevice::ValidOfflineXuid(std::string xuid)

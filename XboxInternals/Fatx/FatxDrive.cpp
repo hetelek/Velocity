@@ -228,7 +228,11 @@ FatxFileEntry* FatxDrive::createFileEntry(FatxFileEntry *parent, FatxFileEntry *
             if (parent->cachedFiles.at(i).nameLen != FATX_ENTRY_DELETED)
             {
                 if (errorIfAlreadyExists)
-                    throw std::string("FATX: Entry already exists.\n");
+                {
+                    std::stringstream errorText;
+                    errorText << "FATX: Entry \"" << newEntry->path << newEntry->name << "\" already exists.\n";
+                    throw errorText.str();
+                }
                 else
                     return NULL;
             }
@@ -311,6 +315,10 @@ FatxFileEntry* FatxDrive::CreatePath(std::string folderPath)
 
 void FatxDrive::RemoveFile(FatxFileEntry *entry, void(*progress)(void*), void *arg)
 {
+    // check if the file is already deleted
+    if (entry->nameLen == FATX_ENTRY_DELETED)
+        return;
+
     // read the data
     GetChildFileEntries(entry);
     ReadClusterChain(entry);
