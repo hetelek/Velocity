@@ -325,7 +325,14 @@ void DeviceContentViewer::on_treeWidget_currentItemChanged(QTreeWidgetItem *curr
     else
         ui->imgTitleThumbnail->setPixmap(QPixmap(":/Images/watermark.png"));
 
-    ui->lblRawName->setText(current->data(2, Qt::UserRole).toString());
+    // since the name could be longer than the label, we're going to do some work so
+    // that instead of making the side panel huge, we get ... at the end of the string
+    // and it cuts the rest off
+    QFontMetrics fm = QFontMetrics(ui->lblRawName->font());
+    QString fittedRawName = fm.elidedText(current->data(2, Qt::UserRole).toString(), Qt::ElideRight, ui->lblRawName->width());
+    ui->lblRawName->setText(fittedRawName);
+
+
     ui->lblTitleID->setText(QString::number(package->metaData->titleID, 16).toUpper());
     ui->lblTitleName->setText(QString::fromStdWString(package->metaData->titleName));
     ui->lblPackageType->setText(QString::fromStdString(ContentTypeToString(package->metaData->contentType)));
@@ -345,6 +352,17 @@ void DeviceContentViewer::on_btnViewPackage_clicked()
 
     PackageViewer viewer(statusBar, currentPackage, QList<QAction*>(), QList<QAction*>(), this, false);
     viewer.exec();
+}
+
+void DeviceContentViewer::resizeEvent(QResizeEvent *)
+{
+    if (currentPackage == NULL || ui->treeWidget->currentItem() == NULL)
+        return;
+
+    // we need to re-calculate the string so that it fits properly in the newly sized form
+    QFontMetrics fm = QFontMetrics(ui->lblRawName->font());
+    QString fittedRawName = fm.elidedText(ui->treeWidget->currentItem()->data(2, Qt::UserRole).toString(), Qt::ElideRight, ui->frame->width());
+    ui->lblRawName->setText(fittedRawName);
 }
 
 void DisplayProgress(void *arg, bool finished)

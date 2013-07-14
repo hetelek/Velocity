@@ -49,6 +49,8 @@ private:
     StfsPackage *currentPackage;
     QProgressBar *progressBar;
 
+    void resizeEvent(QResizeEvent *);
+
     void LoadSharedItemCategory(QString category, std::vector<XContentDeviceSharedItem> *items, QTreeWidgetItem *parent, QString iconPath);
     void LoadDevicesp();
     void ClearSidePanel();
