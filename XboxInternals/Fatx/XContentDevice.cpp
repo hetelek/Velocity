@@ -71,9 +71,12 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
     FatxFileEntry *fileEntry = drive->GetFileEntry("Drive:\\Content\\Content\\");
     if (fileEntry == NULL)
     {
-        if(progress)
+        // if the content folder doesn't exist, then create i;t
+        drive->CreatePath("Drive:\\Content\\Content\\");
+
+        if (progress)
             progress(arg, true);
-        return false;
+        return true;
     }
 
     // load all of the sub dirents in Drive:\Content\Content
