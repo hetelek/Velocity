@@ -348,6 +348,7 @@ void FatxDrive::RemoveFile(FatxFileEntry *entry, void(*progress)(void*), void *a
     // update the entry file name lenght to deleted
     io->SetPosition(entry->address);
     io->Write((BYTE)FATX_ENTRY_DELETED);
+    io->Flush();
 
     if (progress)
         progress(arg);
