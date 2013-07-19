@@ -115,7 +115,7 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
         {
             profilePath = "";
         }
-        XContentDeviceProfile profile(profilePath, rawName, profilePackage);
+        XContentDeviceProfile profile(profilePath, profileFolderEntry.name, profilePackage, (profileEntry != NULL) ? profileEntry->fileSize : 0);
 
         // get all of the game save data for this profile
         drive->GetChildFileEntries(&profileFolderEntry);
@@ -335,12 +335,12 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
         }
 
         // if the profile is entirely new, then just add it to the end
-        XContentDeviceProfile profile(devicePath + fileName, fileName, packageOnDevice);
+        XContentDeviceProfile profile(fileEntry, packageOnDevice);
         profiles->push_back(profile);
     }
     else if (memcmp(packageOnDevice->metaData->profileID, sharedProfileID, 8) != 0)
     {
-        XContentDeviceItem item(devicePath + fileName, fileName, packageOnDevice);
+        XContentDeviceItem item(fileEntry, packageOnDevice);
 
         // check to see if the owner of this save's profile is already on the device
         for (int i = 0; i < profiles->size(); i++)
@@ -385,7 +385,7 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
     // it must be a shared item
     else
     {
-        XContentDeviceSharedItem item(devicePath + fileName, fileName, packageOnDevice);
+        XContentDeviceSharedItem item(fileEntry, packageOnDevice);
 
         // put the shared item in the correct category
         switch (item.package->metaData->contentType)
@@ -570,12 +570,12 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
         for (int z = 0; z < contentTypeFolder.cachedFiles.size(); z++)
         {
             // we're looking for STFS packages, so make sure the entry isn't another directory
-            FatxFileEntry contentPackage = contentTypeFolder.cachedFiles.at(z);
-            if (contentPackage.fileAttributes & FatxDirectory || contentPackage.nameLen == 0xE5)
+            FatxFileEntry *contentPackage = &contentTypeFolder.cachedFiles.at(z);
+            if (contentPackage->fileAttributes & FatxDirectory || contentPackage->nameLen == 0xE5)
                 continue;
 
             // open an IO on this file, should be STFS package
-            FatxIO io = drive->GetFatxIO(drive->GetFileEntry(contentPackage.path + contentPackage.name));
+            FatxIO io = drive->GetFatxIO(drive->GetFileEntry(contentPackage->path + contentPackage->name));
             DWORD fileMagic = io.ReadDword();
 
             // verify the magic
@@ -596,7 +596,7 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
                 continue;
             }
 
-            XContentDeviceItem item(contentPackage.path + contentPackage.name, contentPackage.name, content);
+            XContentDeviceItem item(contentPackage, content);
 
             itemsFound.push_back(item);
 

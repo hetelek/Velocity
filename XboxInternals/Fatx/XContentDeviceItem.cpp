@@ -1,7 +1,13 @@
 #include "XContentDeviceItem.h"
 
-XContentDeviceItem::XContentDeviceItem(std::string pathOnDevice, std::string rawName, StfsPackage *package) :
-    package(package), pathOnDevice(pathOnDevice), rawName(rawName)
+XContentDeviceItem::XContentDeviceItem(FatxFileEntry *fileEntry, StfsPackage *package) :
+    package(package), pathOnDevice(fileEntry->path + fileEntry->name), rawName(fileEntry->name), fileSize(fileEntry->fileSize)
+{
+
+}
+
+XContentDeviceItem::XContentDeviceItem(std::string pathOnDevice, std::string rawName, StfsPackage *package, DWORD fileSize) :
+    package(package), pathOnDevice(pathOnDevice), rawName(rawName), fileSize(fileSize)
 {
 
 }
@@ -51,4 +57,9 @@ BYTE *XContentDeviceItem::GetProfileID()
     if (package == NULL)
         return NULL;
     return package->metaData->profileID;
+}
+
+DWORD XContentDeviceItem::GetFileSize()
+{
+    return fileSize;
 }

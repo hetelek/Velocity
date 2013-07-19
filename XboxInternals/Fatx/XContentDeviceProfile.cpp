@@ -1,7 +1,12 @@
 #include "XContentDeviceProfile.h"
 
-XContentDeviceProfile::XContentDeviceProfile(std::string pathOnDevice, std::string rawName, StfsPackage *profile) :
-    XContentDeviceItem(pathOnDevice, rawName, profile)
+XContentDeviceProfile::XContentDeviceProfile(FatxFileEntry *fileEntry, StfsPackage *profile) :
+    XContentDeviceItem(fileEntry, profile)
+{
+}
+
+XContentDeviceProfile::XContentDeviceProfile(std::string pathOnDevice, std::string rawName, StfsPackage *profile, DWORD fileSize) :
+    XContentDeviceItem(pathOnDevice, rawName, profile, fileSize)
 {
 }
 

@@ -136,6 +136,7 @@ void DeviceContentViewer::LoadDevicesp()
                     saveItem->setData(0, Qt::UserRole, QVariant::fromValue(save.package));
                     saveItem->setData(1, Qt::UserRole, QVariant(QString::fromStdString(save.GetPathOnDevice())));
                     saveItem->setData(2, Qt::UserRole, QVariant(QString::fromStdString(save.GetRawName())));
+                    saveItem->setData(3, Qt::UserRole, QVariant((unsigned int)save.GetFileSize()));
 
                     saveItem->setText(0, QString::fromStdWString(save.GetName()));
 
@@ -336,6 +337,7 @@ void DeviceContentViewer::on_treeWidget_currentItemChanged(QTreeWidgetItem *curr
     ui->lblTitleID->setText(QString::number(package->metaData->titleID, 16).toUpper());
     ui->lblTitleName->setText(QString::fromStdWString(package->metaData->titleName));
     ui->lblPackageType->setText(QString::fromStdString(ContentTypeToString(package->metaData->contentType)));
+    ui->lblFileSize->setText(QString::fromStdString(ByteSizeToString(current->data(3, Qt::UserRole).toUInt())));
 
     currentPackage = package;
 
@@ -373,12 +375,14 @@ void DisplayProgress(void *arg, bool finished)
         contentViewer->progressBar->setVisible(true);
         contentViewer->progressBar->setMinimum(0);
         contentViewer->progressBar->setMaximum(0);
+        contentViewer->setWindowTitle("Device Content Viewer - Loading Device(s)");
     }
     else
     {
         contentViewer->progressBar->setVisible(false);
         contentViewer->progressBar->setMaximum(1);
         contentViewer->ui->treeWidget->setEnabled(true);
+        contentViewer->setWindowTitle("Device Content Viewer");
     }
     QApplication::processEvents();
 }
