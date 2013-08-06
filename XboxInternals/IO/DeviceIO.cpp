@@ -341,7 +341,12 @@ void DeviceIO::SetPosition(UINT64 address, std::ios_base::seek_dir dir)
     #ifdef __linux__
         lseek64(impl->device, address, SEEK_SET);
     #else
-        lseek(impl->device, address, SEEK_SET);
+        #ifdef _WIN32
+            LONG addressHigh = impl->offset.OffsetHigh;
+            SetFilePointer(impl->deviceHandle, impl->offset.Offset, &addressHigh, FILE_BEGIN);
+        #else
+            lseek(impl->device, address, SEEK_SET);
+        #endif
     #endif
 }
 
