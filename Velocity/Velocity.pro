@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network xml
+QT       += core gui network xml widgets
 
 # application
 TARGET = Velocity
@@ -35,7 +35,7 @@ macx|unix {
 }
 
 
-macx|win32:QT += phonon
+win32:QT += phonon
 win32:RC_FILE = velocity.rc
 macx:ICON = velocity.icns
 
