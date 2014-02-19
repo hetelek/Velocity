@@ -3,7 +3,6 @@
 
 // qt
 #include <QObject>
-#include <QHttp>
 #include <QUuid>
 #include <QUrl>
 #include <QDir>
@@ -30,7 +29,6 @@ public slots:
     void onRequestFinished(int, bool);
 
 private:
-    QHttp *http;
     QString gpdDirectory, titleID, awardGpd, gameGpd;
     TitleEntry entry;
     bool hasAwards, gpdWritten;
