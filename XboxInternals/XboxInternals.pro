@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       -= gui core
+QT       -= gui
 
 TARGET = XboxInternals
 TEMPLATE = lib
@@ -56,7 +56,6 @@ SOURCES += \
     Cryptography/XeKeys.cpp \
     Cryptography/XeCrypt.cpp \
     AvatarAsset/Ytgr.cpp \
-    Fatx/FatxHelpers.cpp \
     Fatx/FatxDrive.cpp \
     IO/FileIO.cpp \
     IO/FatxIO.cpp \
