@@ -7,6 +7,10 @@
 #include <QUrl>
 #include <QDir>
 
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+
 // other
 #include "winnames.h"
 #include "IO/FileIO.h"
@@ -27,8 +31,11 @@ signals:
 
 public slots:
     void onDone(bool);
-    void onRequestFinished(int, bool);
+    void onRequestFinished(QNetworkReply *aReply);
+
 private:
+    QNetworkAccessManager *manager;
+
     QString titleID;
     QString guid;
 
