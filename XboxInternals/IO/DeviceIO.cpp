@@ -110,21 +110,21 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
                 bool success = ReadFile(
                     impl->deviceHandle,   // Device to read from
                     lastReadData,         // Output buffer
-                    0x200,                // Length to read
+                    FAT_SECTOR_SIZE,                // Length to read
                     NULL,                 // Pointer to the number of bytes read
                     &impl->offset);       // OVERLAPPED structure containing the offset to read from
 
                 if (!success)
                     throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
         #else
-                read(impl->device, lastReadData, 0x200);
+                read(impl->device, lastReadData, FAT_SECTOR_SIZE);
         #endif
 
         lastReadOffset = pos;
     }
 
     // copy over the data requested
-    WORD bytesLeftInSector = 0x200 - (originalPos & 0x1FF);
+    WORD bytesLeftInSector = FAT_SECTOR_SIZE - (originalPos & 0x1FF);
     WORD neededBytes = (len > bytesLeftInSector) ? bytesLeftInSector : len;
     memcpy(outBuffer, lastReadData + (originalPos & 0x1FF), neededBytes);
 
@@ -138,7 +138,7 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
     }
 
     // seek to the next sector
-    SetPosition(pos + 0x200); // 0x200
+    SetPosition(pos + FAT_SECTOR_SIZE); // 0x200
 
     INT64 downTo = DOWN_TO_NEAREST_SECTOR(len);
 
@@ -173,14 +173,14 @@ void DeviceIO::ReadBytes(BYTE *outBuffer, DWORD len)
             success = ReadFile(
                 impl->deviceHandle,                 // Device to read from
                 lastReadData,                       // Output buffer
-                0x200,                              // Length to read
+                FAT_SECTOR_SIZE,                              // Length to read
                 NULL,                               // Pointer to the number of bytes read
                 &impl->offset);                     // OVERLAPPED structure containing the offset to read from
 
             if (!success)
                 throw std::string("DeviceIO: Error reading from device, may be disconnected.\n");
     #else
-            read(impl->device, lastReadData, 0x200);
+            read(impl->device, lastReadData, FAT_SECTOR_SIZE);
     #endif
 
     lastReadOffset = pos;
@@ -229,9 +229,9 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
 
     // Write the bytes up to the next sector
     SetPosition(currentSector);
-    ReadBytes(lastReadData, 0x200);
+    ReadBytes(lastReadData, FAT_SECTOR_SIZE);
     lastReadOffset = currentSector;
-    WORD bytesLeftInSector = 0x200 - (originalPos - currentSector);
+    WORD bytesLeftInSector = FAT_SECTOR_SIZE - (originalPos - currentSector);
     WORD bytesToWrite = (len >= bytesLeftInSector) ? bytesLeftInSector : len;
     memcpy(lastReadData + (originalPos - currentSector), buffer, bytesToWrite);
 
@@ -242,16 +242,16 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
         WriteFile(
             impl->deviceHandle,   // Device to read from
             lastReadData,         // Data to Write
-            0x200,                // Amount of data to Write
+            FAT_SECTOR_SIZE,                // Amount of data to Write
             &bytesWritten,        // Pointer to number of bytes written
             &impl->offset);       // OVERLAPPED structure containing the offset to Write from
     #else
-        write(impl->device, lastReadData, 0x200);
+        write(impl->device, lastReadData, FAT_SECTOR_SIZE);
     #endif
 
     // update the values
     buffer += bytesToWrite;
-    currentSector += 0x200;
+    currentSector += FAT_SECTOR_SIZE;
     len -= bytesToWrite;
 
     // Write the rest of the data
@@ -259,8 +259,8 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
     {
         SetPosition(currentSector);
         lastReadOffset = DOWN_TO_NEAREST_SECTOR(pos);
-        ReadBytes(lastReadData, 0x200);
-        bytesToWrite = (len >= 0x200) ? 0x200 : len;
+        ReadBytes(lastReadData, FAT_SECTOR_SIZE);
+        bytesToWrite = (len >= FAT_SECTOR_SIZE) ? FAT_SECTOR_SIZE : len;
         memcpy(lastReadData, buffer, bytesToWrite);
 
         // go to the top of the sector
@@ -268,18 +268,18 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
 
         // update values
         buffer += bytesToWrite;
-        currentSector += 0x200;
+        currentSector += FAT_SECTOR_SIZE;
         len -= bytesToWrite;
 
         #ifdef _WIN32
             WriteFile(
                 impl->deviceHandle,   // Device to read from
                 lastReadData,         // Data to Write
-                0x200,                // Amount of data to Write
+                FAT_SECTOR_SIZE,                // Amount of data to Write
                 &bytesWritten,        // Pointer to number of bytes written
                 &impl->offset);       // OVERLAPPED structure containing the offset to Write from
         #else
-            write(impl->device, buffer, 0x200);
+            write(impl->device, buffer, FAT_SECTOR_SIZE);
         #endif
     }
 

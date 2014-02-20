@@ -19,6 +19,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
+#include <cmath>
 
 class XBOXINTERNALSSHARED_EXPORT FatxDrive
 {
