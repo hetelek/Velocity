@@ -4,27 +4,19 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network xml
+QT       += core gui network xml widgets
 
 # application
 TARGET = Velocity
 TEMPLATE = app
+
 win32:UI_DIR = ../Velocity
 
 # application version
 VERSION = 0.1.0.0
 DEFINES += VERSION=\\\"$$VERSION\\\"
 
-# flags
-#QMAKE_CXXFLAGS += -std=c++11
-macx {
-    QMAKE_CFLAGS_X86_64 += -mmacosx-version-min=10.7
-    QMAKE_CXXFLAGS_X86_64 = $$QMAKE_CFLAGS_X86_64
-}
-
-# header include path
-INCLUDEPATH += $$PWD/../XboxInternals
-
+# linking against botan (and adding to include path)
 win32 {
     LIBS += -LC:/botan/ -lbotan-1.10
     INCLUDEPATH += C:/botan/include
@@ -34,22 +26,35 @@ macx|unix {
     LIBS += /usr/local/lib/libbotan-1.10.a
 }
 
+# phonon, icon
+win32 {
+    QT += phonon
+    RC_FILE = velocity.rc
+}
 
-macx|win32:QT += phonon
-win32:RC_FILE = velocity.rc
-macx:ICON = velocity.icns
+# application info, icon
+macx {
+    QMAKE_INFO_PLIST = Info.plist.app
+    ICON = velocity.icns
+}
 
+# linking against XboxInternals (and adding to include path)
+INCLUDEPATH += $$PWD/../XboxInternals
 CONFIG(debug, debug|release) {
     win32:LIBS += -L$$PWD/../XboxInternals-Win/debug/ -lXboxInternals
     macx:LIBS += -L$$PWD/../XboxInternals-OSX/debug/ -lXboxInternals
-    unix:!macx:LIBS += -L$$PWD/../XboxInternals-Linux/debug/ -lXboxInternals
-    unix:!macx:PRE_TARGETDEPS += $$PWD/../XboxInternals-Linux/debug/libXboxInternals.a
+    unix:!macx {
+        LIBS += -L$$PWD/../XboxInternals-Linux/debug/ -lXboxInternals
+        PRE_TARGETDEPS += $$PWD/../XboxInternals-Linux/debug/libXboxInternals.a
+    }
 }
 CONFIG(release, debug|release) {
     win32:LIBS += -L$$PWD/../XboxInternals-Win/release/ -lXboxInternals
     macx:LIBS += -L$$PWD/../XboxInternals-OSX/release/ -lXboxInternals
-    unix:!macx:LIBS += -L$$PWD/../XboxInternals-Linux/release/ -lXboxInternals
-    unix:!macx:PRE_TARGETDEPS += $$PWD/../XboxInternals-Linux/release/libXboxInternals.a
+    unix:!macx {
+        LIBS += -L$$PWD/../XboxInternals-Linux/release/ -lXboxInternals
+        PRE_TARGETDEPS += $$PWD/../XboxInternals-Linux/release/libXboxInternals.a
+    }
 }
 
 SOURCES += main.cpp \

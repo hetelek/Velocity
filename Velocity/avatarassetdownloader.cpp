@@ -3,17 +3,17 @@
 AvatarAssetDownloader::AvatarAssetDownloader(QString titleID, QString guid, QObject *parent) :
     QObject(parent), titleID(titleID), guid(guid), v1Done(false), v2Done(false), v1TempPath(QString("")), v2TempPath(QString(""))
 {
-    http = new QHttp(this);
+    /*http = new QHttp(this);
     http->setHost("download.xboxlive.com");
 
     connect(http, SIGNAL(done(bool)), this, SLOT(onDone(bool)));
-    connect(http, SIGNAL(requestFinished(int,bool)), this, SLOT(onRequestFinished(int,bool)));
+    connect(http, SIGNAL(requestFinished(int,bool)), this, SLOT(onRequestFinished(int,bool)));*/
 }
 
 void AvatarAssetDownloader::BeginDownload()
 {
-    http->get("http://download.xboxlive.com/content/" + titleID + "/avataritems/" + guid + ".bin");
-    idToSkip = http->currentId();
+    //http->get("http://download.xboxlive.com/content/" + titleID + "/avataritems/" + guid + ".bin");
+    //idToSkip = http->currentId();
 }
 
 QString AvatarAssetDownloader::GetV1TempPath()
@@ -38,7 +38,7 @@ QString AvatarAssetDownloader::GetTitleID()
 
 void AvatarAssetDownloader::onRequestFinished(int id, bool error)
 {
-    if (error || id == idToSkip)
+    /*if (error || id == idToSkip)
         return;
 
     // verify that the file was downloaded
@@ -88,7 +88,7 @@ void AvatarAssetDownloader::onRequestFinished(int id, bool error)
         http->get("http://download.xboxlive.com/content/" + titleID + "/avataritems/v2/" + guid + ".bin");
     }
     else
-        emit FinishedDownloading();
+        emit FinishedDownloading();*/
 }
 
 void AvatarAssetDownloader::onDone(bool /* error */)

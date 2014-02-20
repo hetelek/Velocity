@@ -10,7 +10,7 @@ About::About(QWidget *parent) :
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
-#ifndef __linux
+#ifdef _WIN32
     if (!QFile::exists(QtHelpers::ExecutingDirectory() + "Developers.mp3"))
         return;
 
@@ -34,7 +34,7 @@ About::~About()
 
 void About::onSongFinished()
 {
-#ifndef __linux
+#ifdef _WIN32
     // for (;;) let's listen to it one more time;
     developers->clear();
     developers->setCurrentSource(Phonon::MediaSource(QtHelpers::ExecutingDirectory() + "Developers.mp3"));
