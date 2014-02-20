@@ -40,7 +40,12 @@ void QtHelpers::ParseHexStringBuffer(QString bytes, BYTE *outBuffer, DWORD len)
 
 QString QtHelpers::DesktopLocation()
 {
+#if QT_VERSION >= 0x050000
     QString desktopLocation = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).at(0);
+#else
+    QString desktopLocation = QDesktopServices::storageLocation(QDesktopServices::DesktopLocation);
+#endif
+
     return desktopLocation.replace("\\", "/");
 }
 

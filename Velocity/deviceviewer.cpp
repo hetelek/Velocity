@@ -159,7 +159,14 @@ void DeviceViewer::showContextMenu(QPoint point)
             }
 
             // get the save path
+
+
+#if QT_VERSION >= 0x050000
             QString path = QFileDialog::getExistingDirectory(this, "Save Location", QStandardPaths::standardLocations(QStandardPaths::DataLocation).at(0));
+#else
+            QString path = QFileDialog::getExistingDirectory(this, "Save Location", QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
+#endif
+
 
             if (path.isEmpty())
                 return;

@@ -1,4 +1,9 @@
-#include <QtWidgets/QApplication>
+#if QT_VERSION >= 0x050000
+    #include <QtWidgets/QApplication>
+#else
+    #include <QApplication>
+#endif
+
 #include <QStringList>
 #include <botan/botan.h>
 #include "mainwindow.h"
