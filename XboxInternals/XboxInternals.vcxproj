@@ -161,7 +161,6 @@
     <ClCompile Include="disc\svod.cpp" />
     <ClCompile Include="fatx\FatxDrive.cpp" />
     <ClCompile Include="fatx\FatxDriveDetection.cpp" />
-    <ClCompile Include="fatx\fatxhelpers.cpp" />
     <ClCompile Include="gpd\AvatarAwardGPD.cpp" />
     <ClCompile Include="gpd\DashboardGPD.cpp" />
     <ClCompile Include="gpd\GameGPD.cpp" />
