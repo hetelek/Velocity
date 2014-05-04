@@ -6,6 +6,7 @@
 #include <QUuid>
 #include <QUrl>
 #include <QDir>
+#include <QDebug>
 
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
