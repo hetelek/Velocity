@@ -13,8 +13,7 @@
     #endif
 
     #ifdef __linux
-        #include <linux/hdreg.h>
-        #include <pwd.h>
+        #include <mntent.h>
     #endif
 #endif
 
@@ -25,92 +24,80 @@ std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
 
     std::vector<DeviceIO*> devices = getPhysicalDisks();
 
-    for (int i = 0; i < devices.size(); i++)
+    for (size_t i = 0; i < devices.size(); i++)
     {
-        try
+        if (devices.at(i)->Length() > HddOffsets::Data)
         {
-            if (devices.at(i)->Length() > HddOffsets::Data)
+            devices.at(i)->SetPosition(HddOffsets::Data);
+            if (devices.at(i)->ReadDword() == FATX_MAGIC)
             {
-                devices.at(i)->SetPosition(HddOffsets::Data);
-                if (devices.at(i)->ReadDword() == FATX_MAGIC)
-                {
-                    FatxDrive *drive = new FatxDrive(static_cast<BaseIO*>(devices.at(i)), FatxHarddrive);
-                    drives.push_back(drive);
-                }
-                else
-                    devices.at(i)->Close();
+                FatxDrive *drive = new FatxDrive(static_cast<BaseIO*>(devices.at(i)), FatxHarddrive);
+                drives.push_back(drive);
             }
-        }
-        catch (...)
-        {
+            else
+                devices.at(i)->Close();
         }
     }
 
     std::vector<std::string> dataFiles;
-    for (int i = 0; i < logicalDrivePaths.size(); i++)
+    for (size_t i = 0; i < logicalDrivePaths.size(); i++)
     {
         // clear data files from the previous drive
         dataFiles.clear();
 
-        try
-        {
-            std::string directory;
-            directory.assign(logicalDrivePaths.at(i).begin(), logicalDrivePaths.at(i).end());
+        std::string directory;
+        directory.assign(logicalDrivePaths.at(i).begin(), logicalDrivePaths.at(i).end());
 
 
-            #ifdef _WIN32
-                WIN32_FIND_DATA fi;
+        #ifdef _WIN32
+            WIN32_FIND_DATA fi;
 
-                HANDLE h = FindFirstFile((logicalDrivePaths.at(i) + L"\\Data*").c_str(), &fi);
-                if (h != INVALID_HANDLE_VALUE)
+            HANDLE h = FindFirstFile((logicalDrivePaths.at(i) + L"\\Data*").c_str(), &fi);
+            if (h != INVALID_HANDLE_VALUE)
+            {
+                do
                 {
-                    do
-                    {
-                        char path[9];
-                        wcstombs(path, fi.cFileName, wcslen(fi.cFileName) + 1);
-                        dataFiles.push_back(directory + "\\" + std::string(path));
-                    }
-                    while (FindNextFile(h, &fi));
-
-                    FindClose(h);
-
-                    if (dataFiles.size() >= 3)
-                    {
-                        // make sure the data files are loaded in the right order
-                        std::sort(dataFiles.begin(), dataFiles.end());
-                        MultiFileIO *io = new MultiFileIO(dataFiles);
-                        FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
-                        drives.push_back(usbDrive);
-                    }
+                    char path[9];
+                    wcstombs(path, fi.cFileName, wcslen(fi.cFileName) + 1);
+                    dataFiles.push_back(directory + "\\" + std::string(path));
                 }
-            #else
-                DIR *dir = NULL;
-                dirent *ent = NULL;
-                dir = opendir(directory.c_str());
-                if (dir != NULL)
+                while (FindNextFile(h, &fi));
+
+                FindClose(h);
+
+                if (dataFiles.size() >= 3)
                 {
-                    // search for valid data files
-                    while ((ent = readdir(dir)) != NULL)
-                    {
-                        // the disks start with 'data'
-                        if (std::string(ent->d_name).substr(0, 4) == "Data")
-                            dataFiles.push_back(directory + std::string(ent->d_name));
-                    }
-
-                    if (dataFiles.size() >= 3)
-                    {
-                        // make sure the data files are loaded in the right order
-                        std::sort(dataFiles.begin(), dataFiles.end());
-                        MultiFileIO *io = new MultiFileIO(dataFiles);
-                        FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
-                        drives.push_back(usbDrive);
-                    }
+                    // make sure the data files are loaded in the right order
+                    std::sort(dataFiles.begin(), dataFiles.end());
+                    MultiFileIO *io = new MultiFileIO(dataFiles);
+                    FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
+                    drives.push_back(usbDrive);
                 }
-            #endif
-        }
-        catch (...)
-        {
-        }
+            }
+        #else
+            DIR *dir = NULL;
+            dirent *ent = NULL;
+            dir = opendir(directory.c_str());
+            if (dir != NULL)
+            {
+                // search for valid data files
+                while ((ent = readdir(dir)) != NULL)
+                {
+                    // the disks start with 'data'
+                    if (std::string(ent->d_name).substr(0, 4) == "Data")
+                        dataFiles.push_back(directory + std::string(ent->d_name));
+                }
+
+                if (dataFiles.size() >= 3)
+                {
+                    // make sure the data files are loaded in the right order
+                    std::sort(dataFiles.begin(), dataFiles.end());
+                    MultiFileIO *io = new MultiFileIO(dataFiles);
+                    FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
+                    drives.push_back(usbDrive);
+                }
+            }
+        #endif
     }
 
     return drives;
@@ -245,62 +232,41 @@ std::vector<std::wstring> FatxDriveDetection::getLogicalDrives()
             delete ent;
     }
 #elif __linux
-    DIR *dir = NULL, *dir2 = NULL;
-    dirent *ent = NULL, *ent2 = NULL;
-    dir = opendir("/media/");
-    if (dir != NULL)
+    DIR *dir;
+    struct mntent *ent;
+    std::stringstream path;
+
+    FILE *mounts = setmntent("/proc/mounts", "r");
+
+    if (mounts != NULL)
     {
-        std::stringstream path;
-
-        // search for valid flash drives
-        while ((ent = readdir(dir)) != NULL)
+        while ((ent = getmntent(mounts)) != NULL)
         {
-            if (ent->d_type != DT_DIR)
-                continue;
-
             path.str(std::string());
-            path << "/media/" << ent->d_name;
-            dir2 = opendir(path.str().c_str());
-            if (dir2 == NULL)
-                continue;
+            path << ent->mnt_dir << "/Xbox360/";
 
-            // search for valid flash drives
-            while ((ent2 = readdir(dir2)) != NULL)
+            try
             {
+                std::string xboxDirPath = path.str();
 
-                if (strcmp(ent2->d_name, ".") == 0 || strcmp(ent2->d_name, "..") == 0)
-                    continue;
-
-                try
+                if((dir = opendir(xboxDirPath.c_str())) != NULL)
                 {
-                    // initialize the path
-                    path << "/" << ent2->d_name << "/Xbox360/";
-
-                    // get the xbox360 folder path
-                    std::string xboxDirPath = path.str();
-
-                    // add it to our list of drives
                     std::wstring widePathStr;
                     widePathStr.assign(xboxDirPath.begin(), xboxDirPath.end());
-                    driveStrings.push_back(widePathStr);
-                }
-                catch(...)
-                {
-                    // something bad happened
-                    // skip this device, and try the next one
-                }
+                    driveStrings.push_back(widePathStr);                    
 
-                // clear the stringstream
-                path.str(std::string());
-                path << "/media/" << ent->d_name;
+                    closedir(dir);
+                }
+            }
+            catch(...)
+            {
             }
         }
-        if (dir)
-            closedir(dir);
-        if (ent)
+
+        endmntent(mounts);
+
+        if(ent)
             delete ent;
-        if (ent2)
-            delete ent2;
     }
 #endif
     return driveStrings;

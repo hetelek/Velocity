@@ -405,7 +405,7 @@ void DeviceViewer::LoadDrives()
     }
     catch (std::string error)
     {
-        QMessageBox::warning(this, "Problem Loading", "The drive failed to load.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Problem Loading", "The drive failed to load.\n\n" + QString::fromStdString(error));
     }
 }
 
