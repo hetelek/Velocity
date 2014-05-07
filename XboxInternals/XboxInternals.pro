@@ -22,9 +22,13 @@ win32 {
     PRE_TARGETDEPS += C:/botan/libbotan-1.10.a
     INCLUDEPATH += C:/botan/include
 }
-macx|unix {
+macx {
     INCLUDEPATH += /usr/local/include/botan-1.10
     LIBS += /usr/local/lib/libbotan-1.10.a
+}
+unix {
+    INCLUDEPATH += /usr/include/botan-1.10
+    LIBS += /usr/lib/libbotan-1.10.so.0
 }
 
 SOURCES += \
