@@ -46,7 +46,7 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
 
     GitHubCommitsDialog *dialog = new GitHubCommitsDialog(this);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
-    ui->mdiArea->addSubWindow(dialog);
+    QtHelpers::AddSubWindow(ui->mdiArea, dialog);
     dialog->show();
 
     pluginManager = new QNetworkAccessManager(this);
@@ -246,7 +246,7 @@ void MainWindow::on_actionDevice_Viewer_triggered()
 {
     DeviceViewer *viewer = new DeviceViewer(ui->statusBar, gpdActions, gameActions, this);
     viewer->setAttribute(Qt::WA_DeleteOnClose);
-    ui->mdiArea->addSubWindow(viewer);
+    QtHelpers::AddSubWindow(ui->mdiArea, viewer);
     viewer->show();
     viewer->LoadDrives();
 }
@@ -415,7 +415,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                             {
                                 PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gpdActions, gameActions, this);
                                 viewer->setAttribute(Qt::WA_DeleteOnClose);
-                                ui->mdiArea->addSubWindow(viewer);
+                                QtHelpers::AddSubWindow(ui->mdiArea, viewer);
                                 viewer->show();
 
                                 ui->statusBar->showMessage("STFS package loaded successfully.", 3000);
@@ -436,7 +436,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                             {
                                 PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gpdActions, gameActions, this);
                                 viewer->setAttribute(Qt::WA_DeleteOnClose);
-                                ui->mdiArea->addSubWindow(viewer);
+                                QtHelpers::AddSubWindow(ui->mdiArea, viewer);
                                 viewer->show();
 
                                 ui->statusBar->showMessage("STFS package loaded successfully.", 3000);
@@ -457,7 +457,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 
                                 if (editor->isOk())
                                 {
-                                    ui->mdiArea->addSubWindow(editor);
+                                    QtHelpers::AddSubWindow(ui->mdiArea, editor);
                                     editor->show();
                                 }
                             }
@@ -467,7 +467,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                     {
                         SVOD *svod = new SVOD(fileName);
                         SvodDialog *dialog = new SvodDialog(svod, ui->statusBar, this);
-                        ui->mdiArea->addSubWindow(dialog);
+                        QtHelpers::AddSubWindow(ui->mdiArea, dialog);
                         dialog->setAttribute(Qt::WA_DeleteOnClose);
                         dialog->exec();
                     }
@@ -481,7 +481,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 
                     XdbfDialog *dialog = new XdbfDialog(ui->statusBar, gpd, NULL, this);
                     dialog->setAttribute(Qt::WA_DeleteOnClose);
-                    ui->mdiArea->addSubWindow(dialog);
+                    QtHelpers::AddSubWindow(ui->mdiArea, dialog);
                     dialog->show();
 
                     break;
@@ -492,7 +492,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 
                     StrbDialog *dialog = new StrbDialog(asset, this);
                     dialog->setAttribute(Qt::WA_DeleteOnClose);
-                    ui->mdiArea->addSubWindow(dialog);
+                    QtHelpers::AddSubWindow(ui->mdiArea, dialog);
                     dialog->show();
 
                     ui->statusBar->showMessage("STRB file parsed successfully", 3000);
@@ -505,7 +505,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 
                     YtgrDialog *dialog = new YtgrDialog(ytgr, ui->statusBar, this);
                     dialog->setAttribute(Qt::WA_DeleteOnClose);
-                    ui->mdiArea->addSubWindow(dialog);
+                    QtHelpers::AddSubWindow(ui->mdiArea, dialog);
                     dialog->show();
 
                     break;
@@ -538,7 +538,7 @@ void MainWindow::on_actionProfile_Editor_triggered()
 
         if (editor->isOk())
         {
-            ui->mdiArea->addSubWindow(editor);
+            QtHelpers::AddSubWindow(ui->mdiArea, editor);
             editor->show();
         }
     }
@@ -566,7 +566,7 @@ void MainWindow::on_actionPackage_triggered()
         StfsPackage *package = new StfsPackage(fileName.toStdString());
         PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gpdActions, gameActions, this);
         viewer->setAttribute(Qt::WA_DeleteOnClose);
-        ui->mdiArea->addSubWindow(viewer);
+        QtHelpers::AddSubWindow(ui->mdiArea, viewer);
         viewer->show();
 
         ui->statusBar->showMessage("Stfs package loaded successfully.", 3000);
@@ -591,7 +591,7 @@ void MainWindow::on_actionXDBF_File_triggered()
 
         XdbfDialog *dialog = new XdbfDialog(ui->statusBar, gpd, NULL, this);
         dialog->setAttribute(Qt::WA_DeleteOnClose);
-        ui->mdiArea->addSubWindow(dialog);
+        QtHelpers::AddSubWindow(ui->mdiArea, dialog);
         dialog->show();
     }
     catch (string error)
@@ -613,7 +613,7 @@ void MainWindow::on_actionSTRB_File_triggered()
 
         StrbDialog *dialog = new StrbDialog(asset, this);
         dialog->setAttribute(Qt::WA_DeleteOnClose);
-        ui->mdiArea->addSubWindow(dialog);
+        QtHelpers::AddSubWindow(ui->mdiArea, dialog);
         dialog->show();
     }
     catch (string error)
@@ -637,7 +637,7 @@ void MainWindow::on_actionCreate_Package_triggered()
 
         PackageViewer *viewer = new PackageViewer(ui->statusBar, package, gpdActions, gameActions, this);
         viewer->setAttribute(Qt::WA_DeleteOnClose);
-        ui->mdiArea->addSubWindow(viewer);
+        QtHelpers::AddSubWindow(ui->mdiArea, viewer);
         viewer->show();
 
         ui->statusBar->showMessage("Stfs package created successfully.", 3000);
@@ -652,7 +652,7 @@ void MainWindow::on_actionTitle_ID_Finder_triggered()
 {
     TitleIdFinderDialog *dialog = new TitleIdFinderDialog(ui->statusBar, this);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
-    ui->mdiArea->addSubWindow(dialog);
+    QtHelpers::AddSubWindow(ui->mdiArea, dialog);
     dialog->show();
 }
 
@@ -690,7 +690,7 @@ void MainWindow::on_actionGamer_Picture_Pack_Creator_triggered()
 {
     GamerPicturePackDialog *dialog = new GamerPicturePackDialog(ui->statusBar, this);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
-    ui->mdiArea->addSubWindow(dialog);
+    QtHelpers::AddSubWindow(ui->mdiArea, dialog);
     dialog->show();
 }
 
@@ -732,7 +732,7 @@ void MainWindow::on_actionFATX_File_Path_triggered()
         StfsPackage *package = new StfsPackage(fileName.toStdString());
         FATXPathGenDialog *dialog = new FATXPathGenDialog(package, this);
         dialog->setAttribute(Qt::WA_DeleteOnClose);
-        ui->mdiArea->addSubWindow(dialog);
+        QtHelpers::AddSubWindow(ui->mdiArea, dialog);
         dialog->show();
     }
     catch (string error)
@@ -827,7 +827,7 @@ void MainWindow::on_actionSVOD_System_triggered()
         ui->statusBar->showMessage("Loading SVOD system...");
         SVOD *svod = new SVOD(filePath.toStdString());
         SvodDialog *dialog = new SvodDialog(svod, ui->statusBar, this);
-        ui->mdiArea->addSubWindow(dialog);
+        QtHelpers::AddSubWindow(ui->mdiArea, dialog);
         dialog->show();
     }
     catch (string error)
@@ -848,7 +848,7 @@ void MainWindow::on_actionYTGR_triggered()
     {
         Ytgr *ytgr = new Ytgr(filePath.toStdString());
         YtgrDialog *dialog = new YtgrDialog(ytgr, ui->statusBar, this);
-        ui->mdiArea->addSubWindow(dialog);
+        QtHelpers::AddSubWindow(ui->mdiArea, dialog);
         dialog->show();
     }
     catch (string error)

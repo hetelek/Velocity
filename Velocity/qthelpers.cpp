@@ -355,3 +355,25 @@ void QtHelpers::GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWid
                 icon = QIcon(":/Images/DefaultFileIcon.png");
     }
 }
+
+void QtHelpers::AddSubWindow(QMdiArea *mdiArea, QWidget *widget)
+{
+    widget->installEventFilter(new SubWindowEvents(widget));
+    mdiArea->addSubWindow(widget);
+}
+
+QtHelpers::SubWindowEvents::SubWindowEvents(QObject *parent)
+{
+}
+
+bool QtHelpers::SubWindowEvents::eventFilter(QObject *obj, QEvent *event)
+{
+    QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+
+    if (event->type() == QEvent::KeyPress && keyEvent->key() == Qt::Key_Escape) 
+    {
+        return true;
+    } 
+    
+    return QObject::eventFilter(obj, event);
+}

@@ -17,6 +17,7 @@
 #include <QHeaderView>
 #include <QCheckBox>
 #include <QProgressBar>
+#include <QMdiArea>
 
 // other
 #include "winnames.h"
@@ -68,6 +69,18 @@ public:
     static void CollapseAllChildren(QTreeWidgetItem *item);
 
     static void GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWidgetItem &item);
+
+    static void AddSubWindow(QMdiArea *mdiArea, QWidget *widget);
+
+private:
+    class SubWindowEvents : public QObject
+    {
+        public:
+            SubWindowEvents(QObject* parent);
+
+        protected:
+            bool eventFilter(QObject *obj, QEvent *event);
+    };
 };
 
 #endif // QTHELPERS_H
