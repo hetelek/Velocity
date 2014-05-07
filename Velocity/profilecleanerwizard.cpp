@@ -39,7 +39,7 @@ void ProfileCleanerWizard::onCurrentIdChanged(int id)
 
 void ProfileCleanerWizard::on_pushButton_clicked()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, "Choose a profile to clean", QtHelpers::DesktopLocation());
+    QString filePath = QFileDialog::getOpenFileName(this, "Choose a profile to clean", QtHelpers::DefaultLocation());
     if (filePath == "")
         return;
 

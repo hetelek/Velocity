@@ -77,9 +77,10 @@ void XdbfDialog::showContextMenu(QPoint p)
         // get the out path
         QString path;
         if (items.count() > 1)
-            path = QFileDialog::getExistingDirectory(this, "Extract Directory", QtHelpers::DesktopLocation()) + "/";
+            path = QFileDialog::getExistingDirectory(this, "Extract Directory", QtHelpers::DefaultLocation()) + "/";
         else
-            path = QFileDialog::getSaveFileName(this, "Choose a place to extract the entry", QtHelpers::DesktopLocation() + "/" + ui->treeWidget->currentItem()->text(0));
+            path = QFileDialog::getSaveFileName(this, "Choose a place to extract the entry",
+                QtHelpers::DefaultLocation() + "/" + ui->treeWidget->currentItem()->text(0));
 
         if (path == "" || path == "\\")
             return;
@@ -139,7 +140,8 @@ void XdbfDialog::showContextMenu(QPoint p)
     }
     else if (selectedItem->text() == "Replace Entry")
     {
-        QString entryPath = QFileDialog::getOpenFileName(this, "Open the entry to replace the current with", QtHelpers::DesktopLocation() + "/" + ui->treeWidget->currentItem()->text(0));
+        QString entryPath = QFileDialog::getOpenFileName(this, "Open the entry to replace the current with",
+            QtHelpers::DefaultLocation() + "/" + ui->treeWidget->currentItem()->text(0));
 
         if (entryPath == "")
             return;

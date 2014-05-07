@@ -113,11 +113,8 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                 {
                     if (!fromPackageViewer)
                     {
-#if QT_VERSION >= 0x050000
-                            QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Save Game"), QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).at(0), "All Files (*)");
-#else
-                            QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Save Game"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
-#endif
+                        QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Save Game"), QtHelpers::DefaultLocation(), "All Files (*)");
+
                         if (fileName.isNull())
                             return;
 
@@ -194,11 +191,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                     // if it's not from the package viewer, ask for a file
                     if (!fromPackageViewer)
                     {
-#if QT_VERSION >= 0x050000
-                        QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Profile"), QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).at(0), "All Files (*)");
-#else
-                        QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Profile"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
-#endif
+                        QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Profile"), QtHelpers::DefaultLocation(), "All Files (*)");
 
                         if (fileName.isNull())
                             return;
@@ -532,11 +525,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 
 void MainWindow::on_actionProfile_Editor_triggered()
 {
-#if QT_VERSION >= 0x050000
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Profile"), QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).at(0), "All Files (*)");
-#else
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Profile"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
-#endif
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Profile"), QtHelpers::DefaultLocation(), "All Files (*)");
 
     if (fileName.isEmpty())
         return;
@@ -569,11 +558,7 @@ void MainWindow::on_actionAbout_triggered()
 }
 void MainWindow::on_actionPackage_triggered()
 {
-#if QT_VERSION >= 0x050000
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).at(0), "All Files (*)");
-#else
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
-#endif
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QtHelpers::DefaultLocation(), "All Files (*)");
 
     if (fileName.isEmpty())
         return;
@@ -596,11 +581,7 @@ void MainWindow::on_actionPackage_triggered()
 
 void MainWindow::on_actionXDBF_File_triggered()
 {
-#if QT_VERSION >= 0x050000
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Xdbf File"), QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).at(0), "Gpd File (*.gpd *.fit);;All Files (*)");
-#else
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Xdbf File"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "Gpd File (*.gpd *.fit);;All Files (*)");
-#endif
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Xdbf File"), QtHelpers::DefaultLocation(), "Gpd File (*.gpd *.fit);;All Files (*)");
 
     if (fileName.isEmpty())
         return;
@@ -625,11 +606,7 @@ void MainWindow::on_actionSTRB_File_triggered()
 {
     try
     {
-#if QT_VERSION >= 0x050000
-        QString fileName = QFileDialog::getOpenFileName(this, tr("Open an Avatar Asset"), QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).at(0), "BIN File (*.bin);;All Files (*)");
-#else
-        QString fileName = QFileDialog::getOpenFileName(this, tr("Open an Avatar Asset"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "BIN File (*.bin);;All Files (*)");
-#endif
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Open an Avatar Asset"), QtHelpers::DefaultLocation(), "BIN File (*.bin);;All Files (*)");
 
         if (fileName.isEmpty())
             return;
@@ -695,11 +672,7 @@ void MainWindow::on_actionProfile_Creator_triggered()
 
 void MainWindow::on_actionGame_Adder_triggered()
 {
-#if QT_VERSION >= 0x050000
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).at(0), "All Files (*)");
-#else
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
-#endif
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QtHelpers::DefaultLocation(), "All Files (*)");
 
     if (fileName.isEmpty())
         return;
@@ -751,11 +724,7 @@ void MainWindow::on_actionPreferences_triggered()
 
 void MainWindow::on_actionFATX_File_Path_triggered()
 {
-#if QT_VERSION >= 0x050000
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).at(0), "All Files (*)");
-#else
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
-#endif
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QtHelpers::DefaultLocation(), "All Files (*)");
 
     if (fileName.isEmpty())
         return;
@@ -850,7 +819,7 @@ void MainWindow::on_actionCheck_For_Updates_triggered()
 
 void MainWindow::on_actionSVOD_System_triggered()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, "Open an SVOD root descriptor...", QtHelpers::DesktopLocation());
+    QString filePath = QFileDialog::getOpenFileName(this, "Open an SVOD root descriptor...", QtHelpers::DefaultLocation());
 
     if (filePath.isEmpty())
         return;
@@ -872,7 +841,7 @@ void MainWindow::on_actionSVOD_System_triggered()
 
 void MainWindow::on_actionYTGR_triggered()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, "Open a file with a Ytgr security header...", QtHelpers::DesktopLocation());
+    QString filePath = QFileDialog::getOpenFileName(this, "Open a file with a Ytgr security header...", QtHelpers::DefaultLocation());
 
     if (filePath.isEmpty())
         return;

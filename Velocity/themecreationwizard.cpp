@@ -156,14 +156,14 @@ void ThemeCreationWizard::onCurrentIdChanged(int index)
             button(QWizard::NextButton)->setEnabled(imagesLoaded & 8);
             break;
         case 8:
-            ui->lblSavePath->setText( QtHelpers::DesktopLocation().replace("\\", "/") + "/" + ui->txtName->text());
+            ui->lblSavePath->setText(QtHelpers::DefaultLocation().replace("\\", "/") + "/" + ui->txtName->text());
             break;
     }
 }
 
 void ThemeCreationWizard::on_pushButton_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Choose a thumbnail image", QtHelpers::DesktopLocation(), "PNG File (*.png)");
+    QString fileName = QFileDialog::getOpenFileName(this, "Choose a thumbnail image", QtHelpers::DefaultLocation(), "PNG File (*.png)");
 
     if (fileName == "")
         return;
@@ -181,7 +181,7 @@ void ThemeCreationWizard::on_pushButton_clicked()
 
 void ThemeCreationWizard::openWallpaper(QLabel *imageViewer, QImage *saveImage)
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Choose a wallpaper image", QtHelpers::DesktopLocation(), "Image Files (*.jpg *.jpeg *.png)");
+    QString fileName = QFileDialog::getOpenFileName(this, "Choose a wallpaper image", QtHelpers::DefaultLocation(), "Image Files (*.jpg *.jpeg *.png)");
 
     if (fileName == "")
         return;
@@ -229,7 +229,8 @@ void ThemeCreationWizard::on_txtName_textChanged(const QString & /* arg1 */)
 
 void ThemeCreationWizard::on_pushButton_6_clicked()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, "Choose a place to save your theme", QtHelpers::DesktopLocation().replace("\\", "/") + "/" + ui->txtName->text());
+    QString filePath = QFileDialog::getOpenFileName(this, "Choose a place to save your theme",
+        QtHelpers::DefaultLocation().replace("\\", "/") + "/" + ui->txtName->text());
 
     if (filePath == "")
         return;

@@ -301,7 +301,7 @@ void PackageViewer::showSaveImageContextMenu(QPoint point)
         return;
     else if (selectedItem->text() == "Save Image")
     {
-        QString imageSavePath = QFileDialog::getSaveFileName(this, "Choose a location to save the thumbnail", QtHelpers::DesktopLocation() + "\\thumbnail.png", "*.png");
+        QString imageSavePath = QFileDialog::getSaveFileName(this, "Choose a location to save the thumbnail", QtHelpers::DefaultLocation() + "\\thumbnail.png", "*.png");
         if (imageSavePath == "")
             return;
 
@@ -422,9 +422,9 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
         QString path;
         if (multiple)
-            path = QFileDialog::getExistingDirectory(this, "Save Location", QtHelpers::DesktopLocation()) + "/";
+            path = QFileDialog::getExistingDirectory(this, "Save Location", QtHelpers::DefaultLocation()) + "/";
         else
-            path = QFileDialog::getSaveFileName(this, "Save Location", QtHelpers::DesktopLocation() + "/" + ui->treeWidget->selectedItems()[0]->text(0));
+            path = QFileDialog::getSaveFileName(this, "Save Location", QtHelpers::DefaultLocation() + "/" + ui->treeWidget->selectedItems()[0]->text(0));
 
         if (path.isEmpty())
             return;
@@ -465,7 +465,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
     }
     else if (selectedItem->text() == "Extract All")
     {
-        QString path = QFileDialog::getExistingDirectory(this, "Save Location", QtHelpers::DesktopLocation()) + "/";
+        QString path = QFileDialog::getExistingDirectory(this, "Save Location", QtHelpers::DefaultLocation()) + "/";
 
         QList<void*> entries;
         GetSubFilesStfs(&listing, entries);
@@ -536,7 +536,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         QString packagePath;
         GetPackagePath(items.at(0), &packagePath);
 
-        QString path = QFileDialog::getOpenFileName(this, "New File", QtHelpers::DesktopLocation() + "/" + ui->treeWidget->selectedItems()[0]->text(0));
+        QString path = QFileDialog::getOpenFileName(this, "New File", QtHelpers::DefaultLocation() + "/" + ui->treeWidget->selectedItems()[0]->text(0));
         if (path.isEmpty())
             return;
 
@@ -559,7 +559,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
     {
         QString packagePath;
 
-        QString path = QFileDialog::getOpenFileName(this, "New File", QtHelpers::DesktopLocation());
+        QString path = QFileDialog::getOpenFileName(this, "New File", QtHelpers::DefaultLocation());
         if (path.isEmpty())
             return;
 

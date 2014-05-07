@@ -482,12 +482,14 @@ void ProfileEditor::showAvatarContextMenu(QPoint point)
             return;
 
         QString titleID = QString::number(aaGames.at(ui->aaGamelist->currentIndex().row()).titleEntry->titleID, 16);
-        QString guid = QString::fromStdString(AvatarAwardGpd::GetGUID(&aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row())));
+        QString guid = QString::fromStdString(AvatarAwardGpd::GetGUID(&aaGames.at(ui->aaGamelist->currentIndex().row()).
+            gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row())));
 
         // get a path for the new asset
         QString assetFileName = guid;
         assetFileName = assetFileName.replace("-", "").toUpper();
-        assetSavePath = QFileDialog::getSaveFileName(this, "Choose a place to save the asset", QtHelpers::DesktopLocation() + "/" + assetFileName, "*");
+        assetSavePath = QFileDialog::getSaveFileName(this, "Choose a place to save the asset",
+            QtHelpers::DefaultLocation() + "/" + assetFileName, "*");
 
         if (assetSavePath == "")
             return;
@@ -719,7 +721,8 @@ void ProfileEditor::saveImage(QPoint p, QLabel *imgLabel)
         return;
     else if (selectedItem->text() == "Save Image")
     {
-        QString saveFileName = QFileDialog::getSaveFileName(this, "Choose a place to save the thumbnail", QtHelpers::DesktopLocation() + "\\thumbnail.png", "*.png");
+        QString saveFileName = QFileDialog::getSaveFileName(this, "Choose a place to save the thumbnail",
+            QtHelpers::DefaultLocation() + "\\thumbnail.png", "*.png");
 
         if (saveFileName == "")
             return;
@@ -1002,7 +1005,8 @@ void ProfileEditor::on_btnExtractGPD_clicked()
         return;
 
     QString gpdName = QString::number(games.at(index).titleEntry->titleID, 16).toUpper() + ".gpd";
-    QString filePath = QFileDialog::getSaveFileName(this, "Choose a place to save the Gpd", QtHelpers::DesktopLocation() + "/" + gpdName, "Gpd File (*.gpd *.fit);;All Files (*.*)");
+    QString filePath = QFileDialog::getSaveFileName(this, "Choose a place to save the Gpd",
+        QtHelpers::DefaultLocation() + "/" + gpdName, "Gpd File (*.gpd *.fit);;All Files (*.*)");
 
     if (filePath == "")
         return;
@@ -1026,7 +1030,8 @@ void ProfileEditor::on_btnExtractGPD_2_clicked()
         return;
 
     QString gpdName = QString::number(aaGames.at(index).titleEntry->titleID, 16).toUpper() + ".gpd";
-    QString filePath = QFileDialog::getSaveFileName(this, "Choose a place to save the Gpd", QtHelpers::DesktopLocation() + "/" + gpdName, "Gpd File (*.gpd *.fit);;All Files (*.*)");
+    QString filePath = QFileDialog::getSaveFileName(this, "Choose a place to save the Gpd",
+        QtHelpers::DefaultLocation() + "/" + gpdName, "Gpd File (*.gpd *.fit);;All Files (*.*)");
 
     if (filePath == "")
         return;

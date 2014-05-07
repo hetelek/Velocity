@@ -102,7 +102,8 @@ void SvodDialog::showFileContextMenu(QPoint pos)
     else if (selectedItem->text() == "Extract")
     {
         // get a directory to save the files to
-        QString savePath = QFileDialog::getExistingDirectory(this, "Choose a place to save the file...", QtHelpers::DesktopLocation() + "/" + QString::fromStdString(entry->name));
+        QString savePath = QFileDialog::getExistingDirectory(this, "Choose a place to save the file...",
+            QtHelpers::DefaultLocation() + "/" + QString::fromStdString(entry->name));
         if (savePath == "")
             return;
 
@@ -122,11 +123,12 @@ void SvodDialog::showFileContextMenu(QPoint pos)
     else if (selectedItem->text() == "Replace")
     {
         // open a file
-        QString filePath = QFileDialog::getOpenFileName(this, "Choose a modifed version to repalce...", QtHelpers::DesktopLocation());
+        QString filePath = QFileDialog::getOpenFileName(this, "Choose a modifed version to repalce...", QtHelpers::DefaultLocation());
         if (filePath == "")
             return;
 
-        SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSVOD, svod, OpReplace, QString::fromStdString(entry->filePath + entry->name), filePath, NULL, this);
+        SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSVOD, svod, OpReplace,
+            QString::fromStdString(entry->filePath + entry->name), filePath, NULL, this);
         dialog->setModal(true);
         dialog->show();
         dialog->start();
@@ -224,7 +226,7 @@ void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
 
 void SvodDialog::on_btnResign_clicked()
 {
-    QString kvPath = QFileDialog::getOpenFileName(this, "Choose a kv for resigning", QtHelpers::DesktopLocation());
+    QString kvPath = QFileDialog::getOpenFileName(this, "Choose a kv for resigning", QtHelpers::DefaultLocation());
     if (kvPath == "")
         return;
 

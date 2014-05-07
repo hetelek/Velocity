@@ -20,7 +20,7 @@ SecuritySectorDialog::~SecuritySectorDialog()
 
 void SecuritySectorDialog::on_btnExtractSecuritySector_clicked()
 {
-    QString savePath = QFileDialog::getSaveFileName(this, "Choose a place to save the security blob...", QtHelpers::DesktopLocation() + "/Security Blob.bin");
+    QString savePath = QFileDialog::getSaveFileName(this, "Choose a place to save the security blob...", QtHelpers::DefaultLocation() + "/Security Blob.bin");
     if (savePath == "")
         return;
 
@@ -37,7 +37,7 @@ void SecuritySectorDialog::on_btnExtractSecuritySector_clicked()
 
 void SecuritySectorDialog::on_btnReplaceSecuritySector_clicked()
 {
-    QString openPath = QFileDialog::getOpenFileName(this, "Choose a security blob...", QtHelpers::DesktopLocation() + "/Security Blob.bin");
+    QString openPath = QFileDialog::getOpenFileName(this, "Choose a security blob...", QtHelpers::DefaultLocation() + "/Security Blob.bin");
     if (openPath == "")
         return;
 
