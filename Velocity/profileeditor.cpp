@@ -1,11 +1,9 @@
 #include "profileeditor.h"
 #include "ui_profileeditor.h"
 
-ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool dispose, bool *ok, QWidget *parent) :
-    QDialog(parent), ui(new Ui::ProfileEditor), profile(profile), PEC(NULL), dashGpd(NULL), account(NULL), downloader(NULL), dispose(dispose), ok(ok), statusBar(statusBar)
+ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool dispose, QWidget *parent) :
+    QDialog(parent), ui(new Ui::ProfileEditor), profile(profile), PEC(NULL), dashGpd(NULL), account(NULL), downloader(NULL), dispose(dispose), statusBar(statusBar)
 {
-    *ok = true;
-
     ui->setupUi(this);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     QtHelpers::GenAdjustWidgetAppearanceToOS(this);
@@ -63,7 +61,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     // verify that the package is a profile
     if (profile->metaData->contentType != Profile)
     {
-        *ok = false;
+        ok = false;
         QMessageBox::critical(this, "Invalid Package", "Package opened isn't a profile.\n");
         return;
     }
@@ -71,7 +69,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     // make sure the dashboard gpd exists
     if (!profile->FileExists("FFFE07D1.gpd"))
     {
-        *ok = false;
+        ok = false;
         QMessageBox::critical(this, "File Not Found", "Dashboard Gpd, FFFE07D1.gpd, wasn't found.\n");
         return;
     }
@@ -79,7 +77,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     // make sure the account file exists
     if (!profile->FileExists("Account"))
     {
-        *ok = false;
+        ok = false;
         QMessageBox::critical(this, "File Not Found", "The Account file wasn't found.\n");
         return;
     }
@@ -236,13 +234,13 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     catch (string error)
     {
         QMessageBox::critical(this, "Error", "An error has occurred while loading the profile.\n\n" + QString::fromStdString(error));
-        *ok = false;
+        ok = false;
         return;
     }
     catch (...)
     {
         QMessageBox::critical(this, "Error", "An unknown error has occurred while loading the profile.");
-        *ok = false;
+        ok = false;
         return;
     }
 
@@ -267,7 +265,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         QString gpdName = titleIDStr + ".gpd";
         if (!profile->FileExists(gpdName.toStdString()))
         {
-            *ok = false;
+            ok = false;
             QMessageBox::critical(this, "File Not Found", "Couldn't find file \"" + gpdName + "\".");
             return;
         }
@@ -291,7 +289,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         }
         catch (string error)
         {
-            *ok = false;
+            ok = false;
             QMessageBox::critical(this, "File Load Error", "Error loading game Gpd, '" + gpdName + "'.\n\n" + QString::fromStdString(error));
             return;
         }
@@ -353,7 +351,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     bool pecExists = profile->FileExists("PEC");
     if (!pecExists && aaGames.size() != 0)
     {
-        *ok = false;
+        ok = false;
         QMessageBox::critical(this, "File Not Found", "Games have been found with avatar awards, but no PEC file exists.\n");
         ui->tabAvatarAwards->setEnabled(false);
         return;
@@ -375,7 +373,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     catch (string error)
     {
         QMessageBox::critical(this, "Error", "An error has occurred while extracting the PEC.\n\n" + QString::fromStdString(error));
-        *ok = false;
+        ok = false;
         return;
     }
 
@@ -386,7 +384,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     }
     catch (string error)
     {
-        *ok = false;
+        ok = false;
         QMessageBox::critical(this, "File Load Error", "Error loading PEC file.\n\n" + QString::fromStdString(error));
         return;
     }
@@ -402,7 +400,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         // make sure the Gpd exists
         if (!PEC->FileExists(gpdName.toStdString()))
         {
-            *ok = false;
+            ok = false;
             QMessageBox::critical(this, "File Not Error", "Avatar Award Gpd '" + gpdName + "' was not found in the PEC.\n");
             return;
         }
@@ -424,7 +422,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         }
         catch (string error)
         {
-            *ok = false;
+            ok = false;
             QMessageBox::critical(this, "File Load Error", "Error loading the Avatar Award Gpd '" + gpdName + "'.\n\n" + QString::fromStdString(error));
             return;
         }
@@ -461,6 +459,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     }
 
     uploader = new GpdUploader(gameGpds, awardGpds, titleIDs, true, this);
+
+    ok = true;
 }
 
 void ProfileEditor::showAvatarContextMenu(QPoint point)
@@ -482,12 +482,14 @@ void ProfileEditor::showAvatarContextMenu(QPoint point)
             return;
 
         QString titleID = QString::number(aaGames.at(ui->aaGamelist->currentIndex().row()).titleEntry->titleID, 16);
-        QString guid = QString::fromStdString(AvatarAwardGpd::GetGUID(&aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row())));
+        QString guid = QString::fromStdString(AvatarAwardGpd::GetGUID(&aaGames.at(ui->aaGamelist->currentIndex().row()).
+            gpd->avatarAwards.at(ui->avatarAwardsList->currentIndex().row())));
 
         // get a path for the new asset
         QString assetFileName = guid;
         assetFileName = assetFileName.replace("-", "").toUpper();
-        assetSavePath = QFileDialog::getSaveFileName(this, "Choose a place to save the asset", QtHelpers::DesktopLocation() + "/" + assetFileName, "*");
+        assetSavePath = QFileDialog::getSaveFileName(this, "Choose a place to save the asset",
+            QtHelpers::DefaultLocation() + "/" + assetFileName, "*");
 
         if (assetSavePath == "")
             return;
@@ -597,7 +599,7 @@ void ProfileEditor::addToDashGpd(SettingEntry *entry, SettingEntryType type, UIN
 
 ProfileEditor::~ProfileEditor()
 {
-    if (*ok)
+    if (ok)
     {
         try
         {
@@ -632,7 +634,7 @@ ProfileEditor::~ProfileEditor()
         delete account;
 
     if (dispose)
-        delete profile;
+       delete profile;
 
     // delete all of the temp files
     for (DWORD i = 0; i < tempFiles.size(); i++)
@@ -719,7 +721,8 @@ void ProfileEditor::saveImage(QPoint p, QLabel *imgLabel)
         return;
     else if (selectedItem->text() == "Save Image")
     {
-        QString saveFileName = QFileDialog::getSaveFileName(this, "Choose a place to save the thumbnail", QtHelpers::DesktopLocation() + "\\thumbnail.png", "*.png");
+        QString saveFileName = QFileDialog::getSaveFileName(this, "Choose a place to save the thumbnail",
+            QtHelpers::DefaultLocation() + "\\thumbnail.png", "*.png");
 
         if (saveFileName == "")
             return;
@@ -1002,7 +1005,8 @@ void ProfileEditor::on_btnExtractGPD_clicked()
         return;
 
     QString gpdName = QString::number(games.at(index).titleEntry->titleID, 16).toUpper() + ".gpd";
-    QString filePath = QFileDialog::getSaveFileName(this, "Choose a place to save the Gpd", QtHelpers::DesktopLocation() + "/" + gpdName, "Gpd File (*.gpd *.fit);;All Files (*.*)");
+    QString filePath = QFileDialog::getSaveFileName(this, "Choose a place to save the Gpd",
+        QtHelpers::DefaultLocation() + "/" + gpdName, "Gpd File (*.gpd *.fit);;All Files (*.*)");
 
     if (filePath == "")
         return;
@@ -1026,7 +1030,8 @@ void ProfileEditor::on_btnExtractGPD_2_clicked()
         return;
 
     QString gpdName = QString::number(aaGames.at(index).titleEntry->titleID, 16).toUpper() + ".gpd";
-    QString filePath = QFileDialog::getSaveFileName(this, "Choose a place to save the Gpd", QtHelpers::DesktopLocation() + "/" + gpdName, "Gpd File (*.gpd *.fit);;All Files (*.*)");
+    QString filePath = QFileDialog::getSaveFileName(this, "Choose a place to save the Gpd",
+        QtHelpers::DefaultLocation() + "/" + gpdName, "Gpd File (*.gpd *.fit);;All Files (*.*)");
 
     if (filePath == "")
         return;
@@ -1241,6 +1246,7 @@ void ProfileEditor::saveAll()
     }
 
     string path = QtHelpers::GetKVPath(profile->metaData->certificate.ownerConsoleType, this);
+
     // save the avatar awards
     if (PEC != NULL)
     {
@@ -1791,4 +1797,9 @@ void ProfileEditor::on_cmbxConsoleType_currentIndexChanged(int index)
         }
 
     }
+}
+
+bool ProfileEditor::isOk()
+{
+    return ok;
 }

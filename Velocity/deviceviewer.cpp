@@ -159,14 +159,7 @@ void DeviceViewer::showContextMenu(QPoint point)
             }
 
             // get the save path
-
-
-#if QT_VERSION >= 0x050000
-            QString path = QFileDialog::getExistingDirectory(this, "Save Location", QStandardPaths::standardLocations(QStandardPaths::DataLocation).at(0));
-#else
-            QString path = QFileDialog::getExistingDirectory(this, "Save Location", QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
-#endif
-
+            QString path = QFileDialog::getExistingDirectory(this, "Save Location", QtHelpers::DefaultLocation());
 
             if (path.isEmpty())
                 return;
@@ -199,7 +192,7 @@ void DeviceViewer::showContextMenu(QPoint point)
         }
         else if (selectedItem->text() == "Copy Folder Here")
         {
-            QString folder = QFileDialog::getExistingDirectory(this, "Choose a folder to copy...", QtHelpers::DesktopLocation());
+            QString folder = QFileDialog::getExistingDirectory(this, "Choose a folder to copy...", QtHelpers::DefaultLocation());
             if (folder == "")
                 return;
 
@@ -786,7 +779,7 @@ void updateUIDelete(void *arg)
 
 void DeviceViewer::on_btnBackup_clicked()
 {
-    QString savePath = QFileDialog::getSaveFileName(this, "Create a backup for your device", QtHelpers::DesktopLocation() + "/Drive Backup.bin");
+    QString savePath = QFileDialog::getSaveFileName(this, "Create a backup for your device", QtHelpers::DefaultLocation() + "/Drive Backup.bin");
 
     if (savePath == "")
         return;
@@ -799,7 +792,7 @@ void DeviceViewer::on_btnBackup_clicked()
 
 void DeviceViewer::on_btnRestore_clicked()
 {
-    QString openPath = QFileDialog::getOpenFileName(this, "Choose a backup to restore from", QtHelpers::DesktopLocation() + "/Drive Backup.bin");
+    QString openPath = QFileDialog::getOpenFileName(this, "Choose a backup to restore from", QtHelpers::DefaultLocation() + "/Drive Backup.bin");
 
     if (openPath == "")
         return;

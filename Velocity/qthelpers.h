@@ -43,7 +43,7 @@ public:
 
     static void ParseHexStringBuffer(QString bytes, BYTE *outBuffer, DWORD len);
 
-    static QString DesktopLocation();
+    static QString DefaultLocation();
 
     static bool VerifyHexString(QString str);
 

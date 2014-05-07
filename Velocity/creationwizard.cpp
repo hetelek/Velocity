@@ -90,19 +90,20 @@ void CreationWizard::onCurrentIdChanged(int id)
         button(QWizard::NextButton)->setEnabled(false);
         break;
     case 6:
-        ui->lblSavePath->setText(QtHelpers::DesktopLocation().replace("\\", "/") + "/" + ui->txtDisplayName->text());
+        ui->lblSavePath->setText(QtHelpers::DefaultLocation().replace("\\", "/") + "/" + ui->txtDisplayName->text());
         break;
     }
 }
 
 void CreationWizard::on_txtDisplayName_textChanged(const QString & /* arg1 */)
 {
-    button(QWizard::NextButton)->setEnabled(ui->txtDisplayName->text() != "" && ui->txtTitleID->text().length() == 8 && QtHelpers::VerifyHexString(ui->txtTitleID->text()));
+    button(QWizard::NextButton)->setEnabled(ui->txtDisplayName->text() != "" && ui->txtTitleID->text().length() == 8 &&
+        QtHelpers::VerifyHexString(ui->txtTitleID->text()));
 }
 
 void CreationWizard::openImage(QLabel *img)
 {
-    QString imgPath = QFileDialog::getOpenFileName(this, "Open a 64x64 thumbnail", QtHelpers::DesktopLocation(), "*.png");
+    QString imgPath = QFileDialog::getOpenFileName(this, "Open a 64x64 thumbnail", QtHelpers::DefaultLocation(), "*.png");
 
     if (imgPath == "")
         return;

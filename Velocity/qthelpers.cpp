@@ -38,15 +38,15 @@ void QtHelpers::ParseHexStringBuffer(QString bytes, BYTE *outBuffer, DWORD len)
     }
 }
 
-QString QtHelpers::DesktopLocation()
+QString QtHelpers::DefaultLocation()
 {
 #if QT_VERSION >= 0x050000
-    QString desktopLocation = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).at(0);
+    QString defaultLocation = QStandardPaths::standardLocations(QStandardPaths::HomeLocation).at(0);
 #else
-    QString desktopLocation = QDesktopServices::storageLocation(QDesktopServices::DesktopLocation);
+    QString defaultLocation = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
 #endif
 
-    return desktopLocation.replace("\\", "/");
+    return defaultLocation.replace("\\", "/");
 }
 
 bool QtHelpers::VerifyHexStringBuffer(QString bytes)
@@ -63,6 +63,8 @@ bool QtHelpers::VerifyHexString(QString str)
     return true;
 }
 
+#include <QDebug>
+
 std::string QtHelpers::GetKVPath(ConsoleType type, QWidget *parent)
 {
     std::string kvName = ExecutingDirectory().toStdString() + "KV_";
@@ -71,11 +73,23 @@ std::string QtHelpers::GetKVPath(ConsoleType type, QWidget *parent)
     else
         kvName += "D.bin";
 
-    if (!QFile::exists( QString::fromStdString(kvName)))
+    if (!QFile::exists(QString::fromStdString(kvName)))
     {
-        QString path = QFileDialog::getOpenFileName(parent, "KV Location", DesktopLocation() + "/KV.bin");
-        kvName = path.toStdString();
+        QFileDialog dialog(parent, "KV Location", DefaultLocation() + "/KV.bin");
+        dialog.setFileMode(QFileDialog::ExistingFile);
+        dialog.setViewMode(QFileDialog::Detail);
+
+        if (dialog.exec() == QFileDialog::Accepted)
+        {
+            QStringList files = dialog.selectedFiles();
+
+            if(files.size() > 0)
+                kvName = files.at(0).toStdString();
+        }
+        else
+            kvName = "";
     }
+
     return kvName;
 }
 

@@ -69,7 +69,7 @@ void AchievementCreationWizard::onCurrentIdChanged(int id)
 
 void AchievementCreationWizard::on_pushButton_clicked()
 {
-    QString imagePath = QFileDialog::getOpenFileName(this, "Choose a thumbnail for your achievement", QtHelpers::DesktopLocation(), "*.png");
+    QString imagePath = QFileDialog::getOpenFileName(this, "Choose a thumbnail for your achievement", QtHelpers::DefaultLocation(), "*.png");
 
     if (imagePath == "")
         return;
