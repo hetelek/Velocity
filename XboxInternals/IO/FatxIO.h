@@ -66,7 +66,7 @@ public:
             void *arg = NULL);
 
     // convert a cluster to an offset
-    static INT64 ClusterToOffset(Partition *part, DWORD cluster);
+    static UINT64 ClusterToOffset(Partition *part, DWORD cluster);
 
     // sets all the clusters equal to value
     static void SetAllClusters(DeviceIO *device, Partition *part, std::vector<DWORD> &clusters,
