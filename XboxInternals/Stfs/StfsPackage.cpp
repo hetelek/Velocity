@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 StfsPackage::StfsPackage(BaseIO *io, DWORD flags) :
-    io(io), ioPassedIn(true), flags(flags), metaData(NULL)
+    metaData(NULL), io(io), ioPassedIn(true), flags(flags)
 {
     try
     {
@@ -18,7 +18,7 @@ StfsPackage::StfsPackage(BaseIO *io, DWORD flags) :
 }
 
 StfsPackage::StfsPackage(string packagePath, DWORD flags) :
-    flags(flags), ioPassedIn(false), metaData(NULL)
+    metaData(NULL), ioPassedIn(false), flags(flags)
 {
     io = new FileIO(packagePath, (bool)(flags & StfsPackageCreate));
     try
@@ -500,7 +500,7 @@ void StfsPackage::ExtractFile(StfsFileEntry *entry, string outPath, void (*extra
                 - ((startAddress - firstHashTableAddress) >> 0xC);
 
         // pick up the change at the begining, until we hit a hash table
-        if (entry->blocksForFile <= blockCount)
+        if ((DWORD)entry->blocksForFile <= blockCount)
         {
             io->ReadBytes(buffer, entry->fileSize);
             outFile.Write(buffer, entry->fileSize);
