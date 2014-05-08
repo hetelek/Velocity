@@ -4,8 +4,8 @@
 PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package,
         QList<QAction *> gpdActions, QList<QAction *> gameActions, QWidget *parent, bool disposePackage) :
     QDialog(parent),ui(new Ui::PackageViewer), package(package), disposePackage(disposePackage),
-    parent (parent), statusBar(statusBar),  gpdActions(gpdActions),
-    gameActions(gameActions), openInMenu(NULL)
+    parent (parent), statusBar(statusBar), openInMenu(NULL), gpdActions(gpdActions),
+    gameActions(gameActions)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -372,7 +372,7 @@ void PackageViewer::aboutToShow()
 void PackageViewer::GetSubFilesStfs(StfsFileListing *parent, QList<void *> &entries,
         QString currentPath)
 {
-    for (int i = 0; i < parent->fileEntries.size(); i++)
+    for (size_t i = 0; i < parent->fileEntries.size(); i++)
     {
         StfsExtractEntry *exEntry = new StfsExtractEntry;
         exEntry->entry = &parent->fileEntries.at(i);
@@ -380,7 +380,7 @@ void PackageViewer::GetSubFilesStfs(StfsFileListing *parent, QList<void *> &entr
         entries.push_back(exEntry);
     }
 
-    for (int i = 0; i < parent->folderEntries.size(); i++)
+    for (size_t i = 0; i < parent->folderEntries.size(); i++)
         GetSubFilesStfs(&parent->folderEntries.at(i), entries,
                 currentPath + QString::fromStdString(parent->folderEntries.at(i).folder.name) + "/");
 }
@@ -696,9 +696,9 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
         return;
 
     // make sure the file double clicked on is a gpd
-    unsigned int index = item->text(0).lastIndexOf(".");
+    int index = item->text(0).lastIndexOf(".");
     QString extension;
-    if (index != string::npos)
+    if (index != -1)
         extension = item->text(0).mid(index).toLower();
 
     if (item->data(1, Qt::UserRole).toString() == "Xdbf")
