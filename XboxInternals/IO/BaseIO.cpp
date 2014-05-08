@@ -129,14 +129,12 @@ UINT64 BaseIO::ReadMultiByte(size_t size)
 
 float BaseIO::ReadFloat()
 {
-    DWORD temp = ReadDword();
-    return *(float*)&temp;
+    return (float)ReadDword();
 }
 
 double BaseIO::ReadDouble()
 {
-    UINT64 temp = ReadUInt64();
-    return *(double*)&temp;
+    return (double)ReadUInt64();
 }
 
 string BaseIO::ReadString(int len, char nullTerminator, bool forceInclude0, int maxLength)
