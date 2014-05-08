@@ -5,8 +5,8 @@
 
 DeviceViewer::DeviceViewer(QStatusBar *statusBar, QList<QAction *> gpdActions,
         QList<QAction *> gameActions, QWidget *parent) :
-    QDialog(parent), ui(new Ui::DeviceViewer), parentEntry(NULL), statusBar(statusBar),
-    currentDrive(NULL), drivesLoaded(false), gpdActions(gpdActions), gameActions(gameActions)
+    QDialog(parent), ui(new Ui::DeviceViewer), currentDrive(NULL), parentEntry(NULL),
+    gpdActions(gpdActions), gameActions(gameActions), statusBar(statusBar), drivesLoaded(false)
 {
     ui->setupUi(this);
 
@@ -41,7 +41,7 @@ DeviceViewer::DeviceViewer(QStatusBar *statusBar, QList<QAction *> gpdActions,
 
 DeviceViewer::~DeviceViewer()
 {
-    for (int i = 0; i < loadedDrives.size(); i++)
+    for (size_t i = 0; i < loadedDrives.size(); i++)
         delete loadedDrives.at(i);
 
     delete ui;
@@ -197,7 +197,7 @@ void DeviceViewer::showContextMenu(QPoint point)
                 return;
 
             QList<void*> files;
-            for (DWORD i = 0; i < toInjectPaths.size(); i++)
+            for (int i = 0; i < toInjectPaths.size(); i++)
                 files.push_back(const_cast<void*>((void*)&toInjectPaths.at(i)));
 
             InjectFiles(files, "");
@@ -346,7 +346,7 @@ void DeviceViewer::LoadDrives()
     // clear all the items
     ui->treeWidget->clear();
 
-    for (int i = 0; i < loadedDrives.size(); i++)
+    for (size_t i = 0; i < loadedDrives.size(); i++)
         delete loadedDrives.at(i);
 
     try
@@ -358,7 +358,7 @@ void DeviceViewer::LoadDrives()
             return;
         }
 
-        for (int i = 0; i < loadedDrives.size(); i++)
+        for (size_t i = 0; i < loadedDrives.size(); i++)
         {
             QTreeWidgetItem *driveItem = new QTreeWidgetItem(ui->treeWidget_2);
             driveItem->setData(0, Qt::UserRole, QVariant::fromValue(loadedDrives.at(i)));
@@ -376,13 +376,13 @@ void DeviceViewer::LoadDrives()
 
             // load the partion information
             std::vector<Partition*> parts = loadedDrives.at(i)->GetPartitions();
-            for (DWORD i = 0; i < parts.size(); i++)
+            for (size_t j = 0; j < parts.size(); j++)
             {
                 QTreeWidgetItem *secondItem = new QTreeWidgetItem(driveItem);
-                secondItem->setText(0, QString::fromStdString(parts.at(i)->name));
+                secondItem->setText(0, QString::fromStdString(parts.at(j)->name));
                 secondItem->setIcon(0, QIcon(":/Images/partition.png"));
                 secondItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
-                secondItem->setData(0, Qt::UserRole, QVariant::fromValue(parts.at(i)));
+                secondItem->setData(0, Qt::UserRole, QVariant::fromValue(parts.at(j)));
                 secondItem->setData(5, Qt::UserRole, QVariant::fromValue(true));
                 secondItem->setData(4, Qt::UserRole, QVariant::fromValue(-1));
             }
@@ -516,7 +516,7 @@ void DeviceViewer::LoadFolderAll(FatxFileEntry *folder)
 
         currentDrive->GetChildFileEntries(folder, updateUI);
 
-        for (int i = 0; i < folder->cachedFiles.size(); i++)
+        for (size_t i = 0; i < folder->cachedFiles.size(); i++)
         {
             // get the entry
             FatxFileEntry *entry = &folder->cachedFiles.at(i);
@@ -636,7 +636,7 @@ void DeviceViewer::LoadPartitions()
 
     // load partitions
     std::vector<Partition*> parts = currentDrive->GetPartitions();
-    for (int i = 0; i < parts.size(); i++)
+    for (size_t i = 0; i < parts.size(); i++)
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
         item->setData(5, Qt::UserRole, QVariant(true));
