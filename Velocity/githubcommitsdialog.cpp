@@ -34,9 +34,12 @@ GitHubCommitsDialog::GitHubCommitsDialog(QWidget *parent) :
     }
 
     // make a request to the API
-    connect(branchesManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(onBrachesReply(QNetworkReply*)));
-    connect(commitsManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(onCommitsReply(QNetworkReply*)));
-    branchesManager->get(QNetworkRequest(QUrl("https://api.github.com/repos/hetelek/velocity/branches")));
+    connect(branchesManager, SIGNAL(finished(QNetworkReply*)), this,
+            SLOT(onBrachesReply(QNetworkReply*)));
+    connect(commitsManager, SIGNAL(finished(QNetworkReply*)), this,
+            SLOT(onCommitsReply(QNetworkReply*)));
+    branchesManager->get(QNetworkRequest(
+                QUrl("https://api.github.com/repos/hetelek/velocity/branches")));
 }
 
 GitHubCommitsDialog::~GitHubCommitsDialog()
@@ -106,7 +109,8 @@ void GitHubCommitsDialog::onCommitsReply(QNetworkReply *reply)
         for (int i = 0; i < iterations; i++)
         {
             // update the label with all the information
-            label->setText(label->text() + "<b>" + allCommits.at(i).author + "</b> - " + allCommits.at(i).timestamp.toString("MM/dd/yyyy") + "<br />" + allCommits.at(i).message + "<br /><br />");
+            label->setText(label->text() + "<b>" + allCommits.at(i).author + "</b> - " + allCommits.at(
+                        i).timestamp.toString("MM/dd/yyyy") + "<br />" + allCommits.at(i).message + "<br /><br />");
         }
     }
 }

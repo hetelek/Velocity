@@ -40,7 +40,8 @@ public:
     FatxIO GetFatxIO(FatxFileEntry *entry);
 
     // populate entry's cachedFiles vector (only if it's a directory)
-    void GetChildFileEntries(FatxFileEntry *entry, void(*progress)(void*, bool) = NULL, void *arg = NULL);
+    void GetChildFileEntries(FatxFileEntry *entry, void(*progress)(void*, bool) = NULL,
+            void *arg = NULL);
 
     // populate entry's clusterChain with its cluster chain
     void ReadClusterChain(FatxFileEntry *entry);
@@ -67,7 +68,8 @@ public:
     void RemoveFile(FatxFileEntry *entry, void(*progress)(void*) = NULL, void *arg = NULL);
 
     // inject the file
-    void InjectFile(FatxFileEntry *parent, std::string name, std::string filePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    void InjectFile(FatxFileEntry *parent, std::string name, std::string filePath,
+            void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
     // determines if a file at the specified path exists
     bool FileExists(std::string filePath);
@@ -85,10 +87,12 @@ public:
     void Close();
 
     // Write the entire contents of the drive to the local disk
-    void CreateBackup(std::string outPath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    void CreateBackup(std::string outPath, void(*progress)(void*, DWORD, DWORD) = NULL,
+            void *arg = NULL);
 
     // re-Write the entire contents of the drive using a backup from the local disk
-    void RestoreFromBackup(std::string backupPath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    void RestoreFromBackup(std::string backupPath, void(*progress)(void*, DWORD, DWORD) = NULL,
+            void *arg = NULL);
 
     // get the amount of free bytes on the device
     UINT64 GetFreeMemory(Partition *part, void(*progress)(void*, bool) = NULL, void *arg = NULL);
@@ -100,7 +104,7 @@ public:
     static INT64 ClusterToOffset(Partition *part, DWORD cluster);
 
     // check to see whether or not a file name is valid
-    static bool ValidFileName(std::string fileName);    
+    static bool ValidFileName(std::string fileName);
 
     // format recovery version, found by Eaton (only on dev kit drives)
     Version lastFormatRecoveryVersion;
@@ -113,7 +117,8 @@ public:
 
 private:
     // Writes the 'newEntry' to disk, in the 'parent' folder
-    FatxFileEntry* createFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry, bool errorIfAlreadyExists = true);
+    FatxFileEntry* createFileEntry(FatxFileEntry *parent, FatxFileEntry *newEntry,
+            bool errorIfAlreadyExists = true);
 
     // open up a physical drive
     void loadFatxDrive(std::wstring drivePath);

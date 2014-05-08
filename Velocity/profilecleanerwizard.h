@@ -20,21 +20,22 @@ enum CleanOperation
     Purify
 };
 
-namespace Ui {
+namespace Ui
+{
 class ProfileCleanerWizard;
 }
 
 class ProfileCleanerWizard : public QWizard
 {
     Q_OBJECT
-    
+
 public:
     explicit ProfileCleanerWizard(QWidget *parent = 0);
     ~ProfileCleanerWizard();
 
 private slots:
     void onCurrentIdChanged(int id);
-    
+
     void on_pushButton_clicked();
 
     void on_radioButton_toggled(bool checked);

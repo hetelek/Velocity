@@ -10,18 +10,19 @@
 // xbox
 #include "Fatx/FatxDrive.h"
 
-namespace Ui {
+namespace Ui
+{
 class SecuritySectorDialog;
 }
 
 class SecuritySectorDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit SecuritySectorDialog(FatxDrive *drive, QWidget *parent = 0);
     ~SecuritySectorDialog();
-    
+
 private slots:
     void on_btnExtractSecuritySector_clicked();
 

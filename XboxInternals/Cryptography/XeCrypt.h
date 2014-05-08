@@ -20,7 +20,8 @@ class XBOXINTERNALSSHARED_EXPORT XeCrypt
 public:
     static void BnQw_SwapDwQwLeBe(BYTE *data, DWORD length);
 
-    static bool Pkcs1Verify(BYTE *pbMessage, DWORD cbMessage, BYTE *pbSignature, DWORD cbSignature, UINT64 publicExponent, BYTE *modulus);
+    static bool Pkcs1Verify(BYTE *pbMessage, DWORD cbMessage, BYTE *pbSignature, DWORD cbSignature,
+            UINT64 publicExponent, BYTE *modulus);
 
     // copied from wikibooks.org
     template<typename iter>

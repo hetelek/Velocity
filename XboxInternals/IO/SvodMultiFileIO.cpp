@@ -5,7 +5,7 @@ using namespace std;
 
 SvodMultiFileIO::SvodMultiFileIO(string fileDirectory) :
     BaseIO(), fileIndex(0), addressInFile(0)
-{  
+{
     loadDirectories(fileDirectory);
 
     // make sure that there is atleast one file in the directory

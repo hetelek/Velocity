@@ -110,26 +110,26 @@ enum SkeletonVersion
 
 enum AssetGender
 {
-	Male = 1,
-	Female,
-	Both
+    Male = 1,
+    Female,
+    Both
 };
 
 struct STRBHeader
 {
-	// in the file
-	DWORD magic;                 
-	bool blockAlignmentStored;   
-	bool littleEndian;
-	BYTE guid[0x10]; 		     
-	BYTE blockIDSize;
-	BYTE blockSpanSize;
-	WORD unused;
-	BYTE blockAlignment;
+    // in the file
+    DWORD magic;
+    bool blockAlignmentStored;
+    bool littleEndian;
+    BYTE guid[0x10];
+    BYTE blockIDSize;
+    BYTE blockSpanSize;
+    WORD unused;
+    BYTE blockAlignment;
 
-	// calculated
-	int blockHeaderSize;
-	DWORD blockStartAddress;
+    // calculated
+    int blockHeaderSize;
+    DWORD blockStartAddress;
 };
 
 enum STRRBBlockId
@@ -144,56 +144,56 @@ enum STRRBBlockId
     STRBShapeOverrides = 4,
     STRBSkeleton = 5,
     STRBTexture = 2
-}; 
+};
 
 struct AssetMetadata
 {
-	BYTE metadataVersion;
-	AssetGender gender;
-	BinaryAssetType type;
-	DWORD assetTypeDetails;
-	AssetSubcategory category;
-	SkeletonVersion skeletonVersion;
+    BYTE metadataVersion;
+    AssetGender gender;
+    BinaryAssetType type;
+    DWORD assetTypeDetails;
+    AssetSubcategory category;
+    SkeletonVersion skeletonVersion;
 };
 
 struct RGBColor
 {
-	BYTE blue;
-	BYTE green;
-	BYTE red;
-	BYTE alpha;
+    BYTE blue;
+    BYTE green;
+    BYTE red;
+    BYTE alpha;
 };
 
 struct ColorGroup
 {
-	RGBColor color;
-	DWORD unknown;
+    RGBColor color;
+    DWORD unknown;
 };
 
 struct ColorTableEntry
 {
-	ColorGroup color1, color2, color3;
+    ColorGroup color1, color2, color3;
 };
 
 struct ColorTable
 {
-	DWORD count;
-	ColorTableEntry *entries;
+    DWORD count;
+    ColorTableEntry *entries;
 };
 
 struct Animation
 {
-	DWORD frameCount;
-	float duration;
-	float framesPerSecond;
+    DWORD frameCount;
+    float duration;
+    float framesPerSecond;
 };
 
 struct STRBBlock
 {
-	STRRBBlockId id;
-	int dataLength;
-	int fieldSize;
+    STRRBBlockId id;
+    int dataLength;
+    int fieldSize;
 
-	BYTE *data;
-	DWORD dataAddress;
+    BYTE *data;
+    DWORD dataAddress;
 };

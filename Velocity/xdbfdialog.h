@@ -23,7 +23,8 @@
 #include "imagedialog.h"
 #include "addressconverterdialog.h"
 
-namespace Ui {
+namespace Ui
+{
 class XdbfDialog;
 }
 
@@ -36,11 +37,12 @@ struct Entry
 class XdbfDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
-    explicit XdbfDialog(QStatusBar *statusBar, GpdBase *gpd, bool *modified = NULL, QWidget *parent = 0);
+    explicit XdbfDialog(QStatusBar *statusBar, GpdBase *gpd, bool *modified = NULL,
+            QWidget *parent = 0);
     ~XdbfDialog();
-    
+
 private slots:
     void on_treeWidget_doubleClicked(const QModelIndex &index);
 

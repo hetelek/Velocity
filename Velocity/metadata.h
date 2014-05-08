@@ -20,7 +20,8 @@
 #include "Stfs/StfsPackage.h"
 #include "Stfs/StfsConstants.h"
 
-namespace Ui {
+namespace Ui
+{
 class Metadata;
 }
 
@@ -39,11 +40,11 @@ struct OnlineResumeStateStruct
 class Metadata : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit Metadata(QStatusBar *statusBar, XContentHeader *header, bool pec, QWidget *parent = 0);
     ~Metadata();
-    
+
 private:
     Ui::Metadata *ui;
     XContentHeader *header;

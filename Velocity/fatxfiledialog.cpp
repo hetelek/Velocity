@@ -1,7 +1,8 @@
 #include "fatxfiledialog.h"
 #include "ui_fatxfiledialog.h"
 
-FatxFileDialog::FatxFileDialog(FatxDrive *drive, FatxFileEntry *entry, DWORD clusterSize, QString type, QWidget *parent) :
+FatxFileDialog::FatxFileDialog(FatxDrive *drive, FatxFileEntry *entry, DWORD clusterSize,
+        QString type, QWidget *parent) :
     QDialog(parent), ui(new Ui::FatxFileDialog), entry(entry), type(type), drive(drive)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);

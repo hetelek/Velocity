@@ -23,7 +23,8 @@ SVOD::SVOD(string rootPath)
 
     switch (metadata->contentType)
     {
-        case GameOnDemand:;
+        case GameOnDemand:
+            ;
         case InstalledGame:
             break;
         default:
@@ -67,7 +68,8 @@ void SVOD::SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *dataFi
     *addressInDataFile += offset;
 
     // for the data hash table(s)
-    *addressInDataFile += ((trueSector / 0x198) + ((trueSector % 0x198 == 0 && trueSector != 0) ? 0 : 1)) * 0x1000;
+    *addressInDataFile += ((trueSector / 0x198) + ((trueSector % 0x198 == 0 &&
+            trueSector != 0) ? 0 : 1)) * 0x1000;
 }
 
 void SVOD::ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int size, string path)

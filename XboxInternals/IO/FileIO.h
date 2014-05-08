@@ -16,7 +16,7 @@ using std::ios_base;
 class XBOXINTERNALSSHARED_EXPORT FileIO : public BaseIO
 {
 public:
-	FileIO(string path, bool truncate = false);
+    FileIO(string path, bool truncate = false);
     void SetPosition(UINT64 pos, ios_base::seek_dir dir = ios_base::beg);
     UINT64 GetPosition();
     UINT64 Length();
@@ -30,12 +30,12 @@ public:
     string GetFilePath();
 
     static void ReverseGenericArray(void *arr, int elemSize, int len);
-	virtual ~FileIO();
+    virtual ~FileIO();
 private:
-	EndianType endian;
+    EndianType endian;
     UINT64 length;
-	void ReadBytesWithChecks(void *buffer, INT32 size);
-	fstream *fstr;
-	const string filePath;
+    void ReadBytesWithChecks(void *buffer, INT32 size);
+    fstream *fstr;
+    const string filePath;
 };
 

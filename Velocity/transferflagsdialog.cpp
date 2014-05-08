@@ -60,7 +60,8 @@ TransferFlagsDialog::TransferFlagsDialog(QStatusBar *statusBar, BYTE *flags, QWi
         ui->comboBox->addItem(availableFlags.at(i).name);
 
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showRemoveContextMenu(QPoint)));
+    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this,
+            SLOT(showRemoveContextMenu(QPoint)));
 
     statusBar->showMessage("Transfer flags loaded successfully", 3000);
 }
@@ -68,27 +69,27 @@ TransferFlagsDialog::TransferFlagsDialog(QStatusBar *statusBar, BYTE *flags, QWi
 void TransferFlagsDialog::showRemoveContextMenu(QPoint pos)
 {
     if (ui->treeWidget->selectedItems().length() == 0)
-           return;
+        return;
 
-   QPoint globalPos =ui->treeWidget->mapToGlobal(pos);
+    QPoint globalPos =ui->treeWidget->mapToGlobal(pos);
 
-   QMenu contextMenu;
-   QIcon icon;
-   icon.addPixmap(QPixmap::fromImage(QImage(":/Images/delete.png")));
-   contextMenu.addAction(icon, "Remove Flag");
+    QMenu contextMenu;
+    QIcon icon;
+    icon.addPixmap(QPixmap::fromImage(QImage(":/Images/delete.png")));
+    contextMenu.addAction(icon, "Remove Flag");
 
-   QAction *selectedItem = contextMenu.exec(globalPos);
-   if (selectedItem)
-   {
-       QTreeWidgetItem *item = ui->treeWidget->selectedItems().at(0);
-       ui->comboBox->addItem(item->text(0));
+    QAction *selectedItem = contextMenu.exec(globalPos);
+    if (selectedItem)
+    {
+        QTreeWidgetItem *item = ui->treeWidget->selectedItems().at(0);
+        ui->comboBox->addItem(item->text(0));
 
-       // add it to the available
-       Flag flag = { item->text(0),  QtHelpers::ParseHexString(item->text(1))};
-       availableFlags.push_back(flag);
+        // add it to the available
+        Flag flag = { item->text(0),  QtHelpers::ParseHexString(item->text(1))};
+        availableFlags.push_back(flag);
 
-       delete item;
-   }
+        delete item;
+    }
 }
 
 TransferFlagsDialog::~TransferFlagsDialog()

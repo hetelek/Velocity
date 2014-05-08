@@ -13,56 +13,56 @@ using std::wstring;
 // Description: different types of entries in an Xdbf file
 enum EntryType
 {
-	Achievement = 1,
-	Image, 
-	Setting,
-	Title,
-	String,
-	AvatarAward
+    Achievement = 1,
+    Image,
+    Setting,
+    Title,
+    String,
+    AvatarAward
 };
 
 struct XdbfHeader
 {
-	DWORD magic;
-	DWORD version;
-	DWORD entryTableLength;
-	DWORD entryCount;
-	DWORD freeMemTableLength;
-	DWORD freeMemTableEntryCount;
+    DWORD magic;
+    DWORD version;
+    DWORD entryTableLength;
+    DWORD entryCount;
+    DWORD freeMemTableLength;
+    DWORD freeMemTableEntryCount;
 };
 
 struct XdbfEntry
 {
-	EntryType type;
-	UINT64 id;
-	DWORD addressSpecifier;
-	DWORD length;
+    EntryType type;
+    UINT64 id;
+    DWORD addressSpecifier;
+    DWORD length;
 };
 
 struct XdbfFreeMemEntry
 {
-	DWORD addressSpecifier;
-	DWORD length;
+    DWORD addressSpecifier;
+    DWORD length;
 };
 
 struct SyncEntry
 {
-	UINT64 entryID;
-	UINT64 syncValue;
+    UINT64 entryID;
+    UINT64 syncValue;
 };
 
 struct SyncList
 {
-	vector<SyncEntry> synced;
-	vector<SyncEntry> toSync;
-	bool lengthChanged;
+    vector<SyncEntry> synced;
+    vector<SyncEntry> toSync;
+    bool lengthChanged;
 
     XdbfEntry entry;
 };
 
 struct SyncData
 {
-	UINT64 nextSyncID, lastSyncID;
+    UINT64 nextSyncID, lastSyncID;
     struct tm *lastSyncedTime;
 
     XdbfEntry entry;
@@ -71,40 +71,40 @@ struct SyncData
 struct XdbfEntryGroup
 {
     vector<XdbfEntry> entries;
-	SyncData syncData;
-	SyncList syncs;
+    SyncData syncData;
+    SyncList syncs;
 };
 
 enum SettingEntryType
 {
     Context,
     Int32,
-	Int64,
-	Double,
-	UnicodeString,
-	Float,
-	Binary,
-	TimeStamp
+    Int64,
+    Double,
+    UnicodeString,
+    Float,
+    Binary,
+    TimeStamp
 };
 
 struct SettingEntry
 {
-	SettingEntryType type;
+    SettingEntryType type;
     XdbfEntry entry;
-	union
-	{
+    union
+    {
         unsigned int int32;
         INT64 int64;
         double doubleData;
-		wstring *str;
+        wstring *str;
         float floatData;
-		struct
-		{
-			BYTE *data;
-			DWORD length;
-		} binaryData;
+        struct
+        {
+            BYTE *data;
+            DWORD length;
+        } binaryData;
         time_t timeStamp;
-	};
+    };
 
 public:
     SettingEntry()
@@ -115,19 +115,19 @@ public:
 
 struct StringEntry
 {
-	wstring ws;
+    wstring ws;
 
     XdbfEntry entry;
-	DWORD initialLength;
+    DWORD initialLength;
 };
 
 struct ImageEntry
 {
-	BYTE *image;
-	DWORD length;
+    BYTE *image;
+    DWORD length;
 
     XdbfEntry entry;
-	DWORD initialLength;
+    DWORD initialLength;
 
     ImageEntry()
     {
@@ -154,47 +154,47 @@ enum AchievementFlags
 struct AchievementEntry
 {
     XdbfEntry entry;
-	DWORD initialLength;
+    DWORD initialLength;
 
-	DWORD structSize;
-	DWORD achievementID;
-	DWORD imageID;
-	DWORD gamerscore;
-	DWORD flags;
+    DWORD structSize;
+    DWORD achievementID;
+    DWORD imageID;
+    DWORD gamerscore;
+    DWORD flags;
     unsigned int unlockTime;
-	wstring name;
-	wstring lockedDescription;
-	wstring unlockedDescription;
+    wstring name;
+    wstring lockedDescription;
+    wstring unlockedDescription;
 };
 
 enum TitleEntryFlags
 {
-	SyncAchievement = 1,
-	DownloadAchievementImage = 2,
-	DownloadAvatarAward = 0x10,
-	SyncAvatarAward = 0x20
+    SyncAchievement = 1,
+    DownloadAchievementImage = 2,
+    DownloadAvatarAward = 0x10,
+    SyncAvatarAward = 0x20
 };
 
 struct TitleEntry
 {
     XdbfEntry entry;
-	DWORD initialLength;
+    DWORD initialLength;
 
-	DWORD titleID;
-	DWORD achievementCount;
-	DWORD achievementsUnlocked;
-	DWORD totalGamerscore;
-	DWORD gamerscoreUnlocked;
-	WORD achievementsUnlockedOnline;
-	BYTE avatarAwardsEarned;
-	BYTE avatarAwardCount;
-	BYTE maleAvatarAwardsEarned;
-	BYTE maleAvatarAwardCount;
-	BYTE femaleAvatarAwardsEarned;
-	BYTE femaleAvatarAwardCount;
-	DWORD flags;
+    DWORD titleID;
+    DWORD achievementCount;
+    DWORD achievementsUnlocked;
+    DWORD totalGamerscore;
+    DWORD gamerscoreUnlocked;
+    WORD achievementsUnlockedOnline;
+    BYTE avatarAwardsEarned;
+    BYTE avatarAwardCount;
+    BYTE maleAvatarAwardsEarned;
+    BYTE maleAvatarAwardCount;
+    BYTE femaleAvatarAwardsEarned;
+    BYTE femaleAvatarAwardCount;
+    DWORD flags;
     time_t lastPlayed;
-	wstring gameName;
+    wstring gameName;
 };
 
 enum XboxLiveCountry
@@ -312,9 +312,9 @@ enum XboxLiveCountry
 
 enum GeneralDifficulty
 {
-	Medium = 0,
-	Easy,
-	Hard
+    Medium = 0,
+    Easy,
+    Hard
 };
 
 enum SettingIDs
@@ -418,20 +418,20 @@ enum Gamerzone
 struct AvatarAward
 {
     XdbfEntry entry;
-	DWORD initialSize;
+    DWORD initialSize;
 
-	DWORD structSize;
-	DWORD clothingType;
-	UINT64 awardFlags;
-	DWORD titleID;
-	DWORD imageID;
-	DWORD flags;
+    DWORD structSize;
+    DWORD clothingType;
+    UINT64 awardFlags;
+    DWORD titleID;
+    DWORD imageID;
+    DWORD flags;
     unsigned int unlockTime;
-	AssetSubcategory subcategory;
+    AssetSubcategory subcategory;
     DWORD colorizable;
-	wstring name;
-	wstring unlockedDescription;
-	wstring lockedDescription;
+    wstring name;
+    wstring unlockedDescription;
+    wstring lockedDescription;
 };
 
 enum AvatarComponentMasks

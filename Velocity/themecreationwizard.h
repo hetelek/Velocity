@@ -58,14 +58,15 @@ const QString colorNames[] =
     QString("Purple")
 };
 
-namespace Ui {
+namespace Ui
+{
 class ThemeCreationWizard;
 }
 
 class ThemeCreationWizard : public QWizard
 {
     Q_OBJECT
-    
+
 public:
     explicit ThemeCreationWizard(QStatusBar *statusBar, QWidget *parent = 0);
     ~ThemeCreationWizard();

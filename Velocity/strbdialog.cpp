@@ -1,7 +1,8 @@
 #include "strbdialog.h"
 #include "ui_strbdialog.h"
 
-StrbDialog::StrbDialog(AvatarAsset *asset, QWidget *parent) : QDialog(parent), ui(new Ui::StrbDialog), asset(asset)
+StrbDialog::StrbDialog(AvatarAsset *asset, QWidget *parent) : QDialog(parent),
+    ui(new Ui::StrbDialog), asset(asset)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -12,11 +13,16 @@ StrbDialog::StrbDialog(AvatarAsset *asset, QWidget *parent) : QDialog(parent), u
     try
     {
         AssetMetadata metadata = asset->GetAssetMetadata();
-        ui->lblGender->setText("Asset Gender: " + QString::fromStdString(AssetHelpers::AssetGenderToString(metadata.gender)));
-        ui->lblBinType->setText("Binary Type: " + QString::fromStdString(AssetHelpers::BinaryAssetTypeToString(metadata.type)));
-        ui->lblDetails->setText("Type Details: 0x" + QString::number(metadata.assetTypeDetails, 16).toUpper());
-        ui->lblSubCat->setText("Sub-Category: " + QString::fromStdString(AssetHelpers::AssetSubcategoryToString(metadata.category)));
-        ui->lblSkeletonV->setText("Skeleton Version: " + QString::fromStdString(AssetHelpers::SkeletonVersionToString(metadata.skeletonVersion)));
+        ui->lblGender->setText("Asset Gender: " + QString::fromStdString(AssetHelpers::AssetGenderToString(
+                    metadata.gender)));
+        ui->lblBinType->setText("Binary Type: " + QString::fromStdString(
+                    AssetHelpers::BinaryAssetTypeToString(metadata.type)));
+        ui->lblDetails->setText("Type Details: 0x" + QString::number(metadata.assetTypeDetails,
+                16).toUpper());
+        ui->lblSubCat->setText("Sub-Category: " + QString::fromStdString(
+                    AssetHelpers::AssetSubcategoryToString(metadata.category)));
+        ui->lblSkeletonV->setText("Skeleton Version: " + QString::fromStdString(
+                    AssetHelpers::SkeletonVersionToString(metadata.skeletonVersion)));
     }
     catch(string error)
     {

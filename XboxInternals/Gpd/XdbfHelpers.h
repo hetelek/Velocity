@@ -13,9 +13,9 @@ class XBOXINTERNALSSHARED_EXPORT XdbfHelpers
 {
 public:
 
-	static string EntryTypeToString(EntryType type);
+    static string EntryTypeToString(EntryType type);
 
-	static string SettingEntryTypeToString(SettingEntryType type);
+    static string SettingEntryTypeToString(SettingEntryType type);
 
     static bool CompareEntries(XdbfEntry a, XdbfEntry b);
 
@@ -25,13 +25,13 @@ public:
 
     static string AchievementTypeToString(AchievementFlags type);
 
-	static string RegionIDtoString(XboxLiveCountry id);
+    static string RegionIDtoString(XboxLiveCountry id);
 
-	static string AssetSubcategoryToString(AssetSubcategory category);
+    static string AssetSubcategoryToString(AssetSubcategory category);
 
-	static string AssetGenderToString(AssetGender gender);
+    static string AssetGenderToString(AssetGender gender);
 
-	static string IDtoString(UINT64 id);
+    static string IDtoString(UINT64 id);
 
     static string GetAchievementState(AchievementEntry *entry);
 };

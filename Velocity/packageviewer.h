@@ -36,7 +36,8 @@
 
 Q_DECLARE_METATYPE( StfsFileEntry* )
 
-namespace Ui {
+namespace Ui
+{
 class PackageViewer;
 }
 
@@ -45,7 +46,8 @@ class PackageViewer : public QDialog
     Q_OBJECT
 
 public:
-    explicit PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<QAction*> gpdActions, QList<QAction*> gameActions, QWidget *parent = NULL, bool disposePackage = true);
+    explicit PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<QAction*> gpdActions,
+            QList<QAction*> gameActions, QWidget *parent = NULL, bool disposePackage = true);
     ~PackageViewer();
 
 private slots:

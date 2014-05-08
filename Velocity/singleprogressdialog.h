@@ -11,19 +11,21 @@
 
 void UpdateProgress(void *arg, DWORD cur, DWORD total);
 
-namespace Ui {
+namespace Ui
+{
 class SingleProgressDialog;
 }
 
 class SingleProgressDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
-    explicit SingleProgressDialog(FileSystem system, void *device, Operation op, QString internalPath, QString externalPath, void *outEntry = NULL, QWidget *parent = 0);
+    explicit SingleProgressDialog(FileSystem system, void *device, Operation op, QString internalPath,
+            QString externalPath, void *outEntry = NULL, QWidget *parent = 0);
     void start();
     ~SingleProgressDialog();
-    
+
 private:
     Ui::SingleProgressDialog *ui;
     Operation op;

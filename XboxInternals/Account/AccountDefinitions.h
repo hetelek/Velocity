@@ -22,17 +22,17 @@ enum PasscodeKeys
 
 enum SubscriptionTeir
 {
-	NoSubcription = 0,
-	Silver = 3,
-	Gold = 6,
-	FamilyGold = 9
+    NoSubcription = 0,
+    Silver = 3,
+    Gold = 6,
+    FamilyGold = 9
 };
 
 enum ReservedFlags
 {
-	PasswordProtected = 0x10000000,
-	LiveEnabled = 0x20000000,
-	Recovering = 0x40000000
+    PasswordProtected = 0x10000000,
+    LiveEnabled = 0x20000000,
+    Recovering = 0x40000000
 };
 
 enum ConsoleLanguage
@@ -56,22 +56,22 @@ enum ConsoleLanguage
 enum XboxLiveServiceProvider
 {
     LiveDisabled = 0,
-	ProductionNet = 0x50524F44,	// PROD
-	PartnerNet = 0x50415254		// PART
+    ProductionNet = 0x50524F44,	// PROD
+    PartnerNet = 0x50415254		// PART
 };
 
 struct AccountInfo
 {
-	DWORD reservedFlags;
-	DWORD liveFlags;
-	wstring gamertag;
-	UINT64 xuid;
-	DWORD cachedUserFlags;
-	XboxLiveServiceProvider serviceProvider;
-	BYTE passcode[4];
-	string onlineDomain;
-	string kerbrosRealm;
-	BYTE onlineKey[0x10];
+    DWORD reservedFlags;
+    DWORD liveFlags;
+    wstring gamertag;
+    UINT64 xuid;
+    DWORD cachedUserFlags;
+    XboxLiveServiceProvider serviceProvider;
+    BYTE passcode[4];
+    string onlineDomain;
+    string kerbrosRealm;
+    BYTE onlineKey[0x10];
 };
 
 const BYTE RETAIL_KEY[0x10] = { 0xE1, 0xBC, 0x15, 0x9C, 0x73, 0xB1, 0xEA, 0xE9, 0xAB, 0x31, 0x70, 0xF3, 0xAD, 0x47, 0xEB, 0xF3 };

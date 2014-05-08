@@ -1,6 +1,7 @@
 #include "XeKeys.h"
 
-bool XeKeys::VerifyRSASignature(XeKeysRsaKeys key, BYTE *pbMessage, DWORD cbMessage, BYTE *signature)
+bool XeKeys::VerifyRSASignature(XeKeysRsaKeys key, BYTE *pbMessage, DWORD cbMessage,
+        BYTE *signature)
 {
     BYTE *modulus1, *modulus2;
     DWORD exponent1, exponent2;

@@ -1,17 +1,24 @@
 #include "svodvolumedescriptordialog.h"
 #include "ui_svodvolumedescriptordialog.h"
 
-SvodVolumeDescriptorDialog::SvodVolumeDescriptorDialog(QStatusBar *statusBar, SvodVolumeDescriptor *descriptor, QWidget *parent) :
-    QDialog(parent), ui(new Ui::SvodVolumeDescriptorDialog), descriptor(descriptor), statusBar(statusBar)
+SvodVolumeDescriptorDialog::SvodVolumeDescriptorDialog(QStatusBar *statusBar,
+        SvodVolumeDescriptor *descriptor, QWidget *parent) :
+    QDialog(parent), ui(new Ui::SvodVolumeDescriptorDialog), descriptor(descriptor),
+    statusBar(statusBar)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
-    ui->tableWidget->setItem(0, 0, new QTableWidgetItem("0x" + QString::number(descriptor->size, 16).toUpper()));
-    ui->tableWidget->setItem(1, 0, new QTableWidgetItem(QString::number(descriptor->blockCacheElementCount)));
-    ui->tableWidget->setItem(2, 0, new QTableWidgetItem(QString::number(descriptor->workerThreadProcessor)));
-    ui->tableWidget->setItem(3, 0, new QTableWidgetItem(QString::number(descriptor->workerThreadPriority)));
-    ui->tableWidget->setItem(4, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(descriptor->rootHash, 0x14, false)));
+    ui->tableWidget->setItem(0, 0, new QTableWidgetItem("0x" + QString::number(descriptor->size,
+            16).toUpper()));
+    ui->tableWidget->setItem(1, 0,
+            new QTableWidgetItem(QString::number(descriptor->blockCacheElementCount)));
+    ui->tableWidget->setItem(2, 0,
+            new QTableWidgetItem(QString::number(descriptor->workerThreadProcessor)));
+    ui->tableWidget->setItem(3, 0,
+            new QTableWidgetItem(QString::number(descriptor->workerThreadPriority)));
+    ui->tableWidget->setItem(4, 0,
+            new QTableWidgetItem(QtHelpers::ByteArrayToString(descriptor->rootHash, 0x14, false)));
     ui->tableWidget->setItem(5, 0, new QTableWidgetItem("0x" + QString::number(descriptor->flags, 16)));
     ui->tableWidget->setItem(6, 0, new QTableWidgetItem(QString::number(descriptor->dataBlockCount)));
     ui->tableWidget->setItem(7, 0, new QTableWidgetItem(QString::number(descriptor->dataBlockOffset)));
@@ -59,17 +66,20 @@ void SvodVolumeDescriptorDialog::on_pushButton_clicked()
     }
     else if (!QtHelpers::VerifyHexString(ui->tableWidget->item(5, 0)->text()))
     {
-        QMessageBox::warning(this, "Invalid Value", "The device features must be all hexadecimal digits.\n");
+        QMessageBox::warning(this, "Invalid Value",
+                "The device features must be all hexadecimal digits.\n");
         return;
     }
     else if (!QtHelpers::VerifyDecimalString(ui->tableWidget->item(6, 0)->text()))
     {
-        QMessageBox::warning(this, "Invalid Value", "The data block count must be all hexadecimal digits.\n");
+        QMessageBox::warning(this, "Invalid Value",
+                "The data block count must be all hexadecimal digits.\n");
         return;
     }
     else if (!QtHelpers::VerifyDecimalString(ui->tableWidget->item(7, 0)->text()))
     {
-        QMessageBox::warning(this, "Invalid Value", "The data block offset must be all hexadecimal digits.\n");
+        QMessageBox::warning(this, "Invalid Value",
+                "The data block offset must be all hexadecimal digits.\n");
         return;
     }
 

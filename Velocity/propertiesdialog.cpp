@@ -1,7 +1,8 @@
 #include "propertiesdialog.h"
 #include "ui_propertiesdialog.h"
 
-PropertiesDialog::PropertiesDialog(StfsFileEntry *entry, QString location, bool *changed, QIcon icon, bool hasChildren, QWidget *parent) :
+PropertiesDialog::PropertiesDialog(StfsFileEntry *entry, QString location, bool *changed,
+        QIcon icon, bool hasChildren, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::PropertiesDialog),
     changed(changed),
@@ -64,10 +65,12 @@ PropertiesDialog::PropertiesDialog(StfsFileEntry *entry, QString location, bool 
 
     ui->lblTypeOfFile->setText(final);
     ui->lblLocation->setText(location);
-    ui->lblSize->setText(QString::fromStdString(ByteSizeToString(entry->fileSize)) + " (" + QString::number(entry->fileSize) + " bytes)");
+    ui->lblSize->setText(QString::fromStdString(ByteSizeToString(entry->fileSize)) + " (" +
+            QString::number(entry->fileSize) + " bytes)");
 
     int sizeOnDisk = (entry->fileSize + 0xFFF) & 0xFFFFF000;
-    ui->lblSizeOnDisk->setText(QString::fromStdString(ByteSizeToString(sizeOnDisk)) + " (" + QString::number(sizeOnDisk) + " bytes)");
+    ui->lblSizeOnDisk->setText(QString::fromStdString(ByteSizeToString(sizeOnDisk)) + " (" +
+            QString::number(sizeOnDisk) + " bytes)");
 
     // get the MSTime from
     MSTime createdtime = DWORDToMSTime(entry->createdTimeStamp);

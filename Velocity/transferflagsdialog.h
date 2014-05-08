@@ -14,7 +14,8 @@
 
 using namespace std;
 
-namespace Ui {
+namespace Ui
+{
 class TransferFlagsDialog;
 }
 
@@ -27,11 +28,11 @@ struct Flag
 class TransferFlagsDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit TransferFlagsDialog(QStatusBar *statusBar, BYTE *flags, QWidget *parent = 0);
     ~TransferFlagsDialog();
-    
+
 private slots:
     void on_pushButton_clicked();
 

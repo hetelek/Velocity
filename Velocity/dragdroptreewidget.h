@@ -15,7 +15,7 @@ protected:
     void dropEvent(QDropEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
-    
+
 signals:
     void dragDropped(QDropEvent *event);
     void dragEntered(QDragEnterEvent *event);

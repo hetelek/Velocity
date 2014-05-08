@@ -24,7 +24,8 @@
 #include "packageviewer.h"
 #include "singleprogressdialog.h"
 
-namespace Ui {
+namespace Ui
+{
 class SvodDialog;
 }
 
@@ -33,11 +34,11 @@ Q_DECLARE_METATYPE( GdfxFileEntry* )
 class SvodDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit SvodDialog(SVOD *svod, QStatusBar *statusBar, QWidget *parent = 0);
     ~SvodDialog();
-    
+
 private slots:
     void showFileContextMenu(QPoint pos);
 

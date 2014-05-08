@@ -87,13 +87,16 @@ public:
     StfsFileListing GetFileListing(bool forceUpdate = false);
 
     // Description: extract a file to designated file path
-    void ExtractFile(string pathInPackage, string outPath, void(*extractProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    void ExtractFile(string pathInPackage, string outPath, void(*extractProgress)(void*, DWORD,
+            DWORD) = NULL, void *arg = NULL);
 
     // Description: extract a file (by FileEntry) to a designated file path
-    void ExtractFile(StfsFileEntry *entry, string outPath, void(*extractProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    void ExtractFile(StfsFileEntry *entry, string outPath, void(*extractProgress)(void*, DWORD,
+            DWORD) = NULL, void *arg = NULL);
 
     // Description: get the file entry of a file's path, sets nameLen to '0' if not found
-    StfsFileEntry GetFileEntry(string pathInPackage, bool checkFolders = false, StfsFileEntry *newEntry = NULL);
+    StfsFileEntry GetFileEntry(string pathInPackage, bool checkFolders = false,
+            StfsFileEntry *newEntry = NULL);
 
     // Description: get the first 4 bytes of a file
     DWORD GetFileMagic(string pathInPackage);
@@ -120,16 +123,20 @@ public:
     void RemoveFile(string pathInPackage);
 
     // Description: inject a file into the package
-    StfsFileEntry InjectFile(string path, string pathInPackage, void(*injectProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    StfsFileEntry InjectFile(string path, string pathInPackage, void(*injectProgress)(void*, DWORD,
+            DWORD) = NULL, void *arg = NULL);
 
     // Description: inject raw data into the package
-    StfsFileEntry InjectData(BYTE *data, DWORD length, string pathInPackage, void(*injectProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    StfsFileEntry InjectData(BYTE *data, DWORD length, string pathInPackage,
+            void(*injectProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
     // Description: replace an existing file into the package
-    void ReplaceFile(string path, string pathInPackage, void(*replaceProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    void ReplaceFile(string path, string pathInPackage, void(*replaceProgress)(void*, DWORD,
+            DWORD) = NULL, void *arg = NULL);
 
     // Description: replace an existing file into the package
-    void ReplaceFile(string path, StfsFileEntry *entry, string pathInPackage, void(*replaceProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    void ReplaceFile(string path, StfsFileEntry *entry, string pathInPackage,
+            void(*replaceProgress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
     // Description: rename an existing file in the package
     void RenameFile(string newName, string pathInPackage);
@@ -218,10 +225,12 @@ private:
     void AddToListing(StfsFileListing *fullListing, StfsFileListing *out);
 
     // Description: get the file entry from a file's path
-    void GetFileEntry(vector<string> locationOfFile, StfsFileListing *start, StfsFileEntry *out, StfsFileEntry *newEntry = NULL, bool updateEntry = false, bool checkFolders = false);
+    void GetFileEntry(vector<string> locationOfFile, StfsFileListing *start, StfsFileEntry *out,
+            StfsFileEntry *newEntry = NULL, bool updateEntry = false, bool checkFolders = false);
 
     // Description: get the raw file listing
-    void GenerateRawFileListing(StfsFileListing *in, vector<StfsFileEntry> *outFiles, vector<StfsFileEntry> *outFolders);
+    void GenerateRawFileListing(StfsFileListing *in, vector<StfsFileEntry> *outFiles,
+            vector<StfsFileEntry> *outFolders);
 
     // Description: split a string into multiple substrings
     vector<string> SplitString(string str, string delimeter);
@@ -236,7 +245,8 @@ private:
     void SetNextBlock(DWORD blockNum, INT24 nextBlockNum);
 
     // Description: discard the current file listing and reWrite it
-    void WriteFileListing(bool usePassed = false, vector<StfsFileEntry> *outFis = NULL, vector<StfsFileEntry> *outFos = NULL);
+    void WriteFileListing(bool usePassed = false, vector<StfsFileEntry> *outFis = NULL,
+            vector<StfsFileEntry> *outFos = NULL);
 
     // Description: Write a file entry at the io's current position
     void WriteFileEntry(StfsFileEntry *entry);
@@ -251,7 +261,8 @@ private:
     Level CalcualateTopLevel();
 
     // Description: get the file listing that matches the directory path
-    void FindDirectoryListing(vector<string> locationOfDirectory, StfsFileListing *start, StfsFileListing **out);
+    void FindDirectoryListing(vector<string> locationOfDirectory, StfsFileListing *start,
+            StfsFileListing **out);
 
     // Description: update the entry at the given path
     void UpdateEntry(string pathInPackage, StfsFileEntry entry);

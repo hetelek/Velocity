@@ -40,7 +40,8 @@ Q_DECLARE_METATYPE( FatxFileEntry* )
 Q_DECLARE_METATYPE( FatxDrive* )
 Q_DECLARE_METATYPE( Partition* )
 
-namespace Ui {
+namespace Ui
+{
 class DeviceViewer;
 }
 
@@ -52,7 +53,8 @@ class DeviceViewer : public QDialog
     Q_OBJECT
 
 public:
-    explicit DeviceViewer(QStatusBar *statusBar, QList<QAction *> gpdActions, QList<QAction *> gameActions, QWidget *parent = 0);
+    explicit DeviceViewer(QStatusBar *statusBar, QList<QAction *> gpdActions,
+            QList<QAction *> gameActions, QWidget *parent = 0);
 
     void LoadDrives();
     ~DeviceViewer();

@@ -25,7 +25,7 @@
 #include <ctype.h>
 
 #ifdef _WIN32
-    #include <direct.h>
+#include <direct.h>
 #endif
 
 enum VelocityDropAction
@@ -75,11 +75,11 @@ public:
 private:
     class SubWindowEvents : public QObject
     {
-        public:
-            SubWindowEvents(QObject* parent);
+    public:
+        SubWindowEvents(QObject* parent);
 
-        protected:
-            bool eventFilter(QObject *obj, QEvent *event);
+    protected:
+        bool eventFilter(QObject *obj, QEvent *event);
     };
 };
 

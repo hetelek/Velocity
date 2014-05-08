@@ -1,7 +1,8 @@
 #include "stfstoolsdialog.h"
 #include "ui_stfstoolsdialog.h"
 
-StfsToolsDialog::StfsToolsDialog(StfsPackage *package, QWidget *parent) : QDialog(parent), ui(new Ui::StfsToolsDialog), package(package)
+StfsToolsDialog::StfsToolsDialog(StfsPackage *package, QWidget *parent) : QDialog(parent),
+    ui(new Ui::StfsToolsDialog), package(package)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -25,6 +26,8 @@ void StfsToolsDialog::on_spnBlock_valueChanged(int arg1)
     DWORD blockNum = package->BlockToAddress(arg1);
     DWORD hashAddr = package->GetHashAddressOfBlock(arg1);
 
-    ui->lblAddr->setText(QString::number(blockNum) + " (0x" + QString::number(blockNum, 16).toUpper() + ")");
-    ui->lblHashAddr->setText(QString::number(hashAddr) + " (0x" + QString::number(hashAddr, 16).toUpper() + ")");
+    ui->lblAddr->setText(QString::number(blockNum) + " (0x" + QString::number(blockNum,
+            16).toUpper() + ")");
+    ui->lblHashAddr->setText(QString::number(hashAddr) + " (0x" + QString::number(hashAddr,
+            16).toUpper() + ")");
 }

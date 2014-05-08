@@ -7,23 +7,28 @@ GamerPicturePackDialog::GamerPicturePackDialog(QStatusBar *statusBar, QWidget *p
     ui->setupUi(this);
 
     titleIDFinder = new TitleIdFinder("", this);
-    connect(titleIDFinder, SIGNAL(SearchFinished(QList<TitleData>)), this, SLOT(onTitleIDSearchReturn(QList<TitleData>)));
+    connect(titleIDFinder, SIGNAL(SearchFinished(QList<TitleData>)), this,
+            SLOT(onTitleIDSearchReturn(QList<TitleData>)));
 
     searchedIDs = new QList<QString>;
     addedIDs = new QList<QString>;
     searchedTitleIDs = new QList<DWORD>;
 
     ui->listSearch->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->listSearch, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenuSearch(QPoint)));
+    connect(ui->listSearch, SIGNAL(customContextMenuRequested(QPoint)), this,
+            SLOT(showContextMenuSearch(QPoint)));
 
     ui->listPack->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->listPack, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenuPack(QPoint)));
+    connect(ui->listPack, SIGNAL(customContextMenuRequested(QPoint)), this,
+            SLOT(showContextMenuPack(QPoint)));
 
     manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamercardNetworkReply(QNetworkReply*)));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this,
+            SLOT(gamercardNetworkReply(QNetworkReply*)));
 
     gpManager = new QNetworkAccessManager(this);
-    connect(gpManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamerPictureDownloaded(QNetworkReply*)));
+    connect(gpManager, SIGNAL(finished(QNetworkReply*)), this,
+            SLOT(gamerPictureDownloaded(QNetworkReply*)));
 
     connect(ui->txtSearch, SIGNAL(returnPressed()), this, SLOT(on_pushButton_clicked()));
 }
@@ -62,7 +67,8 @@ void GamerPicturePackDialog::gamercardNetworkReply(QNetworkReply *reply)
         gamerpic.loadFromData(reply->readAll(), "PNG");
 
         QString url = reply->url().toString();
-        QString picID = url.mid(url.indexOf("t.") + 2, 8).toUpper() + "." + url.mid(url.length() - 4).toUpper();
+        QString picID = url.mid(url.indexOf("t.") + 2,
+                8).toUpper() + "." + url.mid(url.length() - 4).toUpper();
 
         QListWidgetItem *item = new QListWidgetItem(ui->listSearch);
         item->setIcon(QIcon(gamerpic));
@@ -153,7 +159,8 @@ void GamerPicturePackDialog::on_pushButton_clicked()
     {
         ui->btnStopSearch->setEnabled(false);
         currentSearchName = ui->txtSearch->text();
-        manager->get(QNetworkRequest(QUrl("http://gamercard.xbox.com/en-US/" + ui->txtSearch->text() + ".card")));
+        manager->get(QNetworkRequest(QUrl("http://gamercard.xbox.com/en-US/" + ui->txtSearch->text() +
+                ".card")));
     }
 }
 
@@ -162,7 +169,8 @@ void GamerPicturePackDialog::onTitleIDSearchReturn(QList<TitleData> titlesFound)
     if (titlesFound.size() == 0)
         return;
 
-    statusBar->showMessage("Search returned " + QString::number(titlesFound.size()) + " result(s)", 3000);
+    statusBar->showMessage("Search returned " + QString::number(titlesFound.size()) + " result(s)",
+            3000);
 
     currentTitles = new QList<TitleData>(titlesFound);
 
@@ -172,7 +180,8 @@ void GamerPicturePackDialog::onTitleIDSearchReturn(QList<TitleData> titlesFound)
     // display all the titles found in the widget
     for (int i = 0; i < titlesFound.size(); i++)
     {
-        QString newStr = ((QString*)&titlesFound.at(i).titleName)->replace("&#174;", "®").replace("&#39;", "'").replace("&amp;","&").replace("&gt;",">").replace("&lt;","<").replace("â", "").replace("¢", "");
+        QString newStr = ((QString*)&titlesFound.at(i).titleName)->replace("&#174;", "®").replace("&#39;",
+                "'").replace("&amp;","&").replace("&gt;",">").replace("&lt;","<").replace("â", "").replace("¢", "");
         ui->listGameNames->addItem(newStr);
     }
 }
@@ -185,7 +194,8 @@ void GamerPicturePackDialog::on_listGameNames_itemClicked(QListWidgetItem *item)
     searchedTitleIDs->push_back(currentTitles->at(ui->listGameNames->currentIndex().row()).titleID);
 
     currentSearchName = item->text();
-    findGamerPictures(QString::number(currentTitles->at(ui->listGameNames->currentIndex().row()).titleID, 16));
+    findGamerPictures(QString::number(currentTitles->at(
+                ui->listGameNames->currentIndex().row()).titleID, 16));
 }
 
 void GamerPicturePackDialog::findGamerPictures(QString titleID)
@@ -197,17 +207,20 @@ void GamerPicturePackDialog::findGamerPictures(QString titleID)
     const int searchOffsets[] = {0, 0x400, 0x1000, 0x8000};
 
     // reset the manager
-    disconnect(gpManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamerPictureDownloaded(QNetworkReply*)));
+    disconnect(gpManager, SIGNAL(finished(QNetworkReply*)), this,
+               SLOT(gamerPictureDownloaded(QNetworkReply*)));
     delete gpManager;
     gpManager = new QNetworkAccessManager(this);
-    connect(gpManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamerPictureDownloaded(QNetworkReply*)));
+    connect(gpManager, SIGNAL(finished(QNetworkReply*)), this,
+            SLOT(gamerPictureDownloaded(QNetworkReply*)));
 
     // make a bunch of requests
     for (DWORD i = 0; i < 0x400; i++)
     {
         // iterate through all the offsets
         for (int x = 0; x < 4; x++)
-            gpManager->get(QNetworkRequest(QUrl("http://image.xboxlive.com/global/t." + titleID.toUpper() + "/tile/0/2" + QString("%1").arg(searchOffsets[x] + i, 4, 16, QChar('0')).toUpper())));
+            gpManager->get(QNetworkRequest(QUrl("http://image.xboxlive.com/global/t." + titleID.toUpper() +
+                    "/tile/0/2" + QString("%1").arg(searchOffsets[x] + i, 4, 16, QChar('0')).toUpper())));
     }
 }
 
@@ -223,7 +236,8 @@ void GamerPicturePackDialog::gamerPictureDownloaded(QNetworkReply *reply)
         if (image.isNull())
             return;
 
-        QString pictureID = reply->url().toString().mid(reply->url().toString().indexOf("t.") + 2, 8) + "." + reply->url().toString().mid(reply->url().toString().length() - 4);
+        QString pictureID = reply->url().toString().mid(reply->url().toString().indexOf("t.") + 2,
+                8) + "." + reply->url().toString().mid(reply->url().toString().length() - 4);
 
         // add the gamerpicture to the list widget
         QListWidgetItem *item = new QListWidgetItem(ui->listSearch);
@@ -248,7 +262,8 @@ void GamerPicturePackDialog::on_listPack_itemDoubleClicked(QListWidgetItem *item
     switchImage(item, ui->listPack, ui->listSearch, addedIDs, searchedIDs);
 }
 
-void GamerPicturePackDialog::switchImage(QListWidgetItem *currentItem, QListWidget *current, QListWidget *toAddTo, QList<QString> *currentStrs, QList<QString> *toAddToStrs)
+void GamerPicturePackDialog::switchImage(QListWidgetItem *currentItem, QListWidget *current,
+        QListWidget *toAddTo, QList<QString> *currentStrs, QList<QString> *toAddToStrs)
 {
     if (toAddToStrs->contains(currentStrs->at(current->row(currentItem))) && current == ui->listSearch)
     {
@@ -287,7 +302,8 @@ void GamerPicturePackDialog::showContextMenuPack(QPoint p)
     showContextMenu(p, ui->listPack, ui->listSearch, addedIDs, searchedIDs);
 }
 
-void GamerPicturePackDialog::showContextMenu(QPoint p, QListWidget *current, QListWidget *toAddTo, QList<QString> *currentStrs, QList<QString> *toAddToStrs)
+void GamerPicturePackDialog::showContextMenu(QPoint p, QListWidget *current, QListWidget *toAddTo,
+        QList<QString> *currentStrs, QList<QString> *toAddToStrs)
 {
     QPoint globalPos = current->mapToGlobal(p);
     QMenu contextMenu;
@@ -315,7 +331,8 @@ void GamerPicturePackDialog::showContextMenu(QPoint p, QListWidget *current, QLi
     else if (selectedItem->text() == "Save Image")
     {
         QString savePath = QFileDialog::getSaveFileName(this, "Choose a place to save the gamerpicture",
-            QtHelpers::DefaultLocation() + getImageName(currentStrs->at(current->currentIndex().row()), true) + ".png", "*.png");
+                QtHelpers::DefaultLocation() + getImageName(currentStrs->at(current->currentIndex().row()),
+                        true) + ".png", "*.png");
 
         if (savePath == "")
             return;
@@ -353,7 +370,7 @@ void GamerPicturePackDialog::on_txtPackName_textChanged(const QString &arg1)
 void GamerPicturePackDialog::on_btnCreatePack_clicked()
 {
     QString savePath = QFileDialog::getSaveFileName(this, "Choose a place to save your picture pack",
-        QtHelpers::DefaultLocation() + "/" + ui->txtPackName->text());
+            QtHelpers::DefaultLocation() + "/" + ui->txtPackName->text());
     if (savePath == "")
         return;
 
@@ -401,15 +418,18 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
             QBuffer buffLrg(&largeImage);
             buffLrg.open(QIODevice::WriteOnly);
             ui->listPack->item(i)->icon().pixmap(64, 64).save(&buffLrg, "PNG");
-            picturePack.InjectData((BYTE*)largeImage.data(), largeImage.length(), getImageName(addedIDs->at(i), true).toStdString() + ".png");
+            picturePack.InjectData((BYTE*)largeImage.data(), largeImage.length(), getImageName(addedIDs->at(i),
+                    true).toStdString() + ".png");
 
             QByteArray smallImage;
             QBuffer buffSm(&smallImage);
             buffSm.open(QIODevice::WriteOnly);
             ui->listPack->item(i)->icon().pixmap(32, 32).save(&buffSm, "PNG");
-            picturePack.InjectData((BYTE*)smallImage.data(), smallImage.length(), getImageName(addedIDs->at(i), false).toStdString() + ".png");
+            picturePack.InjectData((BYTE*)smallImage.data(), smallImage.length(), getImageName(addedIDs->at(i),
+                    false).toStdString() + ".png");
 
-            statusBar->showMessage("Creating picture pack, " + QString::number(((float)i / (float)ui->listPack->count()) * 100, 'f', 0) + "% complete");
+            statusBar->showMessage("Creating picture pack, " + QString::number(((float)i /
+                    (float)ui->listPack->count()) * 100, 'f', 0) + "% complete");
             QApplication::processEvents();
         }
 
@@ -430,7 +450,8 @@ void GamerPicturePackDialog::on_btnCreatePack_clicked()
     }
     catch (string error)
     {
-        QMessageBox::critical(this, "Error", "An error occurred while creating your picture pack.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error",
+                "An error occurred while creating your picture pack.\n\n" + QString::fromStdString(error));
     }
 }
 
@@ -486,10 +507,12 @@ bool GamerPicturePackDialog::verifyGamertag(QString gamertag)
 
 void GamerPicturePackDialog::on_btnStopSearch_clicked()
 {
-    disconnect(gpManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamerPictureDownloaded(QNetworkReply*)));
+    disconnect(gpManager, SIGNAL(finished(QNetworkReply*)), this,
+               SLOT(gamerPictureDownloaded(QNetworkReply*)));
     delete gpManager;
     gpManager = new QNetworkAccessManager(this);
-    connect(gpManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gamerPictureDownloaded(QNetworkReply*)));
+    connect(gpManager, SIGNAL(finished(QNetworkReply*)), this,
+            SLOT(gamerPictureDownloaded(QNetworkReply*)));
     QApplication::processEvents();
 
     statusBar->showMessage("Search stopped", 3000);

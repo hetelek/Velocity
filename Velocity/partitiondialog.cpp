@@ -24,12 +24,15 @@ void PartitionDialog::on_comboBox_currentIndexChanged(int index)
     ui->lblPartID->setText("0x" + QString::number(part->partitionId, 16).toUpper());
     ui->lblPartSize->setText(QString::fromStdString(ByteSizeToString(part->size)));
     ui->lblPartClusterSize->setText("0x" + QString::number(part->clusterSize, 16).toUpper());
-    ui->lblPartFirstClusterAddr->setText("0x" + QString::number(part->clusterStartingAddress, 16).toUpper());
+    ui->lblPartFirstClusterAddr->setText("0x" + QString::number(part->clusterStartingAddress,
+            16).toUpper());
     ui->lblPartSectorsPerCluster->setText(QString::number(part->sectorsPerCluster));
-    ui->lblPartRootDirCluster->setText("0x" + QString::number(part->rootDirectoryCluster, 16).toUpper());
+    ui->lblPartRootDirCluster->setText("0x" + QString::number(part->rootDirectoryCluster,
+            16).toUpper());
 
     // calculate the percentage
-    float freeMemPercentage = (part->freeMemory * 100.0) / ((UINT64)part->clusterCount * part->clusterSize);
+    float freeMemPercentage = (part->freeMemory * 100.0) / ((UINT64)part->clusterCount *
+            part->clusterSize);
 
     // draw the chart
     QPixmap chart(391, 221);

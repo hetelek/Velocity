@@ -21,7 +21,8 @@ About::About(QWidget *parent) :
 
     Phonon::createPath(developers, audioOutput);
 
-    developers->setCurrentSource(Phonon::MediaSource(QtHelpers::ExecutingDirectory() + "Developers.mp3"));
+    developers->setCurrentSource(Phonon::MediaSource(QtHelpers::ExecutingDirectory() +
+            "Developers.mp3"));
     developers->play();
 #endif
 }
@@ -37,7 +38,8 @@ void About::onSongFinished()
 #ifdef _WIN32
     // for (;;) let's listen to it one more time;
     developers->clear();
-    developers->setCurrentSource(Phonon::MediaSource(QtHelpers::ExecutingDirectory() + "Developers.mp3"));
+    developers->setCurrentSource(Phonon::MediaSource(QtHelpers::ExecutingDirectory() +
+            "Developers.mp3"));
     developers->play();
 #endif
 }

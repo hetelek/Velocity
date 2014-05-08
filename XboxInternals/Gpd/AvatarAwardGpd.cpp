@@ -62,7 +62,8 @@ struct AvatarAward AvatarAwardGpd::readAvatarAwardEntry(XdbfEntry entry)
     award.lockedDescription = io->ReadWString();
 
     // calculate the initial size of the entry
-    award.initialSize = 0x2C + ((award.name.size() + award.unlockedDescription.size() + award.lockedDescription.size() + 3) * 2);
+    award.initialSize = 0x2C + ((award.name.size() + award.unlockedDescription.size() +
+            award.lockedDescription.size() + 3) * 2);
 
     return award;
 }
@@ -90,7 +91,8 @@ string AvatarAwardGpd::GetGUID(struct AvatarAward *award)
 {
     char guid[38];
     WORD *seg = (WORD*)&award->awardFlags;
-    sprintf(guid, "%08lx-%04x-%04x-%04x-%04x%08lx", award->clothingType, seg[3], seg[2], seg[1], seg[0], award->titleID);
+    sprintf(guid, "%08lx-%04x-%04x-%04x-%04x%08lx", award->clothingType, seg[3], seg[2], seg[1], seg[0],
+            award->titleID);
 
     return string(guid);
 }
@@ -118,7 +120,8 @@ string AvatarAwardGpd::GetLargeAwardImageURL(struct AvatarAward *award)
 
 void AvatarAwardGpd::WriteAvatarAward(struct AvatarAward *award)
 {
-    DWORD calculatedLength = 0x2C + ((award->name.size() + award->unlockedDescription.size() + award->lockedDescription.size() + 3) * 2);
+    DWORD calculatedLength = 0x2C + ((award->name.size() + award->unlockedDescription.size() +
+            award->lockedDescription.size() + 3) * 2);
 
     if (calculatedLength != award->initialSize)
     {
@@ -158,10 +161,12 @@ void AvatarAwardGpd::WriteAvatarAward(struct AvatarAward *award)
 
 void AvatarAwardGpd::CreateAvatarAward(struct AvatarAward *award)
 {
-    award->initialSize = 0x2C + ((award->name.size() + award->unlockedDescription.size() + award->lockedDescription.size() + 3) * 2);
+    award->initialSize = 0x2C + ((award->name.size() + award->unlockedDescription.size() +
+            award->lockedDescription.size() + 3) * 2);
 
     // create a new xdbf entry for the award
-    UINT64 entryID = ((UINT64)award->titleID << 32) | ((DWORD)getNextAwardIndex() << 16) | GetAssetGender(award);
+    UINT64 entryID = ((UINT64)award->titleID << 32) | ((DWORD)getNextAwardIndex() << 16) |
+            GetAssetGender(award);
     award->entry = xdbf->CreateEntry(AvatarAward, entryID, award->initialSize);
 
     // Write the award to the file

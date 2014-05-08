@@ -26,7 +26,8 @@ void SvodIO::SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *data
     *addressInDataFile += offset;
 
     // for the data hash table(s)
-    *addressInDataFile += ((trueSector / 0x198) + ((trueSector % 0x198 == 0 && trueSector != 0) ? 0 : 1)) * 0x1000;
+    *addressInDataFile += ((trueSector / 0x198) + ((trueSector % 0x198 == 0 &&
+            trueSector != 0) ? 0 : 1)) * 0x1000;
 }
 
 void SvodIO::SetPosition(UINT64 address, ios_base::seek_dir dir)
@@ -124,7 +125,7 @@ void SvodIO::ReadBytes(BYTE *outBuffer, DWORD len)
 void SvodIO::WriteBytes(BYTE *buffer, DWORD len)
 {
     // all the SvodIOs are using the same IO underneath, so we have to make sure we're at the correct pos
-    SetPosition(pos);  
+    SetPosition(pos);
     pos += len;
 
     // get the current position

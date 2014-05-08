@@ -9,10 +9,10 @@
 #include <QSettings>
 
 // network includes
-    #include <QByteArray>
-    #include <QNetworkAccessManager>
-    #include <QNetworkRequest>
-    #include <QNetworkReply>
+#include <QByteArray>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 //
 
 #include "Gpd/GameGpd.h"
@@ -28,7 +28,8 @@ class GpdUploader : public QObject
     Q_OBJECT
 
 public:
-    explicit GpdUploader(QStringList gamePaths, QStringList avatarPaths, QStringList titleIDs, bool deleteGpds, QObject *parent);
+    explicit GpdUploader(QStringList gamePaths, QStringList avatarPaths, QStringList titleIDs,
+            bool deleteGpds, QObject *parent);
 
 signals:
     void FinishedUploading(int success, int failures);
@@ -44,7 +45,8 @@ private:
     bool deleteGpds;
 
     QNetworkAccessManager *networkAccessManager;
-    void sendRequest(QString filePath, QString awardFilePath, QString gameName, QString titleID, DWORD achievementCount, DWORD gamerscoreTotal, DWORD awards, DWORD mAwards, DWORD fAwards);
+    void sendRequest(QString filePath, QString awardFilePath, QString gameName, QString titleID,
+            DWORD achievementCount, DWORD gamerscoreTotal, DWORD awards, DWORD mAwards, DWORD fAwards);
     void uploadGpd(QString gamePath, QString awardPath, QString titleID);
 };
 

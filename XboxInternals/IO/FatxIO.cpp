@@ -41,7 +41,8 @@ void FatxIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir)
 
     // calculate the read position
     DWORD startInCluster = (position % entry->partition->clusterSize);
-    INT64 driveOff = (entry->partition->clusterStartingAddress + (entry->partition->clusterSize * (INT64)(cluster - 1))) + startInCluster;
+    INT64 driveOff = (entry->partition->clusterStartingAddress + (entry->partition->clusterSize *
+            (INT64)(cluster - 1))) + startInCluster;
 
     // this stores how many bytes we have until we reach another cluster
     maxReadConsecutive = entry->partition->clusterSize - startInCluster;
@@ -70,7 +71,8 @@ int FatxIO::AllocateMemory(DWORD byteAmount)
         byteAmount++;
 
     // calcualte how many clusters to allocate
-    DWORD clusterCount = (byteAmount + ((entry->partition->clusterSize - (entry->fileSize % entry->partition->clusterSize)) - 1)) / entry->partition->clusterSize;
+    DWORD clusterCount = (byteAmount + ((entry->partition->clusterSize - (entry->fileSize %
+            entry->partition->clusterSize)) - 1)) / entry->partition->clusterSize;
     bool fileIsNull = (entry->fileSize == 0 || entry->startingCluster == 0);
 
     if (!(entry->fileAttributes & FatxDirectory) && !wasZero)
@@ -219,8 +221,10 @@ std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
     while (count > 0 && i < consecutiveClusters.size())
     {
         // get the amount of clusters to copy from the consecutive cluster range
-        DWORD clustersToCopy = (count > consecutiveClusters.at(i).len) ? consecutiveClusters.at(i).len : count;
-        std::vector<DWORD>::iterator rangeStart = part->freeClusters.begin() + consecutiveClusters.at(i).start;
+        DWORD clustersToCopy = (count > consecutiveClusters.at(i).len) ? consecutiveClusters.at(
+                    i).len : count;
+        std::vector<DWORD>::iterator rangeStart = part->freeClusters.begin() + consecutiveClusters.at(
+                    i).start;
 
         // get that calculated amount of consecutive clusters
         std::copy(rangeStart, rangeStart + clustersToCopy, freeClusters.begin() + currentIndex);
@@ -235,16 +239,19 @@ std::vector<DWORD> FatxIO::getFreeClusters(Partition *part, DWORD count)
 
     // remove all of the used clusters
     for (DWORD i = 0; i < usedRanges.size(); i++)
-        part->freeClusters.erase(part->freeClusters.begin() + usedRanges.at(i).start, part->freeClusters.begin() + usedRanges.at(i).start + usedRanges.at(i).len);
+        part->freeClusters.erase(part->freeClusters.begin() + usedRanges.at(i).start,
+                part->freeClusters.begin() + usedRanges.at(i).start + usedRanges.at(i).len);
 
     // if we still need more clusters, then we'll just copy over non-consecutive ones that are left
-    std::copy(part->freeClusters.begin(), part->freeClusters.begin() + count, freeClusters.begin() + currentIndex);
+    std::copy(part->freeClusters.begin(), part->freeClusters.begin() + count,
+              freeClusters.begin() + currentIndex);
     part->freeClusters.erase(part->freeClusters.begin(), part->freeClusters.begin() + count);
 
     return freeClusters;
 }
 
-void FatxIO::SetAllClusters(DeviceIO *device, Partition *part, std::vector<DWORD> &clusters, DWORD value)
+void FatxIO::SetAllClusters(DeviceIO *device, Partition *part, std::vector<DWORD> &clusters,
+        DWORD value)
 {
     // sort the clusters numerically, order doesn't matter any more since we're just setting them all to the same value
     XeCrypt::InsertionSort(clusters.begin(), clusters.end());
@@ -286,7 +293,8 @@ void FatxIO::SetAllClusters(DeviceIO *device, Partition *part, std::vector<DWORD
             }
 
             // calculate the value of the next cluster entry
-            clusterEntryOffset = (part->address + 0x1000 + clusters.at(++i) * part->clusterEntrySize) - DOWN_TO_NEAREST_SECTOR(clusterEntryAddr);
+            clusterEntryOffset = (part->address + 0x1000 + clusters.at(++i) * part->clusterEntrySize) -
+                    DOWN_TO_NEAREST_SECTOR(clusterEntryAddr);
         }
         --i;
 
@@ -359,7 +367,8 @@ void FatxIO::ReplaceFile(std::string sourcePath, void (*progress)(void *, DWORD,
     inFile.SetPosition(0);
 
     // calculate the amount of clusters for the file
-    DWORD clusterCount = (fileSize / entry->partition->clusterSize) + ((fileSize % entry->partition->clusterSize == 0) ? 0 : 1);
+    DWORD clusterCount = (fileSize / entry->partition->clusterSize) + ((fileSize %
+            entry->partition->clusterSize == 0) ? 0 : 1);
 
     // if the file is smaller, then we can free up some clusters at the end
     if (clusterCount < entry->clusterChain.size())
@@ -367,7 +376,8 @@ void FatxIO::ReplaceFile(std::string sourcePath, void (*progress)(void *, DWORD,
         std::vector<DWORD> clustersToFree(entry->clusterChain.size() - clusterCount);
 
         // copy over the clusters that can be freed
-        std::copy(entry->clusterChain.begin() + clusterCount, entry->clusterChain.end(), clustersToFree.begin());
+        std::copy(entry->clusterChain.begin() + clusterCount, entry->clusterChain.end(),
+                  clustersToFree.begin());
 
         // set all of those clusters to free
         SetAllClusters(device, entry->partition, clustersToFree, FAT_CLUSTER_AVAILABLE);
@@ -410,14 +420,16 @@ void FatxIO::ReplaceFile(std::string sourcePath, void (*progress)(void *, DWORD,
         {
             range.len += entry->partition->clusterSize;
         }
-        while ((entry->clusterChain.at(i) + 1) == entry->clusterChain.at(++i) && i < (entry->clusterChain.size() - 2) && (range.len + entry->partition->clusterSize) <= bufferSize);
+        while ((entry->clusterChain.at(i) + 1) == entry->clusterChain.at(++i) &&
+                i < (entry->clusterChain.size() - 2) && (range.len + entry->partition->clusterSize) <= bufferSize);
         i--;
 
         WriteRanges.push_back(range);
     }
 
     DWORD finalClusterSize = entry->fileSize % entry->partition->clusterSize;
-    INT64 finalClusterOffset = FatxIO::ClusterToOffset(entry->partition, entry->clusterChain.at(entry->clusterChain.size() - 1));
+    INT64 finalClusterOffset = FatxIO::ClusterToOffset(entry->partition,
+            entry->clusterChain.at(entry->clusterChain.size() - 1));
     Range lastRange = { finalClusterOffset , (finalClusterSize == 0) ? entry->partition->clusterSize : finalClusterSize };
     WriteRanges.push_back(lastRange);
 
@@ -451,7 +463,8 @@ void FatxIO::ReplaceFile(std::string sourcePath, void (*progress)(void *, DWORD,
         progress(arg, WriteRanges.size(), WriteRanges.size());
 }
 
-void FatxIO::WriteClusterChain(Partition *part, DWORD startingCluster, std::vector<DWORD> clusterChain)
+void FatxIO::WriteClusterChain(Partition *part, DWORD startingCluster,
+        std::vector<DWORD> clusterChain)
 {
     if (startingCluster == 0 || clusterChain.size() == 0)
         return;
@@ -468,7 +481,8 @@ void FatxIO::WriteClusterChain(Partition *part, DWORD startingCluster, std::vect
     for (DWORD i = 1; i < clusterChain.size(); i++)
     {
         // seek to the lowest cluster in the chainmap, but round to get a fast read
-        UINT64 clusterEntryAddr = (part->address + 0x1000 + clusterChain.at(i - 1) * part->clusterEntrySize);
+        UINT64 clusterEntryAddr = (part->address + 0x1000 + clusterChain.at(i - 1) *
+                part->clusterEntrySize);
         device->SetPosition(DOWN_TO_NEAREST_SECTOR(clusterEntryAddr));
 
         // read in a chunk of the chainmap
@@ -499,7 +513,8 @@ void FatxIO::WriteClusterChain(Partition *part, DWORD startingCluster, std::vect
             }
 
             // calculate the value of the next cluster entry
-            clusterEntryOffset = (part->address + 0x1000 + clusterChain.at(i++) * part->clusterEntrySize) - DOWN_TO_NEAREST_SECTOR(clusterEntryAddr);
+            clusterEntryOffset = (part->address + 0x1000 + clusterChain.at(i++) * part->clusterEntrySize) -
+                    DOWN_TO_NEAREST_SECTOR(clusterEntryAddr);
         }
         --i;
 
@@ -524,7 +539,8 @@ void FatxIO::WriteClusterChain(Partition *part, DWORD startingCluster, std::vect
     }*/
 }
 
-void FatxIO::GetConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges, bool includeNonConsec)
+void FatxIO::GetConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges,
+        bool includeNonConsec)
 {
     for (int i = 0; i < list.size(); i++)
     {
@@ -576,14 +592,16 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
         {
             range.len += entry->partition->clusterSize;
         }
-        while ((entry->clusterChain.at(i) + 1) == entry->clusterChain.at(++i) && i < (entry->clusterChain.size() - 2) && (range.len + entry->partition->clusterSize) <= bufferSize);
+        while ((entry->clusterChain.at(i) + 1) == entry->clusterChain.at(++i) &&
+                i < (entry->clusterChain.size() - 2) && (range.len + entry->partition->clusterSize) <= bufferSize);
         i--;
 
         readRanges.push_back(range);
     }
 
     DWORD finalClusterSize = entry->fileSize % entry->partition->clusterSize;
-    INT64 finalClusterOffset = ClusterToOffset(entry->partition, entry->clusterChain.at(entry->clusterChain.size() - 1));
+    INT64 finalClusterOffset = ClusterToOffset(entry->partition,
+            entry->clusterChain.at(entry->clusterChain.size() - 1));
     Range lastRange = { finalClusterOffset , (finalClusterSize == 0) ? entry->partition->clusterSize : finalClusterSize};
     readRanges.push_back(lastRange);
 

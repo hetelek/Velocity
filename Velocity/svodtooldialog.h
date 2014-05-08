@@ -8,18 +8,19 @@
 // xbox
 #include "Disc/Svod.h"
 
-namespace Ui {
+namespace Ui
+{
 class SvodToolDialog;
 }
 
 class SvodToolDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit SvodToolDialog(SVOD *svod, QWidget *parent = 0);
     ~SvodToolDialog();
-    
+
 private slots:
     void on_spinBox_valueChanged(int arg1);
 

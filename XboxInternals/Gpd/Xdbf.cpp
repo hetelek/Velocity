@@ -360,7 +360,8 @@ XdbfEntry Xdbf::CreateEntry(EntryType type, UINT64 id, DWORD size)
 
     header.entryCount++;
 
-    if (id == ((type == AvatarAward) ? 1 : 0x100000000) || id == ((type == AvatarAward) ? 2 : 0x200000000))
+    if (id == ((type == AvatarAward) ? 1 : 0x100000000) ||
+            id == ((type == AvatarAward) ? 2 : 0x200000000))
     {
         // allocate memory for the entry
         entry.addressSpecifier = GetSpecifier(AllocateMemory(size));
@@ -430,7 +431,8 @@ XdbfEntry Xdbf::CreateEntry(EntryType type, UINT64 id, DWORD size)
             // create a sync for the entry
             SyncEntry sync;
             sync.entryID = entry.id;
-            if (entry.id != GamercardTitleAchievementsEarned && entry.id != GamercardTitleCredEarned && entry.id != GamercardCred && entry.id != GamercardAchievementsEarned)
+            if (entry.id != GamercardTitleAchievementsEarned && entry.id != GamercardTitleCredEarned &&
+                    entry.id != GamercardCred && entry.id != GamercardAchievementsEarned)
                 sync.syncValue = settings.syncData.nextSyncID++;
             else
                 sync.syncValue = 0;
@@ -769,7 +771,8 @@ void Xdbf::UpdateEntry(XdbfEntry *entry)
     // if the sync data doesn't exist, then create it
     if (group->syncData.entry.type == 0)
     {
-        group->syncData.entry = CreateEntry(entry->type, (entry->type == AvatarAward) ? 2 : 0x200000000, 0x18);
+        group->syncData.entry = CreateEntry(entry->type, (entry->type == AvatarAward) ? 2 : 0x200000000,
+                0x18);
         group->syncData.lastSyncedTime = NULL;
         group->syncData.lastSyncID = 0;
         group->syncData.nextSyncID = 1;
@@ -956,9 +959,9 @@ void Xdbf::DeleteEntry(XdbfEntry entry)
                     break;
                 }
 
-            WriteSyncs:
-                WriteSyncList(&group->syncs);
-                break;
+WriteSyncs:
+            WriteSyncList(&group->syncs);
+            break;
         case Image:
         case String:
             break;

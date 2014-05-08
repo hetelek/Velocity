@@ -1,20 +1,20 @@
 #include "FatxDriveDetection.h"
 #ifdef _WIN32
-    #include <windows.h>
+#include <windows.h>
 #else
-    #include <dirent.h>
-    #include <fcntl.h>
-    #include <unistd.h>
-    #include <sys/stat.h>
+#include <dirent.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
-    #ifdef __APPLE__
-        #include <sys/disk.h>
-        #include <sys/ioctl.h>
-    #endif
+#ifdef __APPLE__
+#include <sys/disk.h>
+#include <sys/ioctl.h>
+#endif
 
-    #ifdef __linux
-        #include <mntent.h>
-    #endif
+#ifdef __linux
+#include <mntent.h>
+#endif
 #endif
 
 std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
@@ -49,55 +49,55 @@ std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
         directory.assign(logicalDrivePaths.at(i).begin(), logicalDrivePaths.at(i).end());
 
 
-        #ifdef _WIN32
-            WIN32_FIND_DATA fi;
+#ifdef _WIN32
+        WIN32_FIND_DATA fi;
 
-            HANDLE h = FindFirstFile((logicalDrivePaths.at(i) + L"\\Data*").c_str(), &fi);
-            if (h != INVALID_HANDLE_VALUE)
+        HANDLE h = FindFirstFile((logicalDrivePaths.at(i) + L"\\Data*").c_str(), &fi);
+        if (h != INVALID_HANDLE_VALUE)
+        {
+            do
             {
-                do
-                {
-                    char path[9];
-                    wcstombs(path, fi.cFileName, wcslen(fi.cFileName) + 1);
-                    dataFiles.push_back(directory + "\\" + std::string(path));
-                }
-                while (FindNextFile(h, &fi));
-
-                FindClose(h);
-
-                if (dataFiles.size() >= 3)
-                {
-                    // make sure the data files are loaded in the right order
-                    std::sort(dataFiles.begin(), dataFiles.end());
-                    MultiFileIO *io = new MultiFileIO(dataFiles);
-                    FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
-                    drives.push_back(usbDrive);
-                }
+                char path[9];
+                wcstombs(path, fi.cFileName, wcslen(fi.cFileName) + 1);
+                dataFiles.push_back(directory + "\\" + std::string(path));
             }
-        #else
-            DIR *dir = NULL;
-            dirent *ent = NULL;
-            dir = opendir(directory.c_str());
-            if (dir != NULL)
+            while (FindNextFile(h, &fi));
+
+            FindClose(h);
+
+            if (dataFiles.size() >= 3)
             {
-                // search for valid data files
-                while ((ent = readdir(dir)) != NULL)
-                {
-                    // the disks start with 'data'
-                    if (std::string(ent->d_name).substr(0, 4) == "Data")
-                        dataFiles.push_back(directory + std::string(ent->d_name));
-                }
-
-                if (dataFiles.size() >= 3)
-                {
-                    // make sure the data files are loaded in the right order
-                    std::sort(dataFiles.begin(), dataFiles.end());
-                    MultiFileIO *io = new MultiFileIO(dataFiles);
-                    FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
-                    drives.push_back(usbDrive);
-                }
+                // make sure the data files are loaded in the right order
+                std::sort(dataFiles.begin(), dataFiles.end());
+                MultiFileIO *io = new MultiFileIO(dataFiles);
+                FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
+                drives.push_back(usbDrive);
             }
-        #endif
+        }
+#else
+        DIR *dir = NULL;
+        dirent *ent = NULL;
+        dir = opendir(directory.c_str());
+        if (dir != NULL)
+        {
+            // search for valid data files
+            while ((ent = readdir(dir)) != NULL)
+            {
+                // the disks start with 'data'
+                if (std::string(ent->d_name).substr(0, 4) == "Data")
+                    dataFiles.push_back(directory + std::string(ent->d_name));
+            }
+
+            if (dataFiles.size() >= 3)
+            {
+                // make sure the data files are loaded in the right order
+                std::sort(dataFiles.begin(), dataFiles.end());
+                MultiFileIO *io = new MultiFileIO(dataFiles);
+                FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
+                drives.push_back(usbDrive);
+            }
+        }
+#endif
     }
 
     return drives;
@@ -113,7 +113,8 @@ std::vector<DeviceIO*> FatxDriveDetection::getPhysicalDisks()
     {
         ss << L"\\\\.\\PHYSICALDRIVE" << i;
 
-        HANDLE drive = CreateFile(ss.str().c_str(), GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+        HANDLE drive = CreateFile(ss.str().c_str(), GENERIC_READ|GENERIC_WRITE,
+                FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
         if (drive != INVALID_HANDLE_VALUE)
         {
             CloseHandle(drive);
@@ -253,7 +254,7 @@ std::vector<std::wstring> FatxDriveDetection::getLogicalDrives()
                 {
                     std::wstring widePathStr;
                     widePathStr.assign(xboxDirPath.begin(), xboxDirPath.end());
-                    driveStrings.push_back(widePathStr);                    
+                    driveStrings.push_back(widePathStr);
 
                     closedir(dir);
                 }

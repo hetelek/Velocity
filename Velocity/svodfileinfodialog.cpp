@@ -1,7 +1,8 @@
 #include "svodfileinfodialog.h"
 #include "ui_svodfileinfodialog.h"
 
-SvodFileInfoDialog::SvodFileInfoDialog(SVOD *svod, GdfxFileEntry *entry, QString type, QWidget *parent) :
+SvodFileInfoDialog::SvodFileInfoDialog(SVOD *svod, GdfxFileEntry *entry, QString type,
+        QWidget *parent) :
     QDialog(parent), ui(new Ui::SvodFileInfoDialog), entry(entry), svod(svod), type(type)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -11,11 +12,13 @@ SvodFileInfoDialog::SvodFileInfoDialog(SVOD *svod, GdfxFileEntry *entry, QString
     // load the information
     ui->lblLocation->setText(QString::fromStdString(entry->filePath));
     ui->txtName->setText(QString::fromStdString(entry->name));
-    ui->lblSize->setText(QString::fromStdString(ByteSizeToString(entry->size)) + " (" + QString::number(entry->size) + ")");
+    ui->lblSize->setText(QString::fromStdString(ByteSizeToString(entry->size)) + " (" + QString::number(
+                entry->size) + ")");
     ui->lblSector->setText("0x" + QString::number(entry->sector, 16).toUpper());
 
     DWORD sizeOnDisk = (entry->size + 0x7FF) & 0xFFFFF800;
-    ui->lblSizeOnDisk->setText(QString::fromStdString(ByteSizeToString(sizeOnDisk)) + " (" + QString::number(sizeOnDisk) + " + bytes)");
+    ui->lblSizeOnDisk->setText(QString::fromStdString(ByteSizeToString(sizeOnDisk)) + " (" +
+            QString::number(sizeOnDisk) + " + bytes)");
     ui->lblTypeOfFile->setText(getFileType(QString::fromStdString(entry->name)));
 
     // load flags

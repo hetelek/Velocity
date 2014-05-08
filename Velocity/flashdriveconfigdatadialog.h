@@ -13,18 +13,20 @@
 #include "certificatedialog.h"
 
 
-namespace Ui {
+namespace Ui
+{
 class FlashDriveConfigDataDialog;
 }
 
 class FlashDriveConfigDataDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
-    explicit FlashDriveConfigDataDialog(FlashDriveConfigurationData *configData, QStatusBar *statusBar, QWidget *parent = 0);
+    explicit FlashDriveConfigDataDialog(FlashDriveConfigurationData *configData, QStatusBar *statusBar,
+            QWidget *parent = 0);
     ~FlashDriveConfigDataDialog();
-    
+
 private slots:
     void on_btnCertificate_clicked();
 

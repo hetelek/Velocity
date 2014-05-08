@@ -10,18 +10,19 @@
 #include "Disc/Svod.h"
 #include "Stfs/StfsDefinitions.h"
 
-namespace Ui {
+namespace Ui
+{
 class SvodFileInfoDialog;
 }
 
 class SvodFileInfoDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit SvodFileInfoDialog(SVOD *svod, GdfxFileEntry *entry, QString type, QWidget *parent = 0);
     ~SvodFileInfoDialog();
-    
+
 private slots:
     void on_pushButton_clicked();
 

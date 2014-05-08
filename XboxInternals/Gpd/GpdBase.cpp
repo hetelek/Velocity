@@ -180,24 +180,24 @@ void GpdBase::CreateSettingEntry(SettingEntry *setting, UINT64 entryID)
     DWORD entryLen = 0;
     switch (setting->type)
     {
-    case Context:
-        entryLen = setting->binaryData.length;
-        break;
-    case Int32:
-    case Float:
-    case Int64:
-    case Double:
-    case TimeStamp:
-        entryLen = 0x18;
-        break;
-    case UnicodeString:
-        entryLen = 0x18 + ((setting->str->size() + 1) * 2);
-        break;
-    case Binary:
-        entryLen = 0x18 + (setting->binaryData.length * 2);
-        break;
-    default:
-        throw string("Gpd: Error creating setting entry. Invalid setting entry type.\n");
+        case Context:
+            entryLen = setting->binaryData.length;
+            break;
+        case Int32:
+        case Float:
+        case Int64:
+        case Double:
+        case TimeStamp:
+            entryLen = 0x18;
+            break;
+        case UnicodeString:
+            entryLen = 0x18 + ((setting->str->size() + 1) * 2);
+            break;
+        case Binary:
+            entryLen = 0x18 + (setting->binaryData.length * 2);
+            break;
+        default:
+            throw string("Gpd: Error creating setting entry. Invalid setting entry type.\n");
     }
 
     // create the xdbf entry
@@ -313,7 +313,9 @@ void GpdBase::WriteSettingEntry(SettingEntry setting)
             break;
     }
 
-    if (setting.entry.id != GamercardTitleAchievementsEarned && setting.entry.id != GamercardTitleCredEarned && setting.entry.id != GamercardCred && setting.entry.id != GamercardAchievementsEarned)
+    if (setting.entry.id != GamercardTitleAchievementsEarned &&
+            setting.entry.id != GamercardTitleCredEarned && setting.entry.id != GamercardCred &&
+            setting.entry.id != GamercardAchievementsEarned)
         xdbf->UpdateEntry(&setting.entry);
 
     io->Flush();

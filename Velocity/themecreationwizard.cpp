@@ -2,7 +2,8 @@
 #include "ui_themecreationwizard.h"
 
 ThemeCreationWizard::ThemeCreationWizard(QStatusBar *statusBar, QWidget *parent) :
-    QWizard(parent), ui(new Ui::ThemeCreationWizard), statusBar(statusBar), imagesLoaded(0), consoleType(Retail)
+    QWizard(parent), ui(new Ui::ThemeCreationWizard), statusBar(statusBar), imagesLoaded(0),
+    consoleType(Retail)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -84,13 +85,15 @@ void ThemeCreationWizard::onFinished(int status)
         injectImage(theme, &wallpaper4, "Wallpaper4");
 
         // create the parameters.ini file
-        QString paramsFilePath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+        QString paramsFilePath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{",
+                "").replace("}", "").replace("-", "");
         QFile params(paramsFilePath);
         params.open(QIODevice::Truncate | QIODevice::WriteOnly);
 
         // Write the correct information to it
         QTextStream txtStream(&params);
-        txtStream << "SphereColor=" << ui->cmbxSphereColor->currentIndex() << "\r\nAvatarLightingDirectional=0,0,0,0\r\nAvatarLightingAmbient=0\r\n";
+        txtStream << "SphereColor=" << ui->cmbxSphereColor->currentIndex() <<
+                  "\r\nAvatarLightingDirectional=0,0,0,0\r\nAvatarLightingAmbient=0\r\n";
 
         // close the file
         txtStream.flush();
@@ -100,7 +103,8 @@ void ThemeCreationWizard::onFinished(int status)
         theme->InjectFile(paramsFilePath.toStdString(), "parameters.ini");
 
         // create the dash style file
-        QString dashStyleFilePath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+        QString dashStyleFilePath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{",
+                "").replace("}", "").replace("-", "");
         FileIO ioD(dashStyleFilePath.toStdString(), true);
         ioD.Write((DWORD)0);
         ioD.Close();
@@ -122,7 +126,8 @@ void ThemeCreationWizard::onFinished(int status)
     }
     catch (string error)
     {
-        QMessageBox::critical(this, "Error", "An error occured while creating the theme.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error",
+                "An error occured while creating the theme.\n\n" + QString::fromStdString(error));
     }
 }
 
@@ -156,14 +161,16 @@ void ThemeCreationWizard::onCurrentIdChanged(int index)
             button(QWizard::NextButton)->setEnabled(imagesLoaded & 8);
             break;
         case 8:
-            ui->lblSavePath->setText(QtHelpers::DefaultLocation().replace("\\", "/") + "/" + ui->txtName->text());
+            ui->lblSavePath->setText(QtHelpers::DefaultLocation().replace("\\",
+                    "/") + "/" + ui->txtName->text());
             break;
     }
 }
 
 void ThemeCreationWizard::on_pushButton_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Choose a thumbnail image", QtHelpers::DefaultLocation(), "PNG File (*.png)");
+    QString fileName = QFileDialog::getOpenFileName(this, "Choose a thumbnail image",
+            QtHelpers::DefaultLocation(), "PNG File (*.png)");
 
     if (fileName == "")
         return;
@@ -181,7 +188,8 @@ void ThemeCreationWizard::on_pushButton_clicked()
 
 void ThemeCreationWizard::openWallpaper(QLabel *imageViewer, QImage *saveImage)
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Choose a wallpaper image", QtHelpers::DefaultLocation(), "Image Files (*.jpg *.jpeg *.png)");
+    QString fileName = QFileDialog::getOpenFileName(this, "Choose a wallpaper image",
+            QtHelpers::DefaultLocation(), "Image Files (*.jpg *.jpeg *.png)");
 
     if (fileName == "")
         return;
@@ -189,7 +197,8 @@ void ThemeCreationWizard::openWallpaper(QLabel *imageViewer, QImage *saveImage)
     QPixmap *thumbnail = new QPixmap(fileName);
     if (thumbnail->isNull())
     {
-        QMessageBox::warning(this, "Invalid Image", "The requested image could not be loaded successfully.");
+        QMessageBox::warning(this, "Invalid Image",
+                "The requested image could not be loaded successfully.");
         return;
     }
 
@@ -230,7 +239,7 @@ void ThemeCreationWizard::on_txtName_textChanged(const QString & /* arg1 */)
 void ThemeCreationWizard::on_pushButton_6_clicked()
 {
     QString filePath = QFileDialog::getOpenFileName(this, "Choose a place to save your theme",
-        QtHelpers::DefaultLocation().replace("\\", "/") + "/" + ui->txtName->text());
+            QtHelpers::DefaultLocation().replace("\\", "/") + "/" + ui->txtName->text());
 
     if (filePath == "")
         return;

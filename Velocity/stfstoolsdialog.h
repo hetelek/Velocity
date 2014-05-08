@@ -6,18 +6,19 @@
 
 #include "Stfs/StfsPackage.h"
 
-namespace Ui {
+namespace Ui
+{
 class StfsToolsDialog;
 }
 
 class StfsToolsDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit StfsToolsDialog(StfsPackage *packge, QWidget *parent = 0);
     ~StfsToolsDialog();
-    
+
 private slots:
 
     void on_spnBlock_valueChanged(int arg1);
