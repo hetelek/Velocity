@@ -9,7 +9,7 @@ else
 	OS = Windows
 endif
 
-all: release
+all: debug
 
 libXboxInternals: XboxInternals/
 	$(QMAKE) XboxInternals/XboxInternals.pro -o XboxInternals/Makefile CONFIG+=$(CONFIG)
