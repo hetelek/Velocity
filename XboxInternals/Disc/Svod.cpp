@@ -138,17 +138,20 @@ GdfxFileEntry SVOD::GetFileEntry(string path, vector<GdfxFileEntry> *listing)
     string entryName = path.substr(1, path.substr(1).find_first_of('/'));
 
     // search for the entry
-    for (DWORD i = 0; i < listing->size(); i++)
+    size_t i = 0;
+    for (; i < listing->size(); i++)
     {
         if (listing->at(i).name == entryName)
         {
             // check to see if it's at the end
-            if (path.substr(1).find_first_of('/') == -1)
+            if (path.substr(1).find_first_of('/') == string::npos)
                 return listing->at(i);
             else
-                return GetFileEntry(path.substr(entryName.length() + 1), &listing->at(i).files);
+                break;
         }
     }
+
+    return GetFileEntry(path.substr(entryName.length() + 1), &listing->at(i).files);
 }
 
 SvodIO SVOD::GetSvodIO(string path)
@@ -262,5 +265,5 @@ DWORD SVOD::GetSectorCount()
 
 int compareFileEntries(GdfxFileEntry a, GdfxFileEntry b)
 {
-    return !!(a.attributes & GdfxDirectory);
+    return !(a.attributes & GdfxDirectory);
 }
