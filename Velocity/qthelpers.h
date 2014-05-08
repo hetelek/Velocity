@@ -42,7 +42,7 @@ public:
 
     static DWORD ParseHexString(QString string);
 
-    static void ParseHexStringBuffer(QString bytes, BYTE *outBuffer, DWORD len);
+    static void ParseHexStringBuffer(QString bytes, BYTE *outBuffer, int len);
 
     static QString DefaultLocation();
 
