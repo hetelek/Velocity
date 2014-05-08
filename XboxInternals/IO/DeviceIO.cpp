@@ -37,22 +37,21 @@ public:
 #endif
 };
 
-
-DeviceIO::DeviceIO(void* deviceHandle) :
-    lastReadOffset(-1), impl(new Impl)
-{
 #ifdef __WIN32
+DeviceIO::DeviceIO(void* deviceHandle) :
+    impl(new Impl), lastReadOffset(-1)
+{
     pos = 0;
     if ((HANDLE)deviceHandle == INVALID_HANDLE_VALUE)
         throw std::string("DeviceIO: Invalid device handle.\n");
 
     this->impl->deviceHandle = (HANDLE)deviceHandle;
     memset(&impl->offset, 0, sizeof(OVERLAPPED));
-#endif
 }
+#endif
 
 DeviceIO::DeviceIO(std::string devicePath) :
-    lastReadOffset(-1), impl(new Impl)
+    impl(new Impl), lastReadOffset(-1)
 {
     // convert it to a wstring
     std::wstring wsDevicePath;
@@ -63,7 +62,7 @@ DeviceIO::DeviceIO(std::string devicePath) :
 }
 
 DeviceIO::DeviceIO(std::wstring devicePath) :
-    lastReadOffset(-1), impl(new Impl)
+    impl(new Impl), lastReadOffset(-1)
 {
     // load the device
     loadDevice(devicePath);
@@ -236,9 +235,10 @@ void DeviceIO::WriteBytes(BYTE *buffer, DWORD len)
     memcpy(lastReadData + (originalPos - currentSector), buffer, bytesToWrite);
 
     // Write the actual data
-    DWORD bytesWritten;
     SetPosition(currentSector);
 #ifdef _WIN32
+    DWORD bytesWritten;
+
     WriteFile(
         impl->deviceHandle,   // Device to read from
         lastReadData,         // Data to Write
@@ -373,7 +373,7 @@ void DeviceIO::Close()
         CloseHandle(impl->deviceHandle);
 #else
     close(impl->device);
-    impl->device = NULL;
+    impl->device = -1;
 #endif
 }
 

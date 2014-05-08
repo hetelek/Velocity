@@ -13,7 +13,10 @@
 class XBOXINTERNALSSHARED_EXPORT DeviceIO : public BaseIO
 {
 public:
+    #ifdef __WIN32
     DeviceIO(void* deviceHandle);
+    #endif
+    
     DeviceIO(std::string devicePath);
     DeviceIO(std::wstring devicePath);
     virtual ~DeviceIO();

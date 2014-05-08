@@ -35,10 +35,12 @@ FatxDrive::FatxDrive(std::wstring drivePath, FatxDriveType type) : type(type)
     loadFatxDrive(drivePath);
 }
 
+#ifdef __WIN32
 FatxDrive::FatxDrive(void* deviceHandle, FatxDriveType type) : type(type)
 {
     loadFatxDrive(deviceHandle);
 }
+#endif
 
 std::vector<Partition*> FatxDrive::GetPartitions()
 {
@@ -806,6 +808,7 @@ void FatxDrive::loadFatxDrive(std::wstring drivePath)
     loadFatxDrive();
 }
 
+#ifdef __WIN32
 void FatxDrive::loadFatxDrive(void* deviceHandle)
 {
     // open the device io
@@ -813,6 +816,7 @@ void FatxDrive::loadFatxDrive(void* deviceHandle)
 
     loadFatxDrive();
 }
+#endif
 
 void FatxDrive::loadFatxDrive()
 {
