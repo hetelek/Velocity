@@ -4,7 +4,7 @@
 using namespace std;
 
 SvodMultiFileIO::SvodMultiFileIO(string fileDirectory) :
-    BaseIO(), fileIndex(0), addressInFile(0)
+    BaseIO(), addressInFile(0), fileIndex(0)
 {
     loadDirectories(fileDirectory);
 
@@ -49,10 +49,10 @@ void SvodMultiFileIO::loadDirectories(string path)
         throw string("MultiFileIO: Error opening directory\n");
 }
 
-void SvodMultiFileIO::SetPosition(DWORD addressInFile, int fileIndex)
+void SvodMultiFileIO::SetPosition(DWORD addressInFile, DWORD fileIndex)
 {
     // check if we're in the current file
-    if (fileIndex == -1 || fileIndex == this->fileIndex)
+    if (fileIndex == (DWORD)-1 || fileIndex == this->fileIndex)
     {
         if (addressInFile >= CurrentFileLength())
             throw string("MultiFileIO: Cannot seek beyond the end of the file\n");
