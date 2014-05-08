@@ -614,6 +614,8 @@ void ProfileEditor::addToDashGpd(SettingEntry *entry, SettingEntryType type, UIN
 
     switch (type)
     {
+        case Context:
+            break;
         case Int32:
         case Int64:
         case Float:
@@ -626,8 +628,7 @@ void ProfileEditor::addToDashGpd(SettingEntry *entry, SettingEntryType type, UIN
             entry->binaryData.data = NULL;
             break;
         case UnicodeString:
-            wstring *s = new wstring(L"");
-            entry->str = s;
+            entry->str = new wstring(L"");
             break;
     }
 
@@ -988,13 +989,13 @@ void ProfileEditor::replyFinishedAwImg(QNetworkReply *aReply)
         // add the avatar image to the gpd if it isn't already there
         if (ok && !ui->imgAw->pixmap()->isNull())
         {
-            for (int i = 0; i < games.size(); i++)
+            for (size_t i = 0; i < games.size(); i++)
             {
                 if (games.at(i).titleEntry->titleID == award->titleID)
                 {
                     GameGpd *gpd = games.at(i).gpd;
-                    int x;
-                    for (x = 0; x < gpd->images.size(); x++)
+                    size_t x = 0;
+                    for (; x < gpd->images.size(); x++)
                         if (gpd->images.at(x).entry.id == award->imageID)
                             break;
                     if (x == gpd->images.size())
@@ -1461,8 +1462,8 @@ void ProfileEditor::on_btnCreateAch_clicked()
         QPixmap::fromImage(thumbnail).save(&buffer, "PNG");
 
         // get the next available image id
-        int max = 0;
-        for (DWORD i = 0; i < game->achievements.size(); i++)
+        DWORD max = 0;
+        for (size_t i = 0; i < game->achievements.size(); i++)
             if (max < game->achievements.at(i).imageID)
                 max = game->achievements.at(i).imageID;
         entry.imageID = max + 1;
