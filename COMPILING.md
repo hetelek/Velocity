@@ -27,4 +27,6 @@ The Qt Creator IDE is used to build/debug Velocity. Velocity currently depends o
 	
 ==========
 
-If you do not want to use Qt Creator IDE, you can use Makefile in the root directory of the project.
+If you do not want to use Qt Creator IDE, you can use Makefile in the root directory of the project.  
+The Makefile builds Velocity with debug configuration by default, but one can explicitly set desired configuration as the parameter like this:  
+`make debug` or `make release`
