@@ -91,7 +91,7 @@ string AvatarAwardGpd::GetGUID(struct AvatarAward *award)
 {
     char guid[38];
     WORD *seg = (WORD*)&award->awardFlags;
-    sprintf(guid, "%08lx-%04x-%04x-%04x-%04x%08lx", award->clothingType, seg[3], seg[2], seg[1], seg[0],
+    sprintf(guid, "%08x-%04x-%04x-%04x-%04x%08x", award->clothingType, seg[3], seg[2], seg[1], seg[0],
             award->titleID);
 
     return string(guid);
