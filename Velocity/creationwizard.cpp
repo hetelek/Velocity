@@ -2,7 +2,7 @@
 #include "ui_creationwizard.h"
 
 CreationWizard::CreationWizard(QString *fileName, QWidget *parent) :
-    QWizard(parent), ui(new Ui::CreationWizard), fileName(fileName), consoleType(Retail), magic(CON)
+    QWizard(parent), ui(new Ui::CreationWizard), magic(CON), fileName(fileName), consoleType(Retail)
 {
     connect(this, SIGNAL(currentIdChanged(int)), SLOT(onCurrentIdChanged(int)));
     connect(this, SIGNAL(finished(int)), this, SLOT(onFinished(int)));
