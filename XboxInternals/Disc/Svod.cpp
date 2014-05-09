@@ -173,7 +173,7 @@ void SVOD::Rehash(void (*progress)(DWORD, DWORD, void*), void *arg)
     BYTE prevHash[0x14] = {0};
 
     // iterate through all of the files
-    for (DWORD i = fileCount - 1; ; i--)
+    for (DWORD i = fileCount; i--;)
     {
         io->SetPosition((DWORD)0x2000, i);
         DWORD hashTableCount = ((io->CurrentFileLength() - 0x2000) + 0xCCFFF) / 0xCD000;
@@ -222,9 +222,6 @@ void SVOD::Rehash(void (*progress)(DWORD, DWORD, void*), void *arg)
         // update progress if needed
         if (progress)
             progress(fileCount - i, fileCount, arg);
-
-        if (i == 0)
-            break;
     }
 
     // update the root hash
