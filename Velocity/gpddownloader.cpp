@@ -1,7 +1,7 @@
 #include "gpddownloader.h"
 
 GpdDownloader::GpdDownloader(TitleEntry entry, int index, bool hasAwards,
-        QObject * /* parent */ ) : entry(entry), indexIn(index), hasAwards(hasAwards)
+        QObject * /* parent */ ) : entry(entry), hasAwards(hasAwards), indexIn(index)
 {
     gpdDirectory = "/gameadder/";
     gpdWritten = false;
