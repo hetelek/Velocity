@@ -3,8 +3,8 @@
 
 SingleProgressDialog::SingleProgressDialog(FileSystem system, void *device, Operation op,
         QString internalPath, QString externalPath, void *outEntry, QWidget *parent) :
-    QDialog(parent), ui(new Ui::SingleProgressDialog), system(system), device(device), op(op),
-    internalPath(internalPath), externalPath(externalPath), outEntry(outEntry)
+    QDialog(parent), ui(new Ui::SingleProgressDialog), op(op), system(system), device(device),
+    outEntry(outEntry), internalPath(internalPath), externalPath(externalPath)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -12,13 +12,15 @@ SingleProgressDialog::SingleProgressDialog(FileSystem system, void *device, Oper
 
     switch (op)
     {
-        case OpInject:
-            setWindowTitle("Injecting File");
-            ui->lblIcon->setPixmap(QPixmap(":/Images/add.png"));
+        case OpExtract:
             break;
         case OpReplace:
             setWindowTitle("Replacing File");
             ui->lblIcon->setPixmap(QPixmap(":/Images/replace.png"));
+            break;
+        case OpInject:
+            setWindowTitle("Injecting File");
+            ui->lblIcon->setPixmap(QPixmap(":/Images/add.png"));
             break;
         case OpBackup:
             setWindowTitle("Creating Backup");
