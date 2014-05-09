@@ -1,8 +1,8 @@
 #include "AvatarAssetDownloader.h"
 
 AvatarAssetDownloader::AvatarAssetDownloader(QString titleID, QString guid, QObject *parent) :
-    QObject(parent), titleID(titleID), guid(guid), v1Done(false), v2Done(false),
-    v1TempPath(QString("")), v2TempPath(QString(""))
+    QObject(parent), titleID(titleID), guid(guid), v1TempPath(QString("")), v2TempPath(QString("")),
+    v1Done(false), v2Done(false)
 {
     manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(onRequestFinished(QNetworkReply*)));
