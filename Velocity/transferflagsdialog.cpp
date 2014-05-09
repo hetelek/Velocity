@@ -85,7 +85,7 @@ void TransferFlagsDialog::showRemoveContextMenu(QPoint pos)
         ui->comboBox->addItem(item->text(0));
 
         // add it to the available
-        Flag flag = { item->text(0),  QtHelpers::ParseHexString(item->text(1))};
+        Flag flag = { item->text(0), (BYTE)QtHelpers::ParseHexString(item->text(1)) };
         availableFlags.push_back(flag);
 
         delete item;
