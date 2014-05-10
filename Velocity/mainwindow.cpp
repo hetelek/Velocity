@@ -402,7 +402,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
         std::string fileName = QString(filePaths.at(i).encodedPath()).mid(1).replace("%20",
                 " ").toStdString();
 #else
-        std::string fileName = QString(filePaths.at(i).toEncoded()).replace("%20", " ").toStdString();
+        std::string fileName = QString(filePaths.at(i).encodedPath()).replace("%20", " ").toStdString();
 #endif
 
         // make sure the file exists
