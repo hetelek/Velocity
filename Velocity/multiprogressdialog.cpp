@@ -15,11 +15,17 @@ MultiProgressDialog::MultiProgressDialog(Operation op, FileSystem fileSystem, vo
 
     switch (op)
     {
+        case OpExtract:
+            ui->lblIcon->setPixmap(QPixmap(":/Images/extract.png"));
+            break;
+        case OpReplace:
+            break;
         case OpInject:
             ui->lblIcon->setPixmap(QPixmap(":/Images/inject.png"));
             break;
-        case OpExtract:
-            ui->lblIcon->setPixmap(QPixmap(":/Images/extract.png"));
+        case OpBackup:
+            break;
+        case OpRestore:
             break;
     }
 }
@@ -35,7 +41,7 @@ void MultiProgressDialog::start()
     switch(system)
     {
         case FileSystemSTFS:
-            for (DWORD i = 0; i < internalFiles.size(); i++)
+            for (int i = 0; i < internalFiles.size(); i++)
             {
                 StfsFileEntry *entry = reinterpret_cast<StfsFileEntry*>(internalFiles.at(i));
                 if (entry->blocksForFile == 0)
@@ -45,7 +51,7 @@ void MultiProgressDialog::start()
             }
             break;
         case FileSystemSVOD:
-            for (DWORD i = 0; i < internalFiles.size(); i++)
+            for (int i = 0; i < internalFiles.size(); i++)
             {
                 GdfxFileEntry *entry = reinterpret_cast<GdfxFileEntry*>(internalFiles.at(i));
                 overallProgressTotal += (entry->size + 0xFFFF) / 0x10000;
@@ -184,7 +190,6 @@ void MultiProgressDialog::operateOnNextFile()
             }
             else if (op == OpInject)
             {
-                bool failed = false;
                 try
                 {
                     for (int i = 0; i < internalFiles.size(); i++)
@@ -243,7 +248,6 @@ void MultiProgressDialog::operateOnNextFile()
                 }
                 catch (string error)
                 {
-                    failed = true;
                     QMessageBox::critical(this, "",
                             "An error occurred while copying files to the drive.\n\n" + QString::fromStdString(error));
                 }
