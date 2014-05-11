@@ -98,6 +98,7 @@ void AchievementCreationWizard::onFinished(int result)
         achievement->gamerscore = ui->spnGamerscore->value();
         achievement->flags = (ui->cmbxType->currentIndex() + 1) | (ui->cmbxSecret->currentIndex() << 3);
         achievement->unlockTime = 0;
+        achievement->unlockTimeMilliseconds = 0;
         achievement->structSize = 0x1C;
 
         // set the thumbnail image

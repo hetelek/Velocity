@@ -162,6 +162,7 @@ struct AchievementEntry
 	DWORD gamerscore;
 	DWORD flags;
     unsigned int unlockTime;
+    unsigned int unlockTimeMilliseconds;
 	wstring name;
 	wstring lockedDescription;
 	wstring unlockedDescription;
