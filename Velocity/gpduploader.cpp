@@ -1,6 +1,8 @@
 #include "gpduploader.h"
 
-GpdUploader::GpdUploader(QStringList gamePaths, QStringList avatarPaths, QStringList titleIDs, bool deleteGpds, QObject *parent = 0) : QObject(parent), gamePaths(gamePaths), avatarPaths(avatarPaths), titleIDs(titleIDs), deleteGpds(deleteGpds)
+GpdUploader::GpdUploader(QStringList gamePaths, QStringList avatarPaths, QStringList titleIDs,
+        bool deleteGpds, QObject *parent = 0) : QObject(parent), gamePaths(gamePaths),
+    avatarPaths(avatarPaths), titleIDs(titleIDs), deleteGpds(deleteGpds)
 {
     settings = new QSettings("Exetelek", "Velocity");
 
@@ -129,7 +131,8 @@ void GpdUploader::uploadGpd(QString gamePath, QString awardPath, QString titleID
         gpd = NULL;
 
         // send the Gpd(s) to the server
-        sendRequest(gamePath, (QFile::exists(awardPath)) ? awardPath : "", titleName, titleID, achievementCount, totalGamerscore, awards, mAwards, fAwards);
+        sendRequest(gamePath, (QFile::exists(awardPath)) ? awardPath : "", titleName, titleID,
+                    achievementCount, totalGamerscore, awards, mAwards, fAwards);
     }
     catch (string s)
     {
@@ -163,13 +166,17 @@ void GpdUploader::reply(QNetworkReply *reply)
         uploadGpd(gamePaths.at(currentIndex), avatarPaths.at(currentIndex), titleIDs.at(currentIndex));
 }
 
-void GpdUploader::sendRequest(QString filePath, QString awardFilePath, QString gameName, QString titleID, DWORD achievementCount, DWORD gamerscoreTotal, DWORD awards, DWORD mAwards, DWORD fAwards)
+void GpdUploader::sendRequest(QString filePath, QString awardFilePath, QString gameName,
+        QString titleID, DWORD achievementCount, DWORD gamerscoreTotal, DWORD awards, DWORD mAwards,
+        DWORD fAwards)
 {
     try
     {
         // setup the GET parameters
-        QString getData = "?nm=" + gameName + "&tid=" + titleID.toUpper() + "&achc=" + QString::number(achievementCount) + "&ttlgs=" +
-                    QString::number(gamerscoreTotal) + "&ttlac=" + QString::number(awards) + "&ttlmac=" + QString::number(mAwards) + "&ttlfac=" + QString::number(fAwards);
+        QString getData = "?nm=" + gameName + "&tid=" + titleID.toUpper() + "&achc=" + QString::number(
+                    achievementCount) + "&ttlgs=" +
+                QString::number(gamerscoreTotal) + "&ttlac=" + QString::number(awards) + "&ttlmac=" +
+                QString::number(mAwards) + "&ttlfac=" + QString::number(fAwards);
 
         // open the Gpd file
         QFile gpdFile(filePath);
@@ -189,7 +196,8 @@ void GpdUploader::sendRequest(QString filePath, QString awardFilePath, QString g
 
         // add data to the variable to be sent
         dataToSend.append("\r\n--" + boundary + "\r\n");
-        dataToSend.append("Content-Disposition: form-data; name=\"game\"; filename=\"" + titleID.toUpper() + ".gpd\"\r\n");
+        dataToSend.append("Content-Disposition: form-data; name=\"game\"; filename=\"" + titleID.toUpper() +
+                ".gpd\"\r\n");
         dataToSend.append("Content-Type: application/octet-stream\r\n\r\n");
         dataToSend.append(gpdFile.readAll());
 
@@ -205,15 +213,18 @@ void GpdUploader::sendRequest(QString filePath, QString awardFilePath, QString g
         // add the award gpd to the data to be sent, if there is an award gpd
         if (awardFilePath != "")
         {
-            dataToSend.append("Content-Disposition: form-data; name=\"award\"; filename=\"" + titleID.toUpper() + ".gpd\"\r\n");
+            dataToSend.append("Content-Disposition: form-data; name=\"award\"; filename=\"" + titleID.toUpper()
+                    + ".gpd\"\r\n");
             dataToSend.append("Content-Type: application/octet-stream\r\n\r\n");
             dataToSend.append(awardFile.readAll());
 
             // remove/close the award gpd
-            if (deleteGpds) {
+            if (deleteGpds)
+            {
                 if (!awardFile.remove())
                     qDebug() << "failed to remove award file";
-            } else
+            }
+            else
                 awardFile.close();
         }
 
@@ -222,7 +233,8 @@ void GpdUploader::sendRequest(QString filePath, QString awardFilePath, QString g
 
         // set the network request
         QNetworkRequest request(QUrl("http://velocity.expetelek.com/gameadder/add.php" + getData));
-        request.setRawHeader("Content-Type","multipart/form-data; boundary=-----------------------------7d935033608e2");
+        request.setRawHeader("Content-Type",
+                "multipart/form-data; boundary=-----------------------------7d935033608e2");
         request.setHeader(QNetworkRequest::ContentLengthHeader, dataToSend.size());
 
         // perform POST request

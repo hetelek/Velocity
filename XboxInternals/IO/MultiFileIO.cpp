@@ -1,8 +1,8 @@
 #include "MultiFileIO.h"
 
-MultiFileIO::MultiFileIO(std::vector<std::string> filePaths) : currentIOIndex(0), pos(0)
+MultiFileIO::MultiFileIO(std::vector<std::string> filePaths) : pos(0), currentIOIndex(0)
 {
-    for (int i = 0; i < filePaths.size(); i++)
+    for (size_t i = 0; i < filePaths.size(); i++)
     {
         FileIO *io = new FileIO(filePaths.at(i));
         files.push_back(io);
@@ -11,7 +11,7 @@ MultiFileIO::MultiFileIO(std::vector<std::string> filePaths) : currentIOIndex(0)
     calcualteLengthOfAllFiles();
 }
 
-MultiFileIO::MultiFileIO(std::vector<BaseIO*> files) : files(files), currentIOIndex(0), pos(0)
+MultiFileIO::MultiFileIO(std::vector<BaseIO*> files) : pos(0), currentIOIndex(0), files(files)
 {
     calcualteLengthOfAllFiles();
 }
@@ -31,7 +31,7 @@ void MultiFileIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir)
     pos = position;
 
     // calculate which stream we should use
-    for (int i = 0; i < files.size(); i++)
+    for (size_t i = 0; i < files.size(); i++)
     {
         if (position >= files.at(i)->Length())
             position -= files.at(i)->Length();
@@ -67,7 +67,8 @@ void MultiFileIO::WriteBytes(BYTE *buffer, DWORD len)
         // if we can't, we must calculate how much we should read each time
         while (len > 0)
         {
-            DWORD WriteCount = (files.at(currentIOIndex)->Length() > files.at(currentIOIndex)->GetPosition() + len) ? len : (files.at(currentIOIndex)->Length() - files.at(currentIOIndex)->GetPosition());
+            DWORD WriteCount = (files.at(currentIOIndex)->Length() > files.at(currentIOIndex)->GetPosition() +
+                    len) ? len : (files.at(currentIOIndex)->Length() - files.at(currentIOIndex)->GetPosition());
             files.at(currentIOIndex)->WriteBytes(buffer + offset, WriteCount);
             offset += WriteCount;
             len -= WriteCount;
@@ -96,7 +97,8 @@ void MultiFileIO::ReadBytes(BYTE *outBuffer, DWORD len)
         // if we can't, we must calculate how much we should read each time
         while (len > 0)
         {
-            DWORD readCount = (files.at(currentIOIndex)->Length() > files.at(currentIOIndex)->GetPosition() + len) ? len : (files.at(currentIOIndex)->Length() - files.at(currentIOIndex)->GetPosition());
+            DWORD readCount = (files.at(currentIOIndex)->Length() > files.at(currentIOIndex)->GetPosition() +
+                    len) ? len : (files.at(currentIOIndex)->Length() - files.at(currentIOIndex)->GetPosition());
             files.at(currentIOIndex)->ReadBytes(outBuffer + offset, readCount);
             offset += readCount;
             len -= readCount;
@@ -115,7 +117,7 @@ void MultiFileIO::Close()
     if (isClosed)
         return;
 
-    for (int i = 0; i < files.size(); i++)
+    for (size_t i = 0; i < files.size(); i++)
         delete files.at(i);
 
     files.clear();
@@ -128,6 +130,6 @@ void MultiFileIO::calcualteLengthOfAllFiles()
     isClosed = false;
     lengthOfFiles = 0;
 
-    for (int i = 0; i < files.size(); i++)
+    for (size_t i = 0; i < files.size(); i++)
         lengthOfFiles += files.at(i)->Length();
 }

@@ -10,18 +10,20 @@
 // xbox
 #include "Stfs/XContentHeader.h"
 
-namespace Ui {
+namespace Ui
+{
 class SvodVolumeDescriptorDialog;
 }
 
 class SvodVolumeDescriptorDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
-    explicit SvodVolumeDescriptorDialog(QStatusBar *statusBar, SvodVolumeDescriptor *descriptor, QWidget *parent = 0);
+    explicit SvodVolumeDescriptorDialog(QStatusBar *statusBar, SvodVolumeDescriptor *descriptor,
+            QWidget *parent = 0);
     ~SvodVolumeDescriptorDialog();
-    
+
 private slots:
     void on_pushButton_2_clicked();
 

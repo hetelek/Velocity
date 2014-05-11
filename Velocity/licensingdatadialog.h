@@ -18,18 +18,20 @@ struct LicenseTypeStruct
     LicenseType value;
 };
 
-namespace Ui {
+namespace Ui
+{
 class LicensingDataDialog;
 }
 
 class LicensingDataDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
-    explicit LicensingDataDialog(QStatusBar *statusBar, LicenseEntry *entryTable, bool unlockable, QWidget *parent = 0);
+    explicit LicensingDataDialog(QStatusBar *statusBar, LicenseEntry *entryTable, bool unlockable,
+            QWidget *parent = 0);
     ~LicensingDataDialog();
-    
+
 private slots:
     void on_pushButton_clicked();
 

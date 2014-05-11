@@ -18,14 +18,17 @@ SvodDialog::SvodDialog(SVOD *svod, QStatusBar *statusBar, QWidget *parent) :
 
     // setup the context menu
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showFileContextMenu(QPoint)));
+    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this,
+            SLOT(showFileContextMenu(QPoint)));
 
     ui->lblDisplayName->setText(QString::fromStdWString(svod->metadata->displayName));
     ui->lblTitleID->setText(QString::number(svod->metadata->titleID, 16).toUpper());
-    ui->lblSectorOffset->setText("0x" + QString::number(svod->metadata->svodVolumeDescriptor.dataBlockOffset * 2, 16).toUpper());
+    ui->lblSectorOffset->setText("0x" + QString::number(
+                svod->metadata->svodVolumeDescriptor.dataBlockOffset * 2, 16).toUpper());
     ui->lblType->setText(QString::fromStdString(ContentTypeToString(svod->metadata->contentType)));
 
-    QByteArray imageBuff((char*)svod->metadata->thumbnailImage, (size_t)svod->metadata->thumbnailImageSize);
+    QByteArray imageBuff((char*)svod->metadata->thumbnailImage,
+            (size_t)svod->metadata->thumbnailImageSize);
     ui->imgThumbnail->setPixmap(QPixmap::fromImage(QImage::fromData(imageBuff)));
 
     statusBar->showMessage("SVOD system parsed successfully", 3000);
@@ -96,14 +99,15 @@ void SvodDialog::showFileContextMenu(QPoint pos)
 
     if (selectedItem->text() == "View Properties")
     {
-        SvodFileInfoDialog dialog(svod, entry, ui->treeWidget->currentItem()->data(1, Qt::UserRole).toString(), this);
+        SvodFileInfoDialog dialog(svod, entry, ui->treeWidget->currentItem()->data(1,
+                Qt::UserRole).toString(), this);
         dialog.exec();
     }
     else if (selectedItem->text() == "Extract")
     {
         // get a directory to save the files to
         QString savePath = QFileDialog::getExistingDirectory(this, "Choose a place to save the file...",
-            QtHelpers::DefaultLocation() + "/" + QString::fromStdString(entry->name));
+                QtHelpers::DefaultLocation() + "/" + QString::fromStdString(entry->name));
         if (savePath == "")
             return;
 
@@ -115,7 +119,8 @@ void SvodDialog::showFileContextMenu(QPoint pos)
             list.push_back(entry);
         }
 
-        MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemSVOD, svod, savePath + "/", list, this);
+        MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemSVOD, svod,
+                savePath + "/", list, this);
         dialog->setModal(true);
         dialog->show();
         dialog->start();
@@ -123,12 +128,13 @@ void SvodDialog::showFileContextMenu(QPoint pos)
     else if (selectedItem->text() == "Replace")
     {
         // open a file
-        QString filePath = QFileDialog::getOpenFileName(this, "Choose a modifed version to repalce...", QtHelpers::DefaultLocation());
+        QString filePath = QFileDialog::getOpenFileName(this, "Choose a modifed version to repalce...",
+                QtHelpers::DefaultLocation());
         if (filePath == "")
             return;
 
         SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSVOD, svod, OpReplace,
-            QString::fromStdString(entry->filePath + entry->name), filePath, NULL, this);
+                QString::fromStdString(entry->filePath + entry->name), filePath, NULL, this);
         dialog->setModal(true);
         dialog->show();
         dialog->start();
@@ -168,7 +174,8 @@ void SvodDialog::on_pushButton_3_clicked()
     }
     catch (string error)
     {
-        QMessageBox::critical(this, "Error", "An error occurred while rehashing the system.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error",
+                "An error occurred while rehashing the system.\n\n" + QString::fromStdString(error));
     }
 }
 
@@ -177,7 +184,8 @@ void UpdateProgress(DWORD cur, DWORD total, void *arg)
     SvodDialog *dialog = reinterpret_cast<SvodDialog*>(arg);
 
     if (cur < total)
-        dialog->statusBar->showMessage("Rehashing files " + QString::number(cur) + "/" + QString::number(total));
+        dialog->statusBar->showMessage("Rehashing files " + QString::number(cur) + "/" + QString::number(
+                    total));
     else
         dialog->statusBar->showMessage("Successfully rehashed the system", 3000);
 
@@ -187,7 +195,8 @@ void UpdateProgress(DWORD cur, DWORD total, void *arg)
 void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     GdfxFileEntry *entry = ui->treeWidget->currentItem()->data(0, Qt::UserRole).value<GdfxFileEntry*>();
-    QString tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", ""));
+    QString tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{",
+            "").replace("}", "").replace("-", ""));
 
     // the other file types that are supported have no buisness being in an SVOD system, so we'll just leave those out
     if (item->data(1, Qt::UserRole).toString() == "Image")
@@ -217,7 +226,8 @@ void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
         }
         catch (string error)
         {
-            QMessageBox::critical(this, "Error", "An error occurred while loading the STFS package.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error",
+                    "An error occurred while loading the STFS package.\n\n" + QString::fromStdString(error));
         }
 
         QFile::remove(tempName);
@@ -226,7 +236,8 @@ void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
 
 void SvodDialog::on_btnResign_clicked()
 {
-    QString kvPath = QFileDialog::getOpenFileName(this, "Choose a kv for resigning", QtHelpers::DefaultLocation());
+    QString kvPath = QFileDialog::getOpenFileName(this, "Choose a kv for resigning",
+            QtHelpers::DefaultLocation());
     if (kvPath == "")
         return;
 
@@ -246,9 +257,10 @@ void SvodDialog::on_btnResign_clicked()
     // make sure the console ids match
     if (memcmp(consoleID, svod->metadata->certificate.ownerConsoleID, 5) != 0)
     {
-        QMessageBox::StandardButton btn = (QMessageBox::StandardButton)QMessageBox::question(this, "Continue?",
-                                                                "The KeyVault provided is not from the console where this SVOD system was signed. This system will show up as corrupt on the original console. Unless you know what you're doing, choose no.\n\nAre you sure that you want to contiure?",
-                                                                QMessageBox::No, QMessageBox::Yes);
+        QMessageBox::StandardButton btn = (QMessageBox::StandardButton)QMessageBox::question(this,
+                "Continue?",
+                "The KeyVault provided is not from the console where this SVOD system was signed. This system will show up as corrupt on the original console. Unless you know what you're doing, choose no.\n\nAre you sure that you want to contiure?",
+                QMessageBox::No, QMessageBox::Yes);
         if (btn != QMessageBox::Yes)
             return;
     }
@@ -260,6 +272,7 @@ void SvodDialog::on_btnResign_clicked()
     }
     catch (string error)
     {
-        QMessageBox::critical(this, "Error", "An error occurred while resigning the system.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error",
+                "An error occurred while resigning the system.\n\n" + QString::fromStdString(error));
     }
 }

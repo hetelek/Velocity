@@ -18,7 +18,7 @@ public:
     virtual ~SvodMultiFileIO();
 
     // seek to a certain address in the file, index of -1 for current file
-    void SetPosition(DWORD addressInFile, int fileIndex = -1);
+    void SetPosition(DWORD addressInFile, DWORD fileIndex = -1);
 
     // get the current position of the io
     void GetPosition(DWORD *addressInFile, DWORD *fileIndex);

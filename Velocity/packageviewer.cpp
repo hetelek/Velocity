@@ -1,9 +1,11 @@
 #include "packageviewer.h"
 #include "ui_packageviewer.h"
 
-PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<QAction *> gpdActions, QList<QAction *> gameActions, QWidget *parent, bool disposePackage) :
-    QDialog(parent),ui(new Ui::PackageViewer), package(package), disposePackage(disposePackage), parent (parent), statusBar(statusBar),  gpdActions(gpdActions),
-    gameActions(gameActions), openInMenu(NULL)
+PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package,
+        QList<QAction *> gpdActions, QList<QAction *> gameActions, QWidget *parent, bool disposePackage) :
+    QDialog(parent),ui(new Ui::PackageViewer), package(package), disposePackage(disposePackage),
+    parent (parent), statusBar(statusBar), openInMenu(NULL), gpdActions(gpdActions),
+    gameActions(gameActions)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -28,15 +30,18 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<
     }
     else
     {
-        ui->lblMagic->setText("Magic: 0x" + QString::number(package->metaData->magic, 16).toUpper() + " (" + QString::fromStdString(MagicToString(package->metaData->magic)) + ")");
-        ui->lblDisplayName->setText("Display Name: " + QString::fromStdWString(package->metaData->displayName));
+        ui->lblMagic->setText("Magic: 0x" + QString::number(package->metaData->magic,
+                16).toUpper() + " (" + QString::fromStdString(MagicToString(package->metaData->magic)) + ")");
+        ui->lblDisplayName->setText("Display Name: " + QString::fromStdWString(
+                    package->metaData->displayName));
 
         if (package->metaData->magic == LIVE || package->metaData->magic == PIRS)
             ui->btnFix->setText("Rehash");
 
         try
         {
-            ui->lblType->setText(QString::fromStdString("Package Type: " + ContentTypeToString(package->metaData->contentType)));
+            ui->lblType->setText(QString::fromStdString("Package Type: " + ContentTypeToString(
+                        package->metaData->contentType)));
         }
         catch (...)
         {
@@ -57,7 +62,8 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<
         ui->txtDeviceID->setText(builder.toUpper());
 
         // set the thumbnail
-        QByteArray imageBuff((char*)package->metaData->thumbnailImage, (size_t)package->metaData->thumbnailImageSize);
+        QByteArray imageBuff((char*)package->metaData->thumbnailImage,
+                (size_t)package->metaData->thumbnailImageSize);
         ui->imgTile->setPixmap(QPixmap::fromImage(QImage::fromData(imageBuff)));
 
         if (package->metaData->magic != CON)
@@ -106,10 +112,12 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<
 
     // setup the context menus
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showRemoveContextMenu(QPoint)));
+    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this,
+            SLOT(showRemoveContextMenu(QPoint)));
 
     ui->imgTile->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->imgTile, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showSaveImageContextMenu(QPoint)));
+    connect(ui->imgTile, SIGNAL(customContextMenuRequested(QPoint)), this,
+            SLOT(showSaveImageContextMenu(QPoint)));
 }
 
 PackageViewer::~PackageViewer()
@@ -167,14 +175,17 @@ void PackageViewer::PopulateTreeWidget(StfsFileListing *entry, QTreeWidgetItem *
         QString name = QString::fromStdString(entry->fileEntries.at(i).name);
         fileEntry->setText(0, name);
         fileEntry->setText(1, QString::fromStdString(ByteSizeToString(entry->fileEntries.at(i).fileSize)));
-        fileEntry->setText(2, "0x" + QString::number(package->BlockToAddress(entry->fileEntries.at(i).startingBlockNum), 16).toUpper());
-        fileEntry->setText(3, "0x" + QString::number(entry->fileEntries.at(i).startingBlockNum, 16).toUpper());
+        fileEntry->setText(2, "0x" + QString::number(package->BlockToAddress(entry->fileEntries.at(
+                    i).startingBlockNum), 16).toUpper());
+        fileEntry->setText(3, "0x" + QString::number(entry->fileEntries.at(i).startingBlockNum,
+                16).toUpper());
 
         if (!package->IsPEC() && package->metaData->contentType == Profile)
         {
             for (int x = 0; x < gpdActions.size(); x++)
             {
-                if (QString::number(gpdActions.at(x)->property("titleid").toUInt(), 16).toUpper() + ".Gpd" == name.toUpper())
+                if (QString::number(gpdActions.at(x)->property("titleid").toUInt(),
+                        16).toUpper() + ".Gpd" == name.toUpper())
                 {
                     gpdActions.at(x)->setProperty("package", QVariant::fromValue(package));
                     openInMenu->addAction(gpdActions.at(x));
@@ -220,12 +231,14 @@ void PackageViewer::on_btnFix_clicked()
     bool success = true, resigned = false;
 
     // verify the profile and device id
-    if ((!QtHelpers::VerifyHexStringBuffer(ui->txtProfileID->text()) || ui->txtProfileID->text().length() != 16) && !package->IsPEC())
+    if ((!QtHelpers::VerifyHexStringBuffer(ui->txtProfileID->text()) ||
+            ui->txtProfileID->text().length() != 16) && !package->IsPEC())
     {
         QMessageBox::warning(this, "Invalid Value", "The profile ID must be 16 hexadecimal digits.");
         return;
     }
-    if ((!QtHelpers::VerifyHexStringBuffer(ui->txtDeviceID->text()) || ui->txtDeviceID->text().length() != 40) && !package->IsPEC())
+    if ((!QtHelpers::VerifyHexStringBuffer(ui->txtDeviceID->text()) ||
+            ui->txtDeviceID->text().length() != 40) && !package->IsPEC())
     {
         QMessageBox::warning(this, "Invalid Value", "The device ID must be 40 hexadecimal digits.");
         return;
@@ -245,7 +258,8 @@ void PackageViewer::on_btnFix_clicked()
     catch (string error)
     {
         success = false;
-        QMessageBox::critical(this, "Error", "Failed to rehash the package.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error",
+                "Failed to rehash the package.\n\n" + QString::fromStdString(error));
     }
 
     if (package->metaData->magic == CON || package->IsPEC())
@@ -263,7 +277,8 @@ void PackageViewer::on_btnFix_clicked()
         catch (string error)
         {
             success = false;
-            QMessageBox::critical(this, "Error", "Failed to resign the package.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error",
+                    "Failed to resign the package.\n\n" + QString::fromStdString(error));
         }
     }
 
@@ -271,7 +286,8 @@ void PackageViewer::on_btnFix_clicked()
     {
         QString resignedStr = (resigned ? " and resigned" : "");
         statusBar->showMessage("Rehashed" + resignedStr + " successfully", 3000);
-        QMessageBox::information(this, "Success", "The package has successfully been rehashed" + resignedStr + ".");
+        QMessageBox::information(this, "Success",
+                "The package has successfully been rehashed" + resignedStr + ".");
     }
 }
 
@@ -301,7 +317,9 @@ void PackageViewer::showSaveImageContextMenu(QPoint point)
         return;
     else if (selectedItem->text() == "Save Image")
     {
-        QString imageSavePath = QFileDialog::getSaveFileName(this, "Choose a location to save the thumbnail", QtHelpers::DefaultLocation() + "\\thumbnail.png", "*.png");
+        QString imageSavePath = QFileDialog::getSaveFileName(this,
+                "Choose a location to save the thumbnail", QtHelpers::DefaultLocation() + "\\thumbnail.png",
+                "*.png");
         if (imageSavePath == "")
             return;
 
@@ -351,9 +369,10 @@ void PackageViewer::aboutToShow()
         gameActions.at(i)->setProperty("fromPackageViewer", QVariant(true));
 }
 
-void PackageViewer::GetSubFilesStfs(StfsFileListing *parent, QList<void *> &entries, QString currentPath)
+void PackageViewer::GetSubFilesStfs(StfsFileListing *parent, QList<void *> &entries,
+        QString currentPath)
 {
-    for (int i = 0; i < parent->fileEntries.size(); i++)
+    for (size_t i = 0; i < parent->fileEntries.size(); i++)
     {
         StfsExtractEntry *exEntry = new StfsExtractEntry;
         exEntry->entry = &parent->fileEntries.at(i);
@@ -361,8 +380,9 @@ void PackageViewer::GetSubFilesStfs(StfsFileListing *parent, QList<void *> &entr
         entries.push_back(exEntry);
     }
 
-    for (int i = 0; i < parent->folderEntries.size(); i++)
-        GetSubFilesStfs(&parent->folderEntries.at(i), entries, currentPath + QString::fromStdString(parent->folderEntries.at(i).folder.name) + "/");
+    for (size_t i = 0; i < parent->folderEntries.size(); i++)
+        GetSubFilesStfs(&parent->folderEntries.at(i), entries,
+                currentPath + QString::fromStdString(parent->folderEntries.at(i).folder.name) + "/");
 }
 
 void PackageViewer::showRemoveContextMenu(QPoint point)
@@ -423,7 +443,8 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         if (multiple)
             path = QFileDialog::getExistingDirectory(this, "Save Location", QtHelpers::DefaultLocation()) + "/";
         else
-            path = QFileDialog::getSaveFileName(this, "Save Location", QtHelpers::DefaultLocation() + "/" + ui->treeWidget->selectedItems()[0]->text(0));
+            path = QFileDialog::getSaveFileName(this, "Save Location",
+                    QtHelpers::DefaultLocation() + "/" + ui->treeWidget->selectedItems()[0]->text(0));
 
         if (path.isEmpty())
             return;
@@ -446,7 +467,8 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
         try
         {
-            MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemSTFS, package, path.replace("\\", "/"), outFiles, this);
+            MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemSTFS, package,
+                    path.replace("\\", "/"), outFiles, this);
             dialog->setModal(true);
             dialog->show();
             dialog->start();
@@ -464,14 +486,16 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
     }
     else if (selectedItem->text() == "Extract All")
     {
-        QString path = QFileDialog::getExistingDirectory(this, "Save Location", QtHelpers::DefaultLocation()) + "/";
+        QString path = QFileDialog::getExistingDirectory(this, "Save Location",
+                QtHelpers::DefaultLocation()) + "/";
 
         QList<void*> entries;
         GetSubFilesStfs(&listing, entries);
 
         try
         {
-            MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemSTFS, package, path.replace("\\", "/"), entries, this);
+            MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemSTFS, package,
+                    path.replace("\\", "/"), entries, this);
             dialog->setModal(true);
             dialog->show();
             dialog->start();
@@ -505,7 +529,9 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         if (successCount == totalCount)
             statusBar->showMessage("Selected files removed successfully", 3000);
         else
-            QMessageBox::warning(this, "Warning", "Some files could not be deleted.\n\nSuccessful Deletions: " + QString::number(successCount) + " / " + QString::number(totalCount));
+            QMessageBox::warning(this, "Warning",
+                    "Some files could not be deleted.\n\nSuccessful Deletions: " + QString::number(
+                        successCount) + " / " + QString::number(totalCount));
     }
     else if (selectedItem->text() == "Rename Selected")
     {
@@ -535,13 +561,15 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         QString packagePath;
         GetPackagePath(items.at(0), &packagePath);
 
-        QString path = QFileDialog::getOpenFileName(this, "New File", QtHelpers::DefaultLocation() + "/" + ui->treeWidget->selectedItems()[0]->text(0));
+        QString path = QFileDialog::getOpenFileName(this, "New File",
+                QtHelpers::DefaultLocation() + "/" + ui->treeWidget->selectedItems()[0]->text(0));
         if (path.isEmpty())
             return;
 
         try
         {
-            SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSTFS, package, OpReplace, packagePath, path, NULL, this);
+            SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSTFS, package, OpReplace,
+                    packagePath, path, NULL, this);
             dialog->setModal(true);
             dialog->show();
             dialog->start();
@@ -577,7 +605,8 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         try
         {
             StfsFileEntry *injectedEntry = new StfsFileEntry;
-            SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSTFS, package, OpInject, packagePath, path, injectedEntry, this);
+            SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSTFS, package, OpInject,
+                    packagePath, path, injectedEntry, this);
             dialog->setModal(true);
             dialog->show();
             dialog->start();
@@ -596,7 +625,8 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
 
             fileEntry->setText(0, QString::fromStdString(injectedEntry->name));
             fileEntry->setText(1, QString::fromStdString(ByteSizeToString(injectedEntry->fileSize)));
-            fileEntry->setText(2, "0x" + QString::number(package->BlockToAddress(injectedEntry->startingBlockNum), 16).toUpper());
+            fileEntry->setText(2, "0x" + QString::number(package->BlockToAddress(
+                        injectedEntry->startingBlockNum), 16).toUpper());
             fileEntry->setText(3, "0x" + QString::number(injectedEntry->startingBlockNum, 16).toUpper());
 
             statusBar->showMessage("File injected successfully", 3000);
@@ -617,7 +647,8 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             bool folder = entry.flags & 2;
 
             bool changed = false;
-            PropertiesDialog dialog(&entry, packagePath, &changed, items.at(0)->icon(0), items.at(0)->childCount() != 0, this);
+            PropertiesDialog dialog(&entry, packagePath, &changed, items.at(0)->icon(0),
+                    items.at(0)->childCount() != 0, this);
             dialog.exec();
 
             if (changed)
@@ -644,7 +675,8 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
                         SetIcon(entry.name, &entry, items.at(0));
                         items.at(0)->setText(0, QString::fromStdString(entry.name));
                         items.at(0)->setText(1, "0x" + QString::number(entry.fileSize, 16).toUpper());
-                        items.at(0)->setText(2, "0x" + QString::number(package->BlockToAddress(entry.startingBlockNum), 16).toUpper());
+                        items.at(0)->setText(2, "0x" + QString::number(package->BlockToAddress(entry.startingBlockNum),
+                                16).toUpper());
                         items.at(0)->setText(3, "0x" + QString::number(entry.startingBlockNum, 16).toUpper());
                     }
                 }
@@ -664,9 +696,9 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
         return;
 
     // make sure the file double clicked on is a gpd
-    unsigned int index = item->text(0).lastIndexOf(".");
+    int index = item->text(0).lastIndexOf(".");
     QString extension;
-    if (index != string::npos)
+    if (index != -1)
         extension = item->text(0).mid(index).toLower();
 
     if (item->data(1, Qt::UserRole).toString() == "Xdbf")
@@ -685,7 +717,8 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
             }
 
             // get a temporary file name
-            QString tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", ""));
+            QString tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{",
+                    "").replace("}", "").replace("-", ""));
             string tempNameStd = tempName.toStdString();
 
             // extract the file to a temporary location
@@ -723,7 +756,8 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
             return;
 
         // get a temporary file name
-        string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+        string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{",
+                "").replace("}", "").replace("-", "")).toStdString();
 
         // extract the file to a temporary location
         package->ExtractFile(packagePath.toStdString(), tempName);
@@ -741,7 +775,8 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
     else if (item->data(1, Qt::UserRole).toString() == "Image")
     {
         // get a temporary file name
-        string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+        string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{",
+                "").replace("}", "").replace("-", "")).toStdString();
 
         // extract the file to a temporary location
         QString imagePath;
@@ -765,7 +800,8 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
         try
         {
             // get a temporary file name
-            string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+            string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{",
+                    "").replace("}", "").replace("-", "")).toStdString();
 
             // extract the file to a temporary location
             QString packagePath;
@@ -787,7 +823,8 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
         }
         catch(string error)
         {
-            QMessageBox::critical(this, "Error", "Failed to open PEC file.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error",
+                    "Failed to open PEC file.\n\n" + QString::fromStdString(error));
         }
     }
     else if (item->data(1, Qt::UserRole).toString() == "STFS")
@@ -798,7 +835,8 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
         try
         {
             // get a temporary file name
-            string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+            string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{",
+                    "").replace("}", "").replace("-", "")).toStdString();
 
             // extract the file to a temporary location
             package->ExtractFile(packagePath.toStdString(), tempName);
@@ -817,7 +855,8 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
         }
         catch(string error)
         {
-            QMessageBox::critical(this, "Error", "Failed to open Stfs Package.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error",
+                    "Failed to open Stfs Package.\n\n" + QString::fromStdString(error));
         }
     }
 }

@@ -11,7 +11,7 @@ Xdbf::Xdbf(string gpdPath) : ioPassedIn(false)
     readFreeMemoryTable();
 }
 
-Xdbf::Xdbf(FileIO *io) : ioPassedIn(true), io(io)
+Xdbf::Xdbf(FileIO *io) : io(io), ioPassedIn(true)
 {
     init();
     readHeader();
@@ -320,7 +320,7 @@ void Xdbf::WriteSyncList(SyncList *syncs)
     }
 
     // Write the toSync ones
-    for (int i = 0; i < syncs->toSync.size(); i++)
+    for (size_t i = 0; i < syncs->toSync.size(); i++)
     {
         io->Write(syncs->toSync.at(i).entryID);
         io->Write(syncs->toSync.at(i).syncValue);
@@ -360,7 +360,8 @@ XdbfEntry Xdbf::CreateEntry(EntryType type, UINT64 id, DWORD size)
 
     header.entryCount++;
 
-    if (id == ((type == AvatarAward) ? 1 : 0x100000000) || id == ((type == AvatarAward) ? 2 : 0x200000000))
+    if (id == ((type == AvatarAward) ? 1 : 0x100000000) ||
+            id == ((type == AvatarAward) ? 2 : 0x200000000))
     {
         // allocate memory for the entry
         entry.addressSpecifier = GetSpecifier(AllocateMemory(size));
@@ -430,7 +431,8 @@ XdbfEntry Xdbf::CreateEntry(EntryType type, UINT64 id, DWORD size)
             // create a sync for the entry
             SyncEntry sync;
             sync.entryID = entry.id;
-            if (entry.id != GamercardTitleAchievementsEarned && entry.id != GamercardTitleCredEarned && entry.id != GamercardCred && entry.id != GamercardAchievementsEarned)
+            if (entry.id != GamercardTitleAchievementsEarned && entry.id != GamercardTitleCredEarned &&
+                    entry.id != GamercardCred && entry.id != GamercardAchievementsEarned)
                 sync.syncValue = settings.syncData.nextSyncID++;
             else
                 sync.syncValue = 0;
@@ -488,10 +490,12 @@ DWORD Xdbf::AllocateMemory(DWORD size)
     DWORD toReturn;
 
     // first checek and see if we can allocate some of the memory in the free memory table
-    int index = 0;
-    for (; index < (int)(freeMemory.size() - 1); index++)
+    size_t index = 0;
+    for (; index < freeMemory.size() - 1; index++)
+    {
         if (freeMemory.at(index).length >= size)
             break;
+    }
     // if the memory wasn't found in the table, then we need to append it to the file
     if (index == (freeMemory.size() - 1))
     {
@@ -769,7 +773,8 @@ void Xdbf::UpdateEntry(XdbfEntry *entry)
     // if the sync data doesn't exist, then create it
     if (group->syncData.entry.type == 0)
     {
-        group->syncData.entry = CreateEntry(entry->type, (entry->type == AvatarAward) ? 2 : 0x200000000, 0x18);
+        group->syncData.entry = CreateEntry(entry->type, (entry->type == AvatarAward) ? 2 : 0x200000000,
+                0x18);
         group->syncData.lastSyncedTime = NULL;
         group->syncData.lastSyncID = 0;
         group->syncData.nextSyncID = 1;
@@ -785,7 +790,7 @@ void Xdbf::UpdateEntry(XdbfEntry *entry)
     bool syncExists = false;
 
     // find the sync if it isn't already in the queue
-    for (int i = 0; i < group->syncs.synced.size(); i++)
+    for (size_t i = 0; i < group->syncs.synced.size(); i++)
     {
         if (group->syncs.synced.at(i).entryID == entry->id)
         {
@@ -956,9 +961,9 @@ void Xdbf::DeleteEntry(XdbfEntry entry)
                     break;
                 }
 
-            WriteSyncs:
-                WriteSyncList(&group->syncs);
-                break;
+WriteSyncs:
+            WriteSyncList(&group->syncs);
+            break;
         case Image:
         case String:
             break;

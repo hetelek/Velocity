@@ -4,7 +4,9 @@
 FileIO::FileIO(string path, bool truncate) :
     BaseIO(), filePath(path)
 {
-    fstr = new fstream(path.c_str(), fstream::in | fstream::out | fstream::binary | (truncate ? fstream::trunc : static_cast<std::ios_base::openmode>(0)));
+    fstr = new fstream(path.c_str(),
+            fstream::in | fstream::out | fstream::binary | (truncate ? fstream::trunc :
+                    static_cast<std::ios_base::openmode>(0)));
     if (!fstr->is_open())
     {
         std::string ex("FileIO: Error opening the file. ");
@@ -13,7 +15,7 @@ FileIO::FileIO(string path, bool truncate) :
         throw ex;
     }
 
-	endian = BigEndian;
+    endian = BigEndian;
 
     fstr->rdbuf()->pubsetbuf(0, 0);
     fstr->seekp(0, std::ios_base::end);
@@ -43,26 +45,27 @@ void FileIO::Close()
 
 void FileIO::Flush()
 {
-	fstr->flush();
+    fstr->flush();
 }
 
 void FileIO::ReverseGenericArray(void *arr, int elemSize, int len)
 {
-	std::vector<char> tempVec;
-	tempVec.reserve(elemSize);
-	char* temp = tempVec.data();
+    std::vector<char> tempVec;
+    tempVec.reserve(elemSize);
+    char* temp = tempVec.data();
 
-	for (int i = 0; i < (len / 2); i++)
-	{
-		memcpy(temp, ((char*)arr) + (i * elemSize), elemSize);
-		memcpy(((char*)arr) + (i * elemSize), ((char*)arr) + (((len - 1) * elemSize) - (i * elemSize)), elemSize);
-		memcpy(((char*)arr) + (((len - 1) * elemSize) - (i * elemSize)), temp, elemSize);
-	}
+    for (int i = 0; i < (len / 2); i++)
+    {
+        memcpy(temp, ((char*)arr) + (i * elemSize), elemSize);
+        memcpy(((char*)arr) + (i * elemSize), ((char*)arr) + (((len - 1) * elemSize) - (i * elemSize)),
+               elemSize);
+        memcpy(((char*)arr) + (((len - 1) * elemSize) - (i * elemSize)), temp, elemSize);
+    }
 }
 
 string FileIO::GetFilePath()
 {
-	return filePath;
+    return filePath;
 }
 
 void FileIO::ReadBytes(BYTE *outBuffer, DWORD len)
@@ -81,7 +84,7 @@ void FileIO::WriteBytes(BYTE *buffer, DWORD len)
 
 FileIO::~FileIO(void)
 {
-	if(fstr->is_open())
+    if(fstr->is_open())
         fstr->close();
     delete fstr;
 }

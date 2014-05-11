@@ -14,18 +14,19 @@
 // other
 #include "nightcharts.h"
 
-namespace Ui {
+namespace Ui
+{
 class PartitionDialog;
 }
 
 class PartitionDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit PartitionDialog(std::vector<Partition*> &partitions, QWidget *parent = 0);
     ~PartitionDialog();
-    
+
 private slots:
     void on_comboBox_currentIndexChanged(int index);
 

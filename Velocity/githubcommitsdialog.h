@@ -10,7 +10,8 @@
 #include <QtAlgorithms>
 #include "json.h"
 
-namespace Ui {
+namespace Ui
+{
 class GitHubCommitsDialog;
 }
 
@@ -24,11 +25,11 @@ struct Commit
 class GitHubCommitsDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit GitHubCommitsDialog(QWidget *parent = 0);
     ~GitHubCommitsDialog();
-    
+
 private slots:
     void onCommitsReply(QNetworkReply *reply);
     void onBrachesReply(QNetworkReply *reply);

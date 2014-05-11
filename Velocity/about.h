@@ -9,22 +9,23 @@
 #include "qthelpers.h"
 
 #ifdef _WIN32
-    #include <phonon/MediaObject>
-    #include <phonon/AudioOutput>
+#include <phonon/MediaObject>
+#include <phonon/AudioOutput>
 #endif
 
-namespace Ui {
+namespace Ui
+{
 class About;
 }
 
 class About : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit About(QWidget *parent = 0);
     ~About();
-    
+
 private slots:
     void on_label_3_linkActivated(const QString &link);
 

@@ -39,7 +39,8 @@ void ProfileCleanerWizard::onCurrentIdChanged(int id)
 
 void ProfileCleanerWizard::on_pushButton_clicked()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, "Choose a profile to clean", QtHelpers::DefaultLocation());
+    QString filePath = QFileDialog::getOpenFileName(this, "Choose a profile to clean",
+            QtHelpers::DefaultLocation());
     if (filePath == "")
         return;
 
@@ -53,7 +54,8 @@ void ProfileCleanerWizard::on_pushButton_clicked()
     }
     catch (string error)
     {
-        QMessageBox::critical(this, "Error", "An error occurred while opening your profile.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error",
+                "An error occurred while opening your profile.\n\n" + QString::fromStdString(error));
         return;
     }
 
@@ -81,7 +83,8 @@ void ProfileCleanerWizard::clean()
     button(QWizard::FinishButton)->setEnabled(false);
 
     // extract all of the files
-    directory = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "") + "/";
+    directory = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}",
+                "").replace("-", "") + "/";
     QDir d(directory);
     d.mkdir(directory);
     StfsFileListing f = profile->GetFileListing();
@@ -95,7 +98,7 @@ void ProfileCleanerWizard::clean()
 
     // iterate through all of the Gpds in the profile
     QFileInfoList files = d.entryInfoList();
-    for (DWORD i = 0; i < files.size(); i++)
+    for (int i = 0; i < files.size(); i++)
     {
         if (files.at(i).fileName().mid(files.at(i).fileName().lastIndexOf(".")) == ".gpd")
         {
@@ -108,7 +111,8 @@ void ProfileCleanerWizard::clean()
                     DWORD offset = 0, settingCount = gpd.settings.size();
                     for (DWORD i = 0; i < settingCount; i++)
                     {
-                        if (gpd.settings.at(offset).entry.id == GamercardTitleAchievementsEarned || gpd.settings.at(offset).entry.id == GamercardTitleCredEarned)
+                        if (gpd.settings.at(offset).entry.id == GamercardTitleAchievementsEarned ||
+                                gpd.settings.at(offset).entry.id == GamercardTitleCredEarned)
                             offset++;
                         else
                             gpd.DeleteSettingEntry(gpd.settings.at(offset));
@@ -131,7 +135,8 @@ void ProfileCleanerWizard::clean()
             }
             catch (string error)
             {
-                QMessageBox::critical(this, "Clean Error", "An error has occurred while cleaning your profile.\n\n" + QString::fromStdString(error));
+                QMessageBox::critical(this, "Clean Error",
+                        "An error has occurred while cleaning your profile.\n\n" + QString::fromStdString(error));
 
                 deleteAllRecursive(QDir(directory));
                 d.rmdir(directory);
@@ -143,11 +148,13 @@ void ProfileCleanerWizard::clean()
     }
 
     // rebuild the profile
-    QString newProfilePath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+    QString newProfilePath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{",
+            "").replace("}", "").replace("-", "");
     StfsPackage newProfile(newProfilePath.toStdString(), StfsPackageCreate);
 
     // copy all the metadata over to the new profile
-    newProfile.metaData->certificate.publicKeyCertificateSize = profile->metaData->certificate.publicKeyCertificateSize;
+    newProfile.metaData->certificate.publicKeyCertificateSize =
+        profile->metaData->certificate.publicKeyCertificateSize;
 
     std::string *s = new std::string(profile->metaData->certificate.ownerConsolePartNumber);
     memcpy(&newProfile.metaData->certificate.ownerConsolePartNumber, s, sizeof(std::string));
@@ -158,7 +165,8 @@ void ProfileCleanerWizard::clean()
     s = new std::string(profile->metaData->certificate.dateGeneration);
     memcpy(&newProfile.metaData->certificate.dateGeneration, s, sizeof(std::string));
 
-    memcpy(newProfile.metaData->certificate.ownerConsoleID, profile->metaData->certificate.ownerConsoleID, 5);
+    memcpy(newProfile.metaData->certificate.ownerConsoleID,
+           profile->metaData->certificate.ownerConsoleID, 5);
 
     memcpy(newProfile.metaData->consoleID, profile->metaData->consoleID, 5);
     newProfile.metaData->contentSize = profile->metaData->contentSize;
@@ -174,7 +182,8 @@ void ProfileCleanerWizard::clean()
 
     newProfile.metaData->executableType = profile->metaData->executableType;
     newProfile.metaData->headerSize = profile->metaData->headerSize;
-    memcpy(newProfile.metaData->licenseData, profile->metaData->licenseData, sizeof(LicenseEntry) * 0x10);
+    memcpy(newProfile.metaData->licenseData, profile->metaData->licenseData,
+           sizeof(LicenseEntry) * 0x10);
     newProfile.metaData->metaDataVersion = profile->metaData->metaDataVersion;
     memcpy(newProfile.metaData->profileID, profile->metaData->profileID, 8);
 
@@ -185,8 +194,10 @@ void ProfileCleanerWizard::clean()
 
     newProfile.metaData->thumbnailImage = new BYTE[profile->metaData->thumbnailImageSize];
     newProfile.metaData->titleThumbnailImage = new BYTE[profile->metaData->titleThumbnailImageSize];
-    memcpy(newProfile.metaData->thumbnailImage, profile->metaData->thumbnailImage, profile->metaData->thumbnailImageSize);
-    memcpy(newProfile.metaData->titleThumbnailImage, profile->metaData->titleThumbnailImage, profile->metaData->titleThumbnailImageSize);
+    memcpy(newProfile.metaData->thumbnailImage, profile->metaData->thumbnailImage,
+           profile->metaData->thumbnailImageSize);
+    memcpy(newProfile.metaData->titleThumbnailImage, profile->metaData->titleThumbnailImage,
+           profile->metaData->titleThumbnailImageSize);
     newProfile.metaData->thumbnailImageSize = profile->metaData->thumbnailImageSize;
     newProfile.metaData->titleThumbnailImageSize = profile->metaData->titleThumbnailImageSize;
 
@@ -236,7 +247,8 @@ void ProfileCleanerWizard::extractAll(StfsFileListing *f, QString parentDirector
     // extract all files
     for (DWORD i = 0; i < f->fileEntries.size(); i++)
     {
-        profile->ExtractFile(&f->fileEntries.at(i), parentDirectory.toStdString() + f->fileEntries.at(i).name);
+        profile->ExtractFile(&f->fileEntries.at(i),
+                parentDirectory.toStdString() + f->fileEntries.at(i).name);
         QApplication::processEvents();
     }
     // create all folders
@@ -245,18 +257,19 @@ void ProfileCleanerWizard::extractAll(StfsFileListing *f, QString parentDirector
         QDir d;
         d.mkpath(parentDirectory + QString::fromStdString(f->folderEntries.at(i).folder.name) + "/");
         if (f->folderEntries.at(i).fileEntries.size() != 0)
-            extractAll(&f->folderEntries.at(i), parentDirectory + QString::fromStdString(f->folderEntries.at(i).folder.name) + "/");
+            extractAll(&f->folderEntries.at(i),
+                       parentDirectory + QString::fromStdString(f->folderEntries.at(i).folder.name) + "/");
     }
 }
 
 void ProfileCleanerWizard::deleteAllRecursive(QDir directory)
 {
     QFileInfoList files = directory.entryInfoList(QDir::Files);
-    for (DWORD i = 0; i < files.size(); i++)
+    for (int i = 0; i < files.size(); i++)
         QFile::remove(files.at(i).absoluteFilePath());
     QApplication::processEvents();
     QFileInfoList dirs = directory.entryInfoList(QDir::Dirs);
-    for (DWORD i = 2; i < dirs.size(); i++)
+    for (int i = 2; i < dirs.size(); i++)
     {
         QDir d;
         deleteAllRecursive(QDir(dirs.at(i).absoluteFilePath() + "/"));
@@ -264,22 +277,25 @@ void ProfileCleanerWizard::deleteAllRecursive(QDir directory)
     }
 }
 
-void ProfileCleanerWizard::injectAll(StfsPackage *profile, QDir currentDirectory, QString currentStfsDir)
+void ProfileCleanerWizard::injectAll(StfsPackage *profile, QDir currentDirectory,
+        QString currentStfsDir)
 {
     try
     {
         QFileInfoList files = currentDirectory.entryInfoList(QDir::Files);
-        for (DWORD i = 0; i < files.size(); i++)
+        for (int i = 0; i < files.size(); i++)
         {
-            profile->InjectFile(files.at(i).absoluteFilePath().toStdString(), currentStfsDir.toStdString() + files.at(i).fileName().toStdString());
+            profile->InjectFile(files.at(i).absoluteFilePath().toStdString(),
+                    currentStfsDir.toStdString() + files.at(i).fileName().toStdString());
             QApplication::processEvents();
         }
         QFileInfoList dirs = currentDirectory.entryInfoList(QDir::Dirs);
-        for (DWORD i = 2; i < dirs.size(); i++)
+        for (int i = 2; i < dirs.size(); i++)
         {
             qDebug() << "dirname: " << dirs.at(i).baseName();
             profile->CreateFolder(currentStfsDir.toStdString() + dirs.at(i).baseName().toStdString());
-            injectAll(profile, QDir(currentDirectory.absolutePath() + "/" + dirs.at(i).fileName() + "/"), currentStfsDir + dirs.at(i).fileName() + "\\");
+            injectAll(profile, QDir(currentDirectory.absolutePath() + "/" + dirs.at(i).fileName() + "/"),
+                      currentStfsDir + dirs.at(i).fileName() + "\\");
         }
     }
     catch (string error)

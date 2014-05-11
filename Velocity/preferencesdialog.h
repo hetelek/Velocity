@@ -7,18 +7,19 @@
 #include <QDir>
 #include "qthelpers.h"
 
-namespace Ui {
+namespace Ui
+{
 class PreferencesDialog;
 }
 
 class PreferencesDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit PreferencesDialog(QWidget *parent = 0);
     ~PreferencesDialog();
-    
+
 private slots:
     void on_pushButton_clicked();
 

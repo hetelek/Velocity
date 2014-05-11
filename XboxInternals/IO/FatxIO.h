@@ -62,16 +62,19 @@ public:
     void WriteEntryToDisk(std::vector<DWORD> *clusterChain = NULL);
 
     // replace the file with one from a local disk
-    void ReplaceFile(std::string sourcePath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    void ReplaceFile(std::string sourcePath, void(*progress)(void*, DWORD, DWORD) = NULL,
+            void *arg = NULL);
 
     // convert a cluster to an offset
-    static INT64 ClusterToOffset(Partition *part, DWORD cluster);
+    static UINT64 ClusterToOffset(Partition *part, DWORD cluster);
 
     // sets all the clusters equal to value
-    static void SetAllClusters(DeviceIO *device, Partition *part, std::vector<DWORD> &clusters, DWORD value);
+    static void SetAllClusters(DeviceIO *device, Partition *part, std::vector<DWORD> &clusters,
+            DWORD value);
 
     // get the ranges of consecutive numbers in list where it's sorted
-    static void GetConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges, bool includeNonConsec = false);
+    static void GetConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges,
+            bool includeNonConsec = false);
 
 private:
     // find count amount of free custers

@@ -114,29 +114,27 @@ UINT64 BaseIO::ReadMultiByte(size_t size)
 {
     switch (size)
     {
-    case 1:
-        return ReadByte();
-    case 2:
-        return ReadWord();
-    case 4:
-        return ReadDword();
-    case 8:
-        return ReadUInt64();
-    default:
-        throw string("BaseIO: Invalid multi-byte size.\n");
+        case 1:
+            return ReadByte();
+        case 2:
+            return ReadWord();
+        case 4:
+            return ReadDword();
+        case 8:
+            return ReadUInt64();
+        default:
+            throw string("BaseIO: Invalid multi-byte size.\n");
     }
 }
 
 float BaseIO::ReadFloat()
 {
-    DWORD temp = ReadDword();
-    return *(float*)&temp;
+    return (float)ReadDword();
 }
 
 double BaseIO::ReadDouble()
 {
-    UINT64 temp = ReadUInt64();
-    return *(double*)&temp;
+    return (double)ReadUInt64();
 }
 
 string BaseIO::ReadString(int len, char nullTerminator, bool forceInclude0, int maxLength)
@@ -149,7 +147,8 @@ string BaseIO::ReadString(int len, char nullTerminator, bool forceInclude0, int 
         toReturn = "";
         int i = 1;
         char nextChar;
-        while ((nextChar = ReadByte()) != nullTerminator && (forceInclude0 && nextChar != 0) && (i++ <= maxLength))
+        while ((nextChar = ReadByte()) != nullTerminator && (forceInclude0 && nextChar != 0) &&
+                (i++ <= maxLength))
             toReturn += nextChar;
     }
     else

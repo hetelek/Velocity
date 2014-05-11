@@ -51,7 +51,7 @@ public:
     explicit Nightcharts();
     ~Nightcharts();
     enum type { Histogramm , Pie, Dpie };
-    enum legend_type{ /*Horizontal,*/ Vertical, Round };
+    enum legend_type { /*Horizontal,*/ Vertical, Round };
     int addPiece(QString name,Qt::GlobalColor,float Percentage);
     int addPiece(QString name,QColor, float Percentage);
     int setCords(double x, double y, double w, double h);

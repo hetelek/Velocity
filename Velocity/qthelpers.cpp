@@ -24,14 +24,14 @@ DWORD QtHelpers::ParseHexString(QString string)
     return string.toULong(0, 16);
 }
 
-void QtHelpers::ParseHexStringBuffer(QString bytes, BYTE *outBuffer, DWORD len)
+void QtHelpers::ParseHexStringBuffer(QString bytes, BYTE *outBuffer, int len)
 {
     bytes = bytes.trimmed().replace(" ", "");
 
     if (len != (bytes.length() / 2))
         throw QString("QT: Error converting hex string to byte array, length mismatch.\n");
 
-    for (DWORD i = 0; i < len; i++)
+    for (int i = 0; i < len; i++)
     {
         QString temp = bytes.mid(i * 2, 2);
         outBuffer[i] = temp.toInt(0, 16);
@@ -129,10 +129,10 @@ bool QtHelpers::ParseVersionString(QString version, Version *out)
         return false;
     if (out->minor > 15)
         return false;
-/*
-    if (out->build > 0xFFFF)
-        return false;
-*/
+    /*
+        if (out->build > 0xFFFF)
+            return false;
+    */
     if (out->revision > 0xFF)
         return false;
 
@@ -147,100 +147,101 @@ QString QtHelpers::ExecutingDirectory()
 void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
 {
     if (rootWidget == NULL)
-            return;
+        return;
 
-        QObject *child = NULL;
-        QObjectList Containers;
-        QObject *container  = NULL;
-        QStringList DoNotAffect;
+    QObject *child = NULL;
+    QObjectList Containers;
+    QObject *container  = NULL;
+    QStringList DoNotAffect;
 
-        // Make an exception list (Objects not to be affected)
-        DoNotAffect.append("aboutTitleLabel");     // about Dialog
-        DoNotAffect.append("aboutVersionLabel");   // about Dialog
-        DoNotAffect.append("aboutCopyrightLabel"); // about Dialog
-        DoNotAffect.append("aboutUrlLabel");       // about Dialog
-        DoNotAffect.append("aboutLicenseLabel");   // about Dialog
+    // Make an exception list (Objects not to be affected)
+    DoNotAffect.append("aboutTitleLabel");     // about Dialog
+    DoNotAffect.append("aboutVersionLabel");   // about Dialog
+    DoNotAffect.append("aboutCopyrightLabel"); // about Dialog
+    DoNotAffect.append("aboutUrlLabel");       // about Dialog
+    DoNotAffect.append("aboutLicenseLabel");   // about Dialog
 
-        // Set sizes according to OS:
-    #ifdef __APPLE__
-        int ButtonHeight = 35;
-        int cmbxHeight = 30;
-        QFont cntrlFont("Myriad Pro", 14);
-        QFont txtFont("Myriad Pro", 14);
-    #elif _WIN32 // Win XP/7
-        int ButtonHeight = 24;
-        int cmbxHeight = 20;
-        QFont cntrlFont("MS Shell Dlg 2", 8);
-        QFont txtFont("MS Shell Dlg 2", 8);
-    #else
-        int ButtonHeight = 24;
-        int cmbxHeight = 24;
-        QFont cntrlFont("Ubuntu Condensed", 10);
-        QFont txtFont("Ubuntu", 10);
-    #endif
+    // Set sizes according to OS:
+#ifdef __APPLE__
+    int ButtonHeight = 35;
+    int cmbxHeight = 30;
+    QFont cntrlFont("Myriad Pro", 14);
+    QFont txtFont("Myriad Pro", 14);
+#elif _WIN32 // Win XP/7
+    int ButtonHeight = 24;
+    int cmbxHeight = 20;
+    QFont cntrlFont("MS Shell Dlg 2", 8);
+    QFont txtFont("MS Shell Dlg 2", 8);
+#else
+    int ButtonHeight = 24;
+    int cmbxHeight = 24;
+    QFont cntrlFont("Ubuntu Condensed", 10);
+    QFont txtFont("Ubuntu", 10);
+#endif
 
-        // Append root to containers
-        Containers.append(rootWidget);
-        while (!Containers.isEmpty())
+    // Append root to containers
+    Containers.append(rootWidget);
+    while (!Containers.isEmpty())
+    {
+        container = Containers.takeFirst();
+        if (container != NULL)
         {
-            container = Containers.takeFirst();
-            if (container != NULL)
+            for (int ChIdx=0; ChIdx < container->children().size(); ChIdx++)
             {
-                for (int ChIdx=0; ChIdx < container->children().size(); ChIdx++)
+                child = container->children()[ChIdx];
+                if (!child->isWidgetType() || DoNotAffect.contains(child->objectName()))
+                    continue;
+                // Append containers to Stack for recursion
+                if (child->children().size() > 0)
+                    Containers.append(child);
+                else
                 {
-                    child = container->children()[ChIdx];
-                    if (!child->isWidgetType() || DoNotAffect.contains(child->objectName()))
-                        continue;
-                    // Append containers to Stack for recursion
-                    if (child->children().size() > 0)
-                        Containers.append(child);
-                    else
+                    // Cast child object to button and label
+                    // (if the object is not of the correct type, it will be NULL)
+                    QPushButton *button = qobject_cast<QPushButton *>(child);
+                    QLabel *label = qobject_cast<QLabel *>(child);
+                    QComboBox *cmbx = qobject_cast<QComboBox *>(child);
+                    QLineEdit *ln = qobject_cast<QLineEdit *>(child);
+                    QTreeWidget *tree = qobject_cast<QTreeWidget *>(child);
+                    QPlainTextEdit *plain = qobject_cast<QPlainTextEdit *>(child);
+                    QCheckBox *check = qobject_cast<QCheckBox *>(child);
+                    QProgressBar *progress = qobject_cast<QProgressBar *>(child);
+                    if (button != NULL)
                     {
-                        // Cast child object to button and label
-                        // (if the object is not of the correct type, it will be NULL)
-                        QPushButton *button = qobject_cast<QPushButton *>(child);
-                        QLabel *label = qobject_cast<QLabel *>(child);
-                        QComboBox *cmbx = qobject_cast<QComboBox *>(child);
-                        QLineEdit *ln = qobject_cast<QLineEdit *>(child);
-                        QTreeWidget *tree = qobject_cast<QTreeWidget *>(child);
-                        QPlainTextEdit *plain = qobject_cast<QPlainTextEdit *>(child);
-                        QCheckBox *check = qobject_cast<QCheckBox *>(child);
-                        QProgressBar *progress = qobject_cast<QProgressBar *>(child);
-                        if (button != NULL)
-                        {
-                            button->setMinimumHeight(ButtonHeight); // Win
-                            button->setMaximumHeight(ButtonHeight); // Win
-                            button->setFont(cntrlFont);
-                        }
-                        else if (cmbx != NULL)
-                        {
-                            cmbx->setFont(cntrlFont);
-                            cmbx->setMaximumHeight(cmbxHeight);
-                        }
-                        else if (label != NULL)
-                            label->setFont(txtFont);
-                        else if (ln != NULL)
-                            ln->setFont(txtFont);
-                        else if (tree != NULL)
-                        {
-                            tree->header()->setFont(txtFont);
-                        }
-                        else if (plain != NULL)
-                            plain->setFont(txtFont);
-                        else if (check != NULL)
-                            check->setFont(txtFont);
-                        else if (progress != NULL)
-                            progress->setMinimumHeight(20);
+                        button->setMinimumHeight(ButtonHeight); // Win
+                        button->setMaximumHeight(ButtonHeight); // Win
+                        button->setFont(cntrlFont);
                     }
+                    else if (cmbx != NULL)
+                    {
+                        cmbx->setFont(cntrlFont);
+                        cmbx->setMaximumHeight(cmbxHeight);
+                    }
+                    else if (label != NULL)
+                        label->setFont(txtFont);
+                    else if (ln != NULL)
+                        ln->setFont(txtFont);
+                    else if (tree != NULL)
+                    {
+                        tree->header()->setFont(txtFont);
+                    }
+                    else if (plain != NULL)
+                        plain->setFont(txtFont);
+                    else if (check != NULL)
+                        check->setFont(txtFont);
+                    else if (progress != NULL)
+                        progress->setMinimumHeight(20);
                 }
             }
         }
+    }
 }
 
 
 void QtHelpers::SearchTreeWidget(QTreeWidget *widget, QLineEdit *searchWidget, QString searchString)
 {
-    QList<QTreeWidgetItem*> itemsMatched = widget->findItems(searchWidget->text(), Qt::MatchContains | Qt::MatchRecursive);
+    QList<QTreeWidgetItem*> itemsMatched = widget->findItems(searchWidget->text(),
+            Qt::MatchContains | Qt::MatchRecursive);
 
     for (int i = 0; i < widget->topLevelItemCount(); i++)
         QtHelpers::HideAllItems(widget->topLevelItem(i));
@@ -354,4 +355,26 @@ void QtHelpers::GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWid
             else
                 icon = QIcon(":/Images/DefaultFileIcon.png");
     }
+}
+
+void QtHelpers::AddSubWindow(QMdiArea *mdiArea, QWidget *widget)
+{
+    widget->installEventFilter(new SubWindowEvents(widget));
+    mdiArea->addSubWindow(widget);
+}
+
+QtHelpers::SubWindowEvents::SubWindowEvents(QObject *parent)
+{
+}
+
+bool QtHelpers::SubWindowEvents::eventFilter(QObject *obj, QEvent *event)
+{
+    QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+
+    if (event->type() == QEvent::KeyPress && keyEvent->key() == Qt::Key_Escape)
+    {
+        return true;
+    }
+
+    return QObject::eventFilter(obj, event);
 }

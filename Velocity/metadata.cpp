@@ -80,7 +80,8 @@ OnlineResumeStateStruct resumeStates[] =
 };
 
 Metadata::Metadata(QStatusBar *statusBar, XContentHeader *header, bool pec, QWidget *parent) :
-    QDialog(parent), ui(new Ui::Metadata), header(header), statusBar(statusBar), cmbxSubcategory(NULL), cmbxSkeletonVersion(NULL), cmbxResumeState(NULL), lastModified(NULL), offset(0), pec(pec)
+    QDialog(parent), ui(new Ui::Metadata), header(header), pec(pec), statusBar(statusBar), cmbxSubcategory(NULL),
+    cmbxSkeletonVersion(NULL), cmbxResumeState(NULL), lastModified(NULL), offset(0)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -133,25 +134,32 @@ Metadata::Metadata(QStatusBar *statusBar, XContentHeader *header, bool pec, QWid
         connect(btnLicense, SIGNAL(clicked()), this, SLOT(btnLicenseClicked()));
 
         // set the header hash
-        ui->tableWidget->setItem(3, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(header->headerHash, 0x14, false)));
+        ui->tableWidget->setItem(3, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(header->headerHash,
+                0x14, false)));
 
         // set some other values
-        ui->tableWidget->setItem(4, 0, new QTableWidgetItem("0x" + QString::number(header->headerSize, 16).toUpper()));
-        ui->tableWidget->setItem(5, 0, new QTableWidgetItem("0x" + QString::number(header->mediaID, 16).toUpper()));
+        ui->tableWidget->setItem(4, 0, new QTableWidgetItem("0x" + QString::number(header->headerSize,
+                16).toUpper()));
+        ui->tableWidget->setItem(5, 0, new QTableWidgetItem("0x" + QString::number(header->mediaID,
+                16).toUpper()));
         ui->tableWidget->setItem(6, 0, new QTableWidgetItem(QString::number(header->version)));
         ui->tableWidget->setItem(7, 0, new QTableWidgetItem(QString::number(header->baseVersion)));
-        ui->tableWidget->setItem(8, 0, new QTableWidgetItem("0x" + QString::number(header->titleID, 16).toUpper()));
+        ui->tableWidget->setItem(8, 0, new QTableWidgetItem("0x" + QString::number(header->titleID,
+                16).toUpper()));
         ui->tableWidget->setItem(9, 0, new QTableWidgetItem(QString::number(header->platform)));
         ui->tableWidget->setItem(10, 0, new QTableWidgetItem(QString::number(header->executableType)));
         ui->tableWidget->setItem(11, 0, new QTableWidgetItem(QString::number(header->discNumber)));
         ui->tableWidget->setItem(12, 0, new QTableWidgetItem(QString::number(header->discInSet)));
-        ui->tableWidget->setItem(13, 0, new QTableWidgetItem("0x" + QString::number(header->savegameID, 16).toUpper()));
+        ui->tableWidget->setItem(13, 0, new QTableWidgetItem("0x" + QString::number(header->savegameID,
+                16).toUpper()));
 
         // set the console id
-        ui->tableWidget->setItem(14, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(header->consoleID, 5, false)));
+        ui->tableWidget->setItem(14, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(header->consoleID,
+                5, false)));
 
         // set the profile id
-        ui->tableWidget->setItem(15, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(header->profileID, 8, false)));
+        ui->tableWidget->setItem(15, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(header->profileID,
+                8, false)));
     }
 
     // set the volume descriptor button
@@ -165,7 +173,8 @@ Metadata::Metadata(QStatusBar *statusBar, XContentHeader *header, bool pec, QWid
     {
         // set some more simple ones
         ui->tableWidget->setItem(17, 0, new QTableWidgetItem(QString::number(header->dataFileCount)));
-        ui->tableWidget->setItem(18, 0, new QTableWidgetItem(QString::number(header->dataFileCombinedSize)));
+        ui->tableWidget->setItem(18, 0,
+                new QTableWidgetItem(QString::number(header->dataFileCombinedSize)));
 
         // add special metadata
         if (header->contentType == AvatarItem)
@@ -189,7 +198,8 @@ Metadata::Metadata(QStatusBar *statusBar, XContentHeader *header, bool pec, QWid
 
             ui->tableWidget->insertRow(21);
             ui->tableWidget->setVerticalHeaderItem(21, new QTableWidgetItem("GUID"));
-            ui->tableWidget->setItem(21, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(header->guid, 0x10, false)));
+            ui->tableWidget->setItem(21, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(header->guid,
+                    0x10, false)));
 
             ui->tableWidget->insertRow(22);
             ui->tableWidget->setVerticalHeaderItem(22, new QTableWidgetItem("Skeleton Version"));
@@ -209,11 +219,13 @@ Metadata::Metadata(QStatusBar *statusBar, XContentHeader *header, bool pec, QWid
         {
             ui->tableWidget->insertRow(19);
             ui->tableWidget->setVerticalHeaderItem(19, new QTableWidgetItem("Series ID"));
-            ui->tableWidget->setItem(19, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(header->seriesID, 0x10, false)));
+            ui->tableWidget->setItem(19, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(header->seriesID,
+                    0x10, false)));
 
             ui->tableWidget->insertRow(20);
             ui->tableWidget->setVerticalHeaderItem(20, new QTableWidgetItem("Season ID"));
-            ui->tableWidget->setItem(20, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(header->seasonID, 0x10, false)));
+            ui->tableWidget->setItem(20, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(header->seasonID,
+                    0x10, false)));
 
             ui->tableWidget->insertRow(21);
             ui->tableWidget->setVerticalHeaderItem(21, new QTableWidgetItem("Season Number"));
@@ -227,13 +239,18 @@ Metadata::Metadata(QStatusBar *statusBar, XContentHeader *header, bool pec, QWid
         }
 
         // set the device id
-        ui->tableWidget->setItem(19 + offset, 0, new QTableWidgetItem(QtHelpers::ByteArrayToString(header->deviceID, 0x14, false)));
+        ui->tableWidget->setItem(19 + offset, 0,
+                new QTableWidgetItem(QtHelpers::ByteArrayToString(header->deviceID, 0x14, false)));
 
         // set the strings
-        ui->tableWidget->setItem(20 + offset, 0, new QTableWidgetItem(QString::fromStdWString(header->displayName)));
-        ui->tableWidget->setItem(21 + offset, 0, new QTableWidgetItem(QString::fromStdWString(header->displayDescription)));
-        ui->tableWidget->setItem(22 + offset, 0, new QTableWidgetItem(QString::fromStdWString(header->publisherName)));
-        ui->tableWidget->setItem(23 + offset, 0, new QTableWidgetItem(QString::fromStdWString(header->titleName)));
+        ui->tableWidget->setItem(20 + offset, 0,
+                new QTableWidgetItem(QString::fromStdWString(header->displayName)));
+        ui->tableWidget->setItem(21 + offset, 0,
+                new QTableWidgetItem(QString::fromStdWString(header->displayDescription)));
+        ui->tableWidget->setItem(22 + offset, 0,
+                new QTableWidgetItem(QString::fromStdWString(header->publisherName)));
+        ui->tableWidget->setItem(23 + offset, 0,
+                new QTableWidgetItem(QString::fromStdWString(header->titleName)));
 
         // set the transfer flags button
         btnTransFlags = new QPushButton(this);
@@ -243,8 +260,10 @@ Metadata::Metadata(QStatusBar *statusBar, XContentHeader *header, bool pec, QWid
         connect(btnTransFlags, SIGNAL(clicked()), this, SLOT(btnTransFlagsClicked()));
 
         // set the image sizes
-        ui->tableWidget->setItem(25 + offset, 0, new QTableWidgetItem(QString::number(header->thumbnailImageSize)));
-        ui->tableWidget->setItem(26 + offset, 0, new QTableWidgetItem(QString::number(header->titleThumbnailImageSize)));
+        ui->tableWidget->setItem(25 + offset, 0,
+                new QTableWidgetItem(QString::number(header->thumbnailImageSize)));
+        ui->tableWidget->setItem(26 + offset, 0,
+                new QTableWidgetItem(QString::number(header->titleThumbnailImageSize)));
 
         switch (header->installerType)
         {
@@ -310,17 +329,20 @@ Metadata::Metadata(QStatusBar *statusBar, XContentHeader *header, bool pec, QWid
                 // current file index
                 ui->tableWidget->insertRow(28 + offset);
                 ui->tableWidget->setVerticalHeaderItem(28 + offset, new QTableWidgetItem("Current File Index"));
-                ui->tableWidget->setItem(28 + offset, 0, new QTableWidgetItem(QString::number(header->currentFileIndex)));
+                ui->tableWidget->setItem(28 + offset, 0,
+                        new QTableWidgetItem(QString::number(header->currentFileIndex)));
 
                 // current file offset
                 ui->tableWidget->insertRow(29 + offset);
                 ui->tableWidget->setVerticalHeaderItem(29 + offset, new QTableWidgetItem("Current File Offset"));
-                ui->tableWidget->setItem(29 + offset, 0, new QTableWidgetItem(QString::number(header->currentFileOffset)));
+                ui->tableWidget->setItem(29 + offset, 0,
+                        new QTableWidgetItem(QString::number(header->currentFileOffset)));
 
                 // current file index
                 ui->tableWidget->insertRow(30 + offset);
                 ui->tableWidget->setVerticalHeaderItem(30 + offset, new QTableWidgetItem("Bytes Processed"));
-                ui->tableWidget->setItem(30 + offset, 0, new QTableWidgetItem(QString::number(header->bytesProcessed)));
+                ui->tableWidget->setItem(30 + offset, 0,
+                        new QTableWidgetItem(QString::number(header->bytesProcessed)));
 
                 // last modified
                 lastModified = new QDateTimeEdit(this);
@@ -367,7 +389,8 @@ void Metadata::btnTransFlagsClicked()
 
 void Metadata::btnLicenseClicked()
 {
-    bool unlockable = (header->contentType == AvatarItem || header->contentType == ArcadeGame || header->contentType == MarketPlaceContent);
+    bool unlockable = (header->contentType == AvatarItem || header->contentType == ArcadeGame ||
+            header->contentType == MarketPlaceContent);
     LicensingDataDialog dialog(statusBar, header->licenseData, unlockable, this);
     dialog.exec();
 }
@@ -382,9 +405,11 @@ void Metadata::on_pushButton_clicked()
     // verify everything
     if (!pec)
     {
-        if (!QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(3, 0)->text()) || ui->tableWidget->item(3, 0)->text().length() != 40)
+        if (!QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(3, 0)->text()) ||
+                ui->tableWidget->item(3, 0)->text().length() != 40)
         {
-            QMessageBox::warning(this, "Invalid Value", "The ContentID/Header Hash must be 40 hexadecimal digits.\n");
+            QMessageBox::warning(this, "Invalid Value",
+                    "The ContentID/Header Hash must be 40 hexadecimal digits.\n");
             return;
         }
         if (!QtHelpers::VerifyHexString(ui->tableWidget->item(4, 0)->text()))
@@ -437,12 +462,14 @@ void Metadata::on_pushButton_clicked()
             QMessageBox::warning(this, "Invalid Value", "The Save Game ID must be all hexadecimal digits.\n");
             return;
         }
-        if (!QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(14, 0)->text()) || ui->tableWidget->item(14, 0)->text().length() != 10)
+        if (!QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(14, 0)->text()) ||
+                ui->tableWidget->item(14, 0)->text().length() != 10)
         {
             QMessageBox::warning(this, "Invalid Value", "The Console ID must be 10 hexadecimal digits.\n");
             return;
         }
-        if (!QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(15, 0)->text()) || ui->tableWidget->item(15, 0)->text().length() != 16)
+        if (!QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(15, 0)->text()) ||
+                ui->tableWidget->item(15, 0)->text().length() != 16)
         {
             QMessageBox::warning(this, "Invalid Value", "The Profile ID must be 16 hexadecimal digits.\n");
             return;
@@ -457,37 +484,45 @@ void Metadata::on_pushButton_clicked()
             QMessageBox::warning(this, "Invalid Value", "The Data File Combined Size must be all digits.\n");
             return;
         }
-        if (header->contentType == Video && !QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(19, 0)->text()))
+        if (header->contentType == Video &&
+                !QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(19, 0)->text()))
         {
             QMessageBox::warning(this, "Invalid Value", "The SeriesID value must be all digits.\n");
             return;
         }
-        if (header->contentType == Video && !QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(20, 0)->text()))
+        if (header->contentType == Video &&
+                !QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(20, 0)->text()))
         {
             QMessageBox::warning(this, "Invalid Value", "The SeasonID value must be all digits.\n");
             return;
         }
-        if (header->contentType == Video && !QtHelpers::VerifyDecimalString(ui->tableWidget->item(21, 0)->text()))
+        if (header->contentType == Video &&
+                !QtHelpers::VerifyDecimalString(ui->tableWidget->item(21, 0)->text()))
         {
             QMessageBox::warning(this, "Invalid Value", "The Season Number value must be all digits.\n");
             return;
         }
-        if (header->contentType == Video && !QtHelpers::VerifyDecimalString(ui->tableWidget->item(22, 0)->text()))
+        if (header->contentType == Video &&
+                !QtHelpers::VerifyDecimalString(ui->tableWidget->item(22, 0)->text()))
         {
             QMessageBox::warning(this, "Invalid Value", "The Episode Number value must be all digits.\n");
             return;
         }
-        if (header->contentType == AvatarItem && !QtHelpers::VerifyDecimalString(ui->tableWidget->item(20, 0)->text()))
+        if (header->contentType == AvatarItem &&
+                !QtHelpers::VerifyDecimalString(ui->tableWidget->item(20, 0)->text()))
         {
             QMessageBox::warning(this, "Invalid Value", "The Colorizable value must be all digits.\n");
             return;
         }
-        if (header->contentType == AvatarItem && (!QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(21, 0)->text()) || ui->tableWidget->item(21, 0)->text().length() != 0x20))
+        if (header->contentType == AvatarItem &&
+                (!QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(21, 0)->text()) ||
+                 ui->tableWidget->item(21, 0)->text().length() != 0x20))
         {
             QMessageBox::warning(this, "Invalid Value", "The GUID must be 16 hexadecimal digits.\n");
             return;
         }
-        if (!QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(19 + offset, 0)->text()) || ui->tableWidget->item(19 + offset, 0)->text().length() != 40)
+        if (!QtHelpers::VerifyHexStringBuffer(ui->tableWidget->item(19 + offset, 0)->text()) ||
+                ui->tableWidget->item(19 + offset, 0)->text().length() != 40)
         {
             QMessageBox::warning(this, "Invalid Value", "The Device ID must be 40 hexadecimal digits.\n");
             return;
@@ -499,7 +534,8 @@ void Metadata::on_pushButton_clicked()
         }
         if (ui->tableWidget->item(21 + offset, 0)->text().length() > 0x80)
         {
-            QMessageBox::warning(this, "Invalid Length", "The maximum length for the Display Description is 128.\n");
+            QMessageBox::warning(this, "Invalid Length",
+                    "The maximum length for the Display Description is 128.\n");
             return;
         }
         if (ui->tableWidget->item(22 + offset, 0)->text().length() > 0x80)
@@ -527,12 +563,14 @@ void Metadata::on_pushButton_clicked()
             Version tempbv, tempv;
             if (!QtHelpers::ParseVersionString(ui->tableWidget->item(28 + offset, 0)->text(), &tempbv))
             {
-                QMessageBox::warning(this, "Invalid Value", "Invalid value for the installer base version. The version should be in the following format, at or below the values provided:\n\n15.15.65535.255\n");
+                QMessageBox::warning(this, "Invalid Value",
+                        "Invalid value for the installer base version. The version should be in the following format, at or below the values provided:\n\n15.15.65535.255\n");
                 return;
             }
             if (!QtHelpers::ParseVersionString(ui->tableWidget->item(29 + offset, 0)->text(), &tempv))
             {
-                QMessageBox::warning(this, "Invalid Value", "Invalid value for the installer version. The version should be in the following format, at or below the values provided:\n\n15.15.65535.255\n");
+                QMessageBox::warning(this, "Invalid Value",
+                        "Invalid value for the installer version. The version should be in the following format, at or below the values provided:\n\n15.15.65535.255\n");
                 return;
             }
 
@@ -541,7 +579,9 @@ void Metadata::on_pushButton_clicked()
 
             header->installerType = (cmbxInstallerType->currentIndex() == 0) ? SystemUpdate : TitleUpdate;
         }
-        if (header->installerType == TitleUpdateProgressCache || header->installerType == SystemUpdateProgressCache || header->installerType == TitleContentProgressCache)
+        if (header->installerType == TitleUpdateProgressCache ||
+                header->installerType == SystemUpdateProgressCache ||
+                header->installerType == TitleContentProgressCache)
         {
             if (!QtHelpers::VerifyDecimalString(ui->tableWidget->item(28 + offset, 0)->text()))
             {
@@ -594,7 +634,8 @@ void Metadata::on_pushButton_clicked()
             header->episodeNumber = ui->tableWidget->item(22, 0)->text().toUShort();
         }
 
-        QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(19 + offset, 0)->text(), header->deviceID, 0x14);
+        QtHelpers::ParseHexStringBuffer(ui->tableWidget->item(19 + offset, 0)->text(), header->deviceID,
+                0x14);
         header->displayName = ui->tableWidget->item(20 + offset, 0)->text().toStdWString();
         header->displayDescription = ui->tableWidget->item(21 + offset, 0)->text().toStdWString();
         header->publisherName = ui->tableWidget->item(22 + offset, 0)->text().toStdWString();
@@ -602,7 +643,9 @@ void Metadata::on_pushButton_clicked()
         header->thumbnailImageSize = ui->tableWidget->item(25 + offset, 0)->text().toULong();
         header->titleThumbnailImageSize = ui->tableWidget->item(26 + offset, 0)->text().toULong();
 
-        if (header->installerType == TitleUpdateProgressCache || header->installerType == SystemUpdateProgressCache || header->installerType == TitleContentProgressCache)
+        if (header->installerType == TitleUpdateProgressCache ||
+                header->installerType == SystemUpdateProgressCache ||
+                header->installerType == TitleContentProgressCache)
         {
             if (cmbxResumeState->currentIndex() != 6)
                 header->resumeState = resumeStates[cmbxResumeState->currentIndex()].value;
@@ -621,7 +664,8 @@ void Metadata::on_pushButton_clicked()
     }
     catch(string error)
     {
-        QMessageBox::critical(this, "Error", "Failed to save metadata.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error",
+                "Failed to save metadata.\n\n" + QString::fromStdString(error));
     }
 
     this->close();

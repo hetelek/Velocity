@@ -1,6 +1,7 @@
 #include "Account.h"
 
-Account::Account(std::string path, bool decrypt, ConsoleType type) : ioPassedIn(false), decrypt(decrypt), path(path), type(type)
+Account::Account(std::string path, bool decrypt, ConsoleType type) : ioPassedIn(false),
+    decrypt(decrypt), path(path), type(type)
 {
     Botan::LibraryInitializer init;
 
@@ -15,15 +16,15 @@ Account::Account(std::string path, bool decrypt, ConsoleType type) : ioPassedIn(
         outPath = path;
     }
 
-	parseFile();
+    parseFile();
 }
 
 void Account::parseFile()
 {
-	// seek to the begining of the file
+    // seek to the begining of the file
     io->SetPosition(0);
 
-	// read the data
+    // read the data
     account.reservedFlags = io->ReadDword();
     account.liveFlags = io->ReadDword();
     account.gamertag = io->ReadWString(16);
@@ -42,48 +43,48 @@ void Account::parseFile()
     account.onlineDomain = io->ReadString(20);
     io->SetPosition(0x50);
     account.kerbrosRealm = io->ReadString(24);
-	
+
     io->ReadBytes(account.onlineKey, 0x10);
 }
 
 bool Account::IsPasscodeEnabled()
 {
-	return (bool)(account.reservedFlags & PasswordProtected);
+    return (bool)(account.reservedFlags & PasswordProtected);
 }
 
 bool Account::IsLiveEnabled()
 {
-	return (bool)(account.reservedFlags & LiveEnabled);
+    return (bool)(account.reservedFlags & LiveEnabled);
 }
 
 bool Account::IsRecovering()
 {
-	return (bool)(account.reservedFlags & Recovering);
+    return (bool)(account.reservedFlags & Recovering);
 }
 
 bool Account::IsParentalControlled()
 {
-	return (bool)(account.cachedUserFlags & 0x1000000);
+    return (bool)(account.cachedUserFlags & 0x1000000);
 }
 
 bool Account::IsPaymentInstrumentCreditCard()
 {
-	return (bool)(account.cachedUserFlags & 1);
+    return (bool)(account.cachedUserFlags & 1);
 }
 
 bool Account::IsXUIDOffline()
 {
-	return ((account.xuid >> 60) & 0xF) == 0xE;
+    return ((account.xuid >> 60) & 0xF) == 0xE;
 }
 
 bool Account::IsXUIDOnline()
 {
-	return ((account.xuid >> 48) & 0xFFFF) == 9;
+    return ((account.xuid >> 48) & 0xFFFF) == 9;
 }
 
 bool Account::IsValidXUID()
 {
-	return IsXUIDOffline() != IsXUIDOnline();
+    return IsXUIDOffline() != IsXUIDOnline();
 }
 
 bool Account::IsTeamXUID()
@@ -98,45 +99,45 @@ UINT64 Account::GetXUID()
 
 void Account::SetPasscodeEnabled(bool b)
 {
-	if (b)
+    if (b)
         account.reservedFlags |= PasswordProtected;
-	else
+    else
         account.reservedFlags &= (~PasswordProtected);
 }
 
 void Account::SetLiveEnabled(bool b)
 {
-	if (b)
-		account.reservedFlags |= LiveEnabled;
-	else
-	{
-		account.reservedFlags &= (~LiveEnabled);
+    if (b)
+        account.reservedFlags |= LiveEnabled;
+    else
+    {
+        account.reservedFlags &= (~LiveEnabled);
         account.serviceProvider = LiveDisabled;
-	}
+    }
 }
 
 void Account::SetRecovering(bool b)
 {
-	if (b)
+    if (b)
         account.reservedFlags |= Recovering;
-	else
+    else
         account.reservedFlags &= (~Recovering);
 }
 
 void Account::SetParentalControlled(bool b)
 {
-	if (b)
+    if (b)
         account.cachedUserFlags |= 0x1000000;
-	else
+    else
         account.cachedUserFlags &= (~0x1000000);
 }
 
 void Account::SetPaymentInstrumentCreditCard(bool b)
 {
-	if (b)
-		account.cachedUserFlags |= 1;
-	else
-		account.cachedUserFlags &= 0xFFFFFFFE;
+    if (b)
+        account.cachedUserFlags |= 1;
+    else
+        account.cachedUserFlags &= 0xFFFFFFFE;
 }
 
 void Account::SetXUIDOnline()
@@ -156,20 +157,20 @@ void Account::SetXUID(UINT64 xuid)
 
 void Account::SetSubscriptionTeir(SubscriptionTeir teir)
 {
-	account.cachedUserFlags &= (~0xF00000);
-	account.cachedUserFlags |= (teir << 20);
+    account.cachedUserFlags &= (~0xF00000);
+    account.cachedUserFlags |= (teir << 20);
 }
 
 void Account::SetCountry(XboxLiveCountry country)
 {
-	account.cachedUserFlags &= (~0xFF00);
-	account.cachedUserFlags |= (country << 8);
+    account.cachedUserFlags &= (~0xFF00);
+    account.cachedUserFlags |= (country << 8);
 }
 
 void Account::SetLanguage(ConsoleLanguage language)
 {
-	account.cachedUserFlags &= (~0x3E000000);
-	account.cachedUserFlags |= (language << 25);
+    account.cachedUserFlags &= (~0x3E000000);
+    account.cachedUserFlags |= (language << 25);
 }
 
 void Account::SetGamertag(wstring gamertag)
@@ -341,10 +342,10 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
 
 void Account::WriteFile()
 {
-	// seek to the beginning of the file
+    // seek to the beginning of the file
     io->SetPosition(0);
 
-	// Write the information
+    // Write the information
     io->Write(account.reservedFlags);
     io->Write(account.liveFlags);
     io->Write(account.gamertag);
@@ -377,27 +378,27 @@ void Account::WriteFile()
 
 SubscriptionTeir Account::GetSubscriptionTeir()
 {
-	return (SubscriptionTeir)((account.cachedUserFlags & 0xF00000) >> 20);
+    return (SubscriptionTeir)((account.cachedUserFlags & 0xF00000) >> 20);
 }
 
 XboxLiveCountry Account::GetCountry()
 {
-	return (XboxLiveCountry)((account.cachedUserFlags & 0xFF00) >> 8);
+    return (XboxLiveCountry)((account.cachedUserFlags & 0xFF00) >> 8);
 }
 
 ConsoleLanguage Account::GetLanguage()
 {
-	return (ConsoleLanguage)((account.cachedUserFlags & 0x3E000000) >> 25);
+    return (ConsoleLanguage)((account.cachedUserFlags & 0x3E000000) >> 25);
 }
 
 XboxLiveServiceProvider Account::GetServiceProvider()
 {
-	return account.serviceProvider;
+    return account.serviceProvider;
 }
 
 void Account::GetPasscode(BYTE *passcode)
 {
-	if (!IsPasscodeEnabled())
+    if (!IsPasscodeEnabled())
     {
         memset(passcode, 0, 4);
         return;
@@ -407,22 +408,22 @@ void Account::GetPasscode(BYTE *passcode)
 
 string Account::GetOnlineDomain()
 {
-	return account.onlineDomain;
+    return account.onlineDomain;
 }
 
 string Account::GetKerbrosRealm()
 {
-	return account.kerbrosRealm;
+    return account.kerbrosRealm;
 }
 
 void Account::GetOnlineKey(BYTE *outKey)
 {
-	memcpy(outKey, account.onlineKey, 0x10);
+    memcpy(outKey, account.onlineKey, 0x10);
 }
 
 wstring Account::GetGamertag()
 {
-	return account.gamertag;
+    return account.gamertag;
 }
 
 Account::~Account(void)

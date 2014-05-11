@@ -7,11 +7,13 @@ TitleIdFinderDialog::TitleIdFinderDialog(QStatusBar *statusBar, QWidget *parent)
     ui->setupUi(this);
     finder = new TitleIdFinder("", this);
 
-    connect(finder, SIGNAL(SearchFinished(QList<TitleData>)), this, SLOT(onRequestFinished(QList<TitleData>)));
+    connect(finder, SIGNAL(SearchFinished(QList<TitleData>)), this,
+            SLOT(onRequestFinished(QList<TitleData>)));
 
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->treeWidget->header()->resizeSection(0, 300);
-    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
+    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this,
+            SLOT(showContextMenu(QPoint)));
 
     connect(ui->lineEdit, SIGNAL(returnPressed()), this, SLOT(on_pushButton_clicked()));
 }
@@ -37,7 +39,8 @@ void TitleIdFinderDialog::onRequestFinished(QList<TitleData> matches)
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
 
-        QString newStr = ((QString*)&matches.at(i).titleName)->replace("&#174;", "®").replace("&#39;", "'").replace("&amp;","&").replace("&gt;",">").replace("&lt;","<").replace("â", "").replace("¢", "");
+        QString newStr = ((QString*)&matches.at(i).titleName)->replace("&#174;", "®").replace("&#39;",
+                "'").replace("&amp;","&").replace("&gt;",">").replace("&lt;","<").replace("â", "").replace("¢", "");
         item->setText(0, newStr);
         item->setText(1, QString::number(matches.at(i).titleID, 16).toUpper());
 
@@ -67,6 +70,7 @@ void TitleIdFinderDialog::showContextMenu(QPoint p)
     }
     else if (selectedItem->text() == "View on Xbox.com")
     {
-        QDesktopServices::openUrl(QUrl("http://marketplace.xbox.com/Product/66acd000-77fe-1000-9115-d802" + ui->treeWidget->selectedItems().at(0)->text(1).toLower()));
+        QDesktopServices::openUrl(QUrl("http://marketplace.xbox.com/Product/66acd000-77fe-1000-9115-d802" +
+                ui->treeWidget->selectedItems().at(0)->text(1).toLower()));
     }
 }

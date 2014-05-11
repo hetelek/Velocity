@@ -11,18 +11,20 @@
 // xbox360
 #include <Stfs/StfsDefinitions.h>
 
-namespace Ui {
+namespace Ui
+{
 class CertificateDialog;
 }
 
 class CertificateDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
-    explicit CertificateDialog(QStatusBar *statusBar, Certificate *cert, QWidget *parent, bool readOnly = false);
+    explicit CertificateDialog(QStatusBar *statusBar, Certificate *cert, QWidget *parent,
+            bool readOnly = false);
     ~CertificateDialog();
-    
+
 private slots:
     void on_pushButton_2_clicked();
 

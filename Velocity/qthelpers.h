@@ -17,6 +17,7 @@
 #include <QHeaderView>
 #include <QCheckBox>
 #include <QProgressBar>
+#include <QMdiArea>
 
 // other
 #include "winnames.h"
@@ -24,7 +25,7 @@
 #include <ctype.h>
 
 #ifdef _WIN32
-    #include <direct.h>
+#include <direct.h>
 #endif
 
 enum VelocityDropAction
@@ -41,7 +42,7 @@ public:
 
     static DWORD ParseHexString(QString string);
 
-    static void ParseHexStringBuffer(QString bytes, BYTE *outBuffer, DWORD len);
+    static void ParseHexStringBuffer(QString bytes, BYTE *outBuffer, int len);
 
     static QString DefaultLocation();
 
@@ -68,6 +69,18 @@ public:
     static void CollapseAllChildren(QTreeWidgetItem *item);
 
     static void GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWidgetItem &item);
+
+    static void AddSubWindow(QMdiArea *mdiArea, QWidget *widget);
+
+private:
+    class SubWindowEvents : public QObject
+    {
+    public:
+        SubWindowEvents(QObject* parent);
+
+    protected:
+        bool eventFilter(QObject *obj, QEvent *event);
+    };
 };
 
 #endif // QTHELPERS_H

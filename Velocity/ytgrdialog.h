@@ -10,18 +10,19 @@
 // xbox360
 #include "AvatarAsset/Ytgr.h"
 
-namespace Ui {
+namespace Ui
+{
 class YtgrDialog;
 }
 
 class YtgrDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit YtgrDialog(Ytgr *ytgr, QStatusBar *statusBar, QWidget *parent = 0);
     ~YtgrDialog();
-    
+
 private:
     Ui::YtgrDialog *ui;
     Ytgr *ytgr;

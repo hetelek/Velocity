@@ -36,7 +36,8 @@
 
 using namespace std;
 
-namespace Ui {
+namespace Ui
+{
 class ProfileEditor;
 }
 
@@ -190,13 +191,14 @@ Q_DECLARE_METATYPE( struct AvatarAward* )
 class ProfileEditor : public QDialog
 {
     Q_OBJECT
-    
+
 public:
-    explicit ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool dispose, QWidget *parent = 0);
+    explicit ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool dispose,
+            QWidget *parent = 0);
     ~ProfileEditor();
 
     bool isOk();
-    
+
 private slots:
     void on_gamesList_itemSelectionChanged();
 
@@ -289,7 +291,8 @@ private:
     QString assetSavePath;
 
     void addToDashGpd(SettingEntry *entry, SettingEntryType type, UINT64 id);
-    void updateAvatarAward(TitleEntry *entry, AvatarAwardGpd *gpd, struct AvatarAward *award, State toSet);
+    void updateAvatarAward(TitleEntry *entry, AvatarAwardGpd *gpd, struct AvatarAward *award,
+            State toSet);
     void updateAchievement(TitleEntry *entry, AchievementEntry *chiev, State toSet, GameGpd *gpd);
     State getStateFromFlags(DWORD flags);
     void saveAll();

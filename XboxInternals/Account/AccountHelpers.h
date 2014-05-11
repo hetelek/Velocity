@@ -14,12 +14,12 @@ using std::string;
 class XBOXINTERNALSSHARED_EXPORT AccountHelpers
 {
 public:
-	static string CountryToString(XboxLiveCountry country);
+    static string CountryToString(XboxLiveCountry country);
 
-	static string SubscriptionTeirToString(SubscriptionTeir teir);
+    static string SubscriptionTeirToString(SubscriptionTeir teir);
 
-	static string ConsoleLanguageToString(ConsoleLanguage language);
+    static string ConsoleLanguageToString(ConsoleLanguage language);
 
-	static string XboxLiveServiceProviderToString(XboxLiveServiceProvider provider);
+    static string XboxLiveServiceProviderToString(XboxLiveServiceProvider provider);
 };
 

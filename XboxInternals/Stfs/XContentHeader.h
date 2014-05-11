@@ -50,7 +50,7 @@ enum FileSystem
 class XBOXINTERNALSSHARED_EXPORT XContentHeader
 {
 public:
-	// Description: read in all of the metadata for the package
+    // Description: read in all of the metadata for the package
     XContentHeader(BaseIO *io, DWORD flags = 0);
 
     // fix the signature in the header
@@ -69,36 +69,36 @@ public:
     void WriteCertificate();
 
     // Description: Write the volume descriptor
-	void WriteVolumeDescriptor();
+    void WriteVolumeDescriptor();
 
     // Description: Write all of the metadata
     void WriteMetaData();
-	~XContentHeader();
+    ~XContentHeader();
 
     Magic magic;
 
-	// only console signed
+    // only console signed
     Certificate certificate;
 
-	// only strong signed
-	BYTE packageSignature[0x100];
+    // only strong signed
+    BYTE packageSignature[0x100];
 
-	LicenseEntry licenseData[0x10];
-	BYTE headerHash[0x14];
-	DWORD headerSize;
-	ContentType contentType;
-	DWORD metaDataVersion;
-	UINT64 contentSize;
-	DWORD mediaID;
-	DWORD version;
-	DWORD baseVersion;
-	DWORD titleID;
-	BYTE platform;
-	BYTE executableType;
-	BYTE discNumber;
-	BYTE discInSet;
-	DWORD savegameID;
-	BYTE consoleID[5];
+    LicenseEntry licenseData[0x10];
+    BYTE headerHash[0x14];
+    DWORD headerSize;
+    ContentType contentType;
+    DWORD metaDataVersion;
+    UINT64 contentSize;
+    DWORD mediaID;
+    DWORD version;
+    DWORD baseVersion;
+    DWORD titleID;
+    BYTE platform;
+    BYTE executableType;
+    BYTE discNumber;
+    BYTE discInSet;
+    DWORD savegameID;
+    BYTE consoleID[5];
     BYTE profileID[8];
 
     StfsVolumeDescriptor stfsVolumeDescriptor;
@@ -108,17 +108,17 @@ public:
     // only in PEC, and im not sure exactly what this byte is but it needs to always be set to 1
     bool enabled;
 
-	// metadata v1
-	DWORD dataFileCount;
-	UINT64 dataFileCombinedSize;
-	BYTE deviceID[0x14];
-	wstring displayName;
-	wstring displayDescription;
-	wstring publisherName;
-	wstring titleName;
+    // metadata v1
+    DWORD dataFileCount;
+    UINT64 dataFileCombinedSize;
+    BYTE deviceID[0x14];
+    wstring displayName;
+    wstring displayDescription;
+    wstring publisherName;
+    wstring titleName;
     BYTE transferFlags;
-	DWORD thumbnailImageSize;
-	DWORD titleThumbnailImageSize;
+    DWORD thumbnailImageSize;
+    DWORD titleThumbnailImageSize;
 
     // credit to Eaton for all the extra metadata stuff
     InstallerType installerType;
@@ -147,8 +147,8 @@ public:
     Version installerBaseVersion;
     Version installerVersion;
 
-	BYTE *thumbnailImage;
-	BYTE *titleThumbnailImage;
+    BYTE *thumbnailImage;
+    BYTE *titleThumbnailImage;
 
 private:
     BaseIO *io;

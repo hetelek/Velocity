@@ -1,7 +1,8 @@
 #include "AvatarAssetDownloader.h"
 
 AvatarAssetDownloader::AvatarAssetDownloader(QString titleID, QString guid, QObject *parent) :
-    QObject(parent), titleID(titleID), guid(guid), v1Done(false), v2Done(false), v1TempPath(QString("")), v2TempPath(QString(""))
+    QObject(parent), titleID(titleID), guid(guid), v1TempPath(QString("")), v2TempPath(QString("")),
+    v1Done(false), v2Done(false)
 {
     manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(onRequestFinished(QNetworkReply*)));
@@ -15,7 +16,8 @@ AvatarAssetDownloader::AvatarAssetDownloader(QString titleID, QString guid, QObj
 
 void AvatarAssetDownloader::BeginDownload()
 {
-    manager->get(QNetworkRequest(QUrl("http://download.xboxlive.com/content/" + titleID + "/avataritems/" + guid + ".bin")));
+    manager->get(QNetworkRequest(QUrl("http://download.xboxlive.com/content/" + titleID +
+            "/avataritems/" + guid + ".bin")));
     //http->get("http://download.xboxlive.com/content/" + titleID + "/avataritems/" + guid + ".bin");
     //idToSkip = http->currentId();
 }
@@ -58,11 +60,12 @@ void AvatarAssetDownloader::onRequestFinished(QNetworkReply *aReply)
         {
             v1Done = true;
             v2Done = true;
-			v1TempPath = "";
-            manager->get(QNetworkRequest(QUrl("http://download.xboxlive.com/content/" + titleID + "/avataritems/v2/" + guid + ".bin")));
+            v1TempPath = "";
+            manager->get(QNetworkRequest(QUrl("http://download.xboxlive.com/content/" + titleID +
+                    "/avataritems/v2/" + guid + ".bin")));
         }
-		else
-			v2TempPath = "";
+        else
+            v2TempPath = "";
         return;
     }
 
@@ -70,7 +73,8 @@ void AvatarAssetDownloader::onRequestFinished(QNetworkReply *aReply)
     BYTE temp[0x140];
     aReply->read((char*)temp, 0x140);
 
-    QString tempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+    QString tempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{",
+            "").replace("}", "").replace("-", "");
     if (!v1Done)
         v1TempPath = tempPath;
     else
@@ -92,7 +96,8 @@ void AvatarAssetDownloader::onRequestFinished(QNetworkReply *aReply)
     if (!v2Done)
     {
         v2Done = true;
-        manager->get(QNetworkRequest(QUrl("http://download.xboxlive.com/content/" + titleID + "/avataritems/v2/" + guid + ".bin")));
+        manager->get(QNetworkRequest(QUrl("http://download.xboxlive.com/content/" + titleID +
+                "/avataritems/v2/" + guid + ".bin")));
     }
     else
         emit FinishedDownloading();
@@ -101,5 +106,5 @@ void AvatarAssetDownloader::onRequestFinished(QNetworkReply *aReply)
 void AvatarAssetDownloader::onDone(bool /* error */)
 {
     //if (!error)
-        //emit FinishedDownloading();
+    //emit FinishedDownloading();
 }

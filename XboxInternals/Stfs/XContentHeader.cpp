@@ -5,10 +5,11 @@
 
 using namespace std;
 
-XContentHeader::XContentHeader(BaseIO *io, DWORD flags) : installerType((InstallerType)0), flags(flags)
+XContentHeader::XContentHeader(BaseIO *io, DWORD flags) : installerType((InstallerType)0),
+    flags(flags)
 {
-	// set the io
-	this->io = io;
+    // set the io
+    this->io = io;
 
     if ((flags & MetadataSkipRead) == 0)
         readMetadata();
@@ -204,10 +205,10 @@ void XContentHeader::readMetadata()
                 throw string("XContentHeader: Invalid Installer Type value.");
         }
 
-    #ifdef DEBUG
+#ifdef DEBUG
         if(metaDataVersion != 2)
             throw string("XContentHeader: Metadata version is not 2.\n");
-    #endif
+#endif
     }
     else
     {
@@ -557,7 +558,8 @@ void XContentHeader::ResignHeader(BaseIO& kvIo)
 
     Botan::PK_Signer signer(pkey, "EMSA3(SHA-160)");
 
-    Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToSign, size, rng);
+    Botan::SecureVector<Botan::byte> signature = signer.sign_message((unsigned char*)dataToSign, size,
+            rng);
 
     // 8 byte swap the new signature
     XeCrypt::BnQw_SwapDwQwLeBe(signature, 0x80);

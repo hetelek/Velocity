@@ -3,8 +3,10 @@
 
 #include <QDebug>
 
-DeviceViewer::DeviceViewer(QStatusBar *statusBar, QList<QAction *> gpdActions, QList<QAction *> gameActions, QWidget *parent) :
-    QDialog(parent), ui(new Ui::DeviceViewer), parentEntry(NULL), statusBar(statusBar), currentDrive(NULL), drivesLoaded(false), gpdActions(gpdActions), gameActions(gameActions)
+DeviceViewer::DeviceViewer(QStatusBar *statusBar, QList<QAction *> gpdActions,
+        QList<QAction *> gameActions, QWidget *parent) :
+    QDialog(parent), ui(new Ui::DeviceViewer), currentDrive(NULL), parentEntry(NULL),
+    gpdActions(gpdActions), gameActions(gameActions), statusBar(statusBar), drivesLoaded(false)
 {
     ui->setupUi(this);
 
@@ -17,14 +19,17 @@ DeviceViewer::DeviceViewer(QStatusBar *statusBar, QList<QAction *> gpdActions, Q
 
     // setup the context menus
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
+    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this,
+            SLOT(showContextMenu(QPoint)));
 
     // setup treewdiget for drag and drop
     setAcceptDrops(true);
     ui->treeWidget->setAcceptDrops(true);
     connect(ui->treeWidget, SIGNAL(dragDropped(QDropEvent*)), this, SLOT(onDragDropped(QDropEvent*)));
-    connect(ui->treeWidget, SIGNAL(dragEntered(QDragEnterEvent*)), this, SLOT(onDragEntered(QDragEnterEvent*)));
-    connect(ui->treeWidget, SIGNAL(dragLeft(QDragLeaveEvent*)), this, SLOT(onDragLeft(QDragLeaveEvent*)));
+    connect(ui->treeWidget, SIGNAL(dragEntered(QDragEnterEvent*)), this,
+            SLOT(onDragEntered(QDragEnterEvent*)));
+    connect(ui->treeWidget, SIGNAL(dragLeft(QDragLeaveEvent*)), this,
+            SLOT(onDragLeft(QDragLeaveEvent*)));
 
     progressBar = new QProgressBar(this);
     progressBar->setMaximumHeight(statusBar->height() - 5);
@@ -36,7 +41,7 @@ DeviceViewer::DeviceViewer(QStatusBar *statusBar, QList<QAction *> gpdActions, Q
 
 DeviceViewer::~DeviceViewer()
 {
-    for (int i = 0; i < loadedDrives.size(); i++)
+    for (size_t i = 0; i < loadedDrives.size(); i++)
         delete loadedDrives.at(i);
 
     delete ui;
@@ -89,12 +94,14 @@ void DeviceViewer::DrawMemoryGraph()
     QPixmap freeMemClr(16, 16);
     freeMemClr.fill(QColor(255, 0, 254));
     ui->imgFreeMem->setPixmap(freeMemClr);
-    ui->lblFeeMemory->setText(QString::fromStdString(ByteSizeToString(totalFreeSpace)) + " of Free Space");
+    ui->lblFeeMemory->setText(QString::fromStdString(ByteSizeToString(totalFreeSpace)) +
+            " of Free Space");
 
     QPixmap usedMemClr(16, 16);
     usedMemClr.fill(QColor(0, 0, 254));
     ui->imgUsedMem->setPixmap(usedMemClr);
-    ui->lblUsedSpace->setText(QString::fromStdString(ByteSizeToString(totalSpace - totalFreeSpace)) + " of Used Space");
+    ui->lblUsedSpace->setText(QString::fromStdString(ByteSizeToString(totalSpace - totalFreeSpace)) +
+            " of Used Space");
 }
 
 void DeviceViewer::showContextMenu(QPoint point)
@@ -159,13 +166,16 @@ void DeviceViewer::showContextMenu(QPoint point)
             }
 
             // get the save path
-            QString path = QFileDialog::getExistingDirectory(this, "Save Location", QtHelpers::DefaultLocation());
+            QString path = QFileDialog::getExistingDirectory(this, "Save Location",
+                    QtHelpers::DefaultLocation());
 
             if (path.isEmpty())
                 return;
 
             // save the file to the local disk
-            MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemFATX, currentDrive, path + "/", filesToExtract, this, QString::fromStdString(directoryChain.last()->path + directoryChain.last()->name + "\\"));
+            MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemFATX, currentDrive,
+                    path + "/", filesToExtract, this,
+                    QString::fromStdString(directoryChain.last()->path + directoryChain.last()->name + "\\"));
             dialog->setModal(true);
             dialog->show();
             dialog->start();
@@ -173,26 +183,29 @@ void DeviceViewer::showContextMenu(QPoint point)
         else if (selectedItem->text() == "View Properties")
         {
             FatxFileEntry *entry = items.at(0)->data(0, Qt::UserRole).value<FatxFileEntry*>();
-            FatxFileDialog dialog(currentDrive, entry, entry->partition->clusterSize, items.at(0)->data(1, Qt::UserRole).toString(), this);
+            FatxFileDialog dialog(currentDrive, entry, entry->partition->clusterSize, items.at(0)->data(1,
+                    Qt::UserRole).toString(), this);
             dialog.exec();
 
             items.at(0)->setText(0, QString::fromStdString(entry->name));
         }
         else if (selectedItem->text() == "Copy File(s) Here")
         {
-            QStringList toInjectPaths = QFileDialog::getOpenFileNames(this);
+            QStringList toInjectPaths = QFileDialog::getOpenFileNames(this, "Choose file(s) to copy...",
+                    QtHelpers::DefaultLocation());
             if (toInjectPaths.size() == 0)
                 return;
 
             QList<void*> files;
-            for (DWORD i = 0; i < toInjectPaths.size(); i++)
+            for (int i = 0; i < toInjectPaths.size(); i++)
                 files.push_back(const_cast<void*>((void*)&toInjectPaths.at(i)));
 
             InjectFiles(files, "");
         }
         else if (selectedItem->text() == "Copy Folder Here")
         {
-            QString folder = QFileDialog::getExistingDirectory(this, "Choose a folder to copy...", QtHelpers::DefaultLocation());
+            QString folder = QFileDialog::getExistingDirectory(this, "Choose a folder to copy...",
+                    QtHelpers::DefaultLocation());
             if (folder == "")
                 return;
 
@@ -234,7 +247,8 @@ void DeviceViewer::showContextMenu(QPoint point)
         else if (selectedItem->text() == "Create Folder Here")
         {
             bool ok;
-            QString text = QInputDialog::getText(this, "New Folder", "Folder name:", QLineEdit::Normal, "New Folder", &ok, windowFlags() & ~Qt::WindowContextHelpButtonHint);
+            QString text = QInputDialog::getText(this, "New Folder", "Folder name:", QLineEdit::Normal,
+                    "New Folder", &ok, windowFlags() & ~Qt::WindowContextHelpButtonHint);
             if (ok && !text.isEmpty())
             {
                 if (text.length() > FATX_ENTRY_MAX_NAME_LENGTH)
@@ -269,7 +283,8 @@ void DeviceViewer::showContextMenu(QPoint point)
 
             do
             {
-                name = QInputDialog::getText(this, "New File Name", label, QLineEdit::Normal, items.at(0)->text(0), NULL, windowFlags() & ~Qt::WindowContextHelpButtonHint);
+                name = QInputDialog::getText(this, "New File Name", label, QLineEdit::Normal, items.at(0)->text(0),
+                        NULL, windowFlags() & ~Qt::WindowContextHelpButtonHint);
                 label = "<font color=\"red\">Invalid File Name</font>";
             }
             while (!FatxDrive::ValidFileName(name.toStdString()));
@@ -302,7 +317,8 @@ void DeviceViewer::showContextMenu(QPoint point)
 
 void DeviceViewer::InjectFiles(QList<void*> files, QString rootPath)
 {
-    MultiProgressDialog *dialog = new MultiProgressDialog(OpInject, FileSystemFATX, currentDrive, "", files, this, rootPath, parentEntry);
+    MultiProgressDialog *dialog = new MultiProgressDialog(OpInject, FileSystemFATX, currentDrive, "",
+            files, this, rootPath, parentEntry);
     dialog->setModal(true);
     dialog->show();
     dialog->start();
@@ -321,7 +337,8 @@ void DeviceViewer::DrawHeader(QString driveName)
         ui->btnSecurityBlob->setText("Config Data");
     ui->txtDriveName->setText(driveName);
 
-    ui->imgDrive->setPixmap(((currentDrive->GetFatxDriveType() == FatxHarddrive) ? QPixmap(":/Images/harddrive.png") : QPixmap(":/Images/usb drive.png")));
+    ui->imgDrive->setPixmap(((currentDrive->GetFatxDriveType() == FatxHarddrive) ?
+            QPixmap(":/Images/harddrive.png") : QPixmap(":/Images/usb drive.png")));
 }
 
 void DeviceViewer::LoadDrives()
@@ -329,7 +346,7 @@ void DeviceViewer::LoadDrives()
     // clear all the items
     ui->treeWidget->clear();
 
-    for (int i = 0; i < loadedDrives.size(); i++)
+    for (size_t i = 0; i < loadedDrives.size(); i++)
         delete loadedDrives.at(i);
 
     try
@@ -341,7 +358,7 @@ void DeviceViewer::LoadDrives()
             return;
         }
 
-        for (int i = 0; i < loadedDrives.size(); i++)
+        for (size_t i = 0; i < loadedDrives.size(); i++)
         {
             QTreeWidgetItem *driveItem = new QTreeWidgetItem(ui->treeWidget_2);
             driveItem->setData(0, Qt::UserRole, QVariant::fromValue(loadedDrives.at(i)));
@@ -359,20 +376,21 @@ void DeviceViewer::LoadDrives()
 
             // load the partion information
             std::vector<Partition*> parts = loadedDrives.at(i)->GetPartitions();
-            for (DWORD i = 0; i < parts.size(); i++)
+            for (size_t j = 0; j < parts.size(); j++)
             {
                 QTreeWidgetItem *secondItem = new QTreeWidgetItem(driveItem);
-                secondItem->setText(0, QString::fromStdString(parts.at(i)->name));
+                secondItem->setText(0, QString::fromStdString(parts.at(j)->name));
                 secondItem->setIcon(0, QIcon(":/Images/partition.png"));
                 secondItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
-                secondItem->setData(0, Qt::UserRole, QVariant::fromValue(parts.at(i)));
+                secondItem->setData(0, Qt::UserRole, QVariant::fromValue(parts.at(j)));
                 secondItem->setData(5, Qt::UserRole, QVariant::fromValue(true));
                 secondItem->setData(4, Qt::UserRole, QVariant::fromValue(-1));
             }
 
             // load the name of the drive
             FatxFileEntry *nameEntry = loadedDrives.at(i)->GetFileEntry("Drive:\\Content\\name.txt");
-            QString name = (loadedDrives.at(i)->GetFatxDriveType() == FatxHarddrive) ? "Hard Drive" : "Flash Drive";
+            QString name = (loadedDrives.at(i)->GetFatxDriveType() == FatxHarddrive) ? "Hard Drive" :
+                    "Flash Drive";
             if (nameEntry)
             {
                 FatxIO nameFile = loadedDrives.at(i)->GetFatxIO(nameEntry);
@@ -380,7 +398,8 @@ void DeviceViewer::LoadDrives()
 
                 // make sure that it starts with 0xFEFF
                 if (nameFile.ReadWord() == 0xFEFF)
-                    name = QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 : (nameEntry->fileSize - 2) / 2));
+                    name = QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 :
+                            (nameEntry->fileSize - 2) / 2));
             }
 
             driveItem->setText(0, name);
@@ -398,7 +417,8 @@ void DeviceViewer::LoadDrives()
     }
     catch (std::string error)
     {
-        QMessageBox::critical(this, "Problem Loading", "The drive failed to load.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Problem Loading",
+                "The drive failed to load.\n\n" + QString::fromStdString(error));
     }
 }
 
@@ -452,7 +472,8 @@ void DeviceViewer::on_treeWidget_doubleClicked(const QModelIndex &index)
     }
     catch (std::string error)
     {
-        QMessageBox::warning(this, "Problem Loading", "The folder failed to load.\n\n" + QString::fromStdString(error));
+        QMessageBox::warning(this, "Problem Loading",
+                "The folder failed to load.\n\n" + QString::fromStdString(error));
     }
 }
 
@@ -495,7 +516,7 @@ void DeviceViewer::LoadFolderAll(FatxFileEntry *folder)
 
         currentDrive->GetChildFileEntries(folder, updateUI);
 
-        for (int i = 0; i < folder->cachedFiles.size(); i++)
+        for (size_t i = 0; i < folder->cachedFiles.size(); i++)
         {
             // get the entry
             FatxFileEntry *entry = &folder->cachedFiles.at(i);
@@ -547,7 +568,8 @@ void DeviceViewer::LoadFolderAll(FatxFileEntry *folder)
     }
     catch (std::string error)
     {
-        QMessageBox::warning(this, "Problem Loading", "The folder failed to load.\n\n" + QString::fromStdString(error));
+        QMessageBox::warning(this, "Problem Loading",
+                "The folder failed to load.\n\n" + QString::fromStdString(error));
     }
 }
 
@@ -585,7 +607,8 @@ void DeviceViewer::LoadFolderTree(QTreeWidgetItem *item)
     }
     catch (std::string error)
     {
-        QMessageBox::warning(this, "Problem Loading", "The folder failed to load.\n\n" + QString::fromStdString(error));
+        QMessageBox::warning(this, "Problem Loading",
+                "The folder failed to load.\n\n" + QString::fromStdString(error));
     }
 }
 
@@ -613,7 +636,7 @@ void DeviceViewer::LoadPartitions()
 
     // load partitions
     std::vector<Partition*> parts = currentDrive->GetPartitions();
-    for (int i = 0; i < parts.size(); i++)
+    for (size_t i = 0; i < parts.size(); i++)
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
         item->setData(5, Qt::UserRole, QVariant(true));
@@ -713,7 +736,8 @@ void DeviceViewer::on_btnPartitions_clicked()
 
 void DeviceViewer::onDragEntered(QDragEnterEvent *event)
 {
-    if (parentEntry != NULL && parentEntry->name != "Drive Root" && event->mimeData()->hasFormat("text/uri-list"))
+    if (parentEntry != NULL && parentEntry->name != "Drive Root" &&
+            event->mimeData()->hasFormat("text/uri-list"))
     {
         event->acceptProposedAction();
         statusBar->showMessage("Copy file(s) here");
@@ -759,7 +783,8 @@ void DeviceViewer::on_txtPath_returnPressed()
 {
     FatxFileEntry *parent = currentDrive->GetFileEntry(ui->txtPath->text().toStdString());
     if (parent == NULL || !(parent->fileAttributes & FatxDirectory))
-        QMessageBox::critical(this, "Error", "Velocity can't find " + ui->txtPath->text() + ". Check the spelling and try again.");
+        QMessageBox::critical(this, "Error",
+                "Velocity can't find " + ui->txtPath->text() + ". Check the spelling and try again.");
     else
         LoadFolderAll(parent);
 }
@@ -779,12 +804,14 @@ void updateUIDelete(void *arg)
 
 void DeviceViewer::on_btnBackup_clicked()
 {
-    QString savePath = QFileDialog::getSaveFileName(this, "Create a backup for your device", QtHelpers::DefaultLocation() + "/Drive Backup.bin");
+    QString savePath = QFileDialog::getSaveFileName(this, "Create a backup for your device",
+            QtHelpers::DefaultLocation() + "/Drive Backup.bin");
 
     if (savePath == "")
         return;
 
-    SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemFATX, currentDrive, OpBackup, "", savePath, NULL, this);
+    SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemFATX, currentDrive, OpBackup, "",
+            savePath, NULL, this);
     dialog->setModal(true);
     dialog->show();
     dialog->start();
@@ -792,12 +819,14 @@ void DeviceViewer::on_btnBackup_clicked()
 
 void DeviceViewer::on_btnRestore_clicked()
 {
-    QString openPath = QFileDialog::getOpenFileName(this, "Choose a backup to restore from", QtHelpers::DefaultLocation() + "/Drive Backup.bin");
+    QString openPath = QFileDialog::getOpenFileName(this, "Choose a backup to restore from",
+            QtHelpers::DefaultLocation() + "/Drive Backup.bin");
 
     if (openPath == "")
         return;
 
-    SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemFATX, currentDrive, OpRestore, "", openPath, NULL, this);
+    SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemFATX, currentDrive, OpRestore, "",
+            openPath, NULL, this);
     dialog->setModal(true);
     dialog->show();
     dialog->start();
@@ -816,7 +845,8 @@ void DeviceViewer::on_btnRestore_clicked()
 
         // make sure that it starts with 0xFEFF
         if (nameFile.ReadWord() == 0xFEFF)
-            name = QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 : (nameEntry->fileSize - 2) / 2));
+            name = QString::fromStdWString(nameFile.ReadWString((nameEntry->fileSize > 0x36) ? 26 :
+                    (nameEntry->fileSize - 2) / 2));
     }
     currentDriveItem->setText(0, name);
     DrawHeader(name);
@@ -857,6 +887,7 @@ void DeviceViewer::on_txtDriveName_editingFinished()
     {
         // restore the original name
         ui->txtDriveName->setText(previousName);
-        QMessageBox::warning(this, "Problem Renaming", "The drive could not be renamed.\n\n" + QString::fromStdString(error));
+        QMessageBox::warning(this, "Problem Renaming",
+                "The drive could not be renamed.\n\n" + QString::fromStdString(error));
     }
 }

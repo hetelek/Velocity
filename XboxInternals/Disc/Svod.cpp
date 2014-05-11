@@ -23,7 +23,8 @@ SVOD::SVOD(string rootPath)
 
     switch (metadata->contentType)
     {
-        case GameOnDemand:;
+        case GameOnDemand:
+            ;
         case InstalledGame:
             break;
         default:
@@ -34,7 +35,7 @@ SVOD::SVOD(string rootPath)
     io = new SvodMultiFileIO(contentDirectory);
 
     // parse the header
-    io->SetPosition(baseAddress, 0);
+    io->SetPosition(baseAddress, (DWORD)0);
     GdfxReadHeader(io, &header);
 
     // read the file listing
@@ -67,7 +68,8 @@ void SVOD::SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *dataFi
     *addressInDataFile += offset;
 
     // for the data hash table(s)
-    *addressInDataFile += ((trueSector / 0x198) + ((trueSector % 0x198 == 0 && trueSector != 0) ? 0 : 1)) * 0x1000;
+    *addressInDataFile += ((trueSector / 0x198) + ((trueSector % 0x198 == 0 &&
+            trueSector != 0) ? 0 : 1)) * 0x1000;
 }
 
 void SVOD::ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int size, string path)
@@ -136,17 +138,20 @@ GdfxFileEntry SVOD::GetFileEntry(string path, vector<GdfxFileEntry> *listing)
     string entryName = path.substr(1, path.substr(1).find_first_of('/'));
 
     // search for the entry
-    for (DWORD i = 0; i < listing->size(); i++)
+    size_t i = 0;
+    for (; i < listing->size(); i++)
     {
         if (listing->at(i).name == entryName)
         {
             // check to see if it's at the end
-            if (path.substr(1).find_first_of('/') == -1)
+            if (path.substr(1).find_first_of('/') == string::npos)
                 return listing->at(i);
             else
-                return GetFileEntry(path.substr(entryName.length() + 1), &listing->at(i).files);
+                break;
         }
     }
+
+    return GetFileEntry(path.substr(entryName.length() + 1), &listing->at(i).files);
 }
 
 SvodIO SVOD::GetSvodIO(string path)
@@ -168,7 +173,7 @@ void SVOD::Rehash(void (*progress)(DWORD, DWORD, void*), void *arg)
     BYTE prevHash[0x14] = {0};
 
     // iterate through all of the files
-    for (int i = fileCount - 1; i >= 0; i--)
+    for (DWORD i = fileCount; i--;)
     {
         io->SetPosition((DWORD)0x2000, i);
         DWORD hashTableCount = ((io->CurrentFileLength() - 0x2000) + 0xCCFFF) / 0xCD000;
@@ -260,5 +265,5 @@ DWORD SVOD::GetSectorCount()
 
 int compareFileEntries(GdfxFileEntry a, GdfxFileEntry b)
 {
-    return !!(a.attributes & GdfxDirectory);
+    return !(a.attributes & GdfxDirectory);
 }

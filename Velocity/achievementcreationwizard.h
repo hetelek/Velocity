@@ -15,18 +15,20 @@
 
 using namespace std;
 
-namespace Ui {
+namespace Ui
+{
 class AchievementCreationWizard;
 }
 
 class AchievementCreationWizard : public QWizard
 {
     Q_OBJECT
-    
+
 public:
-    explicit AchievementCreationWizard(wstring gameName, QImage *achThumbnail, AchievementEntry *entry, QWidget *parent = 0);
+    explicit AchievementCreationWizard(wstring gameName, QImage *achThumbnail, AchievementEntry *entry,
+            QWidget *parent = 0);
     ~AchievementCreationWizard();
-    
+
 private slots:
     void on_comboBox_currentIndexChanged(int index);
 

@@ -7,10 +7,12 @@ SecuritySectorDialog::SecuritySectorDialog(FatxDrive *drive, QWidget *parent) :
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
-    ui->lblFirmwareRevision->setText(QString::fromStdString(drive->securityBlob.firmwareRevision).trimmed());
+    ui->lblFirmwareRevision->setText(QString::fromStdString(
+                drive->securityBlob.firmwareRevision).trimmed());
     ui->lblModelNumber->setText(QString::fromStdString(drive->securityBlob.modelNumber).trimmed());
     ui->lblSerialNumber->setText(QString::fromStdString(drive->securityBlob.serialNumber).trimmed());
-    ui->lblSectors->setText("0x" + QString::number(drive->securityBlob.userAddressableSectors, 16).toUpper());
+    ui->lblSectors->setText("0x" + QString::number(drive->securityBlob.userAddressableSectors,
+            16).toUpper());
 }
 
 SecuritySectorDialog::~SecuritySectorDialog()
@@ -20,7 +22,8 @@ SecuritySectorDialog::~SecuritySectorDialog()
 
 void SecuritySectorDialog::on_btnExtractSecuritySector_clicked()
 {
-    QString savePath = QFileDialog::getSaveFileName(this, "Choose a place to save the security blob...", QtHelpers::DefaultLocation() + "/Security Blob.bin");
+    QString savePath = QFileDialog::getSaveFileName(this, "Choose a place to save the security blob...",
+            QtHelpers::DefaultLocation() + "/Security Blob.bin");
     if (savePath == "")
         return;
 
@@ -31,13 +34,15 @@ void SecuritySectorDialog::on_btnExtractSecuritySector_clicked()
     }
     catch (string error)
     {
-        QMessageBox::critical(this, "Error", "An error occurred while extracting the security blob.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error",
+                "An error occurred while extracting the security blob.\n\n" + QString::fromStdString(error));
     }
 }
 
 void SecuritySectorDialog::on_btnReplaceSecuritySector_clicked()
 {
-    QString openPath = QFileDialog::getOpenFileName(this, "Choose a security blob...", QtHelpers::DefaultLocation() + "/Security Blob.bin");
+    QString openPath = QFileDialog::getOpenFileName(this, "Choose a security blob...",
+            QtHelpers::DefaultLocation() + "/Security Blob.bin");
     if (openPath == "")
         return;
 
@@ -48,6 +53,7 @@ void SecuritySectorDialog::on_btnReplaceSecuritySector_clicked()
     }
     catch (string error)
     {
-        QMessageBox::critical(this, "Error", "An error occurred while replacing the security blob.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error",
+                "An error occurred while replacing the security blob.\n\n" + QString::fromStdString(error));
     }
 }

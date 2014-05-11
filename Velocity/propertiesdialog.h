@@ -6,18 +6,20 @@
 #include <Stfs/StfsPackage.h>
 #include "qthelpers.h"
 
-namespace Ui {
+namespace Ui
+{
 class PropertiesDialog;
 }
 
 class PropertiesDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
-    explicit PropertiesDialog(StfsFileEntry *entry, QString location, bool *changed, QIcon icon, bool hasChildren, QWidget *parent = 0);
+    explicit PropertiesDialog(StfsFileEntry *entry, QString location, bool *changed, QIcon icon,
+            bool hasChildren, QWidget *parent = 0);
     ~PropertiesDialog();
-    
+
 private slots:
     void on_btnCancel_clicked();
 

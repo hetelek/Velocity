@@ -1,6 +1,7 @@
 #include "titleidfinder.h"
 
-TitleIdFinder::TitleIdFinder(QString gameName, QObject *parent) : QObject(parent), gameName(gameName)
+TitleIdFinder::TitleIdFinder(QString gameName, QObject *parent) : QObject(parent),
+    gameName(gameName)
 {
 
 }

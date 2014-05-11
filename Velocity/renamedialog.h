@@ -3,18 +3,19 @@
 
 #include <QDialog>
 
-namespace Ui {
+namespace Ui
+{
 class RenameDialog;
 }
 
 class RenameDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit RenameDialog(QWidget *parent = 0, std::string *newName = 0);
     ~RenameDialog();
-    
+
 private slots:
     void on_pushButton_clicked();
 

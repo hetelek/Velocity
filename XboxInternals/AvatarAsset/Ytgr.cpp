@@ -54,7 +54,8 @@ void Ytgr::Parse()
     BYTE message[0x30];
     io->SetPosition(0);
     io->ReadBytes(message, 0x30);
-    valid = XeKeys::VerifyRSASignature(LIVEKey, message, 0x30, rsaSignature) || XeKeys::VerifyRSASignature(UnknownKey, message, 0x30, rsaSignature);
+    valid = XeKeys::VerifyRSASignature(LIVEKey, message, 0x30, rsaSignature) ||
+            XeKeys::VerifyRSASignature(UnknownKey, message, 0x30, rsaSignature);
 
     // verify the hash
     BYTE block[0x1000];

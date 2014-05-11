@@ -14,7 +14,8 @@ LicenseTypeStruct licenseTypes[] =
     { "UserPrivileges", (LicenseType)0xB000 },
 };
 
-LicensingDataDialog::LicensingDataDialog(QStatusBar *statusBar, LicenseEntry *entryTable, bool unlockable, QWidget *parent) :
+LicensingDataDialog::LicensingDataDialog(QStatusBar *statusBar, LicenseEntry *entryTable,
+        bool unlockable, QWidget *parent) :
     QDialog(parent), ui(new Ui::LicensingDataDialog), entryTable(entryTable), statusBar(statusBar)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -38,9 +39,12 @@ LicensingDataDialog::LicensingDataDialog(QStatusBar *statusBar, LicenseEntry *en
         }
 
         ui->tableWidget->setCellWidget(i, 0, cmbxLicenseTypes[i]);
-        ui->tableWidget->setItem(i, 1, new QTableWidgetItem("0x" + QString::number(entryTable[i].data, 16).toUpper()));
-        ui->tableWidget->setItem(i, 2, new QTableWidgetItem("0x" + QString::number(entryTable[i].bits, 16).toUpper()));
-        ui->tableWidget->setItem(i, 3, new QTableWidgetItem("0x" + QString::number(entryTable[i].flags, 16).toUpper()));
+        ui->tableWidget->setItem(i, 1, new QTableWidgetItem("0x" + QString::number(entryTable[i].data,
+                16).toUpper()));
+        ui->tableWidget->setItem(i, 2, new QTableWidgetItem("0x" + QString::number(entryTable[i].bits,
+                16).toUpper()));
+        ui->tableWidget->setItem(i, 3, new QTableWidgetItem("0x" + QString::number(entryTable[i].flags,
+                16).toUpper()));
     }
 
     statusBar->showMessage("Licenses loaded successfully", 3000);
@@ -58,17 +62,20 @@ void LicensingDataDialog::on_pushButton_clicked()
     {
         if (!QtHelpers::VerifyHexString(ui->tableWidget->item(i, 1)->text()))
         {
-            QMessageBox::warning(this, "Invalid Value", "The License ID in row " + QString::number(i + 1) + " must be all hexadecimal digits.\n");
+            QMessageBox::warning(this, "Invalid Value",
+                    "The License ID in row " + QString::number(i + 1) + " must be all hexadecimal digits.\n");
             return;
         }
         if (!QtHelpers::VerifyHexString(ui->tableWidget->item(i, 2)->text()))
         {
-            QMessageBox::warning(this, "Invalid Value", "The Bits in row " + QString::number(i + 1) + " must be all hexadecimal digits.\n");
+            QMessageBox::warning(this, "Invalid Value",
+                    "The Bits in row " + QString::number(i + 1) + " must be all hexadecimal digits.\n");
             return;
         }
         if (!QtHelpers::VerifyHexString(ui->tableWidget->item(i, 3)->text()))
         {
-            QMessageBox::warning(this, "Invalid Value", "The Flags in row " + QString::number(i + 1) + " must be all hexadecimal digits.\n");
+            QMessageBox::warning(this, "Invalid Value",
+                    "The Flags in row " + QString::number(i + 1) + " must be all hexadecimal digits.\n");
             return;
         }
     }
@@ -94,8 +101,9 @@ void LicensingDataDialog::on_pushButton_2_clicked()
 
 void LicensingDataDialog::on_btnUnlock_clicked()
 {
-    int btn = QMessageBox::question(this, "Continue?", "Content unlocked this way can only be used on a JTAG/RGH/Dev. If you try and play on a retail, it will show up as corrupt.\n\nAre you sure that you want to unlock this content?",
-                                                            QMessageBox::Yes, QMessageBox::No);
+    int btn = QMessageBox::question(this, "Continue?",
+              "Content unlocked this way can only be used on a JTAG/RGH/Dev. If you try and play on a retail, it will show up as corrupt.\n\nAre you sure that you want to unlock this content?",
+              QMessageBox::Yes, QMessageBox::No);
 
     if (btn != (int)QMessageBox::Yes)
         return;

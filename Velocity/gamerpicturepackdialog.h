@@ -22,7 +22,8 @@
 // other
 #include "titleidfinder.h"
 
-namespace Ui {
+namespace Ui
+{
 class GamerPicturePackDialog;
 }
 
@@ -31,11 +32,11 @@ typedef QList<struct Title> QListTile;
 class GamerPicturePackDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit GamerPicturePackDialog(QStatusBar *statusBar, QWidget *parent = 0);
     ~GamerPicturePackDialog();
-    
+
 public slots:
     void gamercardNetworkReply(QNetworkReply*);
 
@@ -71,9 +72,11 @@ private:
     bool requestImage;
 
     void findGamerPictures(QString titleID);
-    void switchImage(QListWidgetItem *currentItem, QListWidget *current, QListWidget *toAddTo, QList<QString> *currentStrs, QList<QString> *toAddToStrs);
+    void switchImage(QListWidgetItem *currentItem, QListWidget *current, QListWidget *toAddTo,
+            QList<QString> *currentStrs, QList<QString> *toAddToStrs);
     QString getImageName(QString id, bool big);
-    void showContextMenu(QPoint p, QListWidget *current, QListWidget *toAddTo, QList<QString> *currentStrs, QList<QString> *toAddToStrs);
+    void showContextMenu(QPoint p, QListWidget *current, QListWidget *toAddTo,
+            QList<QString> *currentStrs, QList<QString> *toAddToStrs);
     bool verifyGamertag(QString gamertag);
 };
 

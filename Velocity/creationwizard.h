@@ -11,7 +11,8 @@
 // xbox 360
 #include "Stfs/StfsPackage.h"
 
-namespace Ui {
+namespace Ui
+{
 class CreationWizard;
 }
 

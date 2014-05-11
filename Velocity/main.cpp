@@ -1,7 +1,7 @@
 #if QT_VERSION >= 0x050000
-    #include <QtWidgets/QApplication>
+#include <QtWidgets/QApplication>
 #else
-    #include <QApplication>
+#include <QApplication>
 #endif
 
 #include <QStringList>
@@ -21,6 +21,6 @@ int main(int argc, char *argv[])
 
     MainWindow w(args);
     w.show();
-    
+
     return a.exec();
 }

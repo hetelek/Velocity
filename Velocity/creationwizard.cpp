@@ -2,7 +2,7 @@
 #include "ui_creationwizard.h"
 
 CreationWizard::CreationWizard(QString *fileName, QWidget *parent) :
-    QWizard(parent), ui(new Ui::CreationWizard), fileName(fileName), consoleType(Retail), magic(CON)
+    QWizard(parent), ui(new Ui::CreationWizard), magic(CON), fileName(fileName), consoleType(Retail)
 {
     connect(this, SIGNAL(currentIdChanged(int)), SLOT(onCurrentIdChanged(int)));
     connect(this, SIGNAL(finished(int)), this, SLOT(onFinished(int)));
@@ -37,73 +37,76 @@ void CreationWizard::onCurrentIdChanged(int id)
 {
     switch (id)
     {
-    case 3:
-        ui->lwContentTypes->clear();
-        // populate content type list
+        case 3:
+            ui->lwContentTypes->clear();
+            // populate content type list
 
-        if (magic == CON)
-        {
-            ui->lwContentTypes->addItem("Cache File");
-            ui->lwContentTypes->addItem("Gamer Picture");
-            ui->lwContentTypes->addItem("License Store");
-            ui->lwContentTypes->addItem("Profile");
-            ui->lwContentTypes->addItem("Publisher");
-            ui->lwContentTypes->addItem("Saved Game");
-            ui->lwContentTypes->addItem("Theme");
-            ui->lwContentTypes->addItem("Xbox Saved Game");
-            ui->lwContentTypes->addItem("XNA");
-        }
-        else if (magic == LIVE)
-        {
-            ui->lwContentTypes->addItem("App");
-            ui->lwContentTypes->addItem("Arcade Game");
-            ui->lwContentTypes->addItem("Avatar Item");
-            ui->lwContentTypes->addItem("Community Game");
-            ui->lwContentTypes->addItem("Game Demo");
-            ui->lwContentTypes->addItem("Gamer Picture");
-            ui->lwContentTypes->addItem("Game Trailer");
-            ui->lwContentTypes->addItem("Game Video");
-            ui->lwContentTypes->addItem("IPTV Pause Buffer ");
-            ui->lwContentTypes->addItem("Installer");
-            ui->lwContentTypes->addItem("License Store");
-            ui->lwContentTypes->addItem("Market Place Content");
-            ui->lwContentTypes->addItem("Movie");
-            ui->lwContentTypes->addItem("Music Video");
-            ui->lwContentTypes->addItem("Podcast Video");
-            ui->lwContentTypes->addItem("Storage Download");
-            ui->lwContentTypes->addItem("Video");
-            ui->lwContentTypes->addItem("Viral Video");
-            ui->lwContentTypes->addItem("Xbox Download");
-            ui->lwContentTypes->addItem("Xbox Original Game");
-            ui->lwContentTypes->addItem("Xbox360 Title");
-        }
-        else
-        {
-            ui->lwContentTypes->addItem("Avatar Asset Pack");
-            ui->lwContentTypes->addItem("Theme");
-        }
-        ui->lwContentTypes->setCurrentItem(ui->lwContentTypes->item(0));
-        ui->lwContentTypes->item(0)->setSelected(true);
-        break;
+            if (magic == CON)
+            {
+                ui->lwContentTypes->addItem("Cache File");
+                ui->lwContentTypes->addItem("Gamer Picture");
+                ui->lwContentTypes->addItem("License Store");
+                ui->lwContentTypes->addItem("Profile");
+                ui->lwContentTypes->addItem("Publisher");
+                ui->lwContentTypes->addItem("Saved Game");
+                ui->lwContentTypes->addItem("Theme");
+                ui->lwContentTypes->addItem("Xbox Saved Game");
+                ui->lwContentTypes->addItem("XNA");
+            }
+            else if (magic == LIVE)
+            {
+                ui->lwContentTypes->addItem("App");
+                ui->lwContentTypes->addItem("Arcade Game");
+                ui->lwContentTypes->addItem("Avatar Item");
+                ui->lwContentTypes->addItem("Community Game");
+                ui->lwContentTypes->addItem("Game Demo");
+                ui->lwContentTypes->addItem("Gamer Picture");
+                ui->lwContentTypes->addItem("Game Trailer");
+                ui->lwContentTypes->addItem("Game Video");
+                ui->lwContentTypes->addItem("IPTV Pause Buffer ");
+                ui->lwContentTypes->addItem("Installer");
+                ui->lwContentTypes->addItem("License Store");
+                ui->lwContentTypes->addItem("Market Place Content");
+                ui->lwContentTypes->addItem("Movie");
+                ui->lwContentTypes->addItem("Music Video");
+                ui->lwContentTypes->addItem("Podcast Video");
+                ui->lwContentTypes->addItem("Storage Download");
+                ui->lwContentTypes->addItem("Video");
+                ui->lwContentTypes->addItem("Viral Video");
+                ui->lwContentTypes->addItem("Xbox Download");
+                ui->lwContentTypes->addItem("Xbox Original Game");
+                ui->lwContentTypes->addItem("Xbox360 Title");
+            }
+            else
+            {
+                ui->lwContentTypes->addItem("Avatar Asset Pack");
+                ui->lwContentTypes->addItem("Theme");
+            }
+            ui->lwContentTypes->setCurrentItem(ui->lwContentTypes->item(0));
+            ui->lwContentTypes->item(0)->setSelected(true);
+            break;
 
-    case 4:
-        button(QWizard::NextButton)->setEnabled(false);
-        break;
-    case 6:
-        ui->lblSavePath->setText(QtHelpers::DefaultLocation().replace("\\", "/") + "/" + ui->txtDisplayName->text());
-        break;
+        case 4:
+            button(QWizard::NextButton)->setEnabled(false);
+            break;
+        case 6:
+            ui->lblSavePath->setText(QtHelpers::DefaultLocation().replace("\\",
+                    "/") + "/" + ui->txtDisplayName->text());
+            break;
     }
 }
 
 void CreationWizard::on_txtDisplayName_textChanged(const QString & /* arg1 */)
 {
-    button(QWizard::NextButton)->setEnabled(ui->txtDisplayName->text() != "" && ui->txtTitleID->text().length() == 8 &&
-        QtHelpers::VerifyHexString(ui->txtTitleID->text()));
+    button(QWizard::NextButton)->setEnabled(ui->txtDisplayName->text() != "" &&
+            ui->txtTitleID->text().length() == 8 &&
+            QtHelpers::VerifyHexString(ui->txtTitleID->text()));
 }
 
 void CreationWizard::openImage(QLabel *img)
 {
-    QString imgPath = QFileDialog::getOpenFileName(this, "Open a 64x64 thumbnail", QtHelpers::DefaultLocation(), "*.png");
+    QString imgPath = QFileDialog::getOpenFileName(this, "Open a 64x64 thumbnail",
+            QtHelpers::DefaultLocation(), "*.png");
 
     if (imgPath == "")
         return;
@@ -136,12 +139,14 @@ void CreationWizard::on_txtTitleID_textChanged(const QString & /* arg1 */)
     else
         ui->txtTitleID->setStyleSheet("");
 
-    button(QWizard::NextButton)->setEnabled(ui->txtDisplayName->text() != "" && ui->txtTitleID->text().length() == 8 && QtHelpers::VerifyHexString(ui->txtTitleID->text()));
+    button(QWizard::NextButton)->setEnabled(ui->txtDisplayName->text() != "" &&
+            ui->txtTitleID->text().length() == 8 && QtHelpers::VerifyHexString(ui->txtTitleID->text()));
 }
 
 void CreationWizard::on_pushButton_clicked()
 {
-    QString savePath = QFileDialog::getSaveFileName(this, "Choose a place to create the pacakge", ui->lblSavePath->text());
+    QString savePath = QFileDialog::getSaveFileName(this, "Choose a place to create the pacakge",
+            ui->lblSavePath->text());
     if (savePath == "")
         return;
 
@@ -156,7 +161,8 @@ void CreationWizard::onFinished(int status)
 
     try
     {
-        StfsPackage package(ui->lblSavePath->text().toStdString(), ((magic != CON) ? StfsPackageFemale : 0) | StfsPackageCreate);
+        StfsPackage package(ui->lblSavePath->text().toStdString(),
+                ((magic != CON) ? StfsPackageFemale : 0) | StfsPackageCreate);
 
         // set the metadata
         package.metaData->magic = magic;
@@ -190,7 +196,8 @@ void CreationWizard::onFinished(int status)
     }
     catch (string error)
     {
-        QMessageBox::critical(this, "Error", "An error occured while creating the package.\n\n" + QString::fromStdString(error));
+        QMessageBox::critical(this, "Error",
+                "An error occured while creating the package.\n\n" + QString::fromStdString(error));
         return;
     }
 

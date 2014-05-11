@@ -26,7 +26,7 @@ public:
 
     void StartSearch();
     void SetGameName(QString gameName);
-    
+
 signals:
     void SearchFinished(QList<TitleData> matches);
 

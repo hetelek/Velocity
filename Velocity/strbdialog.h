@@ -10,18 +10,19 @@
 #include "AvatarAsset/AssetHelpers.h"
 #include "AvatarAsset/AvatarAssetDefinintions.h"
 
-namespace Ui {
+namespace Ui
+{
 class StrbDialog;
 }
 
 class StrbDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit StrbDialog(AvatarAsset *asset, QWidget *parent = 0);
     ~StrbDialog();
-    
+
 private:
     Ui::StrbDialog *ui;
     AvatarAsset *asset;

@@ -20,7 +20,8 @@
 #include "gpddownloader.h"
 #include "Stfs/StfsPackage.h"
 
-namespace Ui {
+namespace Ui
+{
 class GameAdderDialog;
 }
 
@@ -29,7 +30,8 @@ class GameAdderDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit GameAdderDialog(StfsPackage *package, QWidget *parent = 0, bool dispose = true, bool *ok = NULL);
+    explicit GameAdderDialog(StfsPackage *package, QWidget *parent = 0, bool dispose = true,
+            bool *ok = NULL);
     ~GameAdderDialog();
 
 private slots:

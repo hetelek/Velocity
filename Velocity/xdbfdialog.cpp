@@ -20,7 +20,8 @@ XdbfDialog::XdbfDialog(QStatusBar *statusBar, GpdBase *gpd, bool *modified, QWid
         }
 
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
+    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this,
+            SLOT(showContextMenu(QPoint)));
 }
 
 void XdbfDialog::addEntriesToTable(vector<XdbfEntry> entries, QString type)
@@ -30,7 +31,8 @@ void XdbfDialog::addEntriesToTable(vector<XdbfEntry> entries, QString type)
         // create an item
         QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
         item->setText(0, QString::fromStdString(XdbfHelpers::IDtoString(entries.at(i).id)));
-        item->setText(1, "0x" + QString::number(gpd->xdbf->GetRealAddress(entries.at(i).addressSpecifier), 16).toUpper());
+        item->setText(1, "0x" + QString::number(gpd->xdbf->GetRealAddress(entries.at(i).addressSpecifier),
+                16).toUpper());
         item->setText(2, "0x" + QString::number(entries.at(i).length, 16).toUpper());
         item->setText(3, type);
 
@@ -77,10 +79,11 @@ void XdbfDialog::showContextMenu(QPoint p)
         // get the out path
         QString path;
         if (items.count() > 1)
-            path = QFileDialog::getExistingDirectory(this, "Extract Directory", QtHelpers::DefaultLocation()) + "/";
+            path = QFileDialog::getExistingDirectory(this, "Extract Directory",
+                    QtHelpers::DefaultLocation()) + "/";
         else
             path = QFileDialog::getSaveFileName(this, "Choose a place to extract the entry",
-                QtHelpers::DefaultLocation() + "/" + ui->treeWidget->currentItem()->text(0));
+                    QtHelpers::DefaultLocation() + "/" + ui->treeWidget->currentItem()->text(0));
 
         if (path == "" || path == "\\")
             return;
@@ -135,13 +138,14 @@ void XdbfDialog::showContextMenu(QPoint p)
         }
         catch (string error)
         {
-            QMessageBox::critical(this, "Error", "An error occurred while extracting.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error",
+                    "An error occurred while extracting.\n\n" + QString::fromStdString(error));
         }
     }
     else if (selectedItem->text() == "Replace Entry")
     {
         QString entryPath = QFileDialog::getOpenFileName(this, "Open the entry to replace the current with",
-            QtHelpers::DefaultLocation() + "/" + ui->treeWidget->currentItem()->text(0));
+                QtHelpers::DefaultLocation() + "/" + ui->treeWidget->currentItem()->text(0));
 
         if (entryPath == "")
             return;
@@ -202,14 +206,16 @@ void XdbfDialog::showContextMenu(QPoint p)
 
             // update the entry in the UI
             QTreeWidgetItem *item = ui->treeWidget->selectedItems().at(0);
-            item->setText(1, "0x" + QString::number(gpd->xdbf->GetRealAddress(xentry.addressSpecifier), 16).toUpper());
+            item->setText(1, "0x" + QString::number(gpd->xdbf->GetRealAddress(xentry.addressSpecifier),
+                    16).toUpper());
             item->setText(2, "0x" + QString::number(xentry.length, 16).toUpper());
 
             statusBar->showMessage("Entry replaced successfully", 3000);
         }
         catch (string error)
         {
-            QMessageBox::critical(this, "Error", "An error occurred while replacing.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Error",
+                    "An error occurred while replacing.\n\n" + QString::fromStdString(error));
         }
     }
     else if (selectedItem->text() == "Address Converter")
@@ -219,10 +225,12 @@ void XdbfDialog::showContextMenu(QPoint p)
     }
     else if (selectedItem->text() == "Clean")
     {
-        int btn = QMessageBox::question(this, "Continue?", "Cleaning the Gpd will remove all of the unused memory that is in the file. This could potentially reduce the size of the Gpd.\n\nDo you want to continue?", QMessageBox::Yes, QMessageBox::No);
+        int btn = QMessageBox::question(this, "Continue?",
+                  "Cleaning the Gpd will remove all of the unused memory that is in the file. This could potentially reduce the size of the Gpd.\n\nDo you want to continue?",
+                  QMessageBox::Yes, QMessageBox::No);
 
         if (btn != QMessageBox::Yes)
-          return;
+            return;
 
         // clean the Gpd
         try
@@ -231,7 +239,8 @@ void XdbfDialog::showContextMenu(QPoint p)
         }
         catch (std::string error)
         {
-            QMessageBox::critical(this, "Clean Error", "An error occured while cleaning the Gpd.\n\n" + QString::fromStdString(error));
+            QMessageBox::critical(this, "Clean Error",
+                    "An error occured while cleaning the Gpd.\n\n" + QString::fromStdString(error));
             return;
         }
 
@@ -253,7 +262,7 @@ XdbfDialog::~XdbfDialog()
     delete ui;
 }
 
-Entry XdbfDialog::indexToEntry(int index)
+Entry XdbfDialog::indexToEntry(DWORD index)
 {
     Entry toReturn;
 
@@ -301,9 +310,11 @@ void XdbfDialog::on_treeWidget_doubleClicked(const QModelIndex &index)
         {
             QString str = QString::fromStdWString(gpd->strings.at(e.index).ws);
             if (str.trimmed() != "")
-                QMessageBox::about(this, "Setting", "<html><center><h3>Unicode String</h3><br />" + str + "</center></html>");
+                QMessageBox::about(this, "Setting",
+                        "<html><center><h3>Unicode String</h3><br />" + str + "</center></html>");
             else
-                QMessageBox::about(this, "Setting", "<html><center><h3>Unicode String</h3><br /><i>Empty</i></center></html>");
+                QMessageBox::about(this, "Setting",
+                        "<html><center><h3>Unicode String</h3><br /><i>Empty</i></center></html>");
             break;
         }
         case Setting:
@@ -313,28 +324,38 @@ void XdbfDialog::on_treeWidget_doubleClicked(const QModelIndex &index)
             switch (setting.type)
             {
                 case Int32:
-                    QMessageBox::about(this, "Setting", "<html><center><h3>Int32 Setting</h3><br />" + QString::number(setting.int32) + "</center></html>");
+                    QMessageBox::about(this, "Setting",
+                            "<html><center><h3>Int32 Setting</h3><br />" + QString::number(setting.int32) + "</center></html>");
                     break;
                 case Int64:
-                    QMessageBox::about(this, "Setting", "<html><center><h3>Int64 Setting</h3><br />" + QString::number(setting.int64) + "</center></html>");
+                    QMessageBox::about(this, "Setting",
+                            "<html><center><h3>Int64 Setting</h3><br />" + QString::number(setting.int64) + "</center></html>");
                     break;
                 case Float:
-                    QMessageBox::about(this, "Setting", "<html><center><h3>Float Setting</h3><br />" + QString::number(setting.floatData) + "</center></html>");
+                    QMessageBox::about(this, "Setting",
+                            "<html><center><h3>Float Setting</h3><br />" + QString::number(setting.floatData) +
+                            "</center></html>");
                     break;
                 case Double:
-                    QMessageBox::about(this, "Setting", "<html><center><h3>Double Setting</h3><br />" + QString::number(setting.doubleData) + "</center></html>");
+                    QMessageBox::about(this, "Setting",
+                            "<html><center><h3>Double Setting</h3><br />" + QString::number(setting.doubleData) +
+                            "</center></html>");
                     break;
                 case UnicodeString:
                 {
                     QString str = QString::fromStdWString(*setting.str);
                     if (str.trimmed() != "")
-                        QMessageBox::about(this, "Setting", "<html><center><h3>String Setting</h3><br />" + str + "</center></html>");
+                        QMessageBox::about(this, "Setting",
+                                "<html><center><h3>String Setting</h3><br />" + str + "</center></html>");
                     else
-                        QMessageBox::about(this, "Setting", "<html><center><h3>String Setting</h3><br /><i>Empty</i></center></html>");
+                        QMessageBox::about(this, "Setting",
+                                "<html><center><h3>String Setting</h3><br /><i>Empty</i></center></html>");
                     break;
                 }
                 case TimeStamp:
-                    QMessageBox::about(this, "Setting", "<html><center><h3>Timestamp Setting</h3><br />" + QDateTime::fromTime_t(setting.timeStamp).toString() + "</center></html>");
+                    QMessageBox::about(this, "Setting",
+                            "<html><center><h3>Timestamp Setting</h3><br />" + QDateTime::fromTime_t(
+                                setting.timeStamp).toString() + "</center></html>");
                     break;
                 default:
                     statusBar->showMessage("Cannot view this type of entry", 3000);
