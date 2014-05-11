@@ -1492,7 +1492,17 @@ p, li { white-space: pre-wrap; }
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_10">
                     <item>
-                     <widget class="QDateTimeEdit" name="dteAwTimestamp"/>
+                     <widget class="QDateTimeEdit" name="dteAwTimestamp">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="displayFormat">
+                       <string>yyyy-MM-dd hh:mm:ss.zzz AP</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
                      <widget class="QComboBox" name="cmbxAwState">

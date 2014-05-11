@@ -899,7 +899,7 @@ void ProfileEditor::loadAvatarAwardInfo(int gameIndex, unsigned int awardIndex)
         ui->dteAwTimestamp->setEnabled(false);
     }
 
-    ui->dteAwTimestamp->setDateTime(QDateTime::fromTime_t(award->unlockTime));
+    ui->dteAwTimestamp->setDateTime(QDateTime::fromTime_t(award->unlockTime).addMSecs(award->unlockTimeMilliseconds));
 
     // download the thumbnail
     string tmp = AvatarAwardGpd::GetLargeAwardImageURL(award);
@@ -1602,6 +1602,7 @@ void ProfileEditor::on_dteAwTimestamp_dateTimeChanged(const QDateTime &date)
         return;
 
     entry->unlockTime = date.toTime_t();
+    entry->unlockTimeMilliseconds = date.time().msec();
     aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->WriteAvatarAward(entry);
     aaGames.at(ui->aaGamelist->currentIndex().row()).updated = true;
 
