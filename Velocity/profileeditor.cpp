@@ -776,7 +776,7 @@ void ProfileEditor::loadAchievementInfo(int gameIndex, unsigned int chievIndex)
         ui->dteAchTimestamp->setEnabled(false);
     }
 
-    ui->dteAchTimestamp->setDateTime(QDateTime::fromTime_t(entry.unlockTime));
+    ui->dteAchTimestamp->setDateTime(QDateTime::fromTime_t(entry.unlockTime).addMSecs(entry.unlockTimeMilliseconds));
 
     // set the thumbnail
     ImageEntry img;
@@ -1579,7 +1579,9 @@ void ProfileEditor::on_dteAchTimestamp_dateTimeChanged(const QDateTime &date)
     games.at(ui->gamesList->currentIndex().row()).gpd->StartWriting();
 
     entry->unlockTime = date.toTime_t();
-    ui->dteAchTimestamp->setDateTime(QDateTime::fromTime_t(entry->unlockTime));
+    entry->unlockTimeMilliseconds = date.time().msec();
+
+    ui->dteAchTimestamp->setDateTime(QDateTime::fromTime_t(entry->unlockTime).addMSecs(entry->unlockTimeMilliseconds));
     games.at(ui->gamesList->currentIndex().row()).gpd->WriteAchievementEntry(entry);
     games.at(ui->gamesList->currentIndex().row()).updated = true;
 
