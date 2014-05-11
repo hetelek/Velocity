@@ -19,25 +19,7 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
     ui->mdiArea->setAcceptDrops(false);
     setAcceptDrops(true);
 
-    QStringList fileNames;
-    fileNames.append("KV_D.bin");
-    fileNames.append("KV_R.bin");
-
-    // check for all of the startup files
-    QString missingFiles = "";
-    for (int i = 0; i < fileNames.size(); i++)
-        if (!QFile::exists(QtHelpers::ExecutingDirectory() + "/" + fileNames[i]))
-            missingFiles += fileNames[i] + ", ";
-
-    if (missingFiles.size() != 0)
-    {
-        // remove the extra ", "
-        missingFiles.chop(2);
-
-        ui->statusBar->showMessage("The following file(s) weren't found: " + missingFiles, 10000);
-    }
-    else
-        ui->statusBar->showMessage("Welcome to Velocity!", 10000);
+    ui->statusBar->showMessage("Welcome to Velocity!", 10000);
 
     LoadAllPlugins();
 
