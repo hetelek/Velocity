@@ -53,6 +53,7 @@ struct AvatarAward AvatarAwardGpd::readAvatarAwardEntry(XdbfEntry entry)
     // read the unlock time
     WINFILETIME time = { io->ReadDword(), io->ReadDword() };
     award.unlockTime = XdbfHelpers::FILETIMEtoTimeT(time);
+    award.unlockTimeMilliseconds = XdbfHelpers::FILETIMEtoMilliseconds(time);
 
     // read the rest of the entry
     award.subcategory = (AssetSubcategory)io->ReadDword();
@@ -143,7 +144,7 @@ void AvatarAwardGpd::WriteAvatarAward(struct AvatarAward *award)
     io->Write(award->flags);
 
     // Write the unlock time
-    WINFILETIME time = XdbfHelpers::TimeTtoFILETIME(award->unlockTime);
+    WINFILETIME time = XdbfHelpers::TimeTtoFILETIME(award->unlockTime, award->unlockTimeMilliseconds);
     io->Write(time.dwHighDateTime);
     io->Write(time.dwLowDateTime);
 

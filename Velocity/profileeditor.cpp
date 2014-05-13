@@ -831,7 +831,7 @@ void ProfileEditor::loadAchievementInfo(int gameIndex, unsigned int chievIndex)
         ui->dteAchTimestamp->setEnabled(false);
     }
 
-    ui->dteAchTimestamp->setDateTime(QDateTime::fromTime_t(entry.unlockTime));
+    ui->dteAchTimestamp->setDateTime(QDateTime::fromTime_t(entry.unlockTime).addMSecs(entry.unlockTimeMilliseconds));
 
     // set the thumbnail
     ImageEntry img;
@@ -966,7 +966,7 @@ void ProfileEditor::loadAvatarAwardInfo(int gameIndex, unsigned int awardIndex)
         ui->dteAwTimestamp->setEnabled(false);
     }
 
-    ui->dteAwTimestamp->setDateTime(QDateTime::fromTime_t(award->unlockTime));
+    ui->dteAwTimestamp->setDateTime(QDateTime::fromTime_t(award->unlockTime).addMSecs(award->unlockTimeMilliseconds));
 
     // download the thumbnail
     string tmp = AvatarAwardGpd::GetLargeAwardImageURL(award);
@@ -1692,7 +1692,9 @@ void ProfileEditor::on_dteAchTimestamp_dateTimeChanged(const QDateTime &date)
     games.at(ui->gamesList->currentIndex().row()).gpd->StartWriting();
 
     entry->unlockTime = date.toTime_t();
-    ui->dteAchTimestamp->setDateTime(QDateTime::fromTime_t(entry->unlockTime));
+    entry->unlockTimeMilliseconds = date.time().msec();
+
+    ui->dteAchTimestamp->setDateTime(QDateTime::fromTime_t(entry->unlockTime).addMSecs(entry->unlockTimeMilliseconds));
     games.at(ui->gamesList->currentIndex().row()).gpd->WriteAchievementEntry(entry);
     games.at(ui->gamesList->currentIndex().row()).updated = true;
 
@@ -1714,6 +1716,7 @@ void ProfileEditor::on_dteAwTimestamp_dateTimeChanged(const QDateTime &date)
         return;
 
     entry->unlockTime = date.toTime_t();
+    entry->unlockTimeMilliseconds = date.time().msec();
     aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->WriteAvatarAward(entry);
     aaGames.at(ui->aaGamelist->currentIndex().row()).updated = true;
 
