@@ -3,7 +3,10 @@
 // other
 #include <iostream>
 #include <stdio.h>
+
 #include "IO/FileIO.h"
+#include "IO/MemoryIO.h"
+#include "IO/BaseIO.h"
 #include "Account/AccountDefinitions.h"
 #include "Gpd/XdbfDefininitions.h"
 #include "Stfs/StfsConstants.h"
@@ -23,7 +26,8 @@ class XBOXINTERNALSSHARED_EXPORT Account
 {
 public:
     Account(std::string path, bool decrypt = true, ConsoleType type = Retail);
-	~Account(void);
+    Account(BaseIO *io, bool decrypt = true, ConsoleType type = Retail);
+    ~Account(void);
 
 	// Description: returns true if the player has a passcode, false otherwise
 	bool IsPasscodeEnabled();
@@ -128,8 +132,8 @@ public:
     void Save(ConsoleType type = Retail);
 
 private:
-	FileIO *io;
-    bool ioPassedIn, decrypt;
+    BaseIO *io;
+    bool freeIO, decrypt;
 	AccountInfo account;
     std::string outPath, path;
     ConsoleType type;
@@ -139,6 +143,7 @@ private:
 	void WriteFile();
 
     void decryptAccount(std::string encryptedPath, std::string *outPath, ConsoleType type);
+    MemoryIO* decryptAccount(BaseIO *io, ConsoleType type);
     void encryptAccount(std::string decryptedPath, ConsoleType type, std::string *outPath = NULL);
 };
 

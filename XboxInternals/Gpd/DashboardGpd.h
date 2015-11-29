@@ -14,7 +14,7 @@ class XBOXINTERNALSSHARED_EXPORT DashboardGpd : public GpdBase
 {
 public:
 	DashboardGpd(string gpdPath);
-	DashboardGpd(FileIO *io);
+    DashboardGpd(BaseIO *io);
 
 	~DashboardGpd(void);
 

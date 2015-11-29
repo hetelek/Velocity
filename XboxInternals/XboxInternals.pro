@@ -63,6 +63,7 @@ SOURCES += \
     Fatx/FatxDriveDetection.cpp \
     IO/SvodMultiFileIO.cpp \
     IO/MultiFileIO.cpp \
+    IO/StfsIO.cpp \
     Fatx/XContentDevice.cpp \
     Fatx/XContentDeviceProfile.cpp \
     Fatx/XContentDeviceItem.cpp \

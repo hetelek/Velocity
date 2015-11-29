@@ -24,3 +24,33 @@ BYTE *XContentDeviceProfile::GetProfileID()
             return NULL;
     }
 }
+
+std::wstring XContentDeviceProfile::GetName()
+{
+    // return XContentDeviceItem::GetName();
+
+    // check to see if the gamertag is cached
+    if (gamertag.size() == 0)
+    {
+        ConsoleType consoleType;
+        if (package != NULL)
+            consoleType = package->metaData->certificate.consoleTypeFlags ? DevKit : Retail;
+        else
+            return L"Unknown Profile";
+
+        try
+        {
+            StfsIO *accountIO = package->GetStfsIO("Account");
+            Account account(accountIO, true, consoleType);
+
+            gamertag = account.GetGamertag();
+            delete accountIO;
+        }
+        catch (...)
+        {
+            return L"Unknown Profile";
+        }
+    }
+
+    return gamertag;
+}

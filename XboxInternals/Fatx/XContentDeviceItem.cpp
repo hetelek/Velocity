@@ -22,15 +22,7 @@ std::wstring XContentDeviceItem::GetName()
     if (package == NULL)
         return L"";
 
-    if (package->metaData->contentType == Profile)
-    {
-        // TODO: make this retrieve the gamertag
-        return package->metaData->displayName;
-    }
-    else
-    {
-        return package->metaData->displayName;
-    }
+    return package->metaData->displayName;
 }
 
 BYTE *XContentDeviceItem::GetThumbnail()

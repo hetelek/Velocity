@@ -1,6 +1,7 @@
 #include "Account.h"
 
-Account::Account(std::string path, bool decrypt, ConsoleType type) : ioPassedIn(false), decrypt(decrypt), path(path), type(type)
+Account::Account(std::string path, bool decrypt, ConsoleType type) :
+    freeIO(true), decrypt(decrypt), path(path), type(type)
 {
     Botan::LibraryInitializer init;
 
@@ -15,13 +16,31 @@ Account::Account(std::string path, bool decrypt, ConsoleType type) : ioPassedIn(
         outPath = path;
     }
 
-	parseFile();
+    parseFile();
+}
+
+Account::Account(BaseIO *io, bool decrypt, ConsoleType type) :
+    freeIO(false), decrypt(decrypt), path(""), type(type)
+{
+    Botan::LibraryInitializer init;
+
+    if (decrypt)
+    {
+        this->io = decryptAccount(io, type);
+    }
+    else
+    {
+        this->io = io;
+    }
+
+    parseFile();
 }
 
 void Account::parseFile()
 {
 	// seek to the begining of the file
     io->SetPosition(0);
+    io->SetEndian(BigEndian);
 
 	// read the data
     account.reservedFlags = io->ReadDword();
@@ -194,15 +213,16 @@ void Account::Save(ConsoleType type)
     encryptAccount(outPath, type, &path);
 }
 
-void Account::decryptAccount(std::string encryptedPath, std::string *outPath, ConsoleType type)
+MemoryIO* Account::decryptAccount(BaseIO *io, ConsoleType type)
 {
-    // open the encrypted file
-    FileIO encIo(encryptedPath);
+    // seek to the beginning of the file
+    io->SetPosition(0);
+
     BYTE hmacHash[0x10];
     BYTE rc4Key[0x14];
 
     // read the hash
-    encIo.ReadBytes(hmacHash, 0x10);
+    io->ReadBytes(hmacHash, 0x10);
 
     Botan::SHA_160 *sha1 = new Botan::SHA_160;
     Botan::HMAC hmacSha1(sha1);
@@ -219,10 +239,10 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
 
     BYTE restOfFile[0x184];
     BYTE confounder[8];
-    BYTE payload[0x17C];
+    BYTE *payload = new BYTE[0x17C];
 
     // read the rest of the file
-    encIo.ReadBytes(restOfFile, 0x184);
+    io->ReadBytes(restOfFile, 0x184);
 
     // decrypt using rc4
     Botan::ARC4 rc4;
@@ -243,8 +263,16 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
     if (memcmp(confoundPayloadHash, hmacHash, 0x10) != 0)
         throw string("Account: Account decryption failed.\n");
 
+    // create a memory stream on the decrypted data
+    return new MemoryIO(payload, 0x17C);
+}
 
-    // Write the payload
+void Account::decryptAccount(std::string encryptedPath, std::string *outPath, ConsoleType type)
+{
+    FileIO encryptedIO(encryptedPath);
+    MemoryIO *decryptedIO = decryptAccount(&encryptedIO, type);
+
+    // get a temporary file path
 #ifdef _WIN32
     // Opening a file using the path returned by tmpnam() may result in a "permission denied" error on Windows.
     // Not sure why it happens but tweaking the manifest/UAC properties makes a difference.
@@ -261,13 +289,20 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
     *outPath = string(outPath_c);
 #endif
 
-    FileIO decrypted(*outPath, true);
-    decrypted.Write(payload, 0x17C);
-    decrypted.Flush();
+    // get the decrypted data
+    BYTE decryptedData[0x17C];
+    decryptedIO->SetPosition(0);
+    decryptedIO->ReadBytes(decryptedData, 0x17C);
+
+    // write the decrypted data to the temporary file
+    FileIO decryptedFileIO(*outPath, true);
+    decryptedFileIO.Write(decryptedData, 0x17C);
+    decryptedFileIO.Flush();
 
     // cleanup
-    decrypted.Close();
-    encIo.Close();
+    decryptedFileIO.Close();
+    decryptedIO->Close();
+    delete decryptedIO;
 }
 
 void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::string *outPath)
@@ -427,7 +462,10 @@ wstring Account::GetGamertag()
 
 Account::~Account(void)
 {
-    io->Close();
-    delete io;
-    remove(outPath.c_str());
+    if (this->freeIO)
+    {
+        io->Close();
+        delete io;
+        remove(outPath.c_str());
+    }
 }

@@ -7,7 +7,7 @@ GameGpd::GameGpd(string filePath) : GpdBase(filePath), filePath(filePath)
     StopWriting();
 }
 
-GameGpd::GameGpd(FileIO *io) : GpdBase(io)
+GameGpd::GameGpd(BaseIO *io) : GpdBase(io)
 {
 	init();
 }

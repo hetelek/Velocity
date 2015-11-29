@@ -160,12 +160,13 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         ui->imgGamerpicture->setPixmap(QPixmap::fromImage(QImage::fromData(imageBuff)));
 
         // extract the dashboard gpd
-        dashGpdTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
-        tempFiles.push_back(dashGpdTempPath);
-        profile->ExtractFile("FFFE07D1.gpd", dashGpdTempPath);
+        //dashGpdTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+        //tempFiles.push_back(dashGpdTempPath);
+        //profile->ExtractFile("FFFE07D1.gpd", dashGpdTempPath);
 
         // parse the dashboard gpd
-        dashGpd = new DashboardGpd(dashGpdTempPath);
+        StfsIO *dashGpdIO = profile->GetStfsIO("FFFE07D1.gpd");
+        dashGpd = new DashboardGpd((BaseIO*)dashGpdIO);
 
         // load all the goodies
         if (dashGpd->gamerName.entry.type == 0)
@@ -368,9 +369,9 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     try
     {
         // extract the PEC file
-        pecTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
-        profile->ExtractFile("PEC", pecTempPath);
-        tempFiles.push_back(pecTempPath);
+        //pecTempPath = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "")).toStdString();
+        //profile->ExtractFile("PEC", pecTempPath);
+        //tempFiles.push_back(pecTempPath);
     }
     catch (string error)
     {
@@ -382,7 +383,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     // parse the PEC STFS package
     try
     {
-        PEC = new StfsPackage(pecTempPath, StfsPackagePEC);
+        StfsIO *pecIO = this->profile->GetStfsIO("PEC");
+        PEC = new StfsPackage((BaseIO*)pecIO, StfsPackagePEC);
     }
     catch (string error)
     {
@@ -1257,7 +1259,7 @@ void ProfileEditor::saveAll()
 
         delete PEC;
 
-        profile->ReplaceFile(pecTempPath, "PEC");
+        //profile->ReplaceFile(pecTempPath, "PEC");
     }
 
     // save the achievements
@@ -1327,7 +1329,7 @@ void ProfileEditor::saveAll()
     dashGpd->WriteSettingEntry(dashGpd->gamerBio);
 
     // put the dash gpd back in the profile
-    profile->ReplaceFile(dashGpdTempPath, "FFFE07D1.gpd");
+    //profile->ReplaceFile(dashGpdTempPath, "FFFE07D1.gpd");
 
     // fix the package
     profile->metaData->WriteMetaData();

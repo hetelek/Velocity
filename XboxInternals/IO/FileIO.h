@@ -27,15 +27,16 @@ public:
     void Close();
     void Flush();
 
+    void Resize(UINT64 size);
+
     string GetFilePath();
 
     static void ReverseGenericArray(void *arr, int elemSize, int len);
 	virtual ~FileIO();
 private:
-	EndianType endian;
-    UINT64 length;
+    EndianType endian;
 	void ReadBytesWithChecks(void *buffer, INT32 size);
 	fstream *fstr;
-	const string filePath;
+    string filePath;
 };
 

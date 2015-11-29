@@ -13,7 +13,7 @@ using std::vector;
 class XBOXINTERNALSSHARED_EXPORT GpdBase
 {
 public:
-    GpdBase(FileIO *io);
+    GpdBase(BaseIO *io);
     GpdBase(string gpdPath);
 
     ~GpdBase(void);
@@ -52,7 +52,7 @@ public:
 
 protected:
     bool ioPassedIn;
-    FileIO *io;
+    BaseIO *io;
 
 private:
     // Description: read the string entry passed in

@@ -5,6 +5,8 @@
 #include <vector>
 
 #include "Stfs/StfsPackage.h"
+#include "IO/StfsIO.h"
+#include "Account/Account.h"
 #include "XContentDeviceItem.h"
 #include "XContentDeviceTitle.h"
 
@@ -19,6 +21,11 @@ public:
     std::vector<XContentDeviceTitle> titles;
 
     BYTE* GetProfileID();
+
+    virtual std::wstring GetName();
+
+private:
+    std::wstring gamertag;
 };
 
 #endif // XCONTENTDEVICEPROFILE_H
