@@ -805,7 +805,7 @@ void FatxDrive::loadFatxDrive(std::wstring drivePath)
             ss.str(std::string());
         }
 
-        io = new MultiFileIO(dataFiles);
+        io = new JoinedMultiFileIO(dataFiles);
         DWORD  a = io->ReadDword();
         DWORD b = 5;
     }

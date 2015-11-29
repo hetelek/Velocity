@@ -31,7 +31,7 @@ SVOD::SVOD(string rootPath)
     }
 
     // open an IO on the content files
-    io = new SvodMultiFileIO(contentDirectory);
+    io = new LocalIndexableMultiFileIO(contentDirectory);
 
     // parse the header
     io->SetPosition(baseAddress, 0);

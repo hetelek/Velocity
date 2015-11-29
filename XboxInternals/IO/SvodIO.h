@@ -9,7 +9,7 @@
 class XBOXINTERNALSSHARED_EXPORT SvodIO : public BaseIO
 {
 public:
-    SvodIO(XContentHeader *metadata, GdfxFileEntry entry, SvodMultiFileIO *io);
+    SvodIO(XContentHeader *metadata, GdfxFileEntry entry, IndexableMultiFileIO *io);
 
     virtual ~SvodIO();
 
@@ -34,7 +34,7 @@ public:
 private:
     void SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *dataFileIndex);
 
-    SvodMultiFileIO *io;
+    IndexableMultiFileIO *io;
     XContentHeader *metadata;
     GdfxFileEntry fileEntry;
     DWORD pos;

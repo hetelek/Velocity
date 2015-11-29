@@ -61,15 +61,15 @@ SOURCES += \
     IO/FileIO.cpp \
     IO/FatxIO.cpp \
     Fatx/FatxDriveDetection.cpp \
-    IO/SvodMultiFileIO.cpp \
-    IO/MultiFileIO.cpp \
     IO/StfsIO.cpp \
     Fatx/XContentDevice.cpp \
     Fatx/XContentDeviceProfile.cpp \
     Fatx/XContentDeviceItem.cpp \
     Fatx/XContentDeviceTitle.cpp \
     Fatx/XContentDeviceSharedItem.cpp \
-    IO/IndexableMultiFileIO.cpp
+    IO/IndexableMultiFileIO.cpp \
+    IO/JoinedMultiFileIO.cpp \
+    IO/LocalIndexableMultiFileIO.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -106,8 +106,6 @@ HEADERS +=\
     IO/FileIO.h \
     IO/FatxIO.h \
     Fatx/FatxDriveDetection.h \
-    IO/SvodMultiFileIO.h \
-    IO/MultiFileIO.h \
     Fatx/FatxHelpers.h \
     Fatx/FatxDriveDetection.h \
     Fatx/FatxDrive.h \
@@ -118,4 +116,6 @@ HEADERS +=\
     Fatx/XContentDeviceTitle.h \
     Fatx/XContentDeviceSharedItem.h \
     Stfs/IXContentHeader.h \
-    IO/IndexableMultiFileIO.h
+    IO/IndexableMultiFileIO.h \
+    IO/JoinedMultiFileIO.h \
+    IO/LocalIndexableMultiFileIO.h

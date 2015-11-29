@@ -7,12 +7,13 @@
 #include "FileIO.h"
 #include <vector>
 
-class XBOXINTERNALSSHARED_EXPORT MultiFileIO : public BaseIO
+// treat a collection of files as one big file merged together
+class XBOXINTERNALSSHARED_EXPORT JoinedMultiFileIO : public BaseIO
 {
 public:
-    MultiFileIO(std::vector<std::string> filePaths);
-    MultiFileIO(std::vector<BaseIO*> files);
-    virtual ~MultiFileIO();
+    JoinedMultiFileIO(std::vector<std::string> filePaths);
+    JoinedMultiFileIO(std::vector<BaseIO*> files);
+    virtual ~JoinedMultiFileIO();
 
     // seek to a position in a file
     void SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios_base::beg);

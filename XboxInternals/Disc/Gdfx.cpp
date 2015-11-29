@@ -1,6 +1,6 @@
 #include "Gdfx.h"
 
-void GdfxReadHeader(SvodMultiFileIO *io, GdfxHeader *header)
+void GdfxReadHeader(IndexableMultiFileIO *io, GdfxHeader *header)
 {
     // make sure that the byte order is little endian
     io->SetEndian(LittleEndian);
@@ -17,7 +17,7 @@ void GdfxReadHeader(SvodMultiFileIO *io, GdfxHeader *header)
     header->creationTime.dwHighDateTime = io->ReadDword();
 }
 
-bool GdfxReadFileEntry(SvodMultiFileIO *io, GdfxFileEntry *entry)
+bool GdfxReadFileEntry(IndexableMultiFileIO *io, GdfxFileEntry *entry)
 {
     // everything's little endian, so let's be safe
     io->SetEndian(LittleEndian);
@@ -40,7 +40,7 @@ bool GdfxReadFileEntry(SvodMultiFileIO *io, GdfxFileEntry *entry)
     return true;
 }
 
-void GdfxWriteFileEntry(SvodMultiFileIO *io, GdfxFileEntry *entry)
+void GdfxWriteFileEntry(IndexableMultiFileIO *io, GdfxFileEntry *entry)
 {
     // everything's little endian, so let's be safe
     io->SetEndian(LittleEndian);

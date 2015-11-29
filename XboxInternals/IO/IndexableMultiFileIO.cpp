@@ -1,55 +1,19 @@
-#include "SvodMultiFileIO.h"
+#include "IndexableMultiFileIO.h"
 #include <dirent.h>
 
 using namespace std;
 
-SvodMultiFileIO::SvodMultiFileIO(string fileDirectory) :
-    BaseIO(), fileIndex(0), addressInFile(0)
-{  
-    loadDirectories(fileDirectory);
-
-    // make sure that there is atleast one file in the directory
-    if (files.size() == 0)
-        throw string("MultiFileIO: Directory is empty\n");
-
-    // open an IO on the first file at position 0
-    currentIO = new FileIO(files.at(0));
-}
-
-SvodMultiFileIO::~SvodMultiFileIO()
+IndexableMultiFileIO::IndexableMultiFileIO() :
+    addressInFile(0), fileIndex(0)
 {
-    currentIO->Close();
-    delete currentIO;
+
 }
 
-void SvodMultiFileIO::loadDirectories(string path)
+IndexableMultiFileIO::~IndexableMultiFileIO()
 {
-    DIR *dir;
-    struct dirent *ent;
-    dir = opendir(path.c_str());
-    if (dir != NULL)
-    {
-        // load the stuff that's always at the begining . ..
-#ifdef __win32
-        readdir(dir);
-        readdir(dir);
-#endif
-
-        // load only the files, don't want the folders
-        while ((ent = readdir(dir)) != NULL)
-        {
-            string fullName(path);
-            fullName += ent->d_name;
-            if (opendir(fullName.c_str()) == NULL)
-                files.push_back(fullName);
-        }
-        closedir (dir);
-    }
-    else
-        throw string("MultiFileIO: Error opening directory\n");
 }
 
-void SvodMultiFileIO::SetPosition(DWORD addressInFile, int fileIndex)
+void IndexableMultiFileIO::SetPosition(DWORD addressInFile, int fileIndex)
 {
     // check if we're in the current file
     if (fileIndex == -1 || fileIndex == this->fileIndex)
@@ -69,7 +33,7 @@ void SvodMultiFileIO::SetPosition(DWORD addressInFile, int fileIndex)
         // open a new IO on the file
         currentIO->Close();
         delete currentIO;
-        currentIO = new FileIO(files.at(fileIndex));
+        currentIO = openFile(files.at(fileIndex));
 
         if (addressInFile >= CurrentFileLength())
             throw string("MultiFileIO: Cannot seek beyond the end of the file\n");
@@ -79,13 +43,13 @@ void SvodMultiFileIO::SetPosition(DWORD addressInFile, int fileIndex)
     }
 }
 
-void SvodMultiFileIO::GetPosition(DWORD *addressInFile, DWORD *fileIndex)
+void IndexableMultiFileIO::GetPosition(DWORD *addressInFile, DWORD *fileIndex)
 {
     *addressInFile = this->addressInFile;
     *fileIndex = this->fileIndex;
 }
 
-DWORD SvodMultiFileIO::CurrentFileLength()
+DWORD IndexableMultiFileIO::CurrentFileLength()
 {
     currentIO->SetPosition(0, ios_base::end);
     DWORD fileLen = currentIO->GetPosition();
@@ -94,7 +58,7 @@ DWORD SvodMultiFileIO::CurrentFileLength()
     return fileLen;
 }
 
-void SvodMultiFileIO::ReadBytes(BYTE *outBuffer, DWORD len)
+void IndexableMultiFileIO::ReadBytes(BYTE *outBuffer, DWORD len)
 {
     while (len)
     {
@@ -116,7 +80,7 @@ void SvodMultiFileIO::ReadBytes(BYTE *outBuffer, DWORD len)
     }
 }
 
-void SvodMultiFileIO::WriteBytes(BYTE *buffer, DWORD len)
+void IndexableMultiFileIO::WriteBytes(BYTE *buffer, DWORD len)
 {
     while (len)
     {
@@ -138,32 +102,32 @@ void SvodMultiFileIO::WriteBytes(BYTE *buffer, DWORD len)
     }
 }
 
-void SvodMultiFileIO::Close()
+void IndexableMultiFileIO::Close()
 {
     currentIO->Close();
 }
 
-DWORD SvodMultiFileIO::FileCount()
+DWORD IndexableMultiFileIO::FileCount()
 {
     return files.size();
 }
 
-void SvodMultiFileIO::SetPosition(UINT64 position, ios_base::seek_dir dir)
+void IndexableMultiFileIO::SetPosition(UINT64 position, ios_base::seek_dir dir)
 {
     throw string("MultiFileIO: Unused function has been called.\n");
 }
 
-UINT64 SvodMultiFileIO::GetPosition()
+UINT64 IndexableMultiFileIO::GetPosition()
 {
     throw string("MultiFileIO: Unused function has been called.\n");
 }
 
-void SvodMultiFileIO::Flush()
+void IndexableMultiFileIO::Flush()
 {
     currentIO->Flush();
 }
 
-UINT64 SvodMultiFileIO::Length()
+UINT64 IndexableMultiFileIO::Length()
 {
     return currentIO->Length();
 }

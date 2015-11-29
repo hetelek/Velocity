@@ -1,6 +1,6 @@
-#include "MultiFileIO.h"
+#include "JoinedMultiFileIO.h"
 
-MultiFileIO::MultiFileIO(std::vector<std::string> filePaths) : currentIOIndex(0), pos(0)
+JoinedMultiFileIO::JoinedMultiFileIO(std::vector<std::string> filePaths) : currentIOIndex(0), pos(0)
 {
     for (int i = 0; i < filePaths.size(); i++)
     {
@@ -11,17 +11,17 @@ MultiFileIO::MultiFileIO(std::vector<std::string> filePaths) : currentIOIndex(0)
     calcualteLengthOfAllFiles();
 }
 
-MultiFileIO::MultiFileIO(std::vector<BaseIO*> files) : files(files), currentIOIndex(0), pos(0)
+JoinedMultiFileIO::JoinedMultiFileIO(std::vector<BaseIO*> files) : files(files), currentIOIndex(0), pos(0)
 {
     calcualteLengthOfAllFiles();
 }
 
-MultiFileIO::~MultiFileIO()
+JoinedMultiFileIO::~JoinedMultiFileIO()
 {
     Close();
 }
 
-void MultiFileIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir)
+void JoinedMultiFileIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir)
 {
     if (dir == std::ios_base::end)
         throw std::string("MultiFileIO: Unsupported seek dir.");
@@ -44,17 +44,17 @@ void MultiFileIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir)
     }
 }
 
-UINT64 MultiFileIO::GetPosition()
+UINT64 JoinedMultiFileIO::GetPosition()
 {
     return pos;
 }
 
-UINT64 MultiFileIO::Length()
+UINT64 JoinedMultiFileIO::Length()
 {
     return lengthOfFiles;
 }
 
-void MultiFileIO::WriteBytes(BYTE *buffer, DWORD len)
+void JoinedMultiFileIO::WriteBytes(BYTE *buffer, DWORD len)
 {
     if (len > lengthOfFiles - pos)
         throw std::string("MultiFileIO: Requested Write length is too large.\n");
@@ -81,12 +81,12 @@ void MultiFileIO::WriteBytes(BYTE *buffer, DWORD len)
     }
 }
 
-void MultiFileIO::Flush()
+void JoinedMultiFileIO::Flush()
 {
     files.at(currentIOIndex)->Flush();
 }
 
-void MultiFileIO::ReadBytes(BYTE *outBuffer, DWORD len)
+void JoinedMultiFileIO::ReadBytes(BYTE *outBuffer, DWORD len)
 {
     DWORD offset = 0;
 
@@ -110,7 +110,7 @@ void MultiFileIO::ReadBytes(BYTE *outBuffer, DWORD len)
     }
 }
 
-void MultiFileIO::Close()
+void JoinedMultiFileIO::Close()
 {
     if (isClosed)
         return;
@@ -123,7 +123,7 @@ void MultiFileIO::Close()
     isClosed = true;
 }
 
-void MultiFileIO::calcualteLengthOfAllFiles()
+void JoinedMultiFileIO::calcualteLengthOfAllFiles()
 {
     isClosed = false;
     lengthOfFiles = 0;

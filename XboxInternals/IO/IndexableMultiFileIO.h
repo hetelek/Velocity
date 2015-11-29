@@ -1,5 +1,5 @@
-#ifndef MULTIFILEIO_H
-#define MULTIFILEIO_H
+#ifndef INDEXABLEMULTIFILEIO_H
+#define INDEXABLEMULTIFILEIO_H
 
 #include "IO/FileIO.h"
 #include <iostream>
@@ -11,11 +11,11 @@ using std::string;
 using std::wstring;
 using std::vector;
 
-class XBOXINTERNALSSHARED_EXPORT SvodMultiFileIO : public BaseIO
+class XBOXINTERNALSSHARED_EXPORT IndexableMultiFileIO : public BaseIO
 {
 public:
-    SvodMultiFileIO(string fileDirectory);
-    virtual ~SvodMultiFileIO();
+    IndexableMultiFileIO();
+    virtual ~IndexableMultiFileIO();
 
     // seek to a certain address in the file, index of -1 for current file
     void SetPosition(DWORD addressInFile, int fileIndex = -1);
@@ -45,15 +45,17 @@ public:
     void SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios_base::beg);
     UINT64 GetPosition();
 
-private:
+protected:
     DWORD addressInFile;
     DWORD fileIndex;
 
-    FileIO *currentIO;
+    BaseIO *currentIO;
     vector<string> files;
 
     // get all the file names in the directory
-    void loadDirectories(string path);
+    virtual void loadDirectories(string path) = 0;
+
+    virtual BaseIO* openFile(string path) = 0;
 };
 
-#endif // MULTIFILEIO_H
+#endif // INDEXABLEMULTIFILEIO_H
