@@ -1,13 +1,13 @@
 #include "XContentDeviceItem.h"
 
-XContentDeviceItem::XContentDeviceItem(FatxFileEntry *fileEntry, StfsPackage *package) :
-    package(package), pathOnDevice(fileEntry->path + fileEntry->name), rawName(fileEntry->name), fileSize(fileEntry->fileSize)
+XContentDeviceItem::XContentDeviceItem(FatxFileEntry *fileEntry, IXContentHeader *content) :
+    content(content), pathOnDevice(fileEntry->path + fileEntry->name), rawName(fileEntry->name), fileSize(fileEntry->fileSize)
 {
 
 }
 
-XContentDeviceItem::XContentDeviceItem(std::string pathOnDevice, std::string rawName, StfsPackage *package, DWORD fileSize) :
-    package(package), pathOnDevice(pathOnDevice), rawName(rawName), fileSize(fileSize)
+XContentDeviceItem::XContentDeviceItem(std::string pathOnDevice, std::string rawName, IXContentHeader *content, DWORD fileSize) :
+    content(content), pathOnDevice(pathOnDevice), rawName(rawName), fileSize(fileSize)
 {
 
 }
@@ -19,24 +19,24 @@ std::string XContentDeviceItem::GetPathOnDevice()
 
 std::wstring XContentDeviceItem::GetName()
 {
-    if (package == NULL)
+    if (content == NULL)
         return L"";
 
-    return package->metaData->displayName;
+    return content->metaData->displayName;
 }
 
 BYTE *XContentDeviceItem::GetThumbnail()
 {
-    if (package == NULL)
+    if (content == NULL)
         return NULL;
-    return package->metaData->thumbnailImage;
+    return content->metaData->thumbnailImage;
 }
 
 DWORD XContentDeviceItem::GetThumbnailSize()
 {
-    if (package == NULL)
+    if (content == NULL)
         return 0;
-    return package->metaData->thumbnailImageSize;
+    return content->metaData->thumbnailImageSize;
 }
 
 std::string XContentDeviceItem::GetRawName()
@@ -46,9 +46,9 @@ std::string XContentDeviceItem::GetRawName()
 
 BYTE *XContentDeviceItem::GetProfileID()
 {
-    if (package == NULL)
+    if (content == NULL)
         return NULL;
-    return package->metaData->profileID;
+    return content->metaData->profileID;
 }
 
 DWORD XContentDeviceItem::GetFileSize()

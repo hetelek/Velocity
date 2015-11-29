@@ -21,8 +21,8 @@ XContentDevice::~XContentDevice()
     {
         for (int x = 0; x < profiles->at(i).titles.size(); x++)
             for (int y = 0; y < profiles->at(i).titles.at(x).titleSaves.size(); y++)
-                delete profiles->at(i).titles.at(x).titleSaves.at(y).package;
-        delete profiles->at(i).package;
+                delete profiles->at(i).titles.at(x).titleSaves.at(y).content;
+        delete profiles->at(i).content;
     }
 
     CleanupSharedFiles(games);
@@ -143,7 +143,7 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
                 progress(arg, false);
         }
 
-        if (profile.titles.size() != 0 || profile.package != NULL)
+        if (profile.titles.size() != 0 || profile.content != NULL)
             profiles->push_back(profile);
     }
 
@@ -177,11 +177,11 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
             if (progress)
                 progress(arg, false);
 
-            XContentDeviceSharedItem item(items.at(x).GetPathOnDevice(), items.at(x).GetRawName(), items.at(x).package);
-            if (item.package == NULL)
+            XContentDeviceSharedItem item(items.at(x).GetPathOnDevice(), items.at(x).GetRawName(), items.at(x).content);
+            if (item.content == NULL)
                 continue;
 
-            switch (item.package->metaData->contentType)
+            switch (item.content->metaData->contentType)
             {
                 case ArcadeGame:
                 case CommunityGame:
@@ -329,7 +329,7 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
         {
             if (memcmp(profiles->at(i).GetProfileID(), packageOnDevice->metaData->profileID, 8) == 0)
             {
-                profiles->at(i).package = packageOnDevice;
+                profiles->at(i).content = packageOnDevice;
                 return;
             }
         }
@@ -388,7 +388,7 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
         XContentDeviceSharedItem item(fileEntry, packageOnDevice);
 
         // put the shared item in the correct category
-        switch (item.package->metaData->contentType)
+        switch (item.content->metaData->contentType)
         {
             case ArcadeGame:
             case CommunityGame:
@@ -433,7 +433,7 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
     }
 }
 
-void XContentDevice::DeleteFile(StfsPackage *package, std::string pathOnDevice)
+void XContentDevice::DeleteFile(IXContentHeader *package, std::string pathOnDevice)
 {
     // remove the file from the hierarchy
     BYTE nullID[8] = { 0 };
@@ -451,7 +451,7 @@ void XContentDevice::DeleteFile(StfsPackage *package, std::string pathOnDevice)
                     {
                         for (int y = 0; y < profiles->at(i).titles.at(x).titleSaves.size(); y++)
                         {
-                            if (profiles->at(i).titles.at(x).titleSaves.at(y).package == package)
+                            if (profiles->at(i).titles.at(x).titleSaves.at(y).content == package)
                             {
                                 profiles->at(i).titles.at(x).titleSaves.erase(profiles->at(i).titles.at(x).titleSaves.begin() + y);
                                 delete package;
@@ -511,7 +511,7 @@ void XContentDevice::DeleteFile(StfsPackage *package, std::string pathOnDevice)
 
         for (int i = 0; i < sharedItemCategory->size(); i++)
         {
-            if (sharedItemCategory->at(i).package == package)
+            if (sharedItemCategory->at(i).content == package)
             {
                 sharedItemCategory->erase(sharedItemCategory->begin() + i);
                 delete package;
@@ -582,14 +582,21 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
             if (fileMagic != CON && fileMagic != LIVE && fileMagic != PIRS)
                 continue;
 
+            // get the type, SVOD or STFS
+            io.SetPosition(0x3AC);
+            FileSystem fileSystem = static_cast<FileSystem>(io.ReadByte());
+
             if (progress)
                 progress(arg, false);
 
             // this might not be a valid STFS package, so we have to do try {} catch {}
-            StfsPackage *content;
+            IXContentHeader *content;
             try
             {
-                content = new StfsPackage(new FatxIO(io), StfsPackageDeleteIO);
+                if (fileSystem == FileSystemSTFS)
+                    content = new StfsPackage(new FatxIO(io), StfsPackageDeleteIO);
+                //else if (fileSystem == FileSystemFATX)
+                    //content =
             }
             catch (...)
             {
@@ -609,7 +616,7 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
 void XContentDevice::CleanupSharedFiles(std::vector<XContentDeviceSharedItem> *category)
 {
     for (int i = 0; i < category->size(); i++)
-        delete category->at(i).package;
+        delete category->at(i).content;
 }
 
 std::string XContentDevice::ToUpper(std::string str)

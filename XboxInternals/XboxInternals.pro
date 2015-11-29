@@ -68,7 +68,8 @@ SOURCES += \
     Fatx/XContentDeviceProfile.cpp \
     Fatx/XContentDeviceItem.cpp \
     Fatx/XContentDeviceTitle.cpp \
-    Fatx/XContentDeviceSharedItem.cpp
+    Fatx/XContentDeviceSharedItem.cpp \
+    IO/IndexableMultiFileIO.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -115,4 +116,6 @@ HEADERS +=\
     Fatx/XContentDeviceProfile.h \
     Fatx/XContentDeviceItem.h \
     Fatx/XContentDeviceTitle.h \
-    Fatx/XContentDeviceSharedItem.h
+    Fatx/XContentDeviceSharedItem.h \
+    Stfs/IXContentHeader.h \
+    IO/IndexableMultiFileIO.h

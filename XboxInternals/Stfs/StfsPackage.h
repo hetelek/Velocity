@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include "IO/FileIO.h"
 #include "XContentHeader.h"
+#include "IXContentHeader.h"
 
 #include <botan/botan.h>
 #include <botan/pubkey.h>
@@ -76,11 +77,9 @@ enum StfsPackageFlags
     StfsPackageDeleteIO = 8
 };
 
-class XBOXINTERNALSSHARED_EXPORT StfsPackage
+class XBOXINTERNALSSHARED_EXPORT StfsPackage : public IXContentHeader
 {
 public:
-    XContentHeader *metaData;
-
     // Description: initialize a stfs package from an already opened io
     StfsPackage(BaseIO *io, DWORD flags = 0);
 

@@ -14,18 +14,18 @@ SvodDialog::SvodDialog(SVOD *svod, QStatusBar *statusBar, QWidget *parent) :
     ui->treeWidget->header()->resizeSection(0, 250);
     ui->treeWidget->header()->resizeSection(3, 20);
 
-    ui->btnResign->setEnabled(svod->metadata->magic == CON);
+    ui->btnResign->setEnabled(svod->metaData->magic == CON);
 
     // setup the context menu
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showFileContextMenu(QPoint)));
 
-    ui->lblDisplayName->setText(QString::fromStdWString(svod->metadata->displayName));
-    ui->lblTitleID->setText(QString::number(svod->metadata->titleID, 16).toUpper());
-    ui->lblSectorOffset->setText("0x" + QString::number(svod->metadata->svodVolumeDescriptor.dataBlockOffset * 2, 16).toUpper());
-    ui->lblType->setText(QString::fromStdString(ContentTypeToString(svod->metadata->contentType)));
+    ui->lblDisplayName->setText(QString::fromStdWString(svod->metaData->displayName));
+    ui->lblTitleID->setText(QString::number(svod->metaData->titleID, 16).toUpper());
+    ui->lblSectorOffset->setText("0x" + QString::number(svod->metaData->svodVolumeDescriptor.dataBlockOffset * 2, 16).toUpper());
+    ui->lblType->setText(QString::fromStdString(ContentTypeToString(svod->metaData->contentType)));
 
-    QByteArray imageBuff((char*)svod->metadata->thumbnailImage, (size_t)svod->metadata->thumbnailImageSize);
+    QByteArray imageBuff((char*)svod->metaData->thumbnailImage, (size_t)svod->metaData->thumbnailImageSize);
     ui->imgThumbnail->setPixmap(QPixmap::fromImage(QImage::fromData(imageBuff)));
 
     statusBar->showMessage("SVOD system parsed successfully", 3000);
@@ -135,7 +135,7 @@ void SvodDialog::showFileContextMenu(QPoint pos)
 
 void SvodDialog::on_btnViewAll_clicked()
 {
-    Metadata dialog(statusBar, svod->metadata, false, this);
+    Metadata dialog(statusBar, svod->metaData, false, this);
     dialog.exec();
 }
 
@@ -242,7 +242,7 @@ void SvodDialog::on_btnResign_clicked()
     kvIO.Close();
 
     // make sure the console ids match
-    if (memcmp(consoleID, svod->metadata->certificate.ownerConsoleID, 5) != 0)
+    if (memcmp(consoleID, svod->metaData->certificate.ownerConsoleID, 5) != 0)
     {
         QMessageBox::StandardButton btn = (QMessageBox::StandardButton)QMessageBox::question(this, "Continue?",
                                                                 "The KeyVault provided is not from the console where this SVOD system was signed. This system will show up as corrupt on the original console. Unless you know what you're doing, choose no.\n\nAre you sure that you want to contiure?",

@@ -5,6 +5,7 @@
 #include "IO/SvodMultiFileIO.h"
 #include "Gdfx.h"
 #include "Stfs/XContentHeader.h"
+#include "Stfs/IXContentHeader.h"
 #include <iostream>
 #include <vector>
 #include "IO/SvodIO.h"
@@ -17,13 +18,12 @@
 using std::string;
 using std::vector;
 
-class XBOXINTERNALSSHARED_EXPORT SVOD
+class XBOXINTERNALSSHARED_EXPORT SVOD : public IXContentHeader
 {
 public:
     SVOD(string rootFile);
     ~SVOD();
 
-    XContentHeader *metadata;
     vector<GdfxFileEntry> root;
 
     // get a SvodIO for the given entry

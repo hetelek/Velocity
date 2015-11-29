@@ -55,7 +55,7 @@ void DeviceContentViewer::LoadSharedItemCategory(QString category, std::vector<X
 
         item->setText(0, QString::fromStdWString(content.GetName()));
 
-        item->setData(0, Qt::UserRole, QVariant::fromValue(content.package));
+        item->setData(0, Qt::UserRole, QVariant::fromValue(content.content));
         item->setData(1, Qt::UserRole, QVariant(QString::fromStdString(content.GetPathOnDevice())));
         item->setData(2, Qt::UserRole, QVariant(QString::fromStdString(content.GetRawName())));
 
@@ -99,7 +99,7 @@ void DeviceContentViewer::LoadDevicesp()
                 profileName = "Unknown Profile";
             profileItem->setText(0, profileName);
 
-            profileItem->setData(0, Qt::UserRole, QVariant::fromValue(profile.package));
+            profileItem->setData(0, Qt::UserRole, QVariant::fromValue(profile.content));
             profileItem->setData(1, Qt::UserRole, QVariant(QString::fromStdString(profile.GetPathOnDevice())));
             profileItem->setData(2, Qt::UserRole, QVariant(QString::fromStdString(profile.GetRawName())));
 
@@ -133,7 +133,7 @@ void DeviceContentViewer::LoadDevicesp()
                     QTreeWidgetItem *saveItem = new QTreeWidgetItem(titleItem);
                     XContentDeviceItem save = title.titleSaves.at(z);
 
-                    saveItem->setData(0, Qt::UserRole, QVariant::fromValue(save.package));
+                    saveItem->setData(0, Qt::UserRole, QVariant::fromValue(save.content));
                     saveItem->setData(1, Qt::UserRole, QVariant(QString::fromStdString(save.GetPathOnDevice())));
                     saveItem->setData(2, Qt::UserRole, QVariant(QString::fromStdString(save.GetRawName())));
                     saveItem->setData(3, Qt::UserRole, QVariant((unsigned int)save.GetFileSize()));
@@ -187,20 +187,21 @@ void DeviceContentViewer::ClearSidePanel()
 
 void DeviceContentViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    StfsPackage *package = item->data(0, Qt::UserRole).value<StfsPackage*>();
+    IXContentHeader *package = item->data(0, Qt::UserRole).value<IXContentHeader*>();
     if (package == NULL)
         return;
 
+    StfsPackage *stfsPackage = reinterpret_cast<StfsPackage*>(package);
     if (package->metaData->contentType == Profile)
     {
         bool ok;
-        ProfileEditor editor(statusBar, package, false, &ok, this);
+        ProfileEditor editor(statusBar, stfsPackage, false, &ok, this);
         if (ok)
             editor.exec();
     }
     else
     {
-        PackageViewer viewer(statusBar, package, QList<QAction*>(), QList<QAction*>(), this, false);
+        PackageViewer viewer(statusBar, stfsPackage, QList<QAction*>(), QList<QAction*>(), this, false);
         viewer.exec();
     }
 }
@@ -281,7 +282,7 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
             {
                 QTreeWidgetItem *selectedItem = ui->treeWidget->selectedItems().at(0);
 
-                StfsPackage *package = selectedItem->data(0, Qt::UserRole).value<StfsPackage*>();
+                IXContentHeader *package = selectedItem->data(0, Qt::UserRole).value<IXContentHeader*>();
                 std::string path = selectedItem->data(1, Qt::UserRole).toString().toStdString();
 
                 devices.at(0)->DeleteFile(package, path);
@@ -302,7 +303,7 @@ void DeviceContentViewer::on_treeWidget_currentItemChanged(QTreeWidgetItem *curr
     if (current == NULL)
         return;
 
-    StfsPackage *package = current->data(0, Qt::UserRole).value<StfsPackage*>();
+    IXContentHeader *package = current->data(0, Qt::UserRole).value<IXContentHeader*>();
     if (package == NULL)
     {
         ClearSidePanel();
@@ -352,7 +353,8 @@ void DeviceContentViewer::on_btnViewPackage_clicked()
         return;
     }
 
-    PackageViewer viewer(statusBar, currentPackage, QList<QAction*>(), QList<QAction*>(), this, false);
+    StfsPackage *stfsPackage = reinterpret_cast<StfsPackage*>(currentPackage);
+    PackageViewer viewer(statusBar, stfsPackage, QList<QAction*>(), QList<QAction*>(), this, false);
     viewer.exec();
 }
 

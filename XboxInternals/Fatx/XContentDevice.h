@@ -45,7 +45,7 @@ public:
 
     void CopyFileToLocalDisk(std::string outPath, std::string inPath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
     void CopyFileToDevice(std::string outPath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
-    void DeleteFile(StfsPackage *package, std::string pathOnDevice);
+    void DeleteFile(IXContentHeader *package, std::string pathOnDevice);
 
 private:
     FatxDrive *drive;

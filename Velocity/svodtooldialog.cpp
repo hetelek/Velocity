@@ -8,7 +8,7 @@ SvodToolDialog::SvodToolDialog(SVOD *svod, QWidget *parent) :
     ui->setupUi(this);
     QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
-    ui->spinBox->setMinimum(svod->metadata->svodVolumeDescriptor.dataBlockOffset * 2);
+    ui->spinBox->setMinimum(svod->metaData->svodVolumeDescriptor.dataBlockOffset * 2);
     ui->spinBox->setMaximum(svod->GetSectorCount());
 }
 

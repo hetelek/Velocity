@@ -13,15 +13,15 @@ SVOD::SVOD(string rootPath)
 
     // parse the XContentHeader
     rootFile = new FileIO(rootPath);
-    metadata = new XContentHeader(rootFile);
+    metaData = new XContentHeader(rootFile);
 
-    baseAddress = (metadata->svodVolumeDescriptor.flags & EnhancedGDFLayout) ? 0x2000 : 0x12000;
-    offset = (metadata->svodVolumeDescriptor.flags & EnhancedGDFLayout) ? 0x2000 : 0x1000;
+    baseAddress = (metaData->svodVolumeDescriptor.flags & EnhancedGDFLayout) ? 0x2000 : 0x12000;
+    offset = (metaData->svodVolumeDescriptor.flags & EnhancedGDFLayout) ? 0x2000 : 0x1000;
 
-    if (metadata->fileSystem != FileSystemSVOD)
+    if (metaData->fileSystem != FileSystemSVOD)
         throw string("SVOD: Invalid file system header.\n");
 
-    switch (metadata->contentType)
+    switch (metaData->contentType)
     {
         case GameOnDemand:;
         case InstalledGame:
@@ -52,16 +52,16 @@ SVOD::~SVOD()
 
 void SVOD::Resign(string kvPath)
 {
-    if (metadata->magic != CON)
+    if (metaData->magic != CON)
         throw string("SVOD: Can only resign console systems.\n");
-    metadata->ResignHeader(kvPath);
+    metaData->ResignHeader(kvPath);
 }
 
 void SVOD::SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *dataFileIndex)
 {
-    DWORD trueSector = (sector - (metadata->svodVolumeDescriptor.dataBlockOffset * 2)) % 0x14388;
+    DWORD trueSector = (sector - (metaData->svodVolumeDescriptor.dataBlockOffset * 2)) % 0x14388;
     *addressInDataFile = trueSector * 0x800;
-    *dataFileIndex = (sector - (metadata->svodVolumeDescriptor.dataBlockOffset * 2)) / 0x14388;
+    *dataFileIndex = (sector - (metaData->svodVolumeDescriptor.dataBlockOffset * 2)) / 0x14388;
 
     // for the silly stuff at the beginning
     *addressInDataFile += offset;
@@ -156,7 +156,7 @@ SvodIO SVOD::GetSvodIO(string path)
 
 SvodIO SVOD::GetSvodIO(GdfxFileEntry entry)
 {
-    return SvodIO(metadata, entry, io);
+    return SvodIO(metaData, entry, io);
 }
 
 void SVOD::Rehash(void (*progress)(DWORD, DWORD, void*), void *arg)
@@ -220,10 +220,10 @@ void SVOD::Rehash(void (*progress)(DWORD, DWORD, void*), void *arg)
     }
 
     // update the root hash
-    memcpy(metadata->svodVolumeDescriptor.rootHash, prevHash, 0x14);
-    metadata->WriteVolumeDescriptor();
+    memcpy(metaData->svodVolumeDescriptor.rootHash, prevHash, 0x14);
+    metaData->WriteVolumeDescriptor();
 
-    DWORD dataLen = ((metadata->headerSize + 0xFFF) & 0xFFFFF000) - 0x344;
+    DWORD dataLen = ((metaData->headerSize + 0xFFF) & 0xFFFFF000) - 0x344;
     BYTE *buff = new BYTE[dataLen];
 
     rootFile->SetPosition(0x344);
@@ -232,9 +232,9 @@ void SVOD::Rehash(void (*progress)(DWORD, DWORD, void*), void *arg)
     Botan::SHA_160 sha1;
     sha1.clear();
     sha1.update(buff, dataLen);
-    sha1.final(metadata->headerHash);
+    sha1.final(metaData->headerHash);
 
-    metadata->WriteMetaData();
+    metaData->WriteMetaData();
 }
 
 void SVOD::HashBlock(BYTE *block, BYTE *outHash)

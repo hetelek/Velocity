@@ -19,12 +19,16 @@
 // xbox
 #include "Fatx/XContentDevice.h"
 #include "Fatx/FatxDriveDetection.h"
+#include "Stfs/IXContentHeader.h"
+#include "Stfs/StfsPackage.h"
 
 namespace Ui {
 class DeviceContentViewer;
 }
 
 void DisplayProgress(void *arg, bool finished);
+
+Q_DECLARE_METATYPE( IXContentHeader* )
 
 class DeviceContentViewer : public QDialog
 {
@@ -46,7 +50,7 @@ private:
     Ui::DeviceContentViewer *ui;
     QStatusBar *statusBar;
     QList<XContentDevice*> devices;
-    StfsPackage *currentPackage;
+    IXContentHeader *currentPackage;
     QProgressBar *progressBar;
 
     void resizeEvent(QResizeEvent *);

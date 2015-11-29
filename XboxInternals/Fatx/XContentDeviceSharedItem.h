@@ -1,7 +1,7 @@
 #ifndef XCONTENTDEVICESHAREDITEM_H
 #define XCONTENTDEVICESHAREDITEM_H
 
-#include "Stfs/StfsPackage.h"
+#include "Stfs/IXContentHeader.h"
 #include "XContentDeviceItem.h"
 
 #include "XboxInternals_global.h"
@@ -9,8 +9,8 @@
 class XBOXINTERNALSSHARED_EXPORT XContentDeviceSharedItem : public XContentDeviceItem
 {
 public:
-    XContentDeviceSharedItem(FatxFileEntry *fileEntry, StfsPackage *package);
-    XContentDeviceSharedItem(std::string pathOnDevice, std::string rawName, StfsPackage *package);
+    XContentDeviceSharedItem(FatxFileEntry *fileEntry, IXContentHeader *content);
+    XContentDeviceSharedItem(std::string pathOnDevice, std::string rawName, IXContentHeader *content);
 };
 
 #endif // XCONTENTDEVICESHAREDITEM_H

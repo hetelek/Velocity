@@ -12,14 +12,14 @@ XContentDeviceProfile::XContentDeviceProfile(std::string pathOnDevice, std::stri
 
 BYTE *XContentDeviceProfile::GetProfileID()
 {
-    if (package != NULL)
+    if (content != NULL)
     {
-        return package->metaData->profileID;
+        return content->metaData->profileID;
     }
     else
     {
         if (titles.size() != 0 && titles.at(0).titleSaves.size() != 0)
-            return titles.at(0).titleSaves.at(0).package->metaData->profileID;
+            return titles.at(0).titleSaves.at(0).content->metaData->profileID;
         else
             return NULL;
     }
@@ -27,20 +27,20 @@ BYTE *XContentDeviceProfile::GetProfileID()
 
 std::wstring XContentDeviceProfile::GetName()
 {
-    // return XContentDeviceItem::GetName();
-
     // check to see if the gamertag is cached
     if (gamertag.size() == 0)
     {
         ConsoleType consoleType;
-        if (package != NULL)
-            consoleType = package->metaData->certificate.consoleTypeFlags ? DevKit : Retail;
+        if (content != NULL)
+            consoleType = content->metaData->certificate.consoleTypeFlags ? DevKit : Retail;
         else
             return L"Unknown Profile";
 
         try
         {
-            StfsIO *accountIO = package->GetStfsIO("Account");
+            StfsPackage *stfsPackage = reinterpret_cast<StfsPackage*>(content);
+
+            StfsIO *accountIO = stfsPackage->GetStfsIO("Account");
             Account account(accountIO, true, consoleType);
 
             gamertag = account.GetGamertag();
