@@ -25,6 +25,7 @@
 #include "singleprogressdialog.h"
 #include "packageviewer.h"
 #include "flashdriveconfigdatadialog.h"
+#include "svoddialog.h"
 
 // xbox
 #include "Fatx/FatxDriveDetection.h"

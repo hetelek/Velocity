@@ -49,7 +49,7 @@
 #include "json.h"
 #include "Stfs/StfsPackage.h"
 #include "Gpd/GpdBase.h"
-#include "IO/SvodMultiFileIO.h"
+#include "IO/IndexableMultiFileIO.h"
 #include "Disc/Svod.h"
 #include "AvatarAsset/Ytgr.h"
 #include "Disc/Svod.h"

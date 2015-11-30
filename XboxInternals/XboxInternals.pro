@@ -69,7 +69,8 @@ SOURCES += \
     Fatx/XContentDeviceSharedItem.cpp \
     IO/IndexableMultiFileIO.cpp \
     IO/JoinedMultiFileIO.cpp \
-    IO/LocalIndexableMultiFileIO.cpp
+    IO/LocalIndexableMultiFileIO.cpp \
+    IO/FatxIndexableMultiFileIO.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -118,4 +119,5 @@ HEADERS +=\
     Stfs/IXContentHeader.h \
     IO/IndexableMultiFileIO.h \
     IO/JoinedMultiFileIO.h \
-    IO/LocalIndexableMultiFileIO.h
+    IO/LocalIndexableMultiFileIO.h \
+    IO/FatxIndexableMultiFileIO.h

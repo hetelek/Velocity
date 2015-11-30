@@ -20,7 +20,8 @@
 
 // other
 #include "winnames.h"
-#include <Stfs/StfsConstants.h>
+#include "Stfs/StfsConstants.h"
+#include "Stfs/XContentHeader.h"
 #include <ctype.h>
 
 #ifdef _WIN32
@@ -67,7 +68,7 @@ public:
 
     static void CollapseAllChildren(QTreeWidgetItem *item);
 
-    static void GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWidgetItem &item);
+    static void GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWidgetItem &item, FileSystem fileSystem = FileSystemSTFS);
 };
 
 #endif // QTHELPERS_H

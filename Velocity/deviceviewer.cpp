@@ -431,6 +431,7 @@ void DeviceViewer::on_treeWidget_doubleClicked(const QModelIndex &index)
         // set the current parent
         FatxFileEntry *currentParent = GetFatxFileEntry(item);
 
+        QString type = item->data(1, Qt::UserRole).toString();
         if (item->data(1, Qt::UserRole).toString() == "STFS")
         {
             FatxIO io = currentDrive->GetFatxIO(currentParent);
@@ -441,6 +442,14 @@ void DeviceViewer::on_treeWidget_doubleClicked(const QModelIndex &index)
 
             package.Close();
             io.Close();
+        }
+        else if (item->data(1, Qt::UserRole).toString() == "SVOD")
+        {
+            std::string rootFilePath = currentParent->path + currentParent->name;
+
+            SVOD *svodSystem = new SVOD(rootFilePath, currentDrive);
+            SvodDialog dialog(svodSystem, statusBar, this);
+            dialog.exec();
         }
 
         if ((currentParent->fileAttributes & FatxDirectory) == 0)
@@ -516,9 +525,10 @@ void DeviceViewer::LoadFolderAll(FatxFileEntry *folder)
             {
                 QIcon fileIcon;
 
+                // get the file magic and file system (either SVOD or STFS, both have the same magic)
                 currentDrive->GetFileEntryMagic(entry);
 
-                QtHelpers::GetFileIcon(entry->magic, QString::fromStdString(entry->name), fileIcon, *entryItem);
+                QtHelpers::GetFileIcon(entry->magic, QString::fromStdString(entry->name), fileIcon, *entryItem, entry->fileSystem);
 
                 entryItem->setIcon(0, fileIcon);
                 entryItem->setText(1, QString::fromStdString(ByteSizeToString(entry->fileSize)));

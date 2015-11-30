@@ -7,6 +7,7 @@
 #include "../winnames.h"
 
 #include "../Stfs/StfsDefinitions.h"
+#include "../Stfs/XContentHeader.h"
 
 #include <vector>
 #include <iostream>
@@ -85,6 +86,7 @@ struct FatxFileEntry
     bool readDirectories;
     INT64 address;
     DWORD magic;
+    FileSystem fileSystem;
     std::vector<FatxFileEntry> cachedFiles;
     std::vector<DWORD> clusterChain;
     std::string path;

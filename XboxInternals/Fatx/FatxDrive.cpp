@@ -25,6 +25,14 @@ FatxDrive::FatxDrive(std::string drivePath, FatxDriveType type)  : type(type)
     loadFatxDrive(wsDrivePath);
 }
 
+std::string FatxDrive::NormalizePathSlashes(std::string path)
+{
+    for (DWORD i = 0; i < path.length(); i++)
+        if (path.at(i) == '/')
+            path.at(i) = '\\';
+    return path;
+}
+
 FatxDrive::FatxDrive(BaseIO *io, FatxDriveType type) : io(io), type(type)
 {
     loadFatxDrive();
@@ -401,6 +409,13 @@ void FatxDrive::GetFileEntryMagic(FatxFileEntry *entry)
 
     io->SetPosition(FatxIO::ClusterToOffset(entry->partition, entry->startingCluster));
     entry->magic = io->ReadDword();
+
+    // get the file system if possible
+    if (entry->fileSize >= 0x3AD)
+    {
+        io->SetPosition(FatxIO::ClusterToOffset(entry->partition, entry->startingCluster) + 0x3AC);
+        entry->fileSystem = (FileSystem)io->ReadByte();
+    }
 }
 
 void FatxDrive::GetChildFileEntries(FatxFileEntry *entry, void(*progress)(void*, bool), void *arg)

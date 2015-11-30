@@ -285,7 +285,7 @@ void QtHelpers::CollapseAllChildren(QTreeWidgetItem *item)
         QtHelpers::CollapseAllChildren(item->child(i));
 }
 
-void QtHelpers::GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWidgetItem &item)
+void QtHelpers::GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWidgetItem &item, FileSystem fileSystem)
 {
     item.setData(1, Qt::UserRole, "");
 
@@ -295,7 +295,10 @@ void QtHelpers::GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWid
         case LIVE:
         case PIRS:
             icon = QIcon(":/Images/PackageFileIcon.png");
-            item.setData(1, Qt::UserRole, "STFS");
+            if (fileSystem == FileSystemSTFS)
+                item.setData(1, Qt::UserRole, "STFS");
+            else if (fileSystem == FileSystemSVOD)
+                item.setData(1, Qt::UserRole, "SVOD");
             break;
         case 0x58444246:    // Xdbf
             icon = QIcon(":/Images/GpdFileIcon.png");
@@ -309,7 +312,7 @@ void QtHelpers::GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWid
             icon = QIcon(":/Images/XEXFileIcon.png");
             item.setData(1, Qt::UserRole, "XEX");
             break;
-        case 0x89504E47:    // ‰PNG
+        case 0x89504E47:    // PNG
             icon = QIcon(":/Images/ImageFileIcon.png");
             item.setData(1, Qt::UserRole, "Image");
             break;

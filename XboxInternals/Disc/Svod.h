@@ -4,13 +4,18 @@
 #include "IO/FileIO.h"
 #include "IO/IndexableMultiFileIO.h"
 #include "IO/LocalIndexableMultiFileIO.h"
+#include "IO/FatxIndexableMultiFileIO.h"
+#include "IO/SvodIO.h"
+#include "IO/FatxIO.h"
 #include "Gdfx.h"
 #include "Stfs/XContentHeader.h"
 #include "Stfs/IXContentHeader.h"
+#include "Fatx/FatxDrive.h"
+
 #include <iostream>
 #include <vector>
-#include "IO/SvodIO.h"
 #include <algorithm>
+
 #include "botan/botan.h"
 #include "botan/sha160.h"
 
@@ -22,7 +27,7 @@ using std::vector;
 class XBOXINTERNALSSHARED_EXPORT SVOD : public IXContentHeader
 {
 public:
-    SVOD(string rootFile);
+    SVOD(string rootFile, FatxDrive *drive = NULL);
     ~SVOD();
 
     vector<GdfxFileEntry> root;
@@ -51,10 +56,11 @@ public:
 private:
     string contentDirectory;
     IndexableMultiFileIO *io;
-    FileIO *rootFile;
+    BaseIO *rootFile;
     GdfxHeader header;
     DWORD baseAddress;
     DWORD offset;
+    FatxDrive *drive;
 
     // parse the file listing
     void ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int size, string path);

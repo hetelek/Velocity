@@ -1,6 +1,7 @@
 #include "Svod.h"
 
-SVOD::SVOD(string rootPath)
+SVOD::SVOD(string rootPath, FatxDrive *drive) :
+    drive(drive)
 {
     // make sure all of the slashes are the same
     for (DWORD i = 0; i < rootPath.length(); i++)
@@ -12,7 +13,18 @@ SVOD::SVOD(string rootPath)
     contentDirectory = rootPath.substr(0, rootPath.find_last_of("/")) + "/" + fileName + ".data/";
 
     // parse the XContentHeader
-    rootFile = new FileIO(rootPath);
+    if (drive == NULL)
+    {
+        rootFile = new FileIO(rootPath);
+    }
+    else
+    {
+        // for FATX paths the slashes have to be \ like on windows
+        rootPath = FatxDrive::NormalizePathSlashes(rootPath) ;
+
+        FatxFileEntry *rootFileEntry = drive->GetFileEntry(rootPath);
+        rootFile = new FatxIO(drive->GetFatxIO(rootFileEntry));
+    }
     metaData = new XContentHeader(rootFile);
 
     baseAddress = (metaData->svodVolumeDescriptor.flags & EnhancedGDFLayout) ? 0x2000 : 0x12000;
@@ -23,15 +35,24 @@ SVOD::SVOD(string rootPath)
 
     switch (metaData->contentType)
     {
-        case GameOnDemand:;
+        case GameOnDemand:
         case InstalledGame:
+        case XboxOriginalGame:
             break;
         default:
             throw string("SVOD: Unrecognized content type.\n");
     }
 
     // open an IO on the content files
-    io = new LocalIndexableMultiFileIO(contentDirectory);
+    if (drive == NULL)
+    {
+        io = new LocalIndexableMultiFileIO(contentDirectory);
+    }
+    else
+    {
+        contentDirectory = FatxDrive::NormalizePathSlashes(contentDirectory);
+        io = new FatxIndexableMultiFileIO(contentDirectory, drive);
+    }
 
     // parse the header
     io->SetPosition(baseAddress, 0);
