@@ -23,8 +23,6 @@
 class XBOXINTERNALSSHARED_EXPORT FatxDrive
 {
 public:
-    static std::string NormalizePathSlashes(std::string path);
-
     FatxDrive(BaseIO *io, FatxDriveType type);
     FatxDrive(void* deviceHandle, FatxDriveType type = FatxHarddrive);
     FatxDrive(std::string drivePath, FatxDriveType type = FatxHarddrive);
@@ -59,7 +57,7 @@ public:
     FatxFileEntry* CreateFolder(FatxFileEntry *parent, std::string folderName);
 
     // creates the specified path (even if multiple folders don't exist in it)
-    FatxFileEntry *CreatePath(std::string folderPath);
+    FatxFileEntry* CreatePath(std::string folderPath);
 
     // get the first 4 bytes of a file and the file system which could be STFS or SVOD
     // both SVOD and STFS packages have the same magic so this is necessary

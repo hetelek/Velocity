@@ -4,9 +4,7 @@ SVOD::SVOD(string rootPath, FatxDrive *drive) :
     drive(drive)
 {
     // make sure all of the slashes are the same
-    for (DWORD i = 0; i < rootPath.length(); i++)
-        if (rootPath.at(i) == '\\')
-            rootPath.at(i) = '/';
+    rootPath = Utils::NormalizeFilePath(rootPath, '\\', '/');
 
     // get the content folder name, and make sure it exists
     string fileName = rootPath.substr(rootPath.find_last_of("/") + 1);
@@ -20,7 +18,7 @@ SVOD::SVOD(string rootPath, FatxDrive *drive) :
     else
     {
         // for FATX paths the slashes have to be \ like on windows
-        rootPath = FatxDrive::NormalizePathSlashes(rootPath) ;
+        rootPath = Utils::NormalizeFilePath(rootPath) ;
 
         FatxFileEntry *rootFileEntry = drive->GetFileEntry(rootPath);
         rootFile = new FatxIO(drive->GetFatxIO(rootFileEntry));
@@ -50,7 +48,7 @@ SVOD::SVOD(string rootPath, FatxDrive *drive) :
     }
     else
     {
-        contentDirectory = FatxDrive::NormalizePathSlashes(contentDirectory);
+        contentDirectory = Utils::NormalizeFilePath(contentDirectory);
         io = new FatxIndexableMultiFileIO(contentDirectory, drive);
     }
 

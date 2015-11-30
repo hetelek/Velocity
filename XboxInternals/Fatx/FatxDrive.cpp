@@ -25,14 +25,6 @@ FatxDrive::FatxDrive(std::string drivePath, FatxDriveType type)  : type(type)
     loadFatxDrive(wsDrivePath);
 }
 
-std::string FatxDrive::NormalizePathSlashes(std::string path)
-{
-    for (DWORD i = 0; i < path.length(); i++)
-        if (path.at(i) == '/')
-            path.at(i) = '\\';
-    return path;
-}
-
 FatxDrive::FatxDrive(BaseIO *io, FatxDriveType type) : io(io), type(type)
 {
     loadFatxDrive();

@@ -1,6 +1,7 @@
 #ifndef SVOD_H
 #define SVOD_H
 
+#include "Utils.h"
 #include "IO/FileIO.h"
 #include "IO/IndexableMultiFileIO.h"
 #include "IO/LocalIndexableMultiFileIO.h"

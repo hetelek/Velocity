@@ -70,7 +70,8 @@ SOURCES += \
     IO/IndexableMultiFileIO.cpp \
     IO/JoinedMultiFileIO.cpp \
     IO/LocalIndexableMultiFileIO.cpp \
-    IO/FatxIndexableMultiFileIO.cpp
+    IO/FatxIndexableMultiFileIO.cpp \
+    Utils.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -120,4 +121,5 @@ HEADERS +=\
     IO/IndexableMultiFileIO.h \
     IO/JoinedMultiFileIO.h \
     IO/LocalIndexableMultiFileIO.h \
-    IO/FatxIndexableMultiFileIO.h
+    IO/FatxIndexableMultiFileIO.h \
+    Utils.h
