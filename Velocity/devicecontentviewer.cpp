@@ -353,9 +353,20 @@ void DeviceContentViewer::on_btnViewPackage_clicked()
         return;
     }
 
-    StfsPackage *stfsPackage = reinterpret_cast<StfsPackage*>(currentPackage);
-    PackageViewer viewer(statusBar, stfsPackage, QList<QAction*>(), QList<QAction*>(), this, false);
-    viewer.exec();
+    IXContentHeader *content = ui->treeWidget->currentItem()->data(0, Qt::UserRole).value<IXContentHeader*>();
+
+    if (content->metaData->fileSystem == FileSystemSTFS)
+    {
+        StfsPackage *stfsPackage = reinterpret_cast<StfsPackage*>(currentPackage);
+        PackageViewer viewer(statusBar, stfsPackage, QList<QAction*>(), QList<QAction*>(), this, false);
+        viewer.exec();
+    }
+    else if (content->metaData->fileSystem == FileSystemSVOD)
+    {
+        SVOD *svodSystem = reinterpret_cast<SVOD*>(currentPackage);
+        SvodDialog viewer(svodSystem, statusBar, this);
+        viewer.exec();
+    }
 }
 
 void DeviceContentViewer::resizeEvent(QResizeEvent *)

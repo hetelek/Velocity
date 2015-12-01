@@ -15,6 +15,7 @@
 #include "Stfs/StfsPackage.h"
 #include "FatxDrive.h"
 #include "IO/FatxIO.h"
+#include "Disc/Svod.h"
 #include "XContentDeviceProfile.h"
 #include "XContentDeviceSharedItem.h"
 

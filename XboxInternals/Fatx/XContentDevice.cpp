@@ -574,29 +574,35 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
             if (contentPackage->fileAttributes & FatxDirectory || contentPackage->nameLen == 0xE5)
                 continue;
 
-            // open an IO on this file, should be STFS package
-            FatxIO io = drive->GetFatxIO(drive->GetFileEntry(contentPackage->path + contentPackage->name));
-            DWORD fileMagic = io.ReadDword();
+            FatxFileEntry *entry = drive->GetFileEntry(contentPackage->path + contentPackage->name);
+            drive->GetFileEntryMagic(entry);
+            DWORD fileMagic = entry->magic;
 
             // verify the magic
             if (fileMagic != CON && fileMagic != LIVE && fileMagic != PIRS)
                 continue;
 
             // get the type, SVOD or STFS
-            io.SetPosition(0x3AC);
-            FileSystem fileSystem = static_cast<FileSystem>(io.ReadByte());
+            FileSystem fileSystem = entry->fileSystem;
 
             if (progress)
                 progress(arg, false);
 
-            // this might not be a valid STFS package, so we have to do try {} catch {}
+            // this might not be a valid STFS or SVOD package, so we have to do try {} catch {}
             IXContentHeader *content;
             try
             {
+                FatxIO io = drive->GetFatxIO(entry);
+
                 if (fileSystem == FileSystemSTFS)
+                {
                     content = new StfsPackage(new FatxIO(io), StfsPackageDeleteIO);
-                //else if (fileSystem == FileSystemFATX)
-                    //content =
+                }
+                else if (fileSystem == FileSystemSVOD)
+                {
+                    std::string rootFilePath = entry->path + entry->name;
+                    content = new SVOD(rootFilePath, drive);
+                }
             }
             catch (...)
             {

@@ -4,6 +4,7 @@
 // forms
 #include "profileeditor.h"
 #include "packageviewer.h"
+#include "svoddialog.h"
 
 // qt
 #include <QDialog>
