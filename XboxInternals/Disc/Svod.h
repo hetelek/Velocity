@@ -73,6 +73,6 @@ private:
     void HashBlock(BYTE *block, BYTE *outHash);
 };
 
-int compareFileEntries(GdfxFileEntry a, GdfxFileEntry b);
+int compareFileEntries(const GdfxFileEntry &a, const GdfxFileEntry &b);
 
 #endif // SVOD_H

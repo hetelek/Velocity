@@ -126,6 +126,7 @@ void SVOD::ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int s
         {
             if ((size - 0x800) <= 0)
             {
+                // sort the file entries so that directories are first
                 std::sort(entryList->begin(), entryList->end(), compareFileEntries);
                 return;
             }
@@ -277,7 +278,12 @@ DWORD SVOD::GetSectorCount()
     return (io->FileCount() * 0x14388) + ((fileLen - (0x1000 * (fileLen / 0xCD000))) / 0x800);
 }
 
-int compareFileEntries(GdfxFileEntry a, GdfxFileEntry b)
+// this must be a < operator, if it returns true if they're equal then it'll break
+// this will compare them so that the directories come first
+int compareFileEntries(const GdfxFileEntry &a, const GdfxFileEntry &b)
 {
-    return !!(a.attributes & GdfxDirectory);
+    int a_directory = a.attributes & GdfxDirectory;
+    int b_directory = b.attributes & GdfxDirectory;
+
+    return a_directory > b_directory;
 }
