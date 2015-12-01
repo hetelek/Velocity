@@ -28,7 +28,13 @@ void FatxIndexableMultiFileIO::loadDirectories(std::string path)
     // get the paths of all the files in the directory
     for (size_t i = 0; i < directory->cachedFiles.size(); i++)
     {
-        std::string filePath = directory->cachedFiles.at(i).path + directory->cachedFiles.at(i).name;
+        // skip over deleted files
+        FatxFileEntry directoryFile = directory->cachedFiles.at(i);
+        if (directoryFile.nameLen == FATX_ENTRY_DELETED)
+            continue;
+
+        // get the path of the file
+        std::string filePath = directoryFile.path + directoryFile.name;
         files.push_back(filePath);
     }
 }
