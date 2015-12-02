@@ -115,9 +115,6 @@ void XContentHeader::readMetadata()
 
             io->ReadBytes(guid, 0x10);
             skeletonVersion = (SkeletonVersion)io->ReadByte();
-
-            if (skeletonVersion < 1 || skeletonVersion > 3)
-                throw string("XContentHeader: Invalid skeleton version.");
         }
         else if (contentType == Video) // there may be other content types with this metadata
         {
