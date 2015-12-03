@@ -44,6 +44,9 @@ void LocalIndexableMultiFileIO::loadDirectories(string path)
                 files.push_back(fullName);
         }
         closedir (dir);
+
+        // sort the files so that they're in order (Data0000, Data0001, etc)
+        std::sort(files.begin(), files.end());
     }
     else
         throw string("MultiFileIO: Error opening directory\n");

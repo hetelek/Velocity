@@ -37,6 +37,9 @@ void FatxIndexableMultiFileIO::loadDirectories(std::string path)
         std::string filePath = directoryFile.path + directoryFile.name;
         files.push_back(filePath);
     }
+
+    // sort the files so that they're in order (Data0000, Data0001, etc)
+    std::sort(files.begin(), files.end());
 }
 
 BaseIO *FatxIndexableMultiFileIO::openFile(std::string path)

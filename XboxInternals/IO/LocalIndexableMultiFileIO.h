@@ -1,9 +1,11 @@
 #ifndef MULTIFILEIO_H
 #define MULTIFILEIO_H
 
-#include "IO/FileIO.h"
 #include <iostream>
 #include <vector>
+#include <algorithm>
+
+#include "FileIO.h"
 #include "BaseIO.h"
 #include "IndexableMultiFileIO.h"
 #include "XboxInternals_global.h"

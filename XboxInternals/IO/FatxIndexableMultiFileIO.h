@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "IndexableMultiFileIO.h"
 #include "BaseIO.h"
