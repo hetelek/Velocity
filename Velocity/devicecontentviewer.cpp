@@ -102,6 +102,7 @@ void DeviceContentViewer::LoadDevicesp()
             profileItem->setData(0, Qt::UserRole, QVariant::fromValue(profile.content));
             profileItem->setData(1, Qt::UserRole, QVariant(QString::fromStdString(profile.GetPathOnDevice())));
             profileItem->setData(2, Qt::UserRole, QVariant(QString::fromStdString(profile.GetRawName())));
+            profileItem->setData(3, Qt::UserRole, QVariant((quint32)profile.GetFileSize()));
 
             // set the icon to the gamerpicture as long as it isn't null
             QByteArray imageBuff((char*)profile.GetThumbnail(), profile.GetThumbnailSize());
@@ -178,6 +179,7 @@ void DeviceContentViewer::ClearSidePanel()
     ui->lblTitleID->setText("...");
     ui->lblTitleName->setText("...");
     ui->lblPackageType->setText("...");
+    ui->lblFileSize->setText("...");
 
     ui->btnOpenIn->setEnabled(false);
     ui->btnViewPackage->setEnabled(false);
