@@ -177,7 +177,7 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
             if (progress)
                 progress(arg, false);
 
-            XContentDeviceSharedItem item(items.at(x).GetPathOnDevice(), items.at(x).GetRawName(), items.at(x).content);
+            XContentDeviceSharedItem item(items.at(x).GetPathOnDevice(), items.at(x).GetRawName(), items.at(x).content, items.at(x).GetContentFilePaths());
             if (item.content == NULL)
                 continue;
 
@@ -590,6 +590,7 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
 
             // this might not be a valid STFS or SVOD package, so we have to do try {} catch {}
             IXContentHeader *content;
+            std::vector<std::string> contentFilePaths;
             try
             {
                 FatxIO io = drive->GetFatxIO(entry);
@@ -602,6 +603,21 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
                 {
                     std::string rootFilePath = entry->path + entry->name;
                     content = new SVOD(rootFilePath, drive);
+
+                    // SVOD systems have data files where the actual content is stored; they're in a folder in the same
+                    // directory as the header file with the name {HEADER_FILE_NAME}.data
+                    FatxFileEntry *dataFileDirectory = drive->GetFileEntry(rootFilePath + ".data");
+                    drive->GetChildFileEntries(dataFileDirectory);
+                    for (size_t i = 0; i < dataFileDirectory->cachedFiles.size(); i++)
+                    {
+                        // skip over deleted files
+                        FatxFileEntry curEntry = dataFileDirectory->cachedFiles.at(i);
+                        if (curEntry.nameLen == FATX_ENTRY_DELETED)
+                            continue;
+
+                        std::string dataFilePath = curEntry.path + curEntry.name;
+                        contentFilePaths.push_back(dataFilePath);
+                    }
                 }
             }
             catch (...)
@@ -609,7 +625,7 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
                 continue;
             }
 
-            XContentDeviceItem item(contentPackage, content);
+            XContentDeviceItem item(contentPackage, content, contentFilePaths);
 
             itemsFound.push_back(item);
 

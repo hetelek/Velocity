@@ -262,8 +262,24 @@ void MultiProgressDialog::operateOnNextFile()
 
                     try
                     {
+                        // make all the directories needed
+                        QString relativeDirectory = QString::fromStdString(*file);
+                        relativeDirectory.chop(fileName.size());
+                        QString dirPath = QDir::toNativeSeparators(outDir + "/" + relativeDirectory.replace(rootPath, ""));
+                        QDir saveDir(dirPath);
+
+                        if (!saveDir.exists())
+                            saveDir.mkpath(dirPath);
+
+                        // get the correct local file path
+                        std::string localFilePath = dirPath.toStdString();
+                        localFilePath = Utils::NormalizeFilePath(localFilePath, '\\', '/');
+                        if (localFilePath.at(localFilePath.size() - 1) != '/')
+                            localFilePath += "/";
+                        localFilePath += fileName;
+
                         // extract the file
-                        drive->CopyFileToLocalDisk(outDir.toStdString() + "/" + fileName, *file, updateProgress, this);
+                        drive->CopyFileToLocalDisk(localFilePath, *file, updateProgress, this);
                     }
                     catch (string error)
                     {

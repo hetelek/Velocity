@@ -1,13 +1,13 @@
 #include "XContentDeviceItem.h"
 
-XContentDeviceItem::XContentDeviceItem(FatxFileEntry *fileEntry, IXContentHeader *content) :
-    content(content), pathOnDevice(fileEntry->path + fileEntry->name), rawName(fileEntry->name), fileSize(fileEntry->fileSize)
+XContentDeviceItem::XContentDeviceItem(FatxFileEntry *fileEntry, IXContentHeader *content, std::vector<std::string> contentFilePaths) :
+    content(content), pathOnDevice(fileEntry->path + fileEntry->name), rawName(fileEntry->name), fileSize(fileEntry->fileSize), contentFilePaths(contentFilePaths)
 {
 
 }
 
-XContentDeviceItem::XContentDeviceItem(std::string pathOnDevice, std::string rawName, IXContentHeader *content, DWORD fileSize) :
-    content(content), pathOnDevice(pathOnDevice), rawName(rawName), fileSize(fileSize)
+XContentDeviceItem::XContentDeviceItem(std::string pathOnDevice, std::string rawName, IXContentHeader *content, DWORD fileSize, std::vector<std::string> contentFilePaths) :
+    content(content), pathOnDevice(pathOnDevice), rawName(rawName), fileSize(fileSize), contentFilePaths(contentFilePaths)
 {
 
 }
@@ -54,4 +54,9 @@ BYTE *XContentDeviceItem::GetProfileID()
 DWORD XContentDeviceItem::GetFileSize()
 {
     return fileSize;
+}
+
+std::vector<std::string> XContentDeviceItem::GetContentFilePaths()
+{
+    return contentFilePaths;
 }

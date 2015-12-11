@@ -17,6 +17,7 @@
 #include <QHeaderView>
 #include <QCheckBox>
 #include <QProgressBar>
+#include <QStringList>
 
 // other
 #include "winnames.h"
@@ -69,6 +70,8 @@ public:
     static void CollapseAllChildren(QTreeWidgetItem *item);
 
     static void GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWidgetItem &item, FileSystem fileSystem = FileSystemSTFS);
+
+    static QStringList StdStringArrayToQStringList(std::vector<std::string> strings);
 };
 
 #endif // QTHELPERS_H

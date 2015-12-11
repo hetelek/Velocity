@@ -9,8 +9,8 @@
 class XBOXINTERNALSSHARED_EXPORT XContentDeviceSharedItem : public XContentDeviceItem
 {
 public:
-    XContentDeviceSharedItem(FatxFileEntry *fileEntry, IXContentHeader *content);
-    XContentDeviceSharedItem(std::string pathOnDevice, std::string rawName, IXContentHeader *content);
+    XContentDeviceSharedItem(FatxFileEntry *fileEntry, IXContentHeader *content, std::vector<std::string> contentFilePaths=std::vector<std::string>());
+    XContentDeviceSharedItem(std::string pathOnDevice, std::string rawName, IXContentHeader *content, std::vector<std::string> contentFilePaths=std::vector<std::string>());
 };
 
 #endif // XCONTENTDEVICESHAREDITEM_H

@@ -15,6 +15,7 @@
 #include "Fatx/FatxConstants.h"
 #include "Fatx/FatxDrive.h"
 #include "Fatx/XContentDevice.h"
+#include "Utils.h"
 
 enum Operation
 {

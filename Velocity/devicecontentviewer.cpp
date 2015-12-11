@@ -59,6 +59,9 @@ void DeviceContentViewer::LoadSharedItemCategory(QString category, std::vector<X
         item->setData(1, Qt::UserRole, QVariant(QString::fromStdString(content.GetPathOnDevice())));
         item->setData(2, Qt::UserRole, QVariant(QString::fromStdString(content.GetRawName())));
 
+        std::vector<std::string> contentFilePaths = content.GetContentFilePaths();
+        item->setData(3, Qt::UserRole, QVariant(QtHelpers::StdStringArrayToQStringList(contentFilePaths)));
+
         // set the icon to the STFS package's thumbnail
         if (content.GetThumbnail() != NULL)
         {
@@ -238,14 +241,32 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
         if (saveDir == "")
             return;
 
+        QString rootPath = "";
         QList<void*> filesToExtract;
         for (int i = 0; i < ui->treeWidget->selectedItems().size(); i++)
         {
-            QString path = ui->treeWidget->selectedItems().at(i)->data(1, Qt::UserRole).toString();
+           	QTreeWidgetItem *curItem = ui->treeWidget->selectedItems().at(i); 
+            
+            QString path = curItem->data(1, Qt::UserRole).toString();
+            QString rawName = curItem->data(2, Qt::UserRole).toString();
             filesToExtract.push_back(new std::string(path.toStdString()));
+
+            rootPath = path;
+            rootPath.chop(rawName.size());
+            
+            // SVOD systems also have all the data files to extract
+            IXContentHeader *content = curItem->data(0, Qt::UserRole).value<IXContentHeader*>();
+            if (content->metaData->fileSystem == FileSystemSVOD)
+            {
+                QStringList contentFilePaths = curItem->data(3, Qt::UserRole).toStringList();
+                foreach (QString contentFilePath, contentFilePaths)
+                {
+                    filesToExtract.push_back(new std::string(contentFilePath.toStdString()));
+                }
+            }
         }
 
-        MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemFriendlyFATX, devices.at(0), saveDir, filesToExtract, this);
+        MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemFriendlyFATX, devices.at(0), saveDir, filesToExtract, this, rootPath);
         dialog->setModal(true);
         dialog->show();
         dialog->start();

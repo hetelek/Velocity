@@ -338,3 +338,11 @@ void QtHelpers::GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWid
                 icon = QIcon(":/Images/DefaultFileIcon.png");
     }
 }
+
+QStringList QtHelpers::StdStringArrayToQStringList(std::vector<std::string> strings)
+{
+    QStringList toReturn;
+    for (size_t i = 0; i < strings.size(); i++)
+        toReturn.append(QString::fromStdString(strings.at(i)));
+    return toReturn;
+}
