@@ -11,7 +11,7 @@ class XBOXINTERNALSSHARED_EXPORT XContentDeviceItem
 {
 public:
     XContentDeviceItem(FatxFileEntry *fileEntry, IXContentHeader *content, std::vector<std::string> contentFilePaths=std::vector<std::string>());
-    XContentDeviceItem(std::string pathOnDevice, std::string rawName, IXContentHeader *content, DWORD fileSize = 0, std::vector<std::string> contentFilePaths=std::vector<std::string>());
+    XContentDeviceItem(std::string pathOnDevice, std::string rawName, IXContentHeader *content, UINT64 fileSize = 0, std::vector<std::string> contentFilePaths=std::vector<std::string>());
 
     IXContentHeader *content;
 
@@ -21,7 +21,7 @@ public:
     virtual DWORD GetThumbnailSize();
     virtual std::string GetRawName();
     virtual BYTE* GetProfileID();
-    virtual DWORD GetFileSize();
+    virtual UINT64 GetFileSize();
 
     std::vector<std::string> GetContentFilePaths();
 
@@ -29,7 +29,7 @@ private:
     std::string pathOnDevice;
     std::vector<std::string> contentFilePaths;
     std::string rawName;
-    DWORD fileSize;
+    UINT64 fileSize;
 };
 
 #endif // XCONTENTDEVICEITEM_H

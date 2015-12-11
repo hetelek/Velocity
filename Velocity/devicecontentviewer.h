@@ -12,6 +12,7 @@
 #include <QList>
 #include <QTreeWidgetItem>
 #include <QProgressBar>
+#include <QtGlobal>
 
 // std
 #include <iostream>

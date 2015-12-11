@@ -58,9 +58,10 @@ void DeviceContentViewer::LoadSharedItemCategory(QString category, std::vector<X
         item->setData(0, Qt::UserRole, QVariant::fromValue(content.content));
         item->setData(1, Qt::UserRole, QVariant(QString::fromStdString(content.GetPathOnDevice())));
         item->setData(2, Qt::UserRole, QVariant(QString::fromStdString(content.GetRawName())));
+        item->setData(3, Qt::UserRole, QVariant((quint64)content.GetFileSize()));
 
         std::vector<std::string> contentFilePaths = content.GetContentFilePaths();
-        item->setData(3, Qt::UserRole, QVariant(QtHelpers::StdStringArrayToQStringList(contentFilePaths)));
+        item->setData(4, Qt::UserRole, QVariant(QtHelpers::StdStringArrayToQStringList(contentFilePaths)));
 
         // set the icon to the STFS package's thumbnail
         if (content.GetThumbnail() != NULL)
@@ -140,7 +141,7 @@ void DeviceContentViewer::LoadDevicesp()
                     saveItem->setData(0, Qt::UserRole, QVariant::fromValue(save.content));
                     saveItem->setData(1, Qt::UserRole, QVariant(QString::fromStdString(save.GetPathOnDevice())));
                     saveItem->setData(2, Qt::UserRole, QVariant(QString::fromStdString(save.GetRawName())));
-                    saveItem->setData(3, Qt::UserRole, QVariant((unsigned int)save.GetFileSize()));
+                    saveItem->setData(3, Qt::UserRole, QVariant((quint64)save.GetFileSize()));
 
                     saveItem->setText(0, QString::fromStdWString(save.GetName()));
 
@@ -258,7 +259,7 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
             IXContentHeader *content = curItem->data(0, Qt::UserRole).value<IXContentHeader*>();
             if (content->metaData->fileSystem == FileSystemSVOD)
             {
-                QStringList contentFilePaths = curItem->data(3, Qt::UserRole).toStringList();
+                QStringList contentFilePaths = curItem->data(4, Qt::UserRole).toStringList();
                 foreach (QString contentFilePath, contentFilePaths)
                 {
                     filesToExtract.push_back(new std::string(contentFilePath.toStdString()));
@@ -361,7 +362,7 @@ void DeviceContentViewer::on_treeWidget_currentItemChanged(QTreeWidgetItem *curr
     ui->lblTitleID->setText(QString::number(package->metaData->titleID, 16).toUpper());
     ui->lblTitleName->setText(QString::fromStdWString(package->metaData->titleName));
     ui->lblPackageType->setText(QString::fromStdString(ContentTypeToString(package->metaData->contentType)));
-    ui->lblFileSize->setText(QString::fromStdString(ByteSizeToString(current->data(3, Qt::UserRole).toUInt())));
+    ui->lblFileSize->setText(QString::fromStdString(ByteSizeToString(current->data(3, Qt::UserRole).toULongLong())));
 
     currentPackage = package;
 

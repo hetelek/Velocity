@@ -6,7 +6,7 @@ XContentDeviceItem::XContentDeviceItem(FatxFileEntry *fileEntry, IXContentHeader
 
 }
 
-XContentDeviceItem::XContentDeviceItem(std::string pathOnDevice, std::string rawName, IXContentHeader *content, DWORD fileSize, std::vector<std::string> contentFilePaths) :
+XContentDeviceItem::XContentDeviceItem(std::string pathOnDevice, std::string rawName, IXContentHeader *content, UINT64 fileSize, std::vector<std::string> contentFilePaths) :
     content(content), pathOnDevice(pathOnDevice), rawName(rawName), fileSize(fileSize), contentFilePaths(contentFilePaths)
 {
 
@@ -51,9 +51,9 @@ BYTE *XContentDeviceItem::GetProfileID()
     return content->metaData->profileID;
 }
 
-DWORD XContentDeviceItem::GetFileSize()
+UINT64 XContentDeviceItem::GetFileSize()
 {
-    return fileSize;
+    return fileSize + content->metaData->dataFileCombinedSize;
 }
 
 std::vector<std::string> XContentDeviceItem::GetContentFilePaths()

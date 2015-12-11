@@ -6,8 +6,8 @@ XContentDeviceSharedItem::XContentDeviceSharedItem(FatxFileEntry *fileEntry, IXC
 
 }
 
-XContentDeviceSharedItem::XContentDeviceSharedItem(std::string pathOnDevice, std::string rawName, IXContentHeader *package, std::vector<std::string> contentFilePaths) :
-    XContentDeviceItem(pathOnDevice, rawName, package, 0, contentFilePaths)
+XContentDeviceSharedItem::XContentDeviceSharedItem(std::string pathOnDevice, std::string rawName, IXContentHeader *content, UINT64 fileSize, std::vector<std::string> contentFilePaths) :
+    XContentDeviceItem(pathOnDevice, rawName, content, fileSize, contentFilePaths)
 {
 
 }

@@ -177,7 +177,8 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
             if (progress)
                 progress(arg, false);
 
-            XContentDeviceSharedItem item(items.at(x).GetPathOnDevice(), items.at(x).GetRawName(), items.at(x).content, items.at(x).GetContentFilePaths());
+            XContentDeviceSharedItem item(items.at(x).GetPathOnDevice(), items.at(x).GetRawName(),
+                                          items.at(x).content, items.at(x).GetFileSize(), items.at(x).GetContentFilePaths());
             if (item.content == NULL)
                 continue;
 
