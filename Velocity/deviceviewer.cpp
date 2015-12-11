@@ -164,8 +164,12 @@ void DeviceViewer::showContextMenu(QPoint point)
             if (path.isEmpty())
                 return;
 
+            QStringList rootPaths;
+            QString rootPath = QString::fromStdString(directoryChain.last()->path + directoryChain.last()->name + "\\");
+            rootPaths.push_back(rootPath);
+
             // save the file to the local disk
-            MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemFATX, currentDrive, path + "/", filesToExtract, this, QString::fromStdString(directoryChain.last()->path + directoryChain.last()->name + "\\"));
+            MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemFATX, currentDrive, path + "/", filesToExtract, this, rootPaths);
             dialog->setModal(true);
             dialog->show();
             dialog->start();
@@ -302,7 +306,7 @@ void DeviceViewer::showContextMenu(QPoint point)
 
 void DeviceViewer::InjectFiles(QList<void*> files, QString rootPath)
 {
-    MultiProgressDialog *dialog = new MultiProgressDialog(OpInject, FileSystemFATX, currentDrive, "", files, this, rootPath, parentEntry);
+    MultiProgressDialog *dialog = new MultiProgressDialog(OpInject, FileSystemFATX, currentDrive, "", files, this, QStringList(rootPath), parentEntry);
     dialog->setModal(true);
     dialog->show();
     dialog->start();

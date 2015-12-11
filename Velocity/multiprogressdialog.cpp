@@ -1,9 +1,9 @@
 #include "multiprogressdialog.h"
 #include "ui_multiprogressdialog.h"
 
-MultiProgressDialog::MultiProgressDialog(Operation op, FileSystem fileSystem, void *device, QString outDir, QList<void *> internalFiles, QWidget *parent, QString rootPath, FatxFileEntry *parentEntry) :
+MultiProgressDialog::MultiProgressDialog(Operation op, FileSystem fileSystem, void *device, QString outDir, QList<void *> internalFiles, QWidget *parent, QStringList rootPaths, FatxFileEntry *parentEntry) :
     QDialog(parent),ui(new Ui::MultiProgressDialog), system(fileSystem), device(device), outDir(outDir), internalFiles(internalFiles),
-    fileIndex(0), overallProgress(0), overallProgressTotal(0), prevProgress(0), rootPath(rootPath), op(op), parentEntry(parentEntry)
+    fileIndex(0), overallProgress(0), overallProgressTotal(0), prevProgress(0), rootPaths(rootPaths), op(op), parentEntry(parentEntry)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -155,6 +155,10 @@ void MultiProgressDialog::operateOnNextFile()
 
                     try
                     {
+                        QString rootPath = "";
+                        if (rootPaths.size() > i)
+                            rootPath = rootPaths.at(i);
+
                         // make all the directories needed
                         QString temp = QString::fromStdString(entry->path);
                         QString dirPath = QDir::toNativeSeparators(outDir + temp.replace(rootPath, ""));
@@ -196,9 +200,11 @@ void MultiProgressDialog::operateOnNextFile()
 
                         // set up the parent entry
                         FatxFileEntry *pEntry = parentEntry;
-                        if (rootPath != "")
+                        if (rootPaths.size() > i)
                         {
-                            // fix the path seperators
+                            QString rootPath = rootPaths.at(i);
+
+                            // fix the path srootPath != ""eperators
                             rootPath = rootPath.replace("/", "\\");
                             *fileName = fileName->replace("/", "\\");
 
@@ -262,6 +268,10 @@ void MultiProgressDialog::operateOnNextFile()
 
                     try
                     {
+                        QString rootPath = "";
+                        if (rootPaths.size() > i)
+                            rootPath = rootPaths.at(i);
+
                         // make all the directories needed
                         QString relativeDirectory = QString::fromStdString(*file);
                         relativeDirectory.chop(fileName.size());

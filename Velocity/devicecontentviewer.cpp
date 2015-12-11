@@ -242,18 +242,20 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
         if (saveDir == "")
             return;
 
-        QString rootPath = "";
+        QStringList rootPaths;
         QList<void*> filesToExtract;
         for (int i = 0; i < ui->treeWidget->selectedItems().size(); i++)
         {
            	QTreeWidgetItem *curItem = ui->treeWidget->selectedItems().at(i); 
             
+            // get the root path which is the directory that the file you're extracting is in
             QString path = curItem->data(1, Qt::UserRole).toString();
             QString rawName = curItem->data(2, Qt::UserRole).toString();
             filesToExtract.push_back(new std::string(path.toStdString()));
 
-            rootPath = path;
+            QString rootPath = path;
             rootPath.chop(rawName.size());
+            rootPaths.push_back(rootPath);
             
             // SVOD systems also have all the data files to extract
             IXContentHeader *content = curItem->data(0, Qt::UserRole).value<IXContentHeader*>();
@@ -263,11 +265,12 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
                 foreach (QString contentFilePath, contentFilePaths)
                 {
                     filesToExtract.push_back(new std::string(contentFilePath.toStdString()));
+                    rootPaths.push_back(rootPath);
                 }
             }
         }
 
-        MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemFriendlyFATX, devices.at(0), saveDir, filesToExtract, this, rootPath);
+        MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemFriendlyFATX, devices.at(0), saveDir, filesToExtract, this, rootPaths);
         dialog->setModal(true);
         dialog->show();
         dialog->start();

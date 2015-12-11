@@ -43,7 +43,8 @@ class MultiProgressDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit MultiProgressDialog(Operation op, FileSystem fileSystem, void *device, QString outDir, QList<void*> internalFiles, QWidget *parent = 0, QString rootPath = "", FatxFileEntry *parentEntry = NULL);
+    explicit MultiProgressDialog(Operation op, FileSystem fileSystem, void *device, QString outDir, QList<void*> internalFiles,
+                                 QWidget *parent = 0, QStringList rootPaths = QStringList(), FatxFileEntry *parentEntry = NULL);
     ~MultiProgressDialog();
 
     void start();
@@ -58,7 +59,7 @@ private:
     DWORD overallProgress;
     DWORD overallProgressTotal;
     DWORD prevProgress;
-    QString rootPath;
+    QStringList rootPaths;
     Operation op;
     FatxFileEntry *parentEntry;
 
