@@ -53,7 +53,10 @@ BYTE *XContentDeviceItem::GetProfileID()
 
 UINT64 XContentDeviceItem::GetFileSize()
 {
-    return fileSize + content->metaData->dataFileCombinedSize;
+    UINT64 toReturn = fileSize;
+    if (content != NULL)
+        toReturn += content->metaData->dataFileCombinedSize;
+    return toReturn;
 }
 
 std::vector<std::string> XContentDeviceItem::GetContentFilePaths()
