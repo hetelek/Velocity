@@ -177,8 +177,11 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
             if (progress)
                 progress(arg, false);
 
+            // XContentDeviceSharedItem needs the size of just the root file descriptor for SVOD systems so we need to subtract
+            // off the size of all the data files, this doesn't affect STFS packages at all
+            DWORD rootFileSize = items.at(x).GetFileSize() - items.at(x).content->metaData->dataFileCombinedSize;
             XContentDeviceSharedItem item(items.at(x).GetPathOnDevice(), items.at(x).GetRawName(),
-                                          items.at(x).content, items.at(x).GetFileSize(), items.at(x).GetContentFilePaths());
+                                          items.at(x).content, rootFileSize, items.at(x).GetContentFilePaths());
             if (item.content == NULL)
                 continue;
 
