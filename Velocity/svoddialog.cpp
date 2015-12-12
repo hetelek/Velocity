@@ -1,8 +1,8 @@
 #include "svoddialog.h"
 #include "ui_svoddialog.h"
 
-SvodDialog::SvodDialog(SVOD *svod, QStatusBar *statusBar, QWidget *parent) :
-    QDialog(parent), ui(new Ui::SvodDialog), svod(svod), statusBar(statusBar)
+SvodDialog::SvodDialog(SVOD *svod, QStatusBar *statusBar, QWidget *parent, bool preserveSvod) :
+    QDialog(parent), ui(new Ui::SvodDialog), svod(svod), statusBar(statusBar), preserveSvod(preserveSvod)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
@@ -33,7 +33,8 @@ SvodDialog::SvodDialog(SVOD *svod, QStatusBar *statusBar, QWidget *parent) :
 
 SvodDialog::~SvodDialog()
 {
-    delete svod;
+    if (!preserveSvod)
+        delete svod;
     delete ui;
 }
 

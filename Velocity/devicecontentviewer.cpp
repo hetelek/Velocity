@@ -391,7 +391,7 @@ void DeviceContentViewer::on_btnViewPackage_clicked()
     else if (content->metaData->fileSystem == FileSystemSVOD)
     {
         SVOD *svodSystem = reinterpret_cast<SVOD*>(currentPackage);
-        SvodDialog viewer(svodSystem, statusBar, this);
+        SvodDialog viewer(svodSystem, statusBar, this, true);
         viewer.exec();
     }
 }

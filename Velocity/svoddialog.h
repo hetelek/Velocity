@@ -35,7 +35,7 @@ class SvodDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit SvodDialog(SVOD *svod, QStatusBar *statusBar, QWidget *parent = 0);
+    explicit SvodDialog(SVOD *svod, QStatusBar *statusBar, QWidget *parent = 0, bool preserveSvod = false);
     ~SvodDialog();
     
 private slots:
@@ -59,6 +59,7 @@ private:
     Ui::SvodDialog *ui;
     SVOD *svod;
     QStatusBar *statusBar;
+    bool preserveSvod;
 
     void loadListing(QTreeWidgetItem *parent, vector<GdfxFileEntry> *files);
 
