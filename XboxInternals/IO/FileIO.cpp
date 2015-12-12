@@ -21,7 +21,7 @@ FileIO::FileIO(string path, bool truncate) :
 
 void FileIO::SetPosition(UINT64 pos, ios_base::seek_dir dir)
 {
-    fstr->seekp(pos, static_cast<std::ios_base::seekdir>(dir));
+    fstr->seekp(pos, dir);
 }
 
 UINT64 FileIO::GetPosition()
@@ -31,8 +31,13 @@ UINT64 FileIO::GetPosition()
 
 UINT64 FileIO::Length()
 {
+    UINT64 originalPosition = GetPosition();
+
     fstr->seekp(0, std::ios_base::end);
-    return fstr->tellp();
+    UINT64 fileLength = fstr->tellp();
+
+    SetPosition(originalPosition);
+    return fileLength;
 }
 
 void FileIO::Close()
@@ -116,14 +121,14 @@ void FileIO::ReadBytes(BYTE *outBuffer, DWORD len)
 {
     fstr->read((fstream::char_type*)outBuffer, len);
     if (fstr->fail())
-        throw string("FileIO: Error reading from file.\n");
+        throw string("FileIO: Error reading from file.\n") + string(strerror(errno));
 }
 
 void FileIO::WriteBytes(BYTE *buffer, DWORD len)
 {
     fstr->write((fstream::char_type*)buffer, len);
     if (fstr->fail())
-        throw string("FileIO: Error writing to file.\n");
+        throw string("FileIO: Error writing to file.\n") + string(strerror(errno));
 }
 
 FileIO::~FileIO(void)
