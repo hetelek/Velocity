@@ -5,10 +5,21 @@
 #include "XboxInternals_global.h"
 
 #include <string>
+#include <sstream>
+#include <iostream>
+#include <iomanip>
+#include <vector>
+
+#include <dirent.h>
 
 namespace Utils
 {
     std::string XBOXINTERNALSSHARED_EXPORT NormalizeFilePath(std::string path, char cur_separater='/', char replacement_separator='\\');
+
+    std::string XBOXINTERNALSSHARED_EXPORT ConvertToHexString(BYTE *buffer, DWORD len, std::ios_base&(letterCase)(std::ios_base&) = std::uppercase);
+    std::string XBOXINTERNALSSHARED_EXPORT ConvertToHexString(UINT64 value, std::ios_base&(letterCase)(std::ios_base&) = std::uppercase);
+
+    std::vector<std::string> FilesInDirectory(std::string directoryPath);
 }
 
 #endif // UTILS_H
