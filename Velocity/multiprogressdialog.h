@@ -32,6 +32,13 @@ struct StfsExtractEntry
     QString path;
 };
 
+struct FatxFriendlyInjectEntry
+{
+    QString localPath;
+    bool isDataFile;
+    QString fatxDataFilePath;
+};
+
 namespace Ui {
 class MultiProgressDialog;
 }

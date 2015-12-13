@@ -1,5 +1,4 @@
 #include "LocalIndexableMultiFileIO.h"
-#include <dirent.h>
 
 using namespace std;
 
@@ -24,32 +23,10 @@ LocalIndexableMultiFileIO::~LocalIndexableMultiFileIO()
 
 void LocalIndexableMultiFileIO::loadDirectories(string path)
 {
-    DIR *dir;
-    struct dirent *ent;
-    dir = opendir(path.c_str());
-    if (dir != NULL)
-    {
-        // load the stuff that's always at the begining . ..
-#ifdef __win32
-        readdir(dir);
-        readdir(dir);
-#endif
+    files = Utils::FilesInDirectory(path);
 
-        // load only the files, don't want the folders
-        while ((ent = readdir(dir)) != NULL)
-        {
-            string fullName(path);
-            fullName += ent->d_name;
-            if (opendir(fullName.c_str()) == NULL)
-                files.push_back(fullName);
-        }
-        closedir (dir);
-
-        // sort the files so that they're in order (Data0000, Data0001, etc)
-        std::sort(files.begin(), files.end());
-    }
-    else
-        throw string("MultiFileIO: Error opening directory\n");
+    // sort the files so they're in order (Data0000, Data0001, etc)
+    std::sort(files.begin(), files.end());
 }
 
 BaseIO* LocalIndexableMultiFileIO::openFile(string path)

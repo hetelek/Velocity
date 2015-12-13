@@ -8,6 +8,7 @@
 #include "FileIO.h"
 #include "BaseIO.h"
 #include "IndexableMultiFileIO.h"
+#include "Utils.h"
 #include "XboxInternals_global.h"
 
 using std::string;

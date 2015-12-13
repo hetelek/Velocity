@@ -8,6 +8,7 @@
 
 #ifndef __WIN32
     #include <libgen.h>
+    #include <sys/stat.h>
 #else
     #include <Shlwapi.h>
 #endif
@@ -18,6 +19,7 @@
 #include "Disc/Svod.h"
 #include "XContentDeviceProfile.h"
 #include "XContentDeviceSharedItem.h"
+#include "Utils.h"
 
 #include "XboxInternals_global.h"
 
@@ -46,6 +48,7 @@ public:
 
     void CopyFileToLocalDisk(std::string outPath, std::string inPath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
     void CopyFileToDevice(std::string outPath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    void CopyFileToRawDevice(std::string outPath, std::string name, std::string inPath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
     void DeleteFile(IXContentHeader *package, std::string pathOnDevice);
 
 private:

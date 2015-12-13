@@ -304,19 +304,59 @@ void MultiProgressDialog::operateOnNextFile()
             {
                 try
                 {
-                    for (int i = 0; i < internalFiles.size(); i++)
+                    // determine the total number of files that need to be copied to the device, SVOD systems may have data files to copy
+                    QList<FatxFriendlyInjectEntry> files;
+                    for (size_t i = 0; i < internalFiles.size(); i++)
                     {
-                        // update groupbox text
-                        ui->groupBox_2->setTitle("Overall Progress - " + QString::number(i + 1) + " of " + QString::number(internalFiles.size()));
-
+                        // get the original file
                         std::string *file = reinterpret_cast<std::string*>(internalFiles.at(i));
 
-                        QFileInfo fileInfo(QString::fromStdString(*file));
+                        FatxFriendlyInjectEntry fileInfo;
+                        fileInfo.localPath = QString::fromStdString(*file);
+                        fileInfo.isDataFile = false;
+
+                        // check to see if it's an SVOD system
+                        if (IXContentHeader::GetFileSystem(*file) == FileSystemSVOD)
+                        {
+                            SVOD svod(*file);
+                            std::string fatxDataFilePath = svod.GetFatxFilePath() + svod.GetContentName() + ".data\\";
+
+                            // get all the data files (if this file has any)
+                            std::vector<std::string> dataFilePaths = SVOD::GetDataFilePaths(*file);
+                            for (size_t x = 0; x < dataFilePaths.size(); x++)
+                            {
+                                FatxFriendlyInjectEntry dataFileInfo;
+                                dataFileInfo.localPath = QString::fromStdString(dataFilePaths.at(x));
+                                dataFileInfo.isDataFile = true;
+                                dataFileInfo.fatxDataFilePath = QString::fromStdString(fatxDataFilePath);
+
+                                files.push_back(dataFileInfo);
+                            }
+                        }
+
+                        // this has to be added after the content data files so that when the root descriptor is added the content device
+                        // can load the SVOD system off the device
+                        files.push_back(fileInfo);
+                    }
+
+                    for (size_t i = 0; i < files.size(); i++)
+                    {
+                        // update groupbox text
+                        ui->groupBox_2->setTitle("Overall Progress - " + QString::number(i + 1) + " of " + QString::number(files.size()));
+
+                        QString filePath = files.at(i).localPath;
+                        bool isDataFile = files.at(i).isDataFile;
+                        QString fatxDataFilePath = files.at(i).fatxDataFilePath;
+
+                        QFileInfo fileInfo(filePath);
                         setWindowTitle("Copying " + fileInfo.baseName());
 
                         // put the file on the device
                         XContentDevice *drive = reinterpret_cast<XContentDevice*>(device);
-                        drive->CopyFileToDevice(*file, updateProgress, this);
+                        if (isDataFile)
+                            drive->CopyFileToRawDevice(filePath.toStdString(), fileInfo.baseName().toStdString(), fatxDataFilePath.toStdString(), updateProgress, this);
+                        else
+                            drive->CopyFileToDevice(filePath.toStdString(), updateProgress, this);
                     }
                 }
                 catch (string error)

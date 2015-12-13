@@ -277,31 +277,24 @@ void XContentDevice::CopyFileToLocalDisk(std::string outPath, std::string inPath
 
 void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void *, DWORD, DWORD), void *arg)
 {
-    StfsPackage package(outPath);
+    // get the file system type
+    FileSystem fileSystem = IXContentHeader::GetFileSystem(outPath);
 
-    std::ostringstream ss;
-    ss << std::hex << std::uppercase << std::setfill('0');
-    for (int i = 0; i < 8; i++)
-        ss << std::setw(2) << (int)package.metaData->profileID[i];
-    std::string profileID = ss.str();
+    // the content file must be destroyed so that it will close the files it's using so that it can be opened again
+    // to be written to the device
+    std::string devicePath, profileID, titleID;
+    {
+        IXContentHeader contentFile;
+        if (fileSystem == FileSystemSTFS)
+            contentFile = StfsPackage(outPath);
+        else
+            contentFile = SVOD(outPath);
 
-    ss.str("");
-    ss << std::hex << std::uppercase << package.metaData->titleID;
-    std::string titleID = ToUpper(ss.str());
+        devicePath = contentFile.GetFatxFilePath();
 
-    ss.str("");
-    ss << std::hex << package.metaData->contentType;
-    std::string contentType = ToUpper(ss.str());
-
-    // the content type is padded with zeros at the beginning
-    while (contentType.size() < 8)
-        contentType = "0" + contentType;
-
-    // get the path of the file on the device
-    std::string devicePath = "Drive:\\Content\\Content\\" + profileID + "\\" + titleID + "\\" + contentType + "\\";
-
-    // close the package so we can open the file again to copy it to the device
-    package.Close();
+        profileID = Utils::ConvertToHexString(contentFile.metaData->profileID);
+        titleID = Utils::ConvertToHexString(contentFile.metaData->titleID);
+    }
 
     // if the parent entry doesn't exist, then we need to create it
     FatxFileEntry *parent = drive->GetFileEntry(devicePath);
@@ -322,46 +315,51 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
 
     // open the package on the device
     FatxFileEntry *fileEntry = drive->GetFileEntry(devicePath + fileName);
-    StfsPackage *packageOnDevice = new StfsPackage(new FatxIO(drive->GetFatxIO(fileEntry)), StfsPackageDeleteIO);
+
+    IXContentHeader *contentOnDevice;
+    if (fileSystem == FileSystemSTFS)
+        contentOnDevice = new StfsPackage(new FatxIO(drive->GetFatxIO(fileEntry)), StfsPackageDeleteIO);
+    else
+        contentOnDevice = new SVOD(devicePath + fileName, drive);
 
     BYTE sharedProfileID[8] = { 0 };
 
-    if (packageOnDevice->metaData->contentType == Profile)
+    if (contentOnDevice->metaData->contentType == Profile)
     {
         // if there are already saves on this device under this profile, then we need to put it in the correct spot
-        for (int i = 0; i < profiles->size(); i++)
+        for (size_t i = 0; i < profiles->size(); i++)
         {
-            if (memcmp(profiles->at(i).GetProfileID(), packageOnDevice->metaData->profileID, 8) == 0)
+            if (memcmp(profiles->at(i).GetProfileID(), contentOnDevice->metaData->profileID, 8) == 0)
             {
-                profiles->at(i).content = packageOnDevice;
+                profiles->at(i).content = contentOnDevice;
                 return;
             }
         }
 
         // if the profile is entirely new, then just add it to the end
-        XContentDeviceProfile profile(fileEntry, packageOnDevice);
+        XContentDeviceProfile profile(fileEntry, contentOnDevice);
         profiles->push_back(profile);
     }
-    else if (memcmp(packageOnDevice->metaData->profileID, sharedProfileID, 8) != 0)
+    else if (memcmp(contentOnDevice->metaData->profileID, sharedProfileID, 8) != 0)
     {
-        XContentDeviceItem item(fileEntry, packageOnDevice);
+        XContentDeviceItem item(fileEntry, contentOnDevice);
 
         // check to see if the owner of this save's profile is already on the device
-        for (int i = 0; i < profiles->size(); i++)
+        for (size_t i = 0; i < profiles->size(); i++)
         {
             // I'm not sure why I have to do it this way, but if I don't,
             // I get a segmentation fault on the call to GetProfileID()
             XContentDeviceProfile prof = profiles->at(i);
             BYTE *tempID = prof.GetProfileID();
 
-            if (memcmp(tempID, packageOnDevice->metaData->profileID, 8) == 0)
+            if (memcmp(tempID, contentOnDevice->metaData->profileID, 8) == 0)
             {
                 // check and see if this profile already has content under this title
-                for (int x = 0; x < profiles->at(i).titles.size(); x++)
+                for (size_t x = 0; x < profiles->at(i).titles.size(); x++)
                 {
                     XContentDeviceTitle *titleP = &profiles->at(i).titles.at(x);
                     // if the title already exists, then just add this save to the title's list of content
-                    if (titleP->GetTitleID() == packageOnDevice->metaData->titleID)
+                    if (titleP->GetTitleID() == contentOnDevice->metaData->titleID)
                     {
                         titleP->titleSaves.push_back(item);
                         return;
@@ -389,7 +387,7 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
     // it must be a shared item
     else
     {
-        XContentDeviceSharedItem item(fileEntry, packageOnDevice);
+        XContentDeviceSharedItem item(fileEntry, contentOnDevice);
 
         // put the shared item in the correct category
         switch (item.content->metaData->contentType)
@@ -435,6 +433,16 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
                 break;
         }
     }
+}
+
+void XContentDevice::CopyFileToRawDevice(std::string outPath, std::string name, std::string inPath, void (*progress)(void *, DWORD, DWORD), void *arg)
+{
+    // make the directory if it doesn't exist
+    if (!drive->FileExists(inPath))
+        drive->CreatePath(inPath);
+
+    FatxFileEntry *directory = drive->GetFileEntry(inPath);
+    drive->InjectFile(directory, name, outPath, progress, arg);
 }
 
 void XContentDevice::DeleteFile(IXContentHeader *package, std::string pathOnDevice)
