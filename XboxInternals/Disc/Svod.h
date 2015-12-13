@@ -20,6 +20,14 @@
 #include "botan/botan.h"
 #include "botan/sha160.h"
 
+#ifdef __WIN32
+    #include "Shlwapi.h"
+#else
+    #include <sys/types.h>
+    #include <sys/stat.h>
+    #include <unistd.h>
+#endif
+
 #include "XboxInternals_global.h"
 
 using std::string;
@@ -28,6 +36,8 @@ using std::vector;
 class XBOXINTERNALSSHARED_EXPORT SVOD : public IXContentHeader
 {
 public:
+    static std::vector<std::string> GetDataFilePaths(std::string rootDescriptorPath);
+
     SVOD(string rootFile, FatxDrive *drive = NULL);
     ~SVOD();
 
@@ -53,6 +63,8 @@ public:
 
     // get the total number of sectors in the system
     DWORD GetSectorCount();
+
+    std::string GetContentName();
 
 private:
     string contentDirectory;

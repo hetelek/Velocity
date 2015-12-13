@@ -1,5 +1,29 @@
 #include "Svod.h"
 
+std::vector<std::string> SVOD::GetDataFilePaths(std::string rootDescriptorPath)
+{
+    SVOD svod(rootDescriptorPath);
+
+    // check to see if the data files are there
+    std::string dataFileDirectoryPath = rootDescriptorPath + ".data\\";
+#ifdef __WIN32
+    bool dataFileDirectoryExists = PathFileExistsA(dataFileDirectoryPath.c_str());
+#else
+    struct stat sb;
+    bool dataFileDirectoryExists = stat(dataFileDirectoryPath.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode));
+#endif
+
+    std::vector<std::string> dataFiles;
+    if (dataFileDirectoryExists)
+    {
+        // get a list of all the data files in the directory
+        dataFiles = Utils::FilesInDirectory(dataFileDirectoryPath);
+
+        // TODO: make sure that they're named DataXXXX
+    }
+    return dataFiles;
+}
+
 SVOD::SVOD(string rootPath, FatxDrive *drive) :
     drive(drive)
 {
@@ -276,6 +300,14 @@ DWORD SVOD::GetSectorCount()
     DWORD fileLen = io->CurrentFileLength() - 0x2000;
 
     return (io->FileCount() * 0x14388) + ((fileLen - (0x1000 * (fileLen / 0xCD000))) / 0x800);
+}
+
+std::string SVOD::GetContentName()
+{
+    std::string headerHashBeginning = Utils::ConvertToHexString(metaData->headerHash, 16);
+    std::string firstByteOfTitleID = Utils::ConvertToHexString((metaData->titleID >> 24) & 0xFF);
+
+    return headerHashBeginning + firstByteOfTitleID;
 }
 
 // this must be a < operator, if it returns true if they're equal then it'll break
