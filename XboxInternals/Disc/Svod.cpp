@@ -24,8 +24,8 @@ std::vector<std::string> SVOD::GetDataFilePaths(std::string rootDescriptorPath)
     return dataFiles;
 }
 
-SVOD::SVOD(string rootPath, FatxDrive *drive) :
-    drive(drive)
+SVOD::SVOD(string rootPath, FatxDrive *drive, bool readFileListing) :
+    drive(drive), didReadFileListing(false)
 {
     // make sure all of the slashes are the same
     rootPath = Utils::NormalizeFilePath(rootPath, '\\', '/');
@@ -80,8 +80,8 @@ SVOD::SVOD(string rootPath, FatxDrive *drive) :
     io->SetPosition(baseAddress, 0);
     GdfxReadHeader(io, &header);
 
-    // read the file listing
-    ReadFileListing(&root, header.rootSector, header.rootSize, "/");
+    if (readFileListing)
+        GetFileListing();
 }
 
 SVOD::~SVOD()
@@ -308,6 +308,15 @@ std::string SVOD::GetContentName()
     std::string firstByteOfTitleID = Utils::ConvertToHexString((metaData->titleID >> 24) & 0xFF);
 
     return headerHashBeginning + firstByteOfTitleID;
+}
+
+void SVOD::GetFileListing()
+{
+    if (!didReadFileListing)
+    {
+        didReadFileListing = true;
+        ReadFileListing(&root, header.rootSector, header.rootSize, "/");
+    }
 }
 
 // this must be a < operator, if it returns true if they're equal then it'll break

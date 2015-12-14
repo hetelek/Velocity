@@ -286,9 +286,9 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
     {
         IXContentHeader contentFile;
         if (fileSystem == FileSystemSTFS)
-            contentFile = StfsPackage(outPath);
+            contentFile = StfsPackage(outPath, StfsPackageDontReadFileListing);
         else
-            contentFile = SVOD(outPath);
+            contentFile = SVOD(outPath, NULL, false);
 
         devicePath = contentFile.GetFatxFilePath();
 
@@ -320,7 +320,7 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
     if (fileSystem == FileSystemSTFS)
         contentOnDevice = new StfsPackage(new FatxIO(drive->GetFatxIO(fileEntry)), StfsPackageDeleteIO);
     else
-        contentOnDevice = new SVOD(devicePath + fileName, drive);
+        contentOnDevice = new SVOD(devicePath + fileName, drive, false);
 
     BYTE sharedProfileID[8] = { 0 };
 
@@ -609,12 +609,12 @@ void XContentDevice::GetAllContentItems(FatxFileEntry &titleFolder, vector<XCont
 
                 if (fileSystem == FileSystemSTFS)
                 {
-                    content = new StfsPackage(new FatxIO(io), StfsPackageDeleteIO);
+                    content = new StfsPackage(new FatxIO(io), StfsPackageDeleteIO | StfsPackageDontReadFileListing);
                 }
                 else if (fileSystem == FileSystemSVOD)
                 {
                     std::string rootFilePath = entry->path + entry->name;
-                    content = new SVOD(rootFilePath, drive);
+                    content = new SVOD(rootFilePath, drive, false);
 
                     // SVOD systems have data files where the actual content is stored; they're in a folder in the same
                     // directory as the header file with the name {HEADER_FILE_NAME}.data

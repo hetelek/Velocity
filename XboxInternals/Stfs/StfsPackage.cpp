@@ -201,7 +201,8 @@ void StfsPackage::Parse()
     fe.entryIndex = 0xFFFF;
     fileListing.folder = fe;
 
-    ReadFileListing();
+    if (!(flags & StfsPackageDontReadFileListing))
+        ReadFileListing();
 }
 
 Level StfsPackage::CalcualateTopLevel()

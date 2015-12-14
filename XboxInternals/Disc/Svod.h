@@ -38,7 +38,7 @@ class XBOXINTERNALSSHARED_EXPORT SVOD : public IXContentHeader
 public:
     static std::vector<std::string> GetDataFilePaths(std::string rootDescriptorPath);
 
-    SVOD(string rootFile, FatxDrive *drive = NULL);
+    SVOD(string rootFile, FatxDrive *drive = NULL, bool readFileListing = true);
     ~SVOD();
 
     vector<GdfxFileEntry> root;
@@ -66,6 +66,8 @@ public:
 
     std::string GetContentName();
 
+    void GetFileListing();
+
 private:
     string contentDirectory;
     IndexableMultiFileIO *io;
@@ -74,6 +76,7 @@ private:
     DWORD baseAddress;
     DWORD offset;
     FatxDrive *drive;
+    bool didReadFileListing;
 
     // parse the file listing
     void ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int size, string path);

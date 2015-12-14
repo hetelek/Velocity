@@ -374,26 +374,45 @@ void DeviceContentViewer::on_treeWidget_currentItemChanged(QTreeWidgetItem *curr
 
 void DeviceContentViewer::on_btnViewPackage_clicked()
 {
+    ui->btnViewPackage->setEnabled(false);
     if (currentPackage == NULL)
-    {
-        ui->btnViewPackage->setEnabled(false);
         return;
-    }
+
+    ui->btnViewPackage->setText("Loading package...");
+    QApplication::processEvents();
 
     IXContentHeader *content = ui->treeWidget->currentItem()->data(0, Qt::UserRole).value<IXContentHeader*>();
 
     if (content->metaData->fileSystem == FileSystemSTFS)
     {
         StfsPackage *stfsPackage = reinterpret_cast<StfsPackage*>(currentPackage);
+
+        // the file listing must be read for packages that aren't profiles because the XContentDevice doesn't to improve load times
+        if (content->metaData->contentType != Profile)
+            stfsPackage->GetFileListing(true);
+
         PackageViewer viewer(statusBar, stfsPackage, QList<QAction*>(), QList<QAction*>(), this, false);
+
+        ui->btnViewPackage->setText("Viewing package...");
+        QApplication::processEvents();
         viewer.exec();
     }
     else if (content->metaData->fileSystem == FileSystemSVOD)
     {
+        // all SVOD systems need their files loaded because the XContentDevice doesn't to improve load times
         SVOD *svodSystem = reinterpret_cast<SVOD*>(currentPackage);
+        svodSystem->GetFileListing();
+
         SvodDialog viewer(svodSystem, statusBar, this, true);
+
+        ui->btnViewPackage->setText("Viewing package...");
+        QApplication::processEvents();
         viewer.exec();
     }
+
+    ui->btnViewPackage->setText("View Package");
+    ui->btnViewPackage->setEnabled(true);
+    QApplication::processEvents();
 }
 
 void DeviceContentViewer::resizeEvent(QResizeEvent *)
