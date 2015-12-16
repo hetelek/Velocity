@@ -13,6 +13,7 @@
 #include <QTreeWidgetItem>
 #include <QProgressBar>
 #include <QtGlobal>
+#include <QInputDialog>
 
 // std
 #include <iostream>

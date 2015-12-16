@@ -86,6 +86,9 @@ void DeviceContentViewer::LoadDevicesp()
         QTreeWidgetItem *deviceItem = new QTreeWidgetItem(ui->treeWidget);
         deviceItem->setText(0, QString::fromStdWString(device->GetName()));
 
+        // set the device index
+        deviceItem->setData(0, Qt::UserRole, i);
+
         // set the appropriate icon
         if (device->GetDeviceType() == FatxHarddrive)
             deviceItem->setIcon(0, QIcon(QPixmap(":/Images/harddrive.png")));
@@ -216,10 +219,18 @@ void DeviceContentViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item,
 void DeviceContentViewer::showContextMenu(const QPoint &pos)
 {
     // make sure that all the items the user has selected can be extracted
-    bool canExtract = true;
+    bool canExtract = true, canRename = true;
     for (int i = 0; i < ui->treeWidget->selectedItems().size(); i++)
-        if (ui->treeWidget->selectedItems().at(i)->data(1, Qt::UserRole).toString() == "")
+    {
+        QTreeWidgetItem *curSelectedItem = ui->treeWidget->selectedItems().at(i);
+
+        // check if the user can extract the files
+        if (curSelectedItem->data(1, Qt::UserRole).toString() == "")
             canExtract = false;
+
+        if (curSelectedItem->parent() != NULL)
+            canRename = false;
+    }
 
     QPoint globalPos = ui->treeWidget->mapToGlobal(pos);
     QMenu contextMenu;
@@ -229,6 +240,12 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
     {
         contextMenu.addAction(QPixmap(":/Images/extract.png"), "Copy Selected to Local Disk");
         contextMenu.addAction(QPixmap(":/Images/delete.png"), "Delete Selected Items");
+    }
+
+    // you can only rename one device at a time
+    if (canRename && ui->treeWidget->selectedItems().count() == 1)
+    {
+        contextMenu.addAction(QPixmap(":/Images/rename.png"), "Rename");
     }
 
     contextMenu.addAction(QPixmap(":/Images/add.png"), "Copy File(s) Here");
@@ -322,6 +339,31 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
         catch (std::string error)
         {
             QMessageBox::critical(this, "Error", "An error occurred while deleting files.\n\n" + QString::fromStdString(error));
+        }
+    }
+    else if (selectedItem->text() == "Rename")
+    {
+        QTreeWidgetItem *selectedItem = ui->treeWidget->selectedItems().at(0);
+
+        // get the device and the name of it
+        int deviceIndex = selectedItem->data(0, Qt::UserRole).toInt();
+        XContentDevice *selectedDevice = devices.at(deviceIndex);
+        QString curDeviceName = QString::fromStdWString(selectedDevice->GetName());
+
+        // display the dialog
+        QInputDialog renameDialog(this);
+        renameDialog.setLabelText("Device Name");
+        renameDialog.setTextValue(curDeviceName);
+        renameDialog.exec();
+
+        // set the new device name as long as it isn't empty
+        QString newDeviceName = renameDialog.textValue();
+        if (!newDeviceName.isEmpty())
+        {
+            selectedDevice->SetName(newDeviceName.toStdWString());
+
+            // update the GUI
+            selectedItem->setText(0, newDeviceName);
         }
     }
 }

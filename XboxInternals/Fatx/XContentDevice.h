@@ -46,6 +46,7 @@ public:
     UINT64 GetFreeMemory(void(*progress)(void*, bool) = NULL, void *arg = NULL, bool finish = true);
     UINT64 GetTotalMemory();
     std::wstring GetName();
+    void SetName(std::wstring name);
 
     void CopyFileToLocalDisk(std::string outPath, std::string inPath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
     void CopyFileToDevice(std::string outPath, void(*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);

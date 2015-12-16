@@ -275,6 +275,11 @@ std::wstring XContentDevice::GetName()
     return name;
 }
 
+void XContentDevice::SetName(std::wstring name)
+{
+    drive->SetDriveName(name);
+}
+
 void XContentDevice::CopyFileToLocalDisk(std::string outPath, std::string inPath, void (*progress)(void *, DWORD, DWORD), void *arg)
 {
     FatxIO io = drive->GetFatxIO(drive->GetFileEntry(inPath));
