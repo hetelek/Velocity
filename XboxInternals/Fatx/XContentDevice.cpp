@@ -12,6 +12,7 @@ XContentDevice::XContentDevice(FatxDrive *drive) :
     themes = new std::vector<XContentDeviceSharedItem>();
     gamerPictures = new std::vector<XContentDeviceSharedItem>();
     avatarItems = new std::vector<XContentDeviceSharedItem>();
+    updates = new std::vector<XContentDeviceSharedItem>();
     systemItems = new std::vector<XContentDeviceSharedItem>();
 }
 
@@ -31,6 +32,7 @@ XContentDevice::~XContentDevice()
     CleanupSharedFiles(themes);
     CleanupSharedFiles(gamerPictures);
     CleanupSharedFiles(avatarItems);
+    CleanupSharedFiles(updates);
     CleanupSharedFiles(systemItems);
 
     delete profiles;
@@ -40,6 +42,7 @@ XContentDevice::~XContentDevice()
     delete themes;
     delete gamerPictures;
     delete avatarItems;
+    delete updates;
     delete systemItems;
 }
 
@@ -223,6 +226,9 @@ bool XContentDevice::LoadDevice(void(*progress)(void*, bool), void *arg)
                 case AvatarAssetPack:
                 case AvatarItem:
                     avatarItems->push_back(item);
+                    break;
+            case Installer:
+                    updates->push_back(item);
                     break;
                 default:
                     systemItems->push_back(item);

@@ -45,7 +45,7 @@ void DeviceContentViewer::LoadSharedItemCategory(QString category, std::vector<X
 {
     QTreeWidgetItem *categoryItem = new QTreeWidgetItem(parent);
     categoryItem->setText(0, category);
-    categoryItem->setIcon(0, QIcon(QPixmap(iconPath)));
+    categoryItem->setIcon(0, QIcon(QPixmap(iconPath).scaled(24, 24)));
 
     // load all the category's items
     for (int i = 0; i < items->size(); i++)
@@ -170,6 +170,7 @@ void DeviceContentViewer::LoadDevicesp()
         LoadSharedItemCategory("Themes", device->themes, sharedItemFolder, ":/Images/thememedium.png");
         LoadSharedItemCategory("Gamer Pictures", device->gamerPictures, sharedItemFolder, ":/Images/gamerpicture.png");
         LoadSharedItemCategory("Avatar Items", device->avatarItems, sharedItemFolder, ":/Images/profile.png");
+        LoadSharedItemCategory("Updates", device->updates, sharedItemFolder, ":/Images/updates.png");
         LoadSharedItemCategory("System Items", device->systemItems, sharedItemFolder, ":/Images/preferences.png");
     }
 }

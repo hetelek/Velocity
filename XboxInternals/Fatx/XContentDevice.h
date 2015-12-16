@@ -38,6 +38,7 @@ public:
     std::vector<XContentDeviceSharedItem> *themes;
     std::vector<XContentDeviceSharedItem> *gamerPictures;
     std::vector<XContentDeviceSharedItem> *avatarItems;
+    std::vector<XContentDeviceSharedItem> *updates;
     std::vector<XContentDeviceSharedItem> *systemItems;
 
     bool LoadDevice(void(*progress)(void*, bool) = NULL, void *arg = NULL);
