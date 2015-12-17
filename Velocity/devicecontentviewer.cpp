@@ -9,6 +9,13 @@ DeviceContentViewer::DeviceContentViewer(QStatusBar *statusBar, QWidget *parent)
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
 
+    // setup treewdiget for drag and drop
+    setAcceptDrops(true);
+    ui->treeWidget->setAcceptDrops(true);
+    connect(ui->treeWidget, SIGNAL(dragDropped(QDropEvent*)), this, SLOT(onDragDropped(QDropEvent*)));
+    connect(ui->treeWidget, SIGNAL(dragEntered(QDragEnterEvent*)), this, SLOT(onDragEntered(QDragEnterEvent*)));
+    connect(ui->treeWidget, SIGNAL(dragLeft(QDragLeaveEvent*)), this, SLOT(onDragLeft(QDragLeaveEvent*)));
+
     progressBar = new QProgressBar(this);
     progressBar->setMaximumHeight(statusBar->height() - 5);
     progressBar->setMinimumWidth(statusBar->width());
@@ -193,6 +200,18 @@ void DeviceContentViewer::ClearSidePanel()
     ui->btnViewPackage->setEnabled(false);
 
     currentPackage = NULL;
+}
+
+void DeviceContentViewer::SetLabelText(QLabel *label, QString text)
+{
+    if (text.isEmpty())
+    {
+        label->setText("...");
+    }
+    else
+    {
+        label->setText(text);
+    }
 }
 
 void DeviceContentViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
@@ -404,11 +423,11 @@ void DeviceContentViewer::on_treeWidget_currentItemChanged(QTreeWidgetItem *curr
     QString fittedRawName = fm.elidedText(current->data(2, Qt::UserRole).toString(), Qt::ElideRight, ui->lblRawName->width());
     ui->lblRawName->setText(fittedRawName);
 
-
-    ui->lblTitleID->setText(QString::number(package->metaData->titleID, 16).toUpper());
-    ui->lblTitleName->setText(QString::fromStdWString(package->metaData->titleName));
-    ui->lblPackageType->setText(QString::fromStdString(ContentTypeToString(package->metaData->contentType)));
-    ui->lblFileSize->setText(QString::fromStdString(ByteSizeToString(current->data(3, Qt::UserRole).toULongLong())));
+    SetLabelText(ui->lblTitleID, QString::number(package->metaData->titleID, 16).toUpper());
+    SetLabelText(ui->lblTitleName, QString::fromStdWString(package->metaData->titleName));
+    SetLabelText(ui->lblDescription, QString::fromStdWString(package->metaData->displayDescription));
+    SetLabelText(ui->lblPackageType, QString::fromStdString(ContentTypeToString(package->metaData->contentType)));
+    SetLabelText(ui->lblFileSize, QString::fromStdString(ByteSizeToString(current->data(3, Qt::UserRole).toULongLong())));
 
     currentPackage = package;
 
@@ -456,6 +475,34 @@ void DeviceContentViewer::on_btnViewPackage_clicked()
     ui->btnViewPackage->setText("View Package");
     ui->btnViewPackage->setEnabled(true);
     QApplication::processEvents();
+}
+
+void DeviceContentViewer::onDragDropped(QDropEvent *event)
+{
+    statusBar->showMessage("");
+
+    QList<QUrl> filePaths = event->mimeData()->urls();
+    if (filePaths.size() == 0)
+        return;
+
+    foreach (QUrl filePath, filePaths)
+    {
+        qDebug() << filePath.toLocalFile();
+    }
+}
+
+void DeviceContentViewer::onDragEntered(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasFormat("text/uri-list"))
+    {
+        XContentDevice *currentDevice = devices.at(0);
+        statusBar->showMessage("Copy to " + QString::fromStdWString(currentDevice->GetName()));
+    }
+}
+
+void DeviceContentViewer::onDragLeft(QDragLeaveEvent *event)
+{
+    statusBar->showMessage("");
 }
 
 void DeviceContentViewer::resizeEvent(QResizeEvent *)

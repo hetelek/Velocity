@@ -30,8 +30,14 @@
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>
      <item>
-      <widget class="QTreeWidget" name="treeWidget">
+      <widget class="DragDropTreeWidget" name="treeWidget">
        <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DropOnly</enum>
+       </property>
+       <property name="alternatingRowColors">
         <bool>false</bool>
        </property>
        <property name="selectionMode">
@@ -244,6 +250,44 @@
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_3">
               <item>
+               <layout class="QVBoxLayout" name="verticalLayout_10">
+                <item>
+                 <widget class="QLabel" name="label_6">
+                  <property name="text">
+                   <string>Description:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,8">
+                  <item>
+                   <spacer name="horizontalSpacer_9">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="lblDescription">
+                    <property name="text">
+                     <string>...</string>
+                    </property>
+                    <property name="wordWrap">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+              <item>
                <widget class="QLabel" name="label_3">
                 <property name="text">
                  <string>Title ID:</string>
@@ -402,6 +446,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DragDropTreeWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>dragdroptreewidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="Resources.qrc"/>
  </resources>

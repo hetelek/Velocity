@@ -14,6 +14,7 @@
 #include <QProgressBar>
 #include <QtGlobal>
 #include <QInputDialog>
+#include <QDebug>
 
 // std
 #include <iostream>
@@ -24,6 +25,9 @@
 #include "Fatx/FatxDriveDetection.h"
 #include "Stfs/IXContentHeader.h"
 #include "Stfs/StfsPackage.h"
+
+// widgets
+#include "dragdroptreewidget.h"
 
 namespace Ui {
 class DeviceContentViewer;
@@ -48,6 +52,9 @@ private slots:
     void showContextMenu(const QPoint &pos);
     void on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void on_btnViewPackage_clicked();
+    void onDragDropped(QDropEvent *event);
+    void onDragEntered(QDragEnterEvent *event);
+    void onDragLeft(QDragLeaveEvent *event);
 
 private:
     Ui::DeviceContentViewer *ui;
@@ -61,6 +68,7 @@ private:
     void LoadSharedItemCategory(QString category, std::vector<XContentDeviceSharedItem> *items, QTreeWidgetItem *parent, QString iconPath);
     void LoadDevicesp();
     void ClearSidePanel();
+    void SetLabelText(QLabel *label, QString text);
 
     friend void DisplayProgress(void *arg, bool finished);
 };
