@@ -69,6 +69,7 @@ private:
     void LoadDevicesp();
     void ClearSidePanel();
     void SetLabelText(QLabel *label, QString text);
+    void OpenContent(bool updateButton);
 
     friend void DisplayProgress(void *arg, bool finished);
 };
