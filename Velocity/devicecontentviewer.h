@@ -70,6 +70,7 @@ private:
     void ClearSidePanel();
     void SetLabelText(QLabel *label, QString text);
     void OpenContent(bool updateButton);
+    void CopyFilesToDevice(XContentDevice *device, QStringList files);
 
     friend void DisplayProgress(void *arg, bool finished);
 };

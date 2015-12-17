@@ -250,6 +250,25 @@ void DeviceContentViewer::OpenContent(bool updateButton)
     }
 }
 
+void DeviceContentViewer::CopyFilesToDevice(XContentDevice *device, QStringList files)
+{
+    QList<void*> filesToInject;
+    for (int i = 0; i < files.size(); i++)
+        filesToInject.push_back(new std::string(files.at(i).toStdString()));
+
+    MultiProgressDialog *dialog = new MultiProgressDialog(OpInject, FileSystemFriendlyFATX, device, "", filesToInject, this);
+    dialog->setModal(true);
+    dialog->show();
+    dialog->start();
+
+    // delete all of the allocated strings
+    for (int i = 0; i < filesToInject.size(); i++)
+        delete (std::string*)filesToInject.at(i);
+
+    ui->treeWidget->clear();
+    LoadDevicesp();
+}
+
 void DeviceContentViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     OpenContent(false);
@@ -342,21 +361,7 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
         if (files.size() == 0)
             return;
 
-        QList<void*> filesToInject;
-        for (int i = 0; i < files.size(); i++)
-            filesToInject.push_back(new std::string(files.at(i).toStdString()));
-
-        MultiProgressDialog *dialog = new MultiProgressDialog(OpInject, FileSystemFriendlyFATX, devices.at(0), "", filesToInject, this);
-        dialog->setModal(true);
-        dialog->show();
-        dialog->start();
-
-        // delete all of the allocated strings
-        for (int i = 0; i < filesToInject.size(); i++)
-            delete (std::string*)filesToInject.at(i);
-
-        ui->treeWidget->clear();
-        LoadDevicesp();
+        CopyFilesToDevice(devices.at(0), files);
     }
     else if (selectedItem->text() == "Delete Selected Items")
     {
@@ -478,16 +483,21 @@ void DeviceContentViewer::onDragDropped(QDropEvent *event)
     if (filePaths.size() == 0)
         return;
 
+    QStringList strFilePaths;
     foreach (QUrl filePath, filePaths)
-    {
-        qDebug() << filePath.toLocalFile();
-    }
+        strFilePaths.push_back(filePath.toLocalFile());
+
+    CopyFilesToDevice(devices.at(0), strFilePaths);
 }
 
 void DeviceContentViewer::onDragEntered(QDragEnterEvent *event)
 {
-    if (event->mimeData()->hasFormat("text/uri-list"))
+    // only allow 1 file
+    if (event->mimeData()->hasFormat("text/uri-list") && event->mimeData()->urls().size() == 1)
     {
+        // allow the file to be dropped
+        event->acceptProposedAction();
+
         XContentDevice *currentDevice = devices.at(0);
         statusBar->showMessage("Copy to " + QString::fromStdWString(currentDevice->GetName()));
     }
