@@ -61,8 +61,6 @@ FatxIO FatxDrive::GetFatxIO(FatxFileEntry *entry)
 
 void FatxDrive::processBootSector(Partition *part)
 {
-    UINT64 partitionSize = part->size;
-
     // seek to the partition
     io->SetPosition(part->address);
 
@@ -92,40 +90,23 @@ void FatxDrive::processBootSector(Partition *part)
             throw std::string("FATX: Found invalid sectors per cluster.\n");
     }
 
-    part->clusterSize = part->sectorsPerCluster << 9;
-    BYTE consecutiveZeroes = cntlzw(part->clusterSize);
-    int shiftFactor = 0x1F - consecutiveZeroes;
+    part->clusterSize = part->sectorsPerCluster * FATX_SECTOR_SIZE;
+    UINT64 totalClusters = (part->size / part->clusterSize) + 1;
 
-    partitionSize >>= shiftFactor;
-    partitionSize++;
-
-    if ((this->type == FatxFlashDrive && part->address == UsbOffsets::Data) || partitionSize >= FAT_CLUSTER16_RESERVED)
-        part->fatEntryShift = 2;
+    if ((this->type == FatxFlashDrive && part->address == UsbOffsets::Data) || totalClusters >= FAT_CLUSTER16_RESERVED)
+        part->clusterEntrySize = 4;
     else
-        part->fatEntryShift = 1;
+        part->clusterEntrySize = 2;
 
-    partitionSize <<= part->fatEntryShift;
-    partitionSize += 0x1000;
-    partitionSize--;
 
-    UINT64 clusters = part->size;
-    clusters -= 0x1000;
+    // https://docs.google.com/presentation/d/1LJLFRMAbCm9RBPg0l241GjwWdjGWROlihVgrC7pzLwg/edit?usp=sharing
+    // go to slide 11 for a good visual to make sense of this
+    UINT64 chainmapSize = Utils::RoundToNearestHex1000((part->size / part->clusterSize + 1) * part->clusterEntrySize);
+    UINT64 totalDataSize = (part->size - FATX_HEADER_SIZE - chainmapSize);
 
-    partitionSize &= ~0xFFF;
-    partitionSize &= 0xFFFFFFFF;
-
-    if (clusters < partitionSize)
-        throw std::string("FATX: Volume too small to hold the FAT.\n");
-
-    clusters -= partitionSize;
-    clusters >>= (shiftFactor & 0xFFFFFFFFFFFFFF);
-    if (clusters > 0xFFFFFFF)
-        throw std::string("FATX: Too many clusters.\n");
-
-    part->clusterCount = clusters;
-    part->allocationTableSize = partitionSize;
-    part->clusterEntrySize = part->fatEntryShift * 2;
-    part->clusterStartingAddress = part->address + (INT64)partitionSize + 0x1000;
+    part->clusterCount = totalDataSize / part->clusterSize;
+    part->chainmapSize = chainmapSize;
+    part->clusterStartingAddress = part->address + FATX_HEADER_SIZE + chainmapSize;
     part->lastFreeClusterFound = 1;
     part->freeMemory = 0;
 

@@ -20,6 +20,8 @@ namespace Utils
     std::string XBOXINTERNALSSHARED_EXPORT ConvertToHexString(UINT64 value, std::ios_base&(letterCase)(std::ios_base&) = std::uppercase);
 
     std::vector<std::string> FilesInDirectory(std::string directoryPath);
+
+    UINT64 RoundToNearestHex1000(UINT64 num);
 }
 
 #endif // UTILS_H

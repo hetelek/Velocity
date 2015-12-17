@@ -58,3 +58,9 @@ std::vector<std::string> Utils::FilesInDirectory(std::string directoryPath)
 
     return toReturn;
 }
+
+
+UINT64 Utils::RoundToNearestHex1000(UINT64 num)
+{
+    return (num + 0xFFF) & ~0xFFF;
+}

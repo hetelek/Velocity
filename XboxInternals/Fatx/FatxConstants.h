@@ -21,6 +21,9 @@
 #define FATX_ENTRY_MAX_NAME_LENGTH 0x2A
 #define FATX_ENTRY_DELETED 0xE5
 
+#define FATX_HEADER_SIZE 0x1000
+#define FATX_SECTOR_SIZE 0x200
+
 #define FAT_CLUSTER_AVAILABLE (DWORD)0x00000000
 #define FAT_CLUSTER_RESERVED (DWORD)0xfffffff0
 #define FAT_CLUSTER_LAST (DWORD)0xffffffff
@@ -114,8 +117,7 @@ struct Partition
     DWORD clusterCount;
     DWORD clusterSize;
     UINT64 clusterStartingAddress;
-    DWORD fatEntryShift;
-    UINT64 allocationTableSize;
+    UINT64 chainmapSize;
     UINT64 freeMemory;
     std::vector<DWORD> freeClusters;
 };

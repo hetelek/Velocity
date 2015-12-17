@@ -13,6 +13,7 @@
 #include "../IO/JoinedMultiFileIO.h"
 #include "../Cryptography/XeKeys.h"
 #include "../Cryptography/XeCrypt.h"
+#include "../Utils.h"
 
 #include <iostream>
 #include <string>
