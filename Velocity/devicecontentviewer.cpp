@@ -551,10 +551,16 @@ void DeviceContentViewer::onDragLeft(QDragLeaveEvent *event)
 
 void DeviceContentViewer::onNewDevicesDetected(QList<FatxDrive *> newDrives)
 {
+    // make sure all the devices are saved before using them
+    QMutex m;
+    {
+        QMutexLocker lock(&m);
+        foreach (FatxDrive *drive, newDrives)
+            deviceNotifier->SaveDevice(drive);
+    }
+
     foreach (FatxDrive *drive, newDrives)
     {
-        deviceNotifier->SaveDevice(drive);
-
         XContentDevice *device = new XContentDevice(drive);
         if (!device->LoadDevice(DisplayProgress, this))
             continue;
