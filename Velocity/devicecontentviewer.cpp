@@ -24,6 +24,10 @@ DeviceContentViewer::DeviceContentViewer(QStatusBar *statusBar, QWidget *parent)
     statusBar->addWidget(progressBar);
 
     ui->tabWidget->setEnabled(false);
+
+    // make the columns the appropriate width
+    ui->treeWidget->setColumnWidth(0, 500);
+    ui->treeWidget->setColumnWidth(1, 50);
 }
 
 DeviceContentViewer::~DeviceContentViewer()
@@ -63,6 +67,7 @@ void DeviceContentViewer::LoadSharedItemCategory(QString category, std::vector<X
         XContentDeviceItem content = items->at(i);
 
         item->setText(0, QString::fromStdWString(content.GetName()));
+        item->setText(1, QString::fromStdString(ByteSizeToString(content.GetFileSize())));
 
         item->setData(0, Qt::UserRole, QVariant::fromValue(content.content));
         item->setData(1, Qt::UserRole, QVariant(QString::fromStdString(content.GetPathOnDevice())));
@@ -95,6 +100,9 @@ void DeviceContentViewer::LoadDevicesp()
         QTreeWidgetItem *deviceItem = new QTreeWidgetItem(ui->treeWidget);
         deviceItem->setText(0, QString::fromStdWString(device->GetName()));
 
+        // display the size of the device
+        deviceItem->setText(1, QString::fromStdString(ByteSizeToString(device->GetTotalMemory())));
+
         // set the device index
         deviceItem->setData(0, Qt::UserRole, i);
 
@@ -114,6 +122,9 @@ void DeviceContentViewer::LoadDevicesp()
             if (profileName == "")
                 profileName = "Unknown Profile";
             profileItem->setText(0, profileName);
+
+            if (profile.GetFileSize() != 0)
+                profileItem->setText(1, QString::fromStdString(ByteSizeToString(profile.GetFileSize())));
 
             profileItem->setData(0, Qt::UserRole, QVariant::fromValue(profile.content));
             profileItem->setData(1, Qt::UserRole, QVariant(QString::fromStdString(profile.GetPathOnDevice())));
@@ -156,6 +167,7 @@ void DeviceContentViewer::LoadDevicesp()
                     saveItem->setData(3, Qt::UserRole, QVariant((quint64)save.GetFileSize()));
 
                     saveItem->setText(0, QString::fromStdWString(save.GetName()));
+                    saveItem->setText(1, QString::fromStdString(ByteSizeToString(save.GetFileSize())));
 
                     // set the icon to the STFS package's thumbnail as long as the image isn't null
                     QByteArray imageBuff((char*)save.GetThumbnail(), save.GetThumbnailSize());

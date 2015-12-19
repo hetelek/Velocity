@@ -25,7 +25,7 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_2">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="5,0">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="5,2">
      <item>
       <widget class="DragDropTreeWidget" name="treeWidget">
        <property name="enabled">
@@ -49,9 +49,20 @@
        <property name="indentation">
         <number>30</number>
        </property>
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="headerDefaultSectionSize">
+        <number>200</number>
+       </attribute>
        <column>
         <property name="text">
          <string>Content</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Size</string>
         </property>
        </column>
       </widget>
