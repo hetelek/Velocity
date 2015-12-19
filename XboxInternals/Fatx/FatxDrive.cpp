@@ -732,7 +732,13 @@ FatxDrive::~FatxDrive()
 
 bool FatxDrive::operator==(FatxDrive &other) const
 {
-    return securityBlob.modelNumber == other.securityBlob.modelNumber;
+    if (type != other.type)
+        return false;
+
+    if (type == FatxHarddrive)
+        return securityBlob.modelNumber == other.securityBlob.modelNumber;
+    else
+        return memcmp(configurationData.deviceID, other.configurationData.deviceID, 0x14) == 0;
 }
 
 void FatxDrive::loadProfiles()
