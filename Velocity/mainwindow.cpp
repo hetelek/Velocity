@@ -865,13 +865,13 @@ void MainWindow::onNewDeviceFound(QList<FatxDrive *> devices)
         return;
 
     // get a list of all the new devices
-    bool hdd;
+    bool hdd = false;
     QString deviceList;
     foreach (FatxDrive *device, devices)
     {
         QString size = QString::fromStdString(ByteSizeToString(device->GetTotalSize()));
         QString type = device->GetFatxDriveType() == FatxHarddrive ? "Hard Drive" : "USB";
-        deviceList += "\t-" + size + " " + type + " device\n";
+        deviceList += "\t" + size + " " + type + " device\n";
 
         if (device->GetFatxDriveType() == FatxHarddrive)
             hdd = true;
