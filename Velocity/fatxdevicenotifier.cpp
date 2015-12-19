@@ -61,6 +61,6 @@ void FatxDeviceNotifier::run()
         if (newDrives.size() != 0)
             emit newDevicesDetected(newDrives);
 
-        msleep(5000);
+        msleep(2000);
     }
 }
