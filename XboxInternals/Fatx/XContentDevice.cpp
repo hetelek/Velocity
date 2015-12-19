@@ -280,6 +280,11 @@ void XContentDevice::SetName(std::wstring name)
     drive->SetDriveName(name);
 }
 
+FatxDrive *XContentDevice::GetFatxDrive()
+{
+    return drive;
+}
+
 void XContentDevice::CopyFileToLocalDisk(std::string outPath, std::string inPath, void (*progress)(void *, DWORD, DWORD), void *arg)
 {
     FatxIO io = drive->GetFatxIO(drive->GetFileEntry(inPath));

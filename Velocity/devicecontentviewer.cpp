@@ -22,6 +22,8 @@ DeviceContentViewer::DeviceContentViewer(QStatusBar *statusBar, QWidget *parent)
     progressBar->setTextVisible(false);
     progressBar->setVisible(false);
     statusBar->addWidget(progressBar);
+
+    ui->tabWidget->setEnabled(false);
 }
 
 DeviceContentViewer::~DeviceContentViewer()
@@ -183,6 +185,12 @@ void DeviceContentViewer::LoadDevicesp()
         LoadSharedItemCategory("Updates", device->updates, sharedItemFolder, ":/Images/updates.png");
         LoadSharedItemCategory("System Items", device->systemItems, sharedItemFolder, ":/Images/preferences.png");
     }
+
+    if (devices.size() >= 1)
+    {
+        UpdateDevicePanel();
+        ui->tabWidget->setEnabled(true);
+    }
 }
 
 void DeviceContentViewer::ClearSidePanel()
@@ -267,6 +275,20 @@ void DeviceContentViewer::CopyFilesToDevice(XContentDevice *device, QStringList 
 
     ui->treeWidget->clear();
     LoadDevicesp();
+}
+
+void DeviceContentViewer::UpdateDevicePanel()
+{
+    XContentDevice *device = devices.at(0);
+    QtHelpers::DrawFreeMemoryGraph(device->GetFatxDrive(), ui->imgPiechart, QColor("white"), ui->imgFreeMem,
+                                   ui->lblFeeMemory, ui->imgUsedMem, ui->lblUsedMem, updateUI);
+
+    if (device->GetDeviceType() == FatxHarddrive)
+        ui->imgDeviceType->setPixmap(QPixmap(":/Images/harddrive.png"));
+    else
+        ui->imgDeviceType->setPixmap(QPixmap(":/Images/usb drive.png"));
+
+    ui->lblDeviceName->setText(QString::fromStdWString(device->GetName()));
 }
 
 void DeviceContentViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
@@ -417,6 +439,15 @@ void DeviceContentViewer::on_treeWidget_currentItemChanged(QTreeWidgetItem *curr
     if (current == NULL)
         return;
 
+    // check to see if the current item is a device
+    if (current->parent() == NULL)
+    {
+        UpdateDevicePanel();
+        ui->tabWidget->setCurrentIndex(0);
+        return;
+    }
+
+    // check to see if the selected item is a category or other non-content item
     IXContentHeader *package = current->data(0, Qt::UserRole).value<IXContentHeader*>();
     if (package == NULL)
     {
@@ -457,6 +488,7 @@ void DeviceContentViewer::on_treeWidget_currentItemChanged(QTreeWidgetItem *curr
     currentPackage = package;
 
     ui->btnViewPackage->setEnabled(true);
+    ui->tabWidget->setCurrentIndex(1);
 }
 
 void DeviceContentViewer::on_btnViewPackage_clicked()
@@ -515,7 +547,7 @@ void DeviceContentViewer::resizeEvent(QResizeEvent *)
 
     // we need to re-calculate the string so that it fits properly in the newly sized form
     QFontMetrics fm = QFontMetrics(ui->lblRawName->font());
-    QString fittedRawName = fm.elidedText(ui->treeWidget->currentItem()->data(2, Qt::UserRole).toString(), Qt::ElideRight, ui->frame->width());
+    QString fittedRawName = fm.elidedText(ui->treeWidget->currentItem()->data(2, Qt::UserRole).toString(), Qt::ElideRight, ui->tabWidget->width());
     ui->lblRawName->setText(fittedRawName);
 }
 
@@ -536,5 +568,10 @@ void DisplayProgress(void *arg, bool finished)
         contentViewer->ui->treeWidget->setEnabled(true);
         contentViewer->setWindowTitle("Device Content Viewer");
     }
+    QApplication::processEvents();
+}
+
+void updateUI(void *arg, bool finished)
+{
     QApplication::processEvents();
 }

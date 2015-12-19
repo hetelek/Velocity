@@ -15,6 +15,7 @@
 #include <QtGlobal>
 #include <QInputDialog>
 #include <QDebug>
+#include <QApplication>
 
 // std
 #include <iostream>
@@ -33,6 +34,7 @@ namespace Ui {
 class DeviceContentViewer;
 }
 
+void updateUI(void *arg, bool finished);
 void DisplayProgress(void *arg, bool finished);
 
 Q_DECLARE_METATYPE( IXContentHeader* )
@@ -71,8 +73,11 @@ private:
     void SetLabelText(QLabel *label, QString text);
     void OpenContent(bool updateButton);
     void CopyFilesToDevice(XContentDevice *device, QStringList files);
+    void UpdateDevicePanel();
 
     friend void DisplayProgress(void *arg, bool finished);
+
+    void UpdateUI();
 };
 
 #endif // DEVICECONTENTVIEWER_H

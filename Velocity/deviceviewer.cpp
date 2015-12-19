@@ -44,9 +44,6 @@ DeviceViewer::~DeviceViewer()
 
 void DeviceViewer::DrawMemoryGraph()
 {
-    UINT64 totalFreeSpace = 0;
-    UINT64 totalSpace = 0;
-
     if (!drivesLoaded)
     {
         progressBar->setVisible(true);
@@ -54,47 +51,8 @@ void DeviceViewer::DrawMemoryGraph()
         progressBar->setMaximum(0);
     }
 
-    // load the partion information
-    std::vector<Partition*> parts = currentDrive->GetPartitions();
-    for (DWORD i = 0; i < parts.size(); i++)
-    {
-        totalFreeSpace += currentDrive->GetFreeMemory(parts.at(i), updateUI);
-        totalSpace += (UINT64)parts.at(i)->clusterCount * parts.at(i)->clusterSize;
-    }
-
-    if (!drivesLoaded)
-    {
-        progressBar->setMaximum(1);
-        progressBar->setVisible(false);
-    }
-
-    // calculate the percentage
-    float freeMemPercentage = (((float)totalFreeSpace * 100.0) / totalSpace);
-
-    // draw the insano piechart
-    QPixmap chart(750, 500);
-    chart.fill(ui->imgPiechart->palette().background().color());
-    QPainter painter(&chart);
-    Nightcharts pieChart;
-    pieChart.setType(Nightcharts::Dpie);
-    pieChart.setCords(25, 1, 700, 425);
-    pieChart.setFont(QFont());
-    pieChart.addPiece("Used Space", QColor(0, 0, 254), 100.0 - freeMemPercentage);
-    pieChart.addPiece("Free Space", QColor(255, 0, 254), freeMemPercentage);
-    pieChart.draw(&painter);
-
-    ui->imgPiechart->setPixmap(chart);
-
-    // setup the legend
-    QPixmap freeMemClr(16, 16);
-    freeMemClr.fill(QColor(255, 0, 254));
-    ui->imgFreeMem->setPixmap(freeMemClr);
-    ui->lblFeeMemory->setText(QString::fromStdString(ByteSizeToString(totalFreeSpace)) + " of Free Space");
-
-    QPixmap usedMemClr(16, 16);
-    usedMemClr.fill(QColor(0, 0, 254));
-    ui->imgUsedMem->setPixmap(usedMemClr);
-    ui->lblUsedSpace->setText(QString::fromStdString(ByteSizeToString(totalSpace - totalFreeSpace)) + " of Used Space");
+    QtHelpers::DrawFreeMemoryGraph(currentDrive, ui->imgPiechart, ui->imgPiechart->palette().background().color(),
+                                   ui->imgFreeMem, ui->lblFeeMemory, ui->imgUsedMem, ui->lblUsedSpace, updateUI);
 }
 
 void DeviceViewer::showContextMenu(QPoint point)
@@ -776,11 +734,6 @@ void DeviceViewer::on_txtPath_returnPressed()
         QMessageBox::critical(this, "Error", "Velocity can't find " + ui->txtPath->text() + ". Check the spelling and try again.");
     else
         LoadFolderAll(parent);
-}
-
-void updateUI(void *arg, bool finished)
-{
-    QApplication::processEvents();
 }
 
 void updateUIDelete(void *arg)

@@ -346,3 +346,46 @@ QStringList QtHelpers::StdStringArrayToQStringList(std::vector<std::string> stri
         toReturn.append(QString::fromStdString(strings.at(i)));
     return toReturn;
 }
+
+void QtHelpers::DrawFreeMemoryGraph(FatxDrive *drive, QLabel *graph, QColor backgroundColor, QLabel *freeMemLegendColor, QLabel *freeMemLegend,
+                                    QLabel *usedMemLengendColor, QLabel *usedMemLegend, void(*progress)(void*, bool))
+{
+    UINT64 totalFreeSpace = 0;
+    UINT64 totalSpace = 0;
+
+    // load the partion information
+    std::vector<Partition*> parts = drive->GetPartitions();
+    for (DWORD i = 0; i < parts.size(); i++)
+    {
+        totalFreeSpace += drive->GetFreeMemory(parts.at(i), progress);
+        totalSpace += (UINT64)parts.at(i)->clusterCount * parts.at(i)->clusterSize;
+    }
+
+    // calculate the percentage
+    float freeMemPercentage = (((float)totalFreeSpace * 100.0) / totalSpace);
+
+    // draw the insano piechart
+    QPixmap chart(750, 500);
+    chart.fill(backgroundColor);
+    QPainter painter(&chart);
+    Nightcharts pieChart;
+    pieChart.setType(Nightcharts::Dpie);
+    pieChart.setCords(25, 1, 700, 425);
+    pieChart.setFont(QFont());
+    pieChart.addPiece("Used Space", QColor(0, 0, 254), 100.0 - freeMemPercentage);
+    pieChart.addPiece("Free Space", QColor(255, 0, 254), freeMemPercentage);
+    pieChart.draw(&painter);
+
+    graph->setPixmap(chart);
+
+    // setup the legend
+    QPixmap freeMemClr(16, 16);
+    freeMemClr.fill(QColor(255, 0, 254));
+    freeMemLegendColor->setPixmap(freeMemClr);
+    freeMemLegend->setText(QString::fromStdString(ByteSizeToString(totalFreeSpace)) + " of Free Space");
+
+    QPixmap usedMemClr(16, 16);
+    usedMemClr.fill(QColor(0, 0, 254));
+    usedMemLengendColor->setPixmap(usedMemClr);
+    usedMemLegend->setText(QString::fromStdString(ByteSizeToString(totalSpace - totalFreeSpace)) + " of Used Space");
+}

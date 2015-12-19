@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QCoreApplication>
+#include <QApplication>
 #include <QLabel>
 #include <QPushButton>
 #include <QFont>
@@ -23,6 +24,8 @@
 #include "winnames.h"
 #include "Stfs/StfsConstants.h"
 #include "Stfs/XContentHeader.h"
+#include "Fatx/FatxDrive.h"
+#include "nightcharts.h"
 #include <ctype.h>
 
 #ifdef _WIN32
@@ -72,6 +75,10 @@ public:
     static void GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWidgetItem &item, FileSystem fileSystem = FileSystemSTFS);
 
     static QStringList StdStringArrayToQStringList(std::vector<std::string> strings);
+
+    static void DrawFreeMemoryGraph(FatxDrive *drive, QLabel *graph, QColor backgroundColor, QLabel *freeMemLegendColor,
+                                    QLabel *freeMemLegend, QLabel *usedMemLengendColor, QLabel *usedMemLegend,
+                                    void(*updateUI)(void*, bool));
 };
 
 #endif // QTHELPERS_H
