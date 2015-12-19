@@ -18,6 +18,11 @@ DeviceContentViewer::DeviceContentViewer(QStatusBar *statusBar, QWidget *parent)
     connect(ui->treeWidget, SIGNAL(dragEntered(QDragEnterEvent*)), this, SLOT(onDragEntered(QDragEnterEvent*)));
     connect(ui->treeWidget, SIGNAL(dragLeft(QDragLeaveEvent*)), this, SLOT(onDragLeft(QDragLeaveEvent*)));
 
+    // setup the device notifier
+    deviceNotifier = new FatxDeviceNotifier();
+    connect(deviceNotifier, SIGNAL(newDevicesDetected(QList<FatxDrive*>)), this, SLOT(onNewDevicesDetected(QList<FatxDrive*>)));
+    deviceNotifier->start();
+
     progressBar = new QProgressBar(this);
     progressBar->setMaximumHeight(statusBar->height() - 5);
     progressBar->setMinimumWidth(statusBar->width());
@@ -42,22 +47,6 @@ DeviceContentViewer::~DeviceContentViewer()
     delete ui;
 
     OPEN = false;
-}
-
-void DeviceContentViewer::LoadDevices()
-{
-    // load all of the FATX drives as XContentDevices
-    std::vector<FatxDrive*> drives = FatxDriveDetection::GetAllFatxDrives();
-    for (int i = 0; i < drives.size(); i++)
-    {
-        XContentDevice *device = new XContentDevice(drives.at(i));
-        if (!device->LoadDevice(DisplayProgress, this))
-            continue;
-
-        devices.push_back(device);
-    }
-
-    LoadDevicesp();
 }
 
 void DeviceContentViewer::LoadSharedItemCategory(QString category, std::vector<XContentDeviceSharedItem> *items, QTreeWidgetItem *parent, QString iconPath)
@@ -558,6 +547,22 @@ void DeviceContentViewer::onDragEntered(QDragEnterEvent *event)
 void DeviceContentViewer::onDragLeft(QDragLeaveEvent *event)
 {
     statusBar->showMessage("");
+}
+
+void DeviceContentViewer::onNewDevicesDetected(QList<FatxDrive *> newDrives)
+{
+    foreach (FatxDrive *drive, newDrives)
+    {
+        deviceNotifier->SaveDevice(drive);
+
+        XContentDevice *device = new XContentDevice(drive);
+        if (!device->LoadDevice(DisplayProgress, this))
+            continue;
+
+        devices.push_back(device);
+    }
+
+    LoadDevicesp();
 }
 
 void DeviceContentViewer::resizeEvent(QResizeEvent *)

@@ -857,7 +857,6 @@ void MainWindow::on_actionContent_Device_Viewer_triggered()
     viewer->setAttribute(Qt::WA_DeleteOnClose);
     ui->mdiArea->addSubWindow(viewer);
     viewer->show();
-    viewer->LoadDevices();
 }
 
 void MainWindow::onNewDeviceFound(QList<FatxDrive *> devices)
@@ -901,6 +900,5 @@ void MainWindow::onNewDeviceFound(QList<FatxDrive *> devices)
         viewer->setAttribute(Qt::WA_DeleteOnClose);
         ui->mdiArea->addSubWindow(viewer);
         viewer->show();
-        viewer->LoadDevices();
     }
 }

@@ -30,6 +30,8 @@
 // widgets
 #include "dragdroptreewidget.h"
 
+#include "fatxdevicenotifier.h"
+
 namespace Ui {
 class DeviceContentViewer;
 }
@@ -49,8 +51,6 @@ public:
 
     explicit DeviceContentViewer(QStatusBar *statusBar, QWidget *parent = 0);
     ~DeviceContentViewer();
-
-    void LoadDevices();
     
 private slots:
     void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
@@ -60,6 +60,7 @@ private slots:
     void onDragDropped(QDropEvent *event);
     void onDragEntered(QDragEnterEvent *event);
     void onDragLeft(QDragLeaveEvent *event);
+    void onNewDevicesDetected(QList<FatxDrive*> newDrives);
 
 private:
     Ui::DeviceContentViewer *ui;
@@ -67,6 +68,7 @@ private:
     QList<XContentDevice*> devices;
     IXContentHeader *currentPackage;
     QProgressBar *progressBar;
+    FatxDeviceNotifier *deviceNotifier;
 
     void resizeEvent(QResizeEvent *);
 

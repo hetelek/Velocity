@@ -17,14 +17,19 @@ class FatxDeviceNotifier : public QThread
 public:
     explicit FatxDeviceNotifier(QObject *parent = 0);
 
+    void SaveDevice(FatxDrive *drive);
+
 signals:
     void newDevicesDetected(QList<FatxDrive*> newDevices);
 
 private:
     QMutex mutex;
     std::vector<FatxDrive *> cachedDrives;
+    std::vector<FatxDrive *> saved;
 
     void run();
+
+    bool ContainsDrive(const std::vector<FatxDrive *> &drives, FatxDrive *drive);
 };
 
 #endif // FATXDEVICENOTIFIER_H

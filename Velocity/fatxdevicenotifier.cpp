@@ -6,6 +6,11 @@ FatxDeviceNotifier::FatxDeviceNotifier(QObject *parent) :
     qRegisterMetaType<QList<FatxDrive *> >("QList<FatxDrive *>");
 }
 
+void FatxDeviceNotifier::SaveDevice(FatxDrive *drive)
+{
+    saved.push_back(drive);
+}
+
 void FatxDeviceNotifier::run()
 {
     while (true)
@@ -20,23 +25,35 @@ void FatxDeviceNotifier::run()
             FatxDrive *currentDrive = foundDrives.at(i);
 
             // check to see if the devices was already detected
-            bool found = false;
+            bool cached = false, save = false;
             for (size_t x = 0; x < cachedDrives.size(); x++)
             {
-                if (*cachedDrives.at(i) == *currentDrive)
+                if (*cachedDrives.at(x) == *currentDrive)
                 {
-                    found = true;
+                    cached = true;
+                    break;
+                }
+            }
+            for (size_t x = 0; x < saved.size(); x++)
+            {
+                if (*saved.at(x) == *currentDrive)
+                {
+                    save = true;
                     break;
                 }
             }
 
-            if (!found)
+            if (!cached && !save)
                 newDrives.push_back(currentDrive);
         }
 
         // free all the old devices
         for (size_t i = 0; i < cachedDrives.size(); i++)
-            delete cachedDrives.at(i);
+        {
+            // make sure the drive isn't saved
+            if (std::find(saved.begin(), saved.end(), cachedDrives.at(i)) == saved.end())
+                delete cachedDrives.at(i);
+        }
 
         cachedDrives = foundDrives;
 
