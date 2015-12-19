@@ -225,6 +225,8 @@ void DeviceContentViewer::SetLabelText(QLabel *label, QString text)
 void DeviceContentViewer::OpenContent(bool updateButton)
 {
     IXContentHeader *content = ui->treeWidget->currentItem()->data(0, Qt::UserRole).value<IXContentHeader*>();
+    if (content == NULL)
+        return;
 
     if (content->metaData->fileSystem == FileSystemSTFS)
     {
