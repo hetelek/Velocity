@@ -58,6 +58,10 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(versionReplyFinished(QNetworkReply*)));
     manager->get(QNetworkRequest(QUrl("http://velocity.expetelek.com/app.data")));
 
+    deviceNotifier = new FatxDeviceNotifier(this);
+    connect(deviceNotifier, SIGNAL(newDevicesDetected(QList<FatxDrive*>)), this, SLOT(onNewDeviceFound(QList<FatxDrive*>)));
+    deviceNotifier->start();
+
     LoadFiles(arguments);
 }
 
@@ -854,4 +858,49 @@ void MainWindow::on_actionContent_Device_Viewer_triggered()
     ui->mdiArea->addSubWindow(viewer);
     viewer->show();
     viewer->LoadDevices();
+}
+
+void MainWindow::onNewDeviceFound(QList<FatxDrive *> devices)
+{
+    if (DeviceContentViewer::OPEN)
+        return;
+
+    // get a list of all the new devices
+    bool hdd;
+    QString deviceList;
+    foreach (FatxDrive *device, devices)
+    {
+        QString size = QString::fromStdString(ByteSizeToString(device->GetTotalSize()));
+        QString type = device->GetFatxDriveType() == FatxHarddrive ? "Hard Drive" : "USB";
+        deviceList += "\t-" + size + " " + type + " device\n";
+
+        if (device->GetFatxDriveType() == FatxHarddrive)
+            hdd = true;
+    }
+
+    QPixmap deviceIcon;
+    if (hdd)
+        deviceIcon = QPixmap(":/Images/harddrive.png");
+    else
+        deviceIcon = QPixmap(":/Images/usb drive.png");
+
+    QString message = "The following Xbox 360 devices have been detected.\n" + deviceList + "\n" +
+            "Would you like to open the content device viewer?";
+
+    QMessageBox newDeviceMessage(this);
+    newDeviceMessage.setWindowTitle("Device Detected");
+    newDeviceMessage.setText(message);
+    newDeviceMessage.setIconPixmap(deviceIcon.scaled(75, 50));
+
+    newDeviceMessage.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+
+    // open the device viewer if requested
+    if (newDeviceMessage.exec() == QMessageBox::Yes)
+    {
+        DeviceContentViewer *viewer = new DeviceContentViewer(ui->statusBar, this);
+        viewer->setAttribute(Qt::WA_DeleteOnClose);
+        ui->mdiArea->addSubWindow(viewer);
+        viewer->show();
+        viewer->LoadDevices();
+    }
 }

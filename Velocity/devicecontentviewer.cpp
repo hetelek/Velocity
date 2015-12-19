@@ -1,6 +1,8 @@
 #include "devicecontentviewer.h"
 #include "ui_devicecontentviewer.h"
 
+bool DeviceContentViewer::OPEN = false;
+
 DeviceContentViewer::DeviceContentViewer(QStatusBar *statusBar, QWidget *parent) :
     statusBar(statusBar), currentPackage(NULL), QDialog(parent), ui(new Ui::DeviceContentViewer)
 {
@@ -28,6 +30,8 @@ DeviceContentViewer::DeviceContentViewer(QStatusBar *statusBar, QWidget *parent)
     // make the columns the appropriate width
     ui->treeWidget->setColumnWidth(0, 500);
     ui->treeWidget->setColumnWidth(1, 50);
+
+    OPEN = true;
 }
 
 DeviceContentViewer::~DeviceContentViewer()
@@ -36,6 +40,8 @@ DeviceContentViewer::~DeviceContentViewer()
         delete devices.at(i);
 
     delete ui;
+
+    OPEN = false;
 }
 
 void DeviceContentViewer::LoadDevices()

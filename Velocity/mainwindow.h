@@ -54,6 +54,9 @@
 #include "AvatarAsset/Ytgr.h"
 #include "Disc/Svod.h"
 #include "IO/DeviceIO.h"
+#include "Fatx/FatxDrive.h"
+
+#include "fatxdevicenotifier.h"
 
 using namespace std;
 
@@ -136,10 +139,14 @@ private slots:
 
     void on_actionContent_Device_Viewer_triggered();
 
+    void onNewDeviceFound(QList<FatxDrive *> devices);
+
 private:
     Ui::MainWindow *ui;
     QSettings *settings;
     QNetworkAccessManager *manager, *pluginManager;
+    FatxDeviceNotifier *deviceNotifier;
+
     QList<QAction*> gpdActions, gameActions;
     bool firstUpdateCheck;
 

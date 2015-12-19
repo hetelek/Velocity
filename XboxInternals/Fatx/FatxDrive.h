@@ -30,6 +30,9 @@ public:
     FatxDrive(std::wstring drivePath, FatxDriveType type = FatxHarddrive);
     ~FatxDrive();
 
+    // compared by their model numbers
+    bool operator==(FatxDrive& other)const;
+
     // get the drives partitions
     std::vector<Partition*> GetPartitions();
 
@@ -94,6 +97,9 @@ public:
     // get the amount of free bytes on the device
     UINT64 GetFreeMemory(Partition *part, void(*progress)(void*, bool) = NULL, void *arg = NULL, bool finish = true);
 
+    // get the total amount of bytes that all the partitions occupy
+    UINT64 GetTotalSize();
+
     // reload the entire drive, called after restoring
     void ReloadDrive();
 
@@ -144,6 +150,7 @@ private:
     std::vector<Partition*> partitions;
     std::vector<FatxFileEntry*> profiles;
     FatxDriveType type;
+    bool onlyVerify;
 };
 
 #endif // FATXDRIVE_H

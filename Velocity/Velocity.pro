@@ -101,7 +101,8 @@ SOURCES += main.cpp \
     nightcharts.cpp \
     dragdroptreewidget.cpp \
     flashdriveconfigdatadialog.cpp \
-    devicecontentviewer.cpp
+    devicecontentviewer.cpp \
+    fatxdevicenotifier.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -153,7 +154,8 @@ HEADERS  += mainwindow.h \
     nightcharts.h \
     dragdroptreewidget.h \
     flashdriveconfigdatadialog.h \
-    devicecontentviewer.h
+    devicecontentviewer.h \
+    fatxdevicenotifier.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \

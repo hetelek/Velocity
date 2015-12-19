@@ -39,11 +39,14 @@ void DisplayProgress(void *arg, bool finished);
 
 Q_DECLARE_METATYPE( IXContentHeader* )
 
+
 class DeviceContentViewer : public QDialog
 {
     Q_OBJECT
     
 public:
+    static bool OPEN;
+
     explicit DeviceContentViewer(QStatusBar *statusBar, QWidget *parent = 0);
     ~DeviceContentViewer();
 

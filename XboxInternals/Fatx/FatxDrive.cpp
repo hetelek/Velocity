@@ -730,6 +730,11 @@ FatxDrive::~FatxDrive()
     delete io;
 }
 
+bool FatxDrive::operator==(FatxDrive &other) const
+{
+    return securityBlob.modelNumber == other.securityBlob.modelNumber;
+}
+
 void FatxDrive::loadProfiles()
 {
     // the general path for profiles is Drive:\Content\Content\OFFLINE_XUID\FFFE07D1\00010000\OFFLINE_XUID
@@ -1005,6 +1010,15 @@ UINT64 FatxDrive::GetFreeMemory(Partition *part, void(*progress)(void*, bool), v
         progress(arg, finish);
 
     return part->freeMemory;
+}
+
+UINT64 FatxDrive::GetTotalSize()
+{
+    UINT64 toReturn = 0;
+    for (size_t i = 0; i < partitions.size(); i++)
+        toReturn += partitions.at(i)->size;
+
+    return toReturn;
 }
 
 void FatxDrive::ReloadDrive()
