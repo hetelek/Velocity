@@ -648,7 +648,6 @@ void DeviceViewer::on_treeWidget_2_itemClicked(QTreeWidgetItem *item, int column
 {
     if (!item->parent())
     {
-        ui->imgPiechart->setPixmap(QPixmap());
         currentDrive = item->data(0, Qt::UserRole).value<FatxDrive*>();
         parentEntry = NULL;
         currentDriveItem = item;
