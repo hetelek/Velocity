@@ -887,7 +887,10 @@ void MainWindow::onNewDeviceFound(QList<FatxDrive *> devices)
             "Would you like to open the content device viewer?";
 
     QMessageBox newDeviceMessage(this);
-    newDeviceMessage.setWindowTitle("Device Detected");
+    if (devices.size() == 1)
+        newDeviceMessage.setWindowTitle("Device Detected");
+    else
+        newDeviceMessage.setWindowTitle("Devices Detected");
     newDeviceMessage.setText(message);
     newDeviceMessage.setIconPixmap(deviceIcon.scaled(75, 50));
 
