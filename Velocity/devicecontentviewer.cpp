@@ -53,7 +53,7 @@ void DeviceContentViewer::LoadSharedItemCategory(QString category, std::vector<X
 {
     QTreeWidgetItem *categoryItem = new QTreeWidgetItem(parent);
     categoryItem->setText(0, category);
-    categoryItem->setIcon(0, QIcon(QPixmap(iconPath).scaled(24, 24)));
+    categoryItem->setIcon(0, QIcon(QPixmap(iconPath).scaled(50, 50)));
 
     // load all the category's items
     for (int i = 0; i < items->size(); i++)
@@ -76,7 +76,7 @@ void DeviceContentViewer::LoadSharedItemCategory(QString category, std::vector<X
         if (content.GetThumbnail() != NULL)
         {
             QByteArray imageBuff((char*)content.GetThumbnail(), content.GetThumbnailSize());
-            item->setIcon(0, QIcon(QPixmap::fromImage(QImage::fromData(imageBuff))));
+            item->setIcon(0, QIcon(QPixmap::fromImage(QImage::fromData(imageBuff)).scaled(50, 50)));
         }
         else
         {
@@ -103,9 +103,9 @@ void DeviceContentViewer::LoadDevicesp()
 
         // set the appropriate icon
         if (device->GetDeviceType() == FatxHarddrive)
-            deviceItem->setIcon(0, QIcon(QPixmap(":/Images/harddrive.png")));
+            deviceItem->setIcon(0, QIcon(QPixmap(":/Images/harddrive.png").scaled(75, 50)));
         else
-            deviceItem->setIcon(0, QIcon(QPixmap(":/Images/usb drive.png")));
+            deviceItem->setIcon(0, QIcon(QPixmap(":/Images/usb drive.png").scaled(75, 50)));
 
         // load the profiles
         for (int x = 0; x < device->profiles->size(); x++)
@@ -132,7 +132,7 @@ void DeviceContentViewer::LoadDevicesp()
             if (profile.GetThumbnail() != NULL && !gamerThumb.isNull())
                 profileItem->setIcon(0, QIcon(gamerThumb));
             else
-                profileItem->setIcon(0, QIcon(QPixmap(":/Images/HiddenAchievement.png")));
+                profileItem->setIcon(0, QIcon(QPixmap(":/Images/HiddenAchievement.png").scaled(50, 50)));
 
             // load all the titles for this profile
             for (int y = 0; y < profile.titles.size(); y++)
@@ -148,7 +148,7 @@ void DeviceContentViewer::LoadDevicesp()
                 if (title.GetThumbnail() != NULL && !titleThumb.isNull())
                     titleItem->setIcon(0, QIcon(titleThumb));
                 else
-                    titleItem->setIcon(0, QIcon(QPixmap(":/Images/watermark.png")));
+                    titleItem->setIcon(0, QIcon(QPixmap(":/Images/watermark.png").scaled(50, 50)));
 
                 // load all the saves for this title
                 for (int z = 0; z < title.titleSaves.size(); z++)
@@ -171,7 +171,7 @@ void DeviceContentViewer::LoadDevicesp()
                         saveItem->setIcon(0, QIcon(saveThumb));
                     else
                     {
-                        profileItem->setIcon(0, QIcon(QPixmap(":/Images/watermark.png")));
+                        profileItem->setIcon(0, QIcon(QPixmap(":/Images/watermark.png").scaled(50, 50)));
                     }
                 }
             }
@@ -179,7 +179,7 @@ void DeviceContentViewer::LoadDevicesp()
 
         QTreeWidgetItem *sharedItemFolder = new QTreeWidgetItem(deviceItem);
         sharedItemFolder->setText(0, "Shared Items");
-        sharedItemFolder->setIcon(0, QIcon(QPixmap(":/Images/FolderFileIcon.png")));
+        sharedItemFolder->setIcon(0, QIcon(QPixmap(":/Images/FolderFileIcon.png").scaled(50, 50)));
 
         // load the shared items
         LoadSharedItemCategory("Games", device->games, sharedItemFolder, ":/Images/xboxcontroller.png");
