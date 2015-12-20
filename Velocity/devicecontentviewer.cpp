@@ -195,6 +195,7 @@ void DeviceContentViewer::LoadDevicesp()
 
     if (devices.size() >= 1)
     {
+        currentDevice = devices.at(0);
         UpdateDevicePanel();
         ui->tabWidget->setEnabled(true);
     }
@@ -288,16 +289,15 @@ void DeviceContentViewer::CopyFilesToDevice(XContentDevice *device, QStringList 
 
 void DeviceContentViewer::UpdateDevicePanel()
 {
-    XContentDevice *device = devices.at(0);
-    QtHelpers::DrawFreeMemoryGraph(device->GetFatxDrive(), ui->imgPiechart, QColor("white"), ui->imgFreeMem,
+    QtHelpers::DrawFreeMemoryGraph(currentDevice->GetFatxDrive(), ui->imgPiechart, QColor("white"), ui->imgFreeMem,
                                    ui->lblFeeMemory, ui->imgUsedMem, ui->lblUsedMem, updateUI);
 
-    if (device->GetDeviceType() == FatxHarddrive)
+    if (currentDevice->GetDeviceType() == FatxHarddrive)
         ui->imgDeviceType->setPixmap(QPixmap(":/Images/harddrive.png"));
     else
         ui->imgDeviceType->setPixmap(QPixmap(":/Images/usb drive.png"));
 
-    ui->lblDeviceName->setText(QString::fromStdWString(device->GetName()));
+    ui->lblDeviceName->setText(QString::fromStdWString(currentDevice->GetName()));
 }
 
 void DeviceContentViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
@@ -377,7 +377,7 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
             }
         }
 
-        MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemFriendlyFATX, devices.at(0), saveDir, filesToExtract, this, rootPaths);
+        MultiProgressDialog *dialog = new MultiProgressDialog(OpExtract, FileSystemFriendlyFATX, currentDevice, saveDir, filesToExtract, this, rootPaths);
         dialog->setModal(true);
         dialog->show();
         dialog->start();
@@ -392,7 +392,7 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
         if (files.size() == 0)
             return;
 
-        CopyFilesToDevice(devices.at(0), files);
+        CopyFilesToDevice(currentDevice, files);
     }
     else if (selectedItem->text() == "Delete Selected Items")
     {
@@ -405,7 +405,7 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
                 IXContentHeader *package = selectedItem->data(0, Qt::UserRole).value<IXContentHeader*>();
                 std::string path = selectedItem->data(1, Qt::UserRole).toString().toStdString();
 
-                devices.at(0)->DeleteFile(package, path);
+                currentDevice->DeleteFile(package, path);
 
                 // remove the item from the tree widget
                 delete selectedItem;
@@ -448,10 +448,16 @@ void DeviceContentViewer::on_treeWidget_currentItemChanged(QTreeWidgetItem *curr
     if (current == NULL)
         return;
 
+    XContentDevice *previousDevice = currentDevice;
+    currentDevice = devices.at(QtHelpers::GetRootLevelTreeWidgetItem(current)->data(0, Qt::UserRole).toInt());
+
+    // if the device changed then update the panel
+    if (previousDevice != currentDevice)
+        UpdateDevicePanel();
+
     // check to see if the current item is a device
     if (current->parent() == NULL)
     {
-        UpdateDevicePanel();
         ui->tabWidget->setCurrentIndex(0);
         return;
     }
@@ -528,7 +534,7 @@ void DeviceContentViewer::onDragDropped(QDropEvent *event)
     foreach (QUrl filePath, filePaths)
         strFilePaths.push_back(filePath.toLocalFile());
 
-    CopyFilesToDevice(devices.at(0), strFilePaths);
+    CopyFilesToDevice(currentDevice, strFilePaths);
 }
 
 void DeviceContentViewer::onDragEntered(QDragEnterEvent *event)
@@ -539,7 +545,6 @@ void DeviceContentViewer::onDragEntered(QDragEnterEvent *event)
         // allow the file to be dropped
         event->acceptProposedAction();
 
-        XContentDevice *currentDevice = devices.at(0);
         statusBar->showMessage("Copy to " + QString::fromStdWString(currentDevice->GetName()));
     }
 }

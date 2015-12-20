@@ -66,6 +66,8 @@ public:
 
     static void SearchTreeWidget(QTreeWidget *widget, QLineEdit *searchWidget, QString searchString);
 
+    static QTreeWidgetItem *GetRootLevelTreeWidgetItem(QTreeWidgetItem *item);
+
     static void HideAllItems(QTreeWidgetItem *parent);
 
     static void ShowAllItems(QTreeWidgetItem *parent);

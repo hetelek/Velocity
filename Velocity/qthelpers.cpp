@@ -254,6 +254,13 @@ void QtHelpers::SearchTreeWidget(QTreeWidget *widget, QLineEdit *searchWidget, Q
     }
 }
 
+QTreeWidgetItem *QtHelpers::GetRootLevelTreeWidgetItem(QTreeWidgetItem *item)
+{
+    while (item->parent() != NULL)
+        item = item->parent();
+    return item;
+}
+
 void QtHelpers::HideAllItems(QTreeWidgetItem *parent)
 {
     for (int i = 0; i < parent->childCount(); i++)

@@ -69,6 +69,7 @@ private:
     IXContentHeader *currentPackage;
     QProgressBar *progressBar;
     FatxDeviceNotifier *deviceNotifier;
+    XContentDevice *currentDevice;
 
     void resizeEvent(QResizeEvent *);
 
