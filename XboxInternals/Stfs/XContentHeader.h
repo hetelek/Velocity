@@ -76,6 +76,8 @@ public:
     void WriteMetaData();
 	~XContentHeader();
 
+    DWORD fileSize;
+
     Magic magic;
 
 	// only console signed

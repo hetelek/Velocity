@@ -5,10 +5,13 @@
 
 using namespace std;
 
-XContentHeader::XContentHeader(BaseIO *io, DWORD flags) : installerType((InstallerType)0), flags(flags)
+XContentHeader::XContentHeader(BaseIO *io, DWORD flags) :
+    installerType((InstallerType)0), flags(flags)
 {
 	// set the io
 	this->io = io;
+
+    fileSize = io->Length();
 
     if ((flags & MetadataSkipRead) == 0)
         readMetadata();

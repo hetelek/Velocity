@@ -277,10 +277,20 @@ void DeviceContentViewer::CopyFilesToDevice(XContentDevice *device, QStringList 
         foreach (QString filePath, files)
         {
             FileSystem fileSystem = IXContentHeader::GetFileSystem(filePath.toStdString());
+            IXContentHeader *xcontent;
             if (fileSystem == FileSystemSTFS)
-                xcontentFiles.push_back(new StfsPackage(filePath.toStdString()));
+                xcontent = new StfsPackage(filePath.toStdString());
             else
-                xcontentFiles.push_back(new SVOD(filePath.toStdString()));
+                xcontent = new SVOD(filePath.toStdString());
+            xcontentFiles.push_back(xcontent);
+
+            // make sure there's enough free space on the device for the file
+            if (currentDevice->GetFreeMemory() < (xcontent->metaData->fileSize + xcontent->metaData->dataFileCombinedSize))
+            {
+                QMessageBox::critical(this, "Out of Space", "Copying halted. There is not enough free space on the device for " +
+                                      QString::fromStdWString(xcontent->metaData->displayName) + ".");
+                return;
+            }
         }
     }
     catch (std::string)
@@ -289,7 +299,7 @@ void DeviceContentViewer::CopyFilesToDevice(XContentDevice *device, QStringList 
         return;
     }
 
-    // make sure that the content files are assigned to a profile on the device
+    // make sure that the content files are assigned to a profile on the device and check for enough free space
     std::vector<XContentDeviceProfile> *profiles = currentDevice->profiles;
     foreach (IXContentHeader *xcontent, xcontentFiles)
     {
