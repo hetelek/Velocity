@@ -31,6 +31,7 @@
 #include "dragdroptreewidget.h"
 
 #include "fatxdevicenotifier.h"
+#include "profileselectiondialog.h"
 
 namespace Ui {
 class DeviceContentViewer;

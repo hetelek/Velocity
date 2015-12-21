@@ -270,6 +270,70 @@ void DeviceContentViewer::OpenContent(bool updateButton)
 
 void DeviceContentViewer::CopyFilesToDevice(XContentDevice *device, QStringList files)
 {
+    QList<IXContentHeader*> xcontentFiles;
+    try
+    {
+        // make sure that all the files are valid XContent
+        foreach (QString filePath, files)
+        {
+            FileSystem fileSystem = IXContentHeader::GetFileSystem(filePath.toStdString());
+            if (fileSystem == FileSystemSTFS)
+                xcontentFiles.push_back(new StfsPackage(filePath.toStdString()));
+            else
+                xcontentFiles.push_back(new SVOD(filePath.toStdString()));
+        }
+    }
+    catch (std::string)
+    {
+        QMessageBox::critical(this, "Invalid XContent", "One or more of the files you are trying to copy to the device is not a valid Xbox360 file.");
+        return;
+    }
+
+    // make sure that the content files are assigned to a profile on the device
+    std::vector<XContentDeviceProfile> *profiles = currentDevice->profiles;
+    foreach (IXContentHeader *xcontent, xcontentFiles)
+    {
+        // saves are the only content type that can be transfered between profiles on retail consoles
+        if (xcontent->metaData->contentType != SavedGame)
+            continue;
+
+        bool found = false;
+        UINT64 contentProfileID = *(UINT64*)xcontent->metaData->profileID;
+        for (size_t i = 0; i < profiles->size(); i++)
+        {
+            // skip over empty profiles
+            XContentDeviceProfile profile = profiles->at(i);
+            if (profile.GetFileSize() == 0)
+                continue;
+
+            UINT64 curProfileID = *(UINT64*)profile.content->metaData->profileID;
+            if (contentProfileID == curProfileID)
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            ProfileSelectionDialog dialog(profiles, QString::fromStdWString(xcontent->metaData->displayName), this);
+            dialog.exec();
+
+            // update profile ID if a different profile was selected
+            if (dialog.HasSelectedProfile())
+            {
+                XContentDeviceProfile profile = dialog.GetSelectedProfile();
+                memcpy(xcontent->metaData->profileID, profile.GetProfileID(), 8);
+                xcontent->metaData->FixHeaderHash();
+
+                // resign with the correct KV (retail or dev)
+                string path = QtHelpers::GetKVPath(xcontent->metaData->certificate.ownerConsoleType, this);
+                xcontent->metaData->ResignHeader(path);
+                xcontent->metaData->WriteMetaData();
+            }
+        }
+    }
+
     QList<void*> filesToInject;
     for (int i = 0; i < files.size(); i++)
         filesToInject.push_back(new std::string(files.at(i).toStdString()));
