@@ -1,5 +1,11 @@
 #include "XContentDeviceProfile.h"
 
+XContentDeviceProfile::XContentDeviceProfile() :
+    XContentDeviceItem()
+{
+
+}
+
 XContentDeviceProfile::XContentDeviceProfile(FatxFileEntry *fileEntry, StfsPackage *profile) :
     XContentDeviceItem(fileEntry, profile)
 {

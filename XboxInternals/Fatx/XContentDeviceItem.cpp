@@ -1,5 +1,11 @@
 #include "XContentDeviceItem.h"
 
+XContentDeviceItem::XContentDeviceItem() :
+    content(NULL)
+{
+
+}
+
 XContentDeviceItem::XContentDeviceItem(FatxFileEntry *fileEntry, IXContentHeader *content, std::vector<std::string> contentFilePaths) :
     content(content), pathOnDevice(fileEntry->path + fileEntry->name), rawName(fileEntry->name), fileSize(fileEntry->fileSize), contentFilePaths(contentFilePaths)
 {

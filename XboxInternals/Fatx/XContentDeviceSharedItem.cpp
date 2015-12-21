@@ -1,5 +1,11 @@
 #include "XContentDeviceSharedItem.h"
 
+XContentDeviceSharedItem::XContentDeviceSharedItem() :
+    XContentDeviceItem()
+{
+
+}
+
 XContentDeviceSharedItem::XContentDeviceSharedItem(FatxFileEntry *fileEntry, IXContentHeader *package, std::vector<std::string> contentFilePaths) :
     XContentDeviceItem(fileEntry, package, contentFilePaths)
 {

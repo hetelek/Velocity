@@ -1,5 +1,11 @@
 #include "XContentDeviceTitle.h"
 
+XContentDeviceTitle::XContentDeviceTitle() :
+    XContentDeviceItem()
+{
+
+}
+
 XContentDeviceTitle::XContentDeviceTitle(std::string pathOnDevice, std::string rawName) :
     pathOnDevice(pathOnDevice), XContentDeviceItem(pathOnDevice, rawName, NULL)
 {
