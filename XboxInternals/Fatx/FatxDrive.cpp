@@ -1027,6 +1027,11 @@ UINT64 FatxDrive::GetTotalSize()
     return toReturn;
 }
 
+UINT64 FatxDrive::GetDeviceSize()
+{
+    return io->Length();
+}
+
 void FatxDrive::ReloadDrive()
 {
     if (type == FatxHarddrive)

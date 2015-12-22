@@ -355,7 +355,7 @@ QStringList QtHelpers::StdStringArrayToQStringList(std::vector<std::string> stri
 }
 
 void QtHelpers::DrawFreeMemoryGraph(FatxDrive *drive, QLabel *graph, QColor backgroundColor, QLabel *freeMemLegendColor, QLabel *freeMemLegend,
-                                    QLabel *usedMemLengendColor, QLabel *usedMemLegend, void(*progress)(void*, bool))
+                                    QLabel *usedMemLengendColor, QLabel *usedMemLegend, bool contentOnly, void(*progress)(void*, bool))
 {
     UINT64 totalFreeSpace = 0;
     UINT64 totalSpace = 0;
@@ -364,8 +364,11 @@ void QtHelpers::DrawFreeMemoryGraph(FatxDrive *drive, QLabel *graph, QColor back
     std::vector<Partition*> parts = drive->GetPartitions();
     for (DWORD i = 0; i < parts.size(); i++)
     {
-        totalFreeSpace += drive->GetFreeMemory(parts.at(i), progress);
-        totalSpace += (UINT64)parts.at(i)->clusterCount * parts.at(i)->clusterSize;
+        if (!contentOnly || parts.at(i)->name == "Content")
+        {
+            totalFreeSpace += drive->GetFreeMemory(parts.at(i), progress);
+            totalSpace += (UINT64)parts.at(i)->clusterCount * parts.at(i)->clusterSize;
+        }
     }
 
     // calculate the percentage

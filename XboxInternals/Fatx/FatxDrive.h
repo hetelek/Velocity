@@ -100,6 +100,9 @@ public:
     // get the total amount of bytes that all the partitions occupy
     UINT64 GetTotalSize();
 
+    // get the total amount of bytes capable of being stored on the device
+    UINT64 GetDeviceSize();
+
     // reload the entire drive, called after restoring
     void ReloadDrive();
 

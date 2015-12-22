@@ -52,7 +52,7 @@ void DeviceViewer::DrawMemoryGraph()
     }
 
     QtHelpers::DrawFreeMemoryGraph(currentDrive, ui->imgPiechart, ui->imgPiechart->palette().background().color(),
-                                   ui->imgFreeMem, ui->lblFeeMemory, ui->imgUsedMem, ui->lblUsedSpace, updateUI);
+                                   ui->imgFreeMem, ui->lblFeeMemory, ui->imgUsedMem, ui->lblUsedSpace, false, updateUI);
 }
 
 void DeviceViewer::showContextMenu(QPoint point)

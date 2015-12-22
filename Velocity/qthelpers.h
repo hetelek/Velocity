@@ -79,7 +79,7 @@ public:
     static QStringList StdStringArrayToQStringList(std::vector<std::string> strings);
 
     static void DrawFreeMemoryGraph(FatxDrive *drive, QLabel *graph, QColor backgroundColor, QLabel *freeMemLegendColor,
-                                    QLabel *freeMemLegend, QLabel *usedMemLengendColor, QLabel *usedMemLegend,
+                                    QLabel *freeMemLegend, QLabel *usedMemLengendColor, QLabel *usedMemLegend, bool contentOnly,
                                     void(*updateUI)(void*, bool));
 };
 

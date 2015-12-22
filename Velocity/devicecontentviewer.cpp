@@ -375,7 +375,7 @@ void DeviceContentViewer::CopyFilesToDevice(XContentDevice *device, QStringList 
 void DeviceContentViewer::UpdateDevicePanel()
 {
     QtHelpers::DrawFreeMemoryGraph(currentDevice->GetFatxDrive(), ui->imgPiechart, QColor("white"), ui->imgFreeMem,
-                                   ui->lblFeeMemory, ui->imgUsedMem, ui->lblUsedMem, updateUI);
+                                   ui->lblFeeMemory, ui->imgUsedMem, ui->lblUsedMem, true, updateUI);
 
     if (currentDevice->GetDeviceType() == FatxHarddrive)
         ui->imgDeviceType->setPixmap(QPixmap(":/Images/harddrive.png"));
