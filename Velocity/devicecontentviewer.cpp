@@ -54,6 +54,7 @@ void DeviceContentViewer::LoadSharedItemCategory(QString category, std::vector<X
     QTreeWidgetItem *categoryItem = new QTreeWidgetItem(parent);
     categoryItem->setText(0, category);
     categoryItem->setIcon(0, QIcon(QPixmap(iconPath).scaled(50, 50)));
+    categoryItem->setData(5, Qt::UserRole, (quint32)ItemTypeSharedItemCategory);
 
     // load all the category's items
     for (int i = 0; i < items->size(); i++)
@@ -68,6 +69,7 @@ void DeviceContentViewer::LoadSharedItemCategory(QString category, std::vector<X
         item->setData(1, Qt::UserRole, QVariant(QString::fromStdString(content.GetPathOnDevice())));
         item->setData(2, Qt::UserRole, QVariant(QString::fromStdString(content.GetRawName())));
         item->setData(3, Qt::UserRole, QVariant((quint64)content.GetFileSize()));
+        item->setData(5, Qt::UserRole, QVariant((quint32)ItemTypeContent));
 
         std::vector<std::string> contentFilePaths = content.GetContentFilePaths();
         item->setData(4, Qt::UserRole, QVariant(QtHelpers::StdStringArrayToQStringList(contentFilePaths)));
@@ -101,6 +103,8 @@ void DeviceContentViewer::LoadDevicesp()
         // set the device index
         deviceItem->setData(0, Qt::UserRole, i);
 
+        deviceItem->setData(5, Qt::UserRole, (quint32)ItemTypeDevice);
+
         // set the appropriate icon
         if (device->GetDeviceType() == FatxHarddrive)
             deviceItem->setIcon(0, QIcon(QPixmap(":/Images/harddrive.png").scaled(75, 50)));
@@ -125,6 +129,7 @@ void DeviceContentViewer::LoadDevicesp()
             profileItem->setData(1, Qt::UserRole, QVariant(QString::fromStdString(profile.GetPathOnDevice())));
             profileItem->setData(2, Qt::UserRole, QVariant(QString::fromStdString(profile.GetRawName())));
             profileItem->setData(3, Qt::UserRole, QVariant((quint32)profile.GetFileSize()));
+            profileItem->setData(5, Qt::UserRole, (quint32)ItemTypeProfile);
 
             // set the icon to the gamerpicture as long as it isn't null
             QByteArray imageBuff((char*)profile.GetThumbnail(), profile.GetThumbnailSize());
@@ -141,6 +146,7 @@ void DeviceContentViewer::LoadDevicesp()
                 XContentDeviceTitle title = profile.titles.at(y);
 
                 titleItem->setText(0, QString::fromStdWString(title.GetName()));
+                titleItem->setData(5, Qt::UserRole, (quint32)ItemTypeTitle);
 
                 // set the title thumbnail as long as it isn't null, if it is then use a default image
                 QByteArray imageBuff((char*)title.GetThumbnail(), title.GetThumbnailSize());
@@ -160,6 +166,7 @@ void DeviceContentViewer::LoadDevicesp()
                     saveItem->setData(1, Qt::UserRole, QVariant(QString::fromStdString(save.GetPathOnDevice())));
                     saveItem->setData(2, Qt::UserRole, QVariant(QString::fromStdString(save.GetRawName())));
                     saveItem->setData(3, Qt::UserRole, QVariant((quint64)save.GetFileSize()));
+                    saveItem->setData(5, Qt::UserRole, QVariant((quint64)ItemTypeContent));
 
                     saveItem->setText(0, QString::fromStdWString(save.GetName()));
                     saveItem->setText(1, QString::fromStdString(ByteSizeToString(save.GetFileSize())));
@@ -295,7 +302,7 @@ void DeviceContentViewer::CopyFilesToDevice(XContentDevice *device, QStringList 
     }
     catch (std::string)
     {
-        QMessageBox::critical(this, "Invalid XContent", "One or more of the files you are trying to copy to the device is not a valid Xbox360 file.");
+        QMessageBox::critical(this, "Invalid XContent", "Copying halted. One or more of the files you are trying to copy to the device is not a valid Xbox360 file.");
         return;
     }
 
@@ -372,6 +379,31 @@ void DeviceContentViewer::UpdateDevicePanel()
         ui->imgDeviceType->setPixmap(QPixmap(":/Images/usb drive.png"));
 
     ui->lblDeviceName->setText(QString::fromStdWString(currentDevice->GetName()));
+}
+
+void DeviceContentViewer::CleanupEmptyItems(QTreeWidgetItem *leafItem)
+{
+    while (leafItem->parent() != NULL && leafItem->childCount() == 0)
+    {
+        QTreeWidgetItem *parent = leafItem->parent();
+
+        ItemType itemType = static_cast<ItemType>(leafItem->data(5, Qt::UserRole).toUInt());
+        switch (itemType)
+        {
+            case ItemTypeDevice:
+                return;
+            case ItemTypeProfile:
+                if (leafItem->text(0) == "Unknown Profile")
+                    delete leafItem;
+                break;
+            case ItemTypeTitle:
+            case ItemTypeContent:
+                delete leafItem;
+                break;
+        }
+
+        leafItem = parent;
+    }
 }
 
 void DeviceContentViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
@@ -481,8 +513,8 @@ void DeviceContentViewer::showContextMenu(const QPoint &pos)
 
                 currentDevice->DeleteFile(package, path);
 
-                // remove the item from the tree widget
-                delete selectedItem;
+                // remove the item and necessary parents from the tree widget
+                CleanupEmptyItems(selectedItem);
             }
         }
         catch (std::string error)

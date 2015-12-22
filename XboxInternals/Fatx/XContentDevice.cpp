@@ -466,6 +466,7 @@ void XContentDevice::DeleteFile(IXContentHeader *package, std::string pathOnDevi
     // remove the file from the hierarchy
     BYTE nullID[8] = { 0 };
 
+    // find the content in memory to
     // file is from a profile, so it's not shared
     if ((memcmp(package->metaData->profileID, nullID, 8)) != 0)
     {
@@ -485,8 +486,16 @@ void XContentDevice::DeleteFile(IXContentHeader *package, std::string pathOnDevi
                                 delete package;
                             }
                         }
+
+                        // if there aren't any more saves for the title then remove the title
+                        if (profiles->at(i).titles.at(x).titleSaves.size() == 0)
+                            profiles->at(i).titles.erase(profiles->at(i).titles.begin() + x);
                     }
                 }
+
+                // if the profile doesn't have any more content in it and it's an "Unknown Profile" remove it
+                if (profiles->at(i).titles.size() == 0 && profiles->at(i).GetName() == L"Unknown Profile")
+                    profiles->erase(profiles->begin() + i);
             }
         }
     }

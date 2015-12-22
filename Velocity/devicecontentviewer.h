@@ -42,6 +42,14 @@ void DisplayProgress(void *arg, bool finished);
 
 Q_DECLARE_METATYPE( IXContentHeader* )
 
+enum ItemType
+{
+    ItemTypeDevice = 0,
+    ItemTypeProfile,
+    ItemTypeTitle,
+    ItemTypeContent,
+    ItemTypeSharedItemCategory
+};
 
 class DeviceContentViewer : public QDialog
 {
@@ -81,6 +89,7 @@ private:
     void OpenContent(bool updateButton);
     void CopyFilesToDevice(XContentDevice *device, QStringList files);
     void UpdateDevicePanel();
+    void CleanupEmptyItems(QTreeWidgetItem *leafItem);
 
     friend void DisplayProgress(void *arg, bool finished);
 
