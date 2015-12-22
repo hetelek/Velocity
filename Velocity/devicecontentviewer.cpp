@@ -351,6 +351,10 @@ void DeviceContentViewer::CopyFilesToDevice(XContentDevice *device, QStringList 
         }
     }
 
+    // close content opened for verification
+    foreach (IXContentHeader *xcontent, xcontentFiles)
+        delete xcontent;
+
     QList<void*> filesToInject;
     for (int i = 0; i < files.size(); i++)
         filesToInject.push_back(new std::string(files.at(i).toStdString()));
