@@ -141,6 +141,10 @@ private slots:
 
     void onNewDeviceFound(QList<FatxDrive *> devices);
 
+    void onContentDeviceViewerClosed();
+
+    void onDeviceViewerClosed();
+
 private:
     Ui::MainWindow *ui;
     QSettings *settings;

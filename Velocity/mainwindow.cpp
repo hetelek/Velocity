@@ -249,6 +249,9 @@ void MainWindow::on_actionDevice_Viewer_triggered()
     DeviceViewer *viewer = new DeviceViewer(ui->statusBar, this);
     viewer->setAttribute(Qt::WA_DeleteOnClose);
     ui->mdiArea->addSubWindow(viewer);
+
+    connect(viewer, SIGNAL(destroyed()), this, SLOT(onDeviceViewerClosed()));
+    ui->actionDevice_Viewer->setEnabled(false);
     viewer->show();
     viewer->LoadDrives();
 }
@@ -856,6 +859,9 @@ void MainWindow::on_actionContent_Device_Viewer_triggered()
     DeviceContentViewer *viewer = new DeviceContentViewer(ui->statusBar, this);
     viewer->setAttribute(Qt::WA_DeleteOnClose);
     ui->mdiArea->addSubWindow(viewer);
+
+    connect(viewer, SIGNAL(destroyed()), this, SLOT(onContentDeviceViewerClosed()));
+    ui->actionContent_Device_Viewer->setEnabled(false);
     viewer->show();
 }
 
@@ -902,6 +908,19 @@ void MainWindow::onNewDeviceFound(QList<FatxDrive *> devices)
         DeviceContentViewer *viewer = new DeviceContentViewer(ui->statusBar, this);
         viewer->setAttribute(Qt::WA_DeleteOnClose);
         ui->mdiArea->addSubWindow(viewer);
+
+        connect(viewer, SIGNAL(destroyed()), this, SLOT(onContentDeviceViewerClosed()));
+        ui->actionContent_Device_Viewer->setEnabled(false);
         viewer->show();
     }
+}
+
+void MainWindow::onContentDeviceViewerClosed()
+{
+    ui->actionContent_Device_Viewer->setEnabled(true);
+}
+
+void MainWindow::onDeviceViewerClosed()
+{
+    ui->actionDevice_Viewer->setEnabled(true);
 }
