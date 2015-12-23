@@ -19,7 +19,7 @@ DeviceContentViewer::DeviceContentViewer(QStatusBar *statusBar, QWidget *parent)
     connect(ui->treeWidget, SIGNAL(dragLeft(QDragLeaveEvent*)), this, SLOT(onDragLeft(QDragLeaveEvent*)));
 
     // setup the device notifier
-    deviceNotifier = new FatxDeviceNotifier();
+    deviceNotifier = new FatxDeviceNotifier(this);
     connect(deviceNotifier, SIGNAL(newDevicesDetected(QList<FatxDrive*>)), this, SLOT(onNewDevicesDetected(QList<FatxDrive*>)));
     deviceNotifier->start();
 
@@ -44,7 +44,11 @@ DeviceContentViewer::~DeviceContentViewer()
     for (int i = 0; i < devices.size(); i++)
         delete devices.at(i);
 
+    deviceNotifier->StopLooking();
+    deviceNotifier->exit();
+
     delete ui;
+    delete progressBar;
 
     OPEN = false;
 }
@@ -666,6 +670,11 @@ void DeviceContentViewer::onDragLeft(QDragLeaveEvent *event)
 
 void DeviceContentViewer::onNewDevicesDetected(QList<FatxDrive *> newDrives)
 {
+    FatxDeviceNotifier *notifier = static_cast<FatxDeviceNotifier*>(sender());
+
+    if (!OPEN)
+        return;
+
     // make sure all the devices are saved before using them
     QMutex m;
     {
@@ -676,9 +685,15 @@ void DeviceContentViewer::onNewDevicesDetected(QList<FatxDrive *> newDrives)
 
     foreach (FatxDrive *drive, newDrives)
     {
+        QMutexLocker lock(&m);
+
         XContentDevice *device = new XContentDevice(drive);
         if (!device->LoadDevice(DisplayProgress, this))
             continue;
+
+        // this is incase the user cancels while the devices are loading
+        if (!OPEN)
+            return;
 
         devices.push_back(device);
     }
@@ -699,20 +714,23 @@ void DeviceContentViewer::resizeEvent(QResizeEvent *)
 
 void DisplayProgress(void *arg, bool finished)
 {
-    DeviceContentViewer *contentViewer = static_cast<DeviceContentViewer*>(arg);
-    if (!finished)
+    if (DeviceContentViewer::OPEN)
     {
-        contentViewer->progressBar->setVisible(true);
-        contentViewer->progressBar->setMinimum(0);
-        contentViewer->progressBar->setMaximum(0);
-        contentViewer->setWindowTitle("Device Content Viewer - Loading Device(s)");
-    }
-    else
-    {
-        contentViewer->progressBar->setVisible(false);
-        contentViewer->progressBar->setMaximum(1);
-        contentViewer->ui->treeWidget->setEnabled(true);
-        contentViewer->setWindowTitle("Device Content Viewer");
+        DeviceContentViewer *contentViewer = static_cast<DeviceContentViewer*>(arg);
+        if (!finished)
+        {
+            contentViewer->progressBar->setVisible(true);
+            contentViewer->progressBar->setMinimum(0);
+            contentViewer->progressBar->setMaximum(0);
+            contentViewer->setWindowTitle("Device Content Viewer - Loading Device(s)");
+        }
+        else
+        {
+            contentViewer->progressBar->setVisible(false);
+            contentViewer->progressBar->setMaximum(1);
+            contentViewer->ui->treeWidget->setEnabled(true);
+            contentViewer->setWindowTitle("Device Content Viewer");
+        }
     }
     QApplication::processEvents();
 }
