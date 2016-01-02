@@ -924,3 +924,24 @@ void MainWindow::onDeviceViewerClosed()
 {
     ui->actionDevice_Viewer->setEnabled(true);
 }
+
+
+void MainWindow::on_actionISO_triggered()
+{
+    QString isoPath = QFileDialog::getOpenFileName(this, "Open an ISO", QtHelpers::DesktopLocation());
+
+    if (!isoPath.isEmpty())
+    {
+        try
+        {
+            ISO *iso = new ISO(isoPath.toStdString());
+            ISODialog *dialog = new ISODialog(iso, this);
+            ui->mdiArea->addSubWindow(dialog);
+            dialog->show();
+        }
+        catch (std::string error)
+        {
+            QMessageBox::critical(this, "Error Opening ISO", QString::fromStdString(error));
+        }
+    }
+}

@@ -25,7 +25,16 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <property name="margin">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
      <number>0</number>
     </property>
     <item row="0" column="0">
@@ -84,6 +93,7 @@
      <addaction name="actionPackage"/>
      <addaction name="actionSVOD_System"/>
      <addaction name="actionYTGR"/>
+     <addaction name="actionISO"/>
     </widget>
     <addaction name="menuOpen"/>
     <addaction name="actionCreate_Package"/>
@@ -238,9 +248,6 @@
    <property name="text">
     <string>Profile Creator</string>
    </property>
-   <property name="softKeyRole">
-    <enum>QAction::NoSoftKey</enum>
-   </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
@@ -248,9 +255,6 @@
   <action name="actionProfile_Editor">
    <property name="text">
     <string>Profile Editor</string>
-   </property>
-   <property name="softKeyRole">
-    <enum>QAction::NoSoftKey</enum>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -363,6 +367,11 @@
   <action name="actionContent_Device_Viewer">
    <property name="text">
     <string>Content Device Viewer</string>
+   </property>
+  </action>
+  <action name="actionISO">
+   <property name="text">
+    <string>ISO</string>
    </property>
   </action>
  </widget>

@@ -40,6 +40,7 @@
 #include "ytgrdialog.h"
 #include "deviceviewer.h"
 #include "devicecontentviewer.h"
+#include "isodialog.h"
 
 // other
 #include "PluginInterfaces/igamemodder.h"
@@ -55,6 +56,7 @@
 #include "Disc/Svod.h"
 #include "IO/DeviceIO.h"
 #include "Fatx/FatxDrive.h"
+#include "Disc/ISO.h"
 
 #include "fatxdevicenotifier.h"
 
@@ -145,6 +147,8 @@ private slots:
 
     void onDeviceViewerClosed();
 
+    void on_actionISO_triggered();
+
 private:
     Ui::MainWindow *ui;
     QSettings *settings;
@@ -158,3 +162,4 @@ private:
 };
 
 #endif // MAINWINDOW_H
+

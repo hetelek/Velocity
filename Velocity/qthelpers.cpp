@@ -24,6 +24,11 @@ DWORD QtHelpers::ParseHexString(QString string)
     return string.toULong(0, 16);
 }
 
+QString QtHelpers::ToHexString(UINT64 num)
+{
+    return "0x" + QString::number(num, 16).toUpper();
+}
+
 void QtHelpers::ParseHexStringBuffer(QString bytes, BYTE *outBuffer, DWORD len)
 {
     bytes = bytes.trimmed().replace(" ", "");

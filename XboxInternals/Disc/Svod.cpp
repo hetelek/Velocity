@@ -121,8 +121,14 @@ void SVOD::ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int s
 
     GdfxFileEntry current;
 
-    while (GdfxReadFileEntry(io, &current) && size != 0)
+    while (true)
     {
+        io->GetPosition(&current.address, &current.fileIndex);
+
+        // make sure we're not at the end of the file listing
+        if (!GdfxReadFileEntry(io, &current) && size != 0)
+            break;
+
         // if it's a folder, then seek to it and read it's contents
         if (current.attributes & GdfxDirectory)
         {
@@ -151,7 +157,7 @@ void SVOD::ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int s
             if ((size - 0x800) <= 0)
             {
                 // sort the file entries so that directories are first
-                std::sort(entryList->begin(), entryList->end(), compareFileEntries);
+                std::sort(entryList->begin(), entryList->end(), DirectoryFirstCompareGdfxEntries);
                 return;
             }
             else
@@ -172,7 +178,7 @@ void SVOD::ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int s
         current.files.clear();
     }
 
-    std::sort(entryList->begin(), entryList->end(), compareFileEntries);
+    std::sort(entryList->begin(), entryList->end(), DirectoryFirstCompareGdfxEntries);
 }
 
 GdfxFileEntry SVOD::GetFileEntry(string path, vector<GdfxFileEntry> *listing)
@@ -291,6 +297,7 @@ void SVOD::HashBlock(BYTE *block, BYTE *outHash)
 
 void SVOD::WriteFileEntry(GdfxFileEntry *entry)
 {
+    io->SetPosition(entry->address, entry->fileIndex);
     GdfxWriteFileEntry(io, entry);
 }
 
@@ -319,12 +326,4 @@ void SVOD::GetFileListing()
     }
 }
 
-// this must be a < operator, if it returns true if they're equal then it'll break
-// this will compare them so that the directories come first
-int compareFileEntries(const GdfxFileEntry &a, const GdfxFileEntry &b)
-{
-    int a_directory = a.attributes & GdfxDirectory;
-    int b_directory = b.attributes & GdfxDirectory;
 
-    return a_directory > b_directory;
-}

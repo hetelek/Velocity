@@ -88,6 +88,6 @@ private:
     void HashBlock(BYTE *block, BYTE *outHash);
 };
 
-int compareFileEntries(const GdfxFileEntry &a, const GdfxFileEntry &b);
+
 
 #endif // SVOD_H

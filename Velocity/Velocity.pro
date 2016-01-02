@@ -103,7 +103,8 @@ SOURCES += main.cpp \
     flashdriveconfigdatadialog.cpp \
     devicecontentviewer.cpp \
     fatxdevicenotifier.cpp \
-    profileselectiondialog.cpp
+    profileselectiondialog.cpp \
+    isodialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -157,7 +158,8 @@ HEADERS  += mainwindow.h \
     flashdriveconfigdatadialog.h \
     devicecontentviewer.h \
     fatxdevicenotifier.h \
-    profileselectiondialog.h
+    profileselectiondialog.h \
+    isodialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -200,7 +202,8 @@ FORMS    += mainwindow.ui \
     securitysectordialog.ui \
     flashdriveconfigdatadialog.ui \
     devicecontentviewer.ui \
-    profileselectiondialog.ui
+    profileselectiondialog.ui \
+    isodialog.ui
 
 RESOURCES += \
     Resources.qrc

@@ -6,6 +6,9 @@
 #include <iostream>
 #include <vector>
 
+#define GDFX_HEADER_MAGIC       "MICROSOFT*XBOX*MEDIA"
+#define GDFX_HEADER_MAGIC_LEN 	0x14
+
 using std::string;
 using std::vector;
 
@@ -48,12 +51,15 @@ enum GdfxDirentAttributesutes
 // TODO: make this work with the IO interface, and Write header
 
 // read the GDFX header, seek io to position of header beforehand
-void GdfxReadHeader(IndexableMultiFileIO *io, GdfxHeader *header);
+void GdfxReadHeader(BaseIO *io, GdfxHeader *header);
 
 // read the next file entry in the listing, reeturns false on listing end
-bool GdfxReadFileEntry(IndexableMultiFileIO *io, GdfxFileEntry *entry);
+bool GdfxReadFileEntry(BaseIO *io, GdfxFileEntry *entry);
 
 // Write a file entry back to the listing
-void GdfxWriteFileEntry(IndexableMultiFileIO *io, GdfxFileEntry *entry);
+void GdfxWriteFileEntry(BaseIO *io, GdfxFileEntry *entry);
+
+// order them so the directories come first
+int DirectoryFirstCompareGdfxEntries(const GdfxFileEntry &a, const GdfxFileEntry &b);
 
 #endif // GDFX_H
