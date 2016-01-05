@@ -23,7 +23,8 @@ enum Operation
     OpReplace,
     OpInject,
     OpBackup,
-    OpRestore
+    OpRestore,
+    OpExtractAll
 };
 
 struct StfsExtractEntry

@@ -64,3 +64,11 @@ UINT64 Utils::RoundToNearestHex1000(UINT64 num)
 {
     return (num + 0xFFF) & ~0xFFF;
 }
+
+
+bool Utils::CreateLocalDirectory(std::string filePath)
+{
+#ifdef _WIN32
+    return (bool)CreateDirectoryA(filePath.c_str(), NULL);
+#endif
+}

@@ -1,6 +1,6 @@
 #include "BigFileIO.h"
 
-BigFileIO::BigFileIO(std::string filePath) :
+BigFileIO::BigFileIO(std::string filePath, bool create) :
     filePath(filePath)
 {
 #ifdef _WIN32
@@ -8,7 +8,7 @@ BigFileIO::BigFileIO(std::string filePath) :
                         GENERIC_READ | GENERIC_WRITE,
                         FILE_SHARE_READ,
                         NULL,
-                        OPEN_EXISTING,
+                        create ? CREATE_ALWAYS : OPEN_EXISTING,
                         0,
                         NULL);
     if (hFile == INVALID_HANDLE_VALUE)
@@ -32,7 +32,11 @@ void BigFileIO::ReadBytes(BYTE *outBuffer, DWORD len)
 
 void BigFileIO::WriteBytes(BYTE *buffer, DWORD len)
 {
-
+#ifdef _WIN32
+    DWORD bytesWritten;
+    if (!WriteFile(hFile, buffer, len, &bytesWritten, NULL) || bytesWritten != len)
+        throw std::string("BigFileIO: Error writing to the file.");
+#endif
 }
 
 UINT64 BigFileIO::Length()

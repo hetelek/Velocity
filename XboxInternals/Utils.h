@@ -22,6 +22,8 @@ namespace Utils
     std::vector<std::string> FilesInDirectory(std::string directoryPath);
 
     UINT64 RoundToNearestHex1000(UINT64 num);
+
+    bool CreateLocalDirectory(std::string filePath);
 }
 
 #endif // UTILS_H

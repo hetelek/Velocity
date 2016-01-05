@@ -8,6 +8,7 @@
 
 // xbox360
 #include "Stfs/StfsPackage.h"
+#include "Disc/ISO.h"
 
 void UpdateProgress(void *arg, DWORD cur, DWORD total);
 

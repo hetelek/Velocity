@@ -20,7 +20,7 @@ ISO::~ISO()
 
 UINT64 ISO::SectorToAddress(DWORD sector)
 {
-    return sector * ISO_SECTOR_SIZE + gdfxHeaderAddress - ISO_XGD1_ADDRESS;
+    return (UINT64)sector * ISO_SECTOR_SIZE + gdfxHeaderAddress - ISO_XGD1_ADDRESS;
 }
 
 void ISO::GetFileListing()
@@ -30,6 +30,29 @@ void ISO::GetFileListing()
         didReadFileListing = true;
         ReadFileListing(&root, gdfxHeader.rootSector, gdfxHeader.rootSize, "");
     }
+}
+
+void ISO::ExtractFile(GdfxFileEntry fileEntry, void (*progress)(void*, DWORD, DWORD) = NULL, void *arg)
+{
+    DWORD bufferSize = ISO_SECTOR_SIZE * 100;
+    BYTE *copyBuffer = new BYTE[bufferSize];
+
+
+
+    delete copyBuffer;
+}
+
+void ISO::ExtractAll(std::string outDirectory, void (*progress)(void*, DWORD, DWORD), void *arg)
+{
+    // calculate the total number of copy iterations for reporting progress
+    UINT64 totalSectors = GetTotalSectors(&root);
+    DWORD totalCopyIterations = (totalSectors * ISO_SECTOR_SIZE) / ISO_COPY_BUFFER_SIZE;
+
+    if (totalCopyIterations % ISO_COPY_BUFFER_SIZE != 0)
+        totalCopyIterations++;
+
+    DWORD curProgress = 0;
+    ExtractAllHelper(outDirectory, &root, progress, arg, &curProgress, &totalCopyIterations);
 }
 
 void ISO::ParseISO()
@@ -122,3 +145,71 @@ void ISO::ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int si
     std::sort(entryList->begin(), entryList->end(), DirectoryFirstCompareGdfxEntries);
 }
 
+UINT64 ISO::GetTotalSectors(const vector<GdfxFileEntry> *entryList)
+{
+    UINT64 totalSectors = 0;
+    for (size_t i = 0; i < entryList->size(); i++)
+    {
+        GdfxFileEntry entry = entryList->at(i);
+        if (entry.attributes & GdfxDirectory)
+            totalSectors += GetTotalSectors(&entry.files);
+        totalSectors += entry.size / ISO_SECTOR_SIZE;
+    }
+
+    return totalSectors;
+}
+
+void ISO::ExtractAllHelper(std::string outDirectory, std::vector<GdfxFileEntry> *entryList, void (*progress)(void*, DWORD, DWORD), void *arg, DWORD *curProgress, const DWORD *totalProgress)
+{
+    BYTE *copyBuffer = new BYTE[ISO_COPY_BUFFER_SIZE];
+
+    // extract all the files in the entry list
+    for (size_t i = 0; i < entryList->size(); i++)
+    {
+        GdfxFileEntry entry = entryList->at(i);
+
+        // if it's a directory then extract all the files inside it
+        if (entry.attributes & GdfxDirectory)
+        {
+            Utils::CreateLocalDirectory(outDirectory + "/" + entry.filePath + entry.name);
+            ExtractAllHelper(outDirectory, &entry.files, progress, arg, curProgress, totalProgress);
+        }
+        else
+        {
+            // create a new file on the local disk
+            Utils::CreateLocalDirectory(outDirectory + "/" + entry.filePath);
+            std::string outFilePath = outDirectory + "/" + entry.filePath + entry.name;
+            BigFileIO extractedFile(outFilePath, true);
+
+            DWORD totalReads = entry.size / ISO_COPY_BUFFER_SIZE;
+            if (entry.size % ISO_COPY_BUFFER_SIZE != 0)
+                totalReads++;
+
+            // seek to the beginning of the file
+            UINT64 readAddress = SectorToAddress(entry.sector);
+            io->SetPosition(readAddress);
+
+            // keep reading into the copy buffer and writing to the local disk until the entire file has been extracted
+            for (DWORD x = 0; x < totalReads; x++)
+            {
+                // if we're at the end of the file then we won't need to read ISO_COPY_BUFFER_SIZE bytes
+                DWORD numBytesToCopy = ISO_COPY_BUFFER_SIZE;
+                if (x == totalReads - 1 && entry.size % ISO_COPY_BUFFER_SIZE != 0)
+                     numBytesToCopy = entry.size % ISO_COPY_BUFFER_SIZE;
+
+                // copy over numBytesToCopy bytes
+                io->ReadBytes(copyBuffer, numBytesToCopy);
+                extractedFile.WriteBytes(copyBuffer, numBytesToCopy);
+
+                (*curProgress)++;
+
+                if (progress)
+                    progress(arg, *curProgress, *totalProgress);
+            }
+
+            extractedFile.Close();
+        }
+    }
+
+    delete copyBuffer;
+}

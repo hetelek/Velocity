@@ -45,7 +45,8 @@ enum FileSystem
     FileSystemSTFS = 0,
     FileSystemSVOD,
     FileSystemFATX,
-    FileSystemFriendlyFATX
+    FileSystemFriendlyFATX,
+    FileSystemISO
 };
 
 class XBOXINTERNALSSHARED_EXPORT XContentHeader

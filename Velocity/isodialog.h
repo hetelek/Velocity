@@ -4,7 +4,10 @@
 #include <QDialog>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
+#include <QMessageBox>
 #include "qthelpers.h"
+
+#include "singleprogressdialog.h"
 
 #include "Disc/ISO.h"
 
@@ -19,6 +22,9 @@ class ISODialog : public QDialog
 public:
     explicit ISODialog(ISO *iso, QWidget *parent = 0);
     ~ISODialog();
+
+private slots:
+    void on_pushButton_clicked();
 
 private:
     Ui::ISODialog *ui;

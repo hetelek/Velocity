@@ -13,7 +13,7 @@
 class BigFileIO : public BaseIO
 {
 public:
-    BigFileIO(std::string filePath);
+    BigFileIO(std::string filePath, bool create = false);
     ~BigFileIO();
 
     void ReadBytes(BYTE *outBuffer, DWORD len);
