@@ -55,6 +55,7 @@ void ISODialog::LoadDirectory(QObject *parent, std::vector<GdfxFileEntry> direct
         if (curEntry.attributes & GdfxDirectory)
         {
             LoadDirectory((QObject*)item, curEntry.files);
+            item->setIcon(0, QIcon(QPixmap(":/Images/FolderFileIcon")));
         }
         else
         {
@@ -64,11 +65,11 @@ void ISODialog::LoadDirectory(QObject *parent, std::vector<GdfxFileEntry> direct
 
             magic = curIO->ReadDword();
             delete curIO;
-        }
 
-        QIcon icon;
-        QtHelpers::GetFileIcon(magic, QString::fromStdString(curEntry.name), icon, *item, FileSystemSTFS);
-        item->setIcon(0, icon);
+            QIcon icon;
+            QtHelpers::GetFileIcon(magic, QString::fromStdString(curEntry.name), icon, *item, FileSystemSTFS);
+            item->setIcon(0, icon);
+        }
 
         item->setData(IsoTreeWidgetItemDataMagic, Qt::UserRole, (quint32)magic);
     }
