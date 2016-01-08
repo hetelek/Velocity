@@ -90,6 +90,17 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="btnSectorTool">
+       <property name="text">
+        <string>Sector Tool</string>
+       </property>
+       <property name="icon">
+        <iconset resource="Resources.qrc">
+         <normaloff>:/Images/gear.png</normaloff>:/Images/gear.png</iconset>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>

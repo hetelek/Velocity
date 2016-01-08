@@ -11,6 +11,7 @@
 
 #include "singleprogressdialog.h"
 #include "packageviewer.h"
+#include "isosectordialog.h"
 
 #include "Disc/ISO.h"
 #include "IO/IsoIO.h"
@@ -40,6 +41,8 @@ private slots:
     void showContextMenu(QPoint point);
 
     void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
+
+    void on_btnSectorTool_clicked();
 
 private:
     Ui::ISODialog *ui;

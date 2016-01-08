@@ -128,6 +128,11 @@ std::string ISO::GetXGDVersion()
     return xgdVersion;
 }
 
+UINT64 ISO::GetTotalSectors()
+{
+    return (io->Length() - gdfxHeaderAddress) / ISO_SECTOR_SIZE;
+}
+
 void ISO::ParseISO()
 {
     // first we need to find the address of the GDFX header, that depends on the XGD (Xbox game disc) version

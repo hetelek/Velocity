@@ -145,3 +145,9 @@ void ISODialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colum
                               QString::fromStdString(error)) ;
     }
 }
+
+void ISODialog::on_btnSectorTool_clicked()
+{
+    IsoSectorDialog sectorDialog(iso, this);
+    sectorDialog.exec();
+}

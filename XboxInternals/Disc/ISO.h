@@ -50,6 +50,8 @@ public:
 
     std::string GetXGDVersion();
 
+    UINT64 GetTotalSectors();
+
 private:
     BaseIO *io;
     bool freeIO;
