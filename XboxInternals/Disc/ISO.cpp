@@ -77,8 +77,6 @@ GdfxFileEntry* ISO::GetFileEntry(std::string filePath)
     {
         std::string entryName = normalizedPath.substr(0, separatorIndex);
 
-        std::cout << "bee" << std::endl;
-
         // find the entry in the current directory
         for (size_t i = 0; i < curDirectory->size(); i++)
         {
@@ -99,16 +97,12 @@ GdfxFileEntry* ISO::GetFileEntry(std::string filePath)
             }
         }
 
-        std::cout << "tree" << std::endl;
-
         if (curDirectoryEntry == NULL)
             throw std::string("ISO: Unable to find file " + filePath);
 
         // remove the current directory from the path and point the new current directory at the next one
         normalizedPath = normalizedPath.substr(separatorIndex + 1);
         curDirectory = &(curDirectoryEntry->files);
-
-        std::cout << "monkey" << std::endl;
 
         separatorIndex = normalizedPath.find('\\');
     }
