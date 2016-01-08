@@ -20,6 +20,9 @@
 // this is 3.2768 MB
 #define ISO_COPY_BUFFER_SIZE 	(ISO_SECTOR_SIZE * 1000)
 
+
+class IsoIO;
+
 class XBOXINTERNALSSHARED_EXPORT ISO
 {
 public:
@@ -39,7 +42,11 @@ public:
 
     void ExtractAll(std::string outDirectory, void (*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
-    GdfxFileEntry* GetFileEntry(std::string filePath);
+    GdfxFileEntry *GetFileEntry(std::string filePath);
+
+    IsoIO *GetIO(std::string filePath);
+
+    IsoIO *GetIO(GdfxFileEntry *entry);
 
 private:
     BaseIO *io;

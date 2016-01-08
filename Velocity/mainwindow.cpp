@@ -397,7 +397,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
             if (file.suffix().toLower() == "iso")
             {
                 ISO *iso = new ISO(fileName);
-                ISODialog *dialog = new ISODialog(iso);
+                ISODialog *dialog = new ISODialog(iso, ui->statusBar);
 
                 dialog->setAttribute(Qt::WA_DeleteOnClose);
                 ui->mdiArea->addSubWindow(dialog);
@@ -950,7 +950,7 @@ void MainWindow::on_actionISO_triggered()
         try
         {
             ISO *iso = new ISO(isoPath.toStdString());
-            ISODialog *dialog = new ISODialog(iso, this);
+            ISODialog *dialog = new ISODialog(iso, ui->statusBar, this);
             ui->mdiArea->addSubWindow(dialog);
             dialog->show();
         }

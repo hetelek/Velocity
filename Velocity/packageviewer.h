@@ -45,7 +45,7 @@ class PackageViewer : public QDialog
     Q_OBJECT
 
 public:
-    explicit PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<QAction*> gpdActions, QList<QAction*> gameActions, QWidget *parent = NULL, bool disposePackage = true);
+    explicit PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<QAction*> gpdActions = QList<QAction*>(), QList<QAction*> gameActions = QList<QAction*>(), QWidget *parent = NULL, bool disposePackage = true);
     ~PackageViewer();
 
 private slots:

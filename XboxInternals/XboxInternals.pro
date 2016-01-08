@@ -74,7 +74,8 @@ SOURCES += \
     Utils.cpp \
     Stfs/IXContentHeader.cpp \
     Disc/ISO.cpp \
-    IO/BigFileIO.cpp
+    IO/BigFileIO.cpp \
+    IO/IsoIO.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -127,4 +128,5 @@ HEADERS +=\
     IO/FatxIndexableMultiFileIO.h \
     Utils.h \
     Disc/ISO.h \
-    IO/BigFileIO.h
+    IO/BigFileIO.h \
+    IO/IsoIO.h

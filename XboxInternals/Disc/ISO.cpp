@@ -1,4 +1,5 @@
 #include "ISO.h"
+#include "IO/IsoIO.h"
 
 ISO::ISO(BaseIO *io) :
     freeIO(false), didReadFileListing(false)
@@ -115,6 +116,17 @@ GdfxFileEntry* ISO::GetFileEntry(std::string filePath)
 EndDirectoriesInPathLoop:
 
     return foundFileEntry;
+}
+
+IsoIO *ISO::GetIO(std::string filePath)
+{
+    return new IsoIO(io, filePath, this);
+}
+
+IsoIO *ISO::GetIO(GdfxFileEntry *entry)
+{
+    IsoIO *io = new IsoIO(io, entry, this);
+    return io;
 }
 
 void ISO::ParseISO()
