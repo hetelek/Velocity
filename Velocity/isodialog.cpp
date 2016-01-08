@@ -26,6 +26,8 @@ void ISODialog::LoadISO()
     LoadDirectory(ui->treeWidget, iso->root, true);
 
     ui->lblXGDVersion->setText(QString::fromStdString(iso->GetXGDVersion()));
+
+    statusBar->showMessage("ISO parsed successfully", 5000);
 }
 
 void ISODialog::LoadDirectory(QObject *parent, std::vector<GdfxFileEntry> directoryContents, bool root)
@@ -117,6 +119,8 @@ void ISODialog::showContextMenu(QPoint point)
 
         QString outDirectory = QFileDialog::getExistingDirectory(this, "Choose a place to extract the file to", QtHelpers::DesktopLocation());
         iso->ExtractFile(outDirectory.toStdString(), pathInISO.toStdString());
+
+        statusBar->showMessage("File extracted successfully", 5000);
     }
 }
 
