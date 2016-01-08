@@ -123,15 +123,29 @@ IsoIO *ISO::GetIO(GdfxFileEntry *entry)
     return io;
 }
 
+std::string ISO::GetXGDVersion()
+{
+    return xgdVersion;
+}
+
 void ISO::ParseISO()
 {
     // first we need to find the address of the GDFX header, that depends on the XGD (Xbox game disc) version
     if (ValidGDFXHeader(ISO_XGD1_ADDRESS))
+    {
         gdfxHeaderAddress = ISO_XGD1_ADDRESS;
+        xgdVersion = "XGD1";
+    }
     else if (ValidGDFXHeader(ISO_XGD2_ADDRESS))
+    {
         gdfxHeaderAddress = ISO_XGD2_ADDRESS;
+        xgdVersion = "XGD2";
+    }
     else if (ValidGDFXHeader(ISO_XGD3_ADDRESS))
+    {
         gdfxHeaderAddress = ISO_XGD3_ADDRESS;
+        xgdVersion = "XGD3";
+    }
     else
         throw std::string("ISO: Invalid Xbox 360 ISO.");
 

@@ -48,12 +48,15 @@ public:
 
     IsoIO *GetIO(GdfxFileEntry *entry);
 
+    std::string GetXGDVersion();
+
 private:
     BaseIO *io;
     bool freeIO;
     UINT64 gdfxHeaderAddress;
     GdfxHeader gdfxHeader;
     bool didReadFileListing;
+    std::string xgdVersion;
 
     void ParseISO();
 
