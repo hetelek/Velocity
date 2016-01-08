@@ -6,7 +6,7 @@ ISODialog::ISODialog(ISO *iso, QStatusBar *statusBar, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    LoadFileListing();
+    LoadISO();
 
     ui->treeWidget->setColumnWidth(0, 300);
 
@@ -20,10 +20,12 @@ ISODialog::~ISODialog()
     delete iso;
 }
 
-void ISODialog::LoadFileListing()
+void ISODialog::LoadISO()
 {
     iso->GetFileListing();
     LoadDirectory(ui->treeWidget, iso->root, true);
+
+    ui->lblXGDVersion->setText(QString::fromStdString(iso->GetXGDVersion()));
 }
 
 void ISODialog::LoadDirectory(QObject *parent, std::vector<GdfxFileEntry> directoryContents, bool root)

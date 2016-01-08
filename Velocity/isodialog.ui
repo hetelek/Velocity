@@ -23,46 +23,70 @@
    <iconset resource="Resources.qrc">
     <normaloff>:/Images/Leaner24.png</normaloff>:/Images/Leaner24.png</iconset>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <widget class="QTreeWidget" name="treeWidget">
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <attribute name="headerDefaultSectionSize">
+      <number>125</number>
+     </attribute>
+     <column>
+      <property name="text">
+       <string>Name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Address</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Sector</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Size</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QTreeWidget" name="treeWidget">
-       <property name="iconSize">
+      <widget class="QLabel" name="lblXGDVersion">
+       <property name="text">
+        <string>XGD Version</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
         <size>
-         <width>24</width>
-         <height>24</height>
+         <width>40</width>
+         <height>20</height>
         </size>
        </property>
-       <attribute name="headerDefaultSectionSize">
-        <number>125</number>
-       </attribute>
-       <column>
-        <property name="text">
-         <string>Name</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Address</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Sector</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Size</string>
-        </property>
-       </column>
-      </widget>
+      </spacer>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton">
        <property name="text">
         <string>Extract All Files</string>
+       </property>
+       <property name="icon">
+        <iconset resource="Resources.qrc">
+         <normaloff>:/Images/extract.png</normaloff>:/Images/extract.png</iconset>
        </property>
       </widget>
      </item>

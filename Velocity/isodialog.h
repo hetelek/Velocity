@@ -46,7 +46,7 @@ private:
     ISO *iso;
     QStatusBar *statusBar;
 
-    void LoadFileListing();
+    void LoadISO();
 
     void LoadDirectory(QObject *parent, std::vector<GdfxFileEntry> directoryContents, bool root=false);
 };
