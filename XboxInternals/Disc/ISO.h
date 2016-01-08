@@ -15,7 +15,7 @@
 #define ISO_SECTOR_SIZE 	0x800
 #define ISO_XGD1_ADDRESS 	0x10000
 #define ISO_XGD2_ADDRESS 	0xFDA0000
-#define ISO_XGD3_ADDRESS 	0x2080000
+#define ISO_XGD3_ADDRESS 	0x2090000
 
 // this is 3.2768 MB
 #define ISO_COPY_BUFFER_SIZE 	(ISO_SECTOR_SIZE * 1000)
@@ -33,13 +33,13 @@ public:
 
     void GetFileListing();
 
-    void ExtractFile(GdfxFileEntry fileEntry, void (*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    void ExtractFile(std::string outDirectory, const GdfxFileEntry *fileEntry, void (*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
-    void ExtractFile(std::string filePath, void (*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
+    void ExtractFile(std::string outDirectory, std::string filePath, void (*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
     void ExtractAll(std::string outDirectory, void (*progress)(void*, DWORD, DWORD) = NULL, void *arg = NULL);
 
-    GdfxFileEntry GetFileEntry(std::string filePath);
+    GdfxFileEntry* GetFileEntry(std::string filePath);
 
 private:
     BaseIO *io;
@@ -57,7 +57,9 @@ private:
     // recursively get the total number of sectors that the files occupy (excluding the file entries)
     UINT64 GetTotalSectors(const vector<GdfxFileEntry> *entryList);
 
-    void ExtractAllHelper(std::string outDirectory, std::vector<GdfxFileEntry> *entryList, void (*progress)(void *, DWORD, DWORD) = NULL, void *arg = NULL, DWORD *curProgress = NULL, const DWORD *totalProgress = NULL);
+    void ExtractAllHelper(std::string outDirectory, std::vector<GdfxFileEntry> *entryList, void (*progress)(void *, DWORD, DWORD) = NULL, void *arg = NULL, DWORD *curProgress = NULL, DWORD totalProgress = 0);
+
+    void ExtractFileHelper(std::string outDirectory, const GdfxFileEntry *toExtract, void (*progress)(void *, DWORD, DWORD) = NULL, void *arg = NULL, DWORD *curProgress = NULL, DWORD totalProgress = 0);
 };
 
 #endif // ISO_H

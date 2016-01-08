@@ -32,14 +32,17 @@ void ISO::GetFileListing()
     }
 }
 
-void ISO::ExtractFile(GdfxFileEntry fileEntry, void (*progress)(void*, DWORD, DWORD) = NULL, void *arg)
+void ISO::ExtractFile(std::string outDirectory, const GdfxFileEntry *fileEntry, void (*progress)(void*, DWORD, DWORD), void *arg)
 {
-    DWORD bufferSize = ISO_SECTOR_SIZE * 100;
-    BYTE *copyBuffer = new BYTE[bufferSize];
+    DWORD curProgress = 0;
+    DWORD totalReads = fileEntry->size / ISO_COPY_BUFFER_SIZE + 1;
+    ExtractFileHelper(outDirectory, fileEntry, progress, arg, &curProgress, totalReads);
+}
 
-
-
-    delete copyBuffer;
+void ISO::ExtractFile(std::string outDirectory, std::string filePath, void (*progress)(void *, DWORD, DWORD), void *arg)
+{
+    GdfxFileEntry *entry = GetFileEntry(filePath);
+    ExtractFile(outDirectory, entry, progress, arg);
 }
 
 void ISO::ExtractAll(std::string outDirectory, void (*progress)(void*, DWORD, DWORD), void *arg)
@@ -52,7 +55,66 @@ void ISO::ExtractAll(std::string outDirectory, void (*progress)(void*, DWORD, DW
         totalCopyIterations++;
 
     DWORD curProgress = 0;
-    ExtractAllHelper(outDirectory, &root, progress, arg, &curProgress, &totalCopyIterations);
+    ExtractAllHelper(outDirectory, &root, progress, arg, &curProgress, totalCopyIterations);
+}
+
+GdfxFileEntry* ISO::GetFileEntry(std::string filePath)
+{
+    std::vector<GdfxFileEntry> *curDirectory = &root;
+
+    std::string normalizedPath = Utils::NormalizeFilePath(filePath);
+    size_t separatorIndex = normalizedPath.find('\\');
+
+    // remove the trailing \ if it's there
+    if (normalizedPath.at(normalizedPath.size() - 1) == '\\')
+        normalizedPath = normalizedPath.substr(0, normalizedPath.size() - 1);
+
+    // iterate over all the directories in the path
+    GdfxFileEntry *curDirectoryEntry = NULL;
+    GdfxFileEntry *foundFileEntry = NULL;
+    while (true)
+    {
+        std::string entryName = normalizedPath.substr(0, separatorIndex);
+
+        std::cout << "bee" << std::endl;
+
+        // find the entry in the current directory
+        for (size_t i = 0; i < curDirectory->size(); i++)
+        {
+            GdfxFileEntry *curEntry = &(curDirectory->at(i));
+            if (curEntry->name == entryName)
+            {
+                // if this isn't the last entry in the chain then we need to continue following the chain
+                if (separatorIndex != std::string::npos)
+                {
+                    curDirectoryEntry = curEntry;
+                    break;
+                }
+                else
+                {
+                    foundFileEntry = curEntry;
+                    goto EndDirectoriesInPathLoop;
+                }
+            }
+        }
+
+        std::cout << "tree" << std::endl;
+
+        if (curDirectoryEntry == NULL)
+            throw std::string("ISO: Unable to find file " + filePath);
+
+        // remove the current directory from the path and point the new current directory at the next one
+        normalizedPath = normalizedPath.substr(separatorIndex + 1);
+        curDirectory = &(curDirectoryEntry->files);
+
+        std::cout << "monkey" << std::endl;
+
+        separatorIndex = normalizedPath.find('\\');
+    }
+
+EndDirectoriesInPathLoop:
+
+    return foundFileEntry;
 }
 
 void ISO::ParseISO()
@@ -159,10 +221,8 @@ UINT64 ISO::GetTotalSectors(const vector<GdfxFileEntry> *entryList)
     return totalSectors;
 }
 
-void ISO::ExtractAllHelper(std::string outDirectory, std::vector<GdfxFileEntry> *entryList, void (*progress)(void*, DWORD, DWORD), void *arg, DWORD *curProgress, const DWORD *totalProgress)
+void ISO::ExtractAllHelper(std::string outDirectory, std::vector<GdfxFileEntry> *entryList, void (*progress)(void*, DWORD, DWORD), void *arg, DWORD *curProgress, DWORD totalProgress)
 {
-    BYTE *copyBuffer = new BYTE[ISO_COPY_BUFFER_SIZE];
-
     // extract all the files in the entry list
     for (size_t i = 0; i < entryList->size(); i++)
     {
@@ -176,40 +236,51 @@ void ISO::ExtractAllHelper(std::string outDirectory, std::vector<GdfxFileEntry> 
         }
         else
         {
-            // create a new file on the local disk
-            Utils::CreateLocalDirectory(outDirectory + "/" + entry.filePath);
-            std::string outFilePath = outDirectory + "/" + entry.filePath + entry.name;
-            BigFileIO extractedFile(outFilePath, true);
-
-            DWORD totalReads = entry.size / ISO_COPY_BUFFER_SIZE;
-            if (entry.size % ISO_COPY_BUFFER_SIZE != 0)
-                totalReads++;
-
-            // seek to the beginning of the file
-            UINT64 readAddress = SectorToAddress(entry.sector);
-            io->SetPosition(readAddress);
-
-            // keep reading into the copy buffer and writing to the local disk until the entire file has been extracted
-            for (DWORD x = 0; x < totalReads; x++)
-            {
-                // if we're at the end of the file then we won't need to read ISO_COPY_BUFFER_SIZE bytes
-                DWORD numBytesToCopy = ISO_COPY_BUFFER_SIZE;
-                if (x == totalReads - 1 && entry.size % ISO_COPY_BUFFER_SIZE != 0)
-                     numBytesToCopy = entry.size % ISO_COPY_BUFFER_SIZE;
-
-                // copy over numBytesToCopy bytes
-                io->ReadBytes(copyBuffer, numBytesToCopy);
-                extractedFile.WriteBytes(copyBuffer, numBytesToCopy);
-
-                (*curProgress)++;
-
-                if (progress)
-                    progress(arg, *curProgress, *totalProgress);
-            }
-
-            extractedFile.Close();
+            std::string outFilePath = outDirectory + "/" + entry.filePath;
+            ExtractFileHelper(outFilePath, &entry, progress, arg, curProgress, totalProgress);
         }
     }
+}
 
+void ISO::ExtractFileHelper(std::string outDirectory, const GdfxFileEntry *toExtract, void (*progress)(void *, DWORD, DWORD), void *arg, DWORD *curProgress, DWORD totalProgress)
+{
+    BYTE *copyBuffer = new BYTE[ISO_COPY_BUFFER_SIZE];
+
+    // create the directory incase it doesn't exist
+    // this is so this function can work with ExtractAllHelper
+    Utils::CreateLocalDirectory(outDirectory);
+
+    // create a new file on the local disk
+    std::string outFilePath = outDirectory + "/" + toExtract->name;
+    BigFileIO extractedFile(outFilePath, true);
+
+    DWORD totalReads = toExtract->size / ISO_COPY_BUFFER_SIZE;
+    if (toExtract->size % ISO_COPY_BUFFER_SIZE != 0)
+        totalReads++;
+
+    // seek to the beginning of the file
+    UINT64 readAddress = SectorToAddress(toExtract->sector);
+    io->SetPosition(readAddress);
+
+    // keep reading into the copy buffer and writing to the local disk until the entire file has been extracted
+    for (DWORD x = 0; x < totalReads; x++)
+    {
+        // if we're at the end of the file then we won't need to read ISO_COPY_BUFFER_SIZE bytes
+        DWORD numBytesToCopy = ISO_COPY_BUFFER_SIZE;
+        if (x == totalReads - 1 && toExtract->size % ISO_COPY_BUFFER_SIZE != 0)
+             numBytesToCopy = toExtract->size % ISO_COPY_BUFFER_SIZE;
+
+        // copy over numBytesToCopy bytes
+        io->ReadBytes(copyBuffer, numBytesToCopy);
+        extractedFile.WriteBytes(copyBuffer, numBytesToCopy);
+
+        if (curProgress)
+            (*curProgress)++;
+
+        if (progress)
+            progress(arg, curProgress ? *curProgress : 0, totalProgress);
+    }
+
+    extractedFile.Close();
     delete copyBuffer;
 }

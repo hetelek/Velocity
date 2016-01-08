@@ -5,6 +5,7 @@
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QMessageBox>
+#include <QMenu>
 #include "qthelpers.h"
 
 #include "singleprogressdialog.h"
@@ -25,6 +26,8 @@ public:
 
 private slots:
     void on_pushButton_clicked();
+
+    void showContextMenu(QPoint point);
 
 private:
     Ui::ISODialog *ui;

@@ -9,6 +9,9 @@ ISODialog::ISODialog(ISO *iso, QWidget *parent) :
     LoadFileListing();
 
     ui->treeWidget->setColumnWidth(0, 300);
+
+    ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
 }
 
 ISODialog::~ISODialog()
@@ -25,8 +28,6 @@ void ISODialog::LoadFileListing()
 
 void ISODialog::LoadDirectory(QObject *parent, std::vector<GdfxFileEntry> directoryContents, bool root)
 {
-    qDebug() << "0x" + QString::number(iso->SectorToAddress(0x30DA20), 16).toUpper();
-
     // create a tree widget for all the items, and recursively call for directories
     for (size_t i = 0; i < directoryContents.size(); i++)
     {
@@ -45,6 +46,9 @@ void ISODialog::LoadDirectory(QObject *parent, std::vector<GdfxFileEntry> direct
         item->setText(1, QtHelpers::ToHexString(fileAddress));
         item->setText(2, QtHelpers::ToHexString(curEntry.sector));
         item->setText(3, QString::fromStdString(ByteSizeToString(curEntry.size)));
+
+        QString pathInISO = QString::fromStdString(curEntry.filePath + curEntry.name);
+        item->setData(0, Qt::UserRole, pathInISO);
 
         if (curEntry.attributes & GdfxDirectory)
             LoadDirectory((QObject*)item, curEntry.files);
@@ -69,5 +73,27 @@ void ISODialog::on_pushButton_clicked()
     {
         QMessageBox::critical(this, "Extract All Error", "An error occurred while extracting all the files.\n\n" + QString::fromStdString(error));
         dialog->close();
+    }
+}
+
+void ISODialog::showContextMenu(QPoint point)
+{
+    QPoint globalPos = ui->treeWidget->mapToGlobal(point);
+    QMenu contextMenu;
+
+    if (ui->treeWidget->selectedItems().size() != 0)
+        contextMenu.addAction(QPixmap(":/Images/extract.png"), "Extract");
+
+    QAction *selectedItem = contextMenu.exec(globalPos);
+    if (selectedItem == NULL)
+        return;
+
+    if (selectedItem->text() == "Extract")
+    {
+        QTreeWidgetItem *selectedItem = ui->treeWidget->selectedItems().at(0);
+        QString pathInISO = selectedItem->data(0, Qt::UserRole).toString();
+
+        QString outDirectory = QFileDialog::getExistingDirectory(this, "Choose a place to extract the file to", QtHelpers::DesktopLocation());
+        iso->ExtractFile(outDirectory.toStdString(), pathInISO.toStdString());
     }
 }
