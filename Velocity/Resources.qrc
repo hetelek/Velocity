@@ -102,5 +102,6 @@
         <file>Images/xboxcircles.png</file>
         <file>Images/film.png</file>
         <file>Images/thememedium.png</file>
+        <file>Images/iso.png</file>
     </qresource>
 </RCC>

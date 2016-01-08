@@ -90,10 +90,10 @@
      </property>
      <addaction name="actionSTRB_File"/>
      <addaction name="actionXDBF_File"/>
+     <addaction name="actionISO"/>
      <addaction name="actionPackage"/>
      <addaction name="actionSVOD_System"/>
      <addaction name="actionYTGR"/>
-     <addaction name="actionISO"/>
     </widget>
     <addaction name="menuOpen"/>
     <addaction name="actionCreate_Package"/>
@@ -370,6 +370,10 @@
    </property>
   </action>
   <action name="actionISO">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/iso.png</normaloff>:/Images/iso.png</iconset>
+   </property>
    <property name="text">
     <string>ISO</string>
    </property>
