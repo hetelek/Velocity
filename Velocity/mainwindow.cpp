@@ -392,6 +392,21 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 
         try
         {
+            // detect ISO files by their extension
+            QFileInfo file(QString::fromStdString(fileName));
+            if (file.suffix().toLower() == "iso")
+            {
+                ISO *iso = new ISO(fileName);
+                ISODialog *dialog = new ISODialog(iso);
+
+                dialog->setAttribute(Qt::WA_DeleteOnClose);
+                ui->mdiArea->addSubWindow(dialog);
+                dialog->show();
+
+                return;
+            }
+
+
             // read in the file magic
             FileIO io(fileName);
             DWORD fileMagic = io.ReadDword();
