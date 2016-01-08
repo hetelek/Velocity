@@ -24,7 +24,7 @@ QMAKE_CFLAGS_RELEASE = -O3
 
 win32 {
     include(Stfs/Botan.pri)
-    LIBS += C:/botan/libbotan-1.10.a "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib\ShLwApi.Lib"
+    LIBS += C:/botan/libbotan-1.10.a "C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v7.0A\\Lib\\ShLwApi.Lib"
     PRE_TARGETDEPS += C:/botan/libbotan-1.10.a
     INCLUDEPATH += C:/botan/include
 }
