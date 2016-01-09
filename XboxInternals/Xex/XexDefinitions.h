@@ -125,36 +125,6 @@ struct XexOptionalHeaderEntry
 {
     XexOptionHeaderEntryID id;
     DWORD data;
-    void *parsedData;
-
-    XexOptionalHeaderEntry()
-    {
-        parsedData = NULL;
-    }
-
-    ~XexOptionalHeaderEntry()
-    {
-        if (parsedData != NULL)
-            delete parsedData;
-    }
-
-    // returns true if data is the actual data, false if it's an offset to the data
-    bool IsInline()
-    {
-        switch (id)
-        {
-            case ImageBaseAddress:
-            case OriginalBaseAddress:
-            case EntryPoint:
-            case DefaultStackSize:
-            case DefaultFileSystemCacheSize:
-            case DefaultHeapSize:
-            case TitleWorkspaceSize:
-                return true;
-        }
-
-        return false;
-    }
 };
 
 struct XexStaticLibraryInfo
