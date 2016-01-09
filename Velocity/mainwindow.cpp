@@ -524,6 +524,15 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 
                     break;
                 }
+                case 'XEX2':
+                {
+                    Xbox360Executable *xex = new Xbox360Executable(fileName);
+                    XexDialog *dialog = new XexDialog(xex, this);
+                    ui->mdiArea->addSubWindow(dialog);
+                    dialog->show();
+
+                    break;
+                }
                 default:
                     QMessageBox::warning(this, "Unknown File Format", "The following file is an unknown format. Velocity can only read STFS, SVOD, Xdbf, Ytgr, and STRB files.\n\n" + QString::fromStdString(fileName));
                     break;
@@ -957,6 +966,26 @@ void MainWindow::on_actionISO_triggered()
         catch (std::string error)
         {
             QMessageBox::critical(this, "Error Opening ISO", QString::fromStdString(error));
+        }
+    }
+}
+
+void MainWindow::on_actionXEX_triggered()
+{
+    QString xexPath = QFileDialog::getOpenFileName(this, "Open an XEX", QtHelpers::DesktopLocation());
+
+    if (!xexPath.isEmpty())
+    {
+        try
+        {
+            Xbox360Executable *xex = new Xbox360Executable(xexPath.toStdString());
+            XexDialog *dialog = new XexDialog(xex, this);
+            ui->mdiArea->addSubWindow(dialog);
+            dialog->show();
+        }
+        catch (std::string error)
+        {
+            QMessageBox::critical(this, "Error Opening XEX", QString::fromStdString(error));
         }
     }
 }

@@ -103,5 +103,11 @@
         <file>Images/film.png</file>
         <file>Images/thememedium.png</file>
         <file>Images/iso.png</file>
+        <file>Images/esrb_rating_E.png</file>
+        <file>Images/esrb_rating_E10.png</file>
+        <file>Images/esrb_rating_EC.png</file>
+        <file>Images/esrb_rating_M.png</file>
+        <file>Images/esrb_rating_RP.png</file>
+        <file>Images/esrb_rating_T.png</file>
     </qresource>
 </RCC>

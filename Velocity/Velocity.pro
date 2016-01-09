@@ -105,7 +105,8 @@ SOURCES += main.cpp \
     fatxdevicenotifier.cpp \
     profileselectiondialog.cpp \
     isodialog.cpp \
-    isosectordialog.cpp
+    isosectordialog.cpp \
+    xexdialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -161,7 +162,8 @@ HEADERS  += mainwindow.h \
     fatxdevicenotifier.h \
     profileselectiondialog.h \
     isodialog.h \
-    isosectordialog.h
+    isosectordialog.h \
+    xexdialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -206,7 +208,8 @@ FORMS    += mainwindow.ui \
     devicecontentviewer.ui \
     profileselectiondialog.ui \
     isodialog.ui \
-    isosectordialog.ui
+    isosectordialog.ui \
+    xexdialog.ui
 
 RESOURCES += \
     Resources.qrc

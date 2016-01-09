@@ -93,6 +93,7 @@
      <addaction name="actionISO"/>
      <addaction name="actionPackage"/>
      <addaction name="actionSVOD_System"/>
+     <addaction name="actionXEX"/>
      <addaction name="actionYTGR"/>
     </widget>
     <addaction name="menuOpen"/>
@@ -376,6 +377,15 @@
    </property>
    <property name="text">
     <string>ISO</string>
+   </property>
+  </action>
+  <action name="actionXEX">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Images/XEXFileIcon.png</normaloff>:/Images/XEXFileIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Xbox360 Executable</string>
    </property>
   </action>
  </widget>

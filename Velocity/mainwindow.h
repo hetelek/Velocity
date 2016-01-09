@@ -41,6 +41,7 @@
 #include "deviceviewer.h"
 #include "devicecontentviewer.h"
 #include "isodialog.h"
+#include "xexdialog.h"
 
 // other
 #include "PluginInterfaces/igamemodder.h"
@@ -148,6 +149,8 @@ private slots:
     void onDeviceViewerClosed();
 
     void on_actionISO_triggered();
+
+    void on_actionXEX_triggered();
 
 private:
     Ui::MainWindow *ui;
