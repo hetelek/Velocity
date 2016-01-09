@@ -109,5 +109,10 @@
         <file>Images/esrb_rating_M.png</file>
         <file>Images/esrb_rating_RP.png</file>
         <file>Images/esrb_rating_T.png</file>
+        <file>Images/pegi_3.jpg</file>
+        <file>Images/pegi_7.jpg</file>
+        <file>Images/pegi_12.jpg</file>
+        <file>Images/pegi_16.jpg</file>
+        <file>Images/pegi_18.jpg</file>
     </qresource>
 </RCC>

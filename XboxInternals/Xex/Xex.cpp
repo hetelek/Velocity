@@ -54,6 +54,30 @@ std::string Xbox360Executable::GetEsrbRatingText()
     }
 }
 
+PEGIRating Xbox360Executable::GetPegiRating()
+{
+    return pegiRating;
+}
+
+std::string Xbox360Executable::GetPegiRatingText()
+{
+    switch (pegiRating)
+    {
+        case PEGI_3:
+            return "3";
+        case PEGI_7:
+            return "7";
+        case PEGI_12:
+            return "12";
+        case PEGI_16:
+            return "16";
+        case PEGI_18:
+            return "18";
+        default:
+            return "Unrated";
+    }
+}
+
 void Xbox360Executable::Parse()
 {
     io->SetPosition(0);

@@ -26,8 +26,11 @@ XexDialog::XexDialog(Xbox360Executable *xex, QWidget *parent) :
     ui->chkUserMode->setChecked(!!(moduleFlags & ModuleUserMode));
 
     // load the ratings
-    QString ratingIconPath = ":/Images/esrb_rating_" + QString::fromStdString(xex->GetEsrbRatingText()) + ".png";
-    ui->imgEsrbRating->setPixmap(QPixmap(ratingIconPath));
+    QString esrbRatingIconPath = ":/Images/esrb_rating_" + QString::fromStdString(xex->GetEsrbRatingText()) + ".png";
+    ui->imgEsrbRating->setPixmap(QPixmap(esrbRatingIconPath));
+
+    QString pegiRatingIconPath = ":/Images/pegi_" + QString::fromStdString(xex->GetPegiRatingText()) + ".jpg";
+    ui->imgPegiRating->setPixmap(QPixmap(pegiRatingIconPath));
 }
 
 XexDialog::~XexDialog()

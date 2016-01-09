@@ -24,6 +24,10 @@ public:
 
     std::string GetEsrbRatingText();
 
+    PEGIRating GetPegiRating();
+
+    std::string GetPegiRatingText();
+
 private:
     bool deleteIO;
     BaseIO *io;
