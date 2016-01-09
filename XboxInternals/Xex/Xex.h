@@ -30,6 +30,8 @@ public:
 
     std::string GetPegiRatingText() const;
 
+    std::string GetOriginalPEImageName() const;
+
     DWORD GetImageBaseAddress() const;
 
     DWORD GetEntryPoint() const;
@@ -51,6 +53,7 @@ private:
     std::vector<XexOptionalHeaderEntry> optionalHeaderData;
     std::vector<std::string> systemImportLibraries;
     std::vector<XexStaticLibraryInfo> staticLibraries;
+    std::string originalPEImageName;
 
     // ratings
     ESRBRating esrbRating;
@@ -78,6 +81,8 @@ private:
     void ParseRatingInformation(DWORD address);
 
     void ParseStaticLibraryTable(DWORD address);
+
+    void ParseOriginalPEImageName(DWORD address);
 };
 
 #endif // XEX_H

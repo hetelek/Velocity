@@ -23,6 +23,8 @@ private:
     Xbox360Executable *xex;
 
     void AddExecutableProperty(QString name, DWORD value);
+
+    void AddExecutableProperty(QString name, QString value);
 };
 
 #endif // XEXDIALOG_H

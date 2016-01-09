@@ -58,6 +58,8 @@ XexDialog::XexDialog(Xbox360Executable *xex, QWidget *parent) :
         AddExecutableProperty("Default Heap Size", xex->GetDefaultHeapSize());
     if (xex->GetTitleWorkspaceSize() != 0)
         AddExecutableProperty("Title Workspace Size", xex->GetTitleWorkspaceSize());
+    if (xex->GetOriginalPEImageName().size() != 0)
+        AddExecutableProperty("Original PE Image Name", QString::fromStdString(xex->GetOriginalPEImageName()));
 }
 
 XexDialog::~XexDialog()
@@ -68,7 +70,12 @@ XexDialog::~XexDialog()
 
 void XexDialog::AddExecutableProperty(QString name, DWORD value)
 {
+    AddExecutableProperty(name, "0x" + QString::fromStdString(Utils::ConvertToHexString(value)));
+}
+
+void XexDialog::AddExecutableProperty(QString name, QString value)
+{
     QTreeWidgetItem *property = new QTreeWidgetItem(ui->treExecutableInfo);
     property->setText(0, name);
-    property->setText(1, "0x" + QString::fromStdString(Utils::ConvertToHexString(value)));
+    property->setText(1, value);
 }

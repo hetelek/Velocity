@@ -82,6 +82,12 @@ std::string Xbox360Executable::GetPegiRatingText() const
             return "Unrated";
     }
 }
+
+std::string Xbox360Executable::GetOriginalPEImageName() const
+{
+    return originalPEImageName;
+}
+
 DWORD Xbox360Executable::GetImageBaseAddress() const
 {
     return imageBaseAddress;
@@ -160,6 +166,9 @@ void Xbox360Executable::ParseOptionalHeaderEntry(XexOptionalHeaderEntry *entry, 
         case StaticLibraries:
             ParseStaticLibraryTable(headerEntry.data);
             break;
+        case OriginalPEImageName:
+            ParseOriginalPEImageName(headerEntry.data);
+            break;
         case ImageBaseAddress:
             imageBaseAddress = headerEntry.data;
             break;
@@ -231,4 +240,12 @@ void Xbox360Executable::ParseStaticLibraryTable(DWORD address)
 
         staticLibraries.push_back(staticLibInfo);
     }
+}
+
+void Xbox360Executable::ParseOriginalPEImageName(DWORD address)
+{
+    // seek past the length at the beginning
+    io->SetPosition(address + 4);
+
+    originalPEImageName = io->ReadString();
 }
