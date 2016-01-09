@@ -16,19 +16,33 @@ public:
     Xbox360Executable(std::string fileName);
     ~Xbox360Executable();
 
-    std::vector<std::string> GetSystemImportLibraries();
+    std::vector<std::string> GetSystemImportLibraries() const;
 
-    std::vector<XexStaticLibraryInfo> GetStaticLibraries();
+    std::vector<XexStaticLibraryInfo> GetStaticLibraries() const;
 
-    DWORD GetModuleFlags();
+    DWORD GetModuleFlags() const;
 
-    ESRBRating GetEsrbRating();
+    ESRBRating GetEsrbRating() const;
 
-    std::string GetEsrbRatingText();
+    std::string GetEsrbRatingText() const;
 
-    PEGIRating GetPegiRating();
+    PEGIRating GetPegiRating() const;
 
-    std::string GetPegiRatingText();
+    std::string GetPegiRatingText() const;
+
+    DWORD GetImageBaseAddress() const;
+
+    DWORD GetEntryPoint() const;
+
+    DWORD GetOriginalBaseAddress() const;
+
+    DWORD GetDefaultStackSize() const;
+
+    DWORD GetDefaultFileSystemCacheSize() const;
+
+    DWORD GetDefaultHeapSize() const;
+
+    DWORD GetTitleWorkspaceSize() const;
 
 private:
     bool deleteIO;
@@ -45,6 +59,15 @@ private:
     PEGIPTRating pegiptRating;
     PEGIBBFCRating pegibbfcRating;
     // there are still more
+
+    DWORD imageBaseAddress;
+    DWORD entryPoint;
+    DWORD originalBaseAddress;
+    DWORD defaultStackSize;
+    DWORD defaultFileSystemCacheSize;
+    DWORD defaultHeapSize;
+    DWORD titleWorkspaceSize;
+
 
     void Parse();
 

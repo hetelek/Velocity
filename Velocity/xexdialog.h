@@ -4,6 +4,7 @@
 #include <QDialog>
 
 #include "Xex/Xex.h"
+#include "Utils.h"
 
 namespace Ui {
 class XexDialog;
@@ -20,6 +21,8 @@ public:
 private:
     Ui::XexDialog *ui;
     Xbox360Executable *xex;
+
+    void AddExecutableProperty(QString name, DWORD value);
 };
 
 #endif // XEXDIALOG_H

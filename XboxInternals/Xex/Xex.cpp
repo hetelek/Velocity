@@ -20,27 +20,27 @@ Xbox360Executable::~Xbox360Executable()
         delete io;
 }
 
-std::vector<std::string> Xbox360Executable::GetSystemImportLibraries()
+std::vector<std::string> Xbox360Executable::GetSystemImportLibraries() const
 {
     return systemImportLibraries;
 }
 
-std::vector<XexStaticLibraryInfo> Xbox360Executable::GetStaticLibraries()
+std::vector<XexStaticLibraryInfo> Xbox360Executable::GetStaticLibraries() const
 {
     return staticLibraries;
 }
 
-DWORD Xbox360Executable::GetModuleFlags()
+DWORD Xbox360Executable::GetModuleFlags() const
 {
     return header.moduleFlags;
 }
 
-ESRBRating Xbox360Executable::GetEsrbRating()
+ESRBRating Xbox360Executable::GetEsrbRating() const
 {
     return esrbRating;
 }
 
-std::string Xbox360Executable::GetEsrbRatingText()
+std::string Xbox360Executable::GetEsrbRatingText() const
 {
     switch (esrbRating)
     {
@@ -59,12 +59,12 @@ std::string Xbox360Executable::GetEsrbRatingText()
     }
 }
 
-PEGIRating Xbox360Executable::GetPegiRating()
+PEGIRating Xbox360Executable::GetPegiRating() const
 {
     return pegiRating;
 }
 
-std::string Xbox360Executable::GetPegiRatingText()
+std::string Xbox360Executable::GetPegiRatingText() const
 {
     switch (pegiRating)
     {
@@ -81,6 +81,40 @@ std::string Xbox360Executable::GetPegiRatingText()
         default:
             return "Unrated";
     }
+}
+DWORD Xbox360Executable::GetImageBaseAddress() const
+{
+    return imageBaseAddress;
+}
+
+DWORD Xbox360Executable::GetEntryPoint() const
+{
+    return entryPoint;
+}
+
+DWORD Xbox360Executable::GetOriginalBaseAddress() const
+{
+    return originalBaseAddress;
+}
+
+DWORD Xbox360Executable::GetDefaultStackSize() const
+{
+    return defaultStackSize;
+}
+
+DWORD Xbox360Executable::GetDefaultFileSystemCacheSize() const
+{
+    return defaultFileSystemCacheSize;
+}
+
+DWORD Xbox360Executable::GetDefaultHeapSize() const
+{
+    return defaultHeapSize;
+}
+
+DWORD Xbox360Executable::GetTitleWorkspaceSize() const
+{
+    return titleWorkspaceSize;
 }
 
 void Xbox360Executable::Parse()
@@ -115,21 +149,38 @@ void Xbox360Executable::ParseOptionalHeaderEntry(XexOptionalHeaderEntry *entry, 
     headerEntry.id = (XexOptionHeaderEntryID)io->ReadDword();
     headerEntry.data = io->ReadDword();
 
-    // check to see if data outside the entry table needs to be read
-    if (!headerEntry.IsInline())
+    switch (headerEntry.id)
     {
-        switch (headerEntry.id)
-        {
-            case SystemImportLibraries:
-                ParseSystemImportLibraryTable(headerEntry.data);
-                break;
-            case RatingInformation:
-                ParseRatingInformation(headerEntry.data);
-                break;
-            case StaticLibraries:
-                ParseStaticLibraryTable(headerEntry.data);
-                break;
-        }
+        case SystemImportLibraries:
+            ParseSystemImportLibraryTable(headerEntry.data);
+            break;
+        case RatingInformation:
+            ParseRatingInformation(headerEntry.data);
+            break;
+        case StaticLibraries:
+            ParseStaticLibraryTable(headerEntry.data);
+            break;
+        case ImageBaseAddress:
+            imageBaseAddress = headerEntry.data;
+            break;
+        case EntryPoint:
+            entryPoint = headerEntry.data;
+            break;
+        case OriginalBaseAddress:
+            originalBaseAddress = headerEntry.data;
+            break;
+        case DefaultStackSize:
+            defaultStackSize = headerEntry.data;
+            break;
+        case DefaultFileSystemCacheSize:
+            defaultFileSystemCacheSize = headerEntry.data;
+            break;
+        case DefaultHeapSize:
+            defaultHeapSize = headerEntry.data;
+            break;
+        case TitleWorkspaceSize:
+            titleWorkspaceSize = headerEntry.data;
+            break;
     }
 }
 

@@ -42,9 +42,32 @@ XexDialog::XexDialog(Xbox360Executable *xex, QWidget *parent) :
         staticLibItem->setText(0, QString::fromStdString(staticLib.name));
         staticLibItem->setText(1, QString::fromStdString(VersionToString(staticLib.version)));
     }
+
+    // load executable information
+    if (xex->GetImageBaseAddress() != 0)
+        AddExecutableProperty("Image Base Address", xex->GetImageBaseAddress());
+    if (xex->GetEntryPoint() != 0)
+        AddExecutableProperty("EntryPoint", xex->GetEntryPoint());
+    if (xex->GetOriginalBaseAddress() != 0)
+        AddExecutableProperty("Original Base Address", xex->GetOriginalBaseAddress());
+    if (xex->GetDefaultStackSize() != 0)
+        AddExecutableProperty("Default Stack Size", xex->GetDefaultStackSize());
+    if (xex->GetDefaultFileSystemCacheSize() != 0)
+        AddExecutableProperty("Default File System Cache Size", xex->GetDefaultFileSystemCacheSize());
+    if (xex->GetDefaultHeapSize() != 0)
+        AddExecutableProperty("Default Heap Size", xex->GetDefaultHeapSize());
+    if (xex->GetTitleWorkspaceSize() != 0)
+        AddExecutableProperty("Title Workspace Size", xex->GetTitleWorkspaceSize());
 }
 
 XexDialog::~XexDialog()
 {
     delete ui;
+}
+
+void XexDialog::AddExecutableProperty(QString name, DWORD value)
+{
+    QTreeWidgetItem *property = new QTreeWidgetItem(ui->treExecutableInfo);
+    property->setText(0, name);
+    property->setText(1, "0x" + QString::fromStdString(Utils::ConvertToHexString(value)));
 }
