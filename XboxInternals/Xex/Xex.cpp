@@ -25,6 +25,11 @@ std::vector<std::string> Xbox360Executable::GetSystemImportLibraries()
     return systemImportLibraries;
 }
 
+std::vector<XexStaticLibraryInfo> Xbox360Executable::GetStaticLibraries()
+{
+    return staticLibraries;
+}
+
 DWORD Xbox360Executable::GetModuleFlags()
 {
     return header.moduleFlags;
@@ -107,7 +112,7 @@ void Xbox360Executable::ParseOptionalHeaderEntry(XexOptionalHeaderEntry *entry, 
     io->SetPosition(XEX_HEADER_SIZE + index * XEX_OPTIONAL_HEADER_ENTRY_SIZE);
 
     XexOptionalHeaderEntry headerEntry;
-    headerEntry.id = io->ReadDword();
+    headerEntry.id = (XexOptionHeaderEntryID)io->ReadDword();
     headerEntry.data = io->ReadDword();
 
     // check to see if data outside the entry table needs to be read
@@ -120,6 +125,9 @@ void Xbox360Executable::ParseOptionalHeaderEntry(XexOptionalHeaderEntry *entry, 
                 break;
             case RatingInformation:
                 ParseRatingInformation(headerEntry.data);
+                break;
+            case StaticLibraries:
+                ParseStaticLibraryTable(headerEntry.data);
                 break;
         }
     }
@@ -151,4 +159,25 @@ void Xbox360Executable::ParseRatingInformation(DWORD address)
     pegibbfcRating = (PEGIBBFCRating)io->ReadByte();
 
     // there are more
+}
+
+void Xbox360Executable::ParseStaticLibraryTable(DWORD address)
+{
+    io->SetPosition(address);
+
+    DWORD staticLibraryStructSize = io->ReadDword();
+    DWORD libraryCount = (staticLibraryStructSize - 4) / XEX_STATIC_LIBRARY_ENTRY_SIZE;
+
+    for (DWORD i = 0; i < libraryCount; i++)
+    {
+        XexStaticLibraryInfo staticLibInfo;
+        staticLibInfo.name = io->ReadString(8);
+
+        staticLibInfo.version.major = io->ReadWord();
+        staticLibInfo.version.minor = io->ReadWord();
+        staticLibInfo.version.build = io->ReadWord();
+        staticLibInfo.version.revision = io->ReadWord();
+
+        staticLibraries.push_back(staticLibInfo);
+    }
 }

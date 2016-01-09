@@ -252,6 +252,17 @@ XBOXINTERNALSSHARED_EXPORT string ConsoleTypeToString(ConsoleType type)
     }
 }
 
+XBOXINTERNALSSHARED_EXPORT string VersionToString(Version version)
+{
+    std::stringstream ss;
+    ss << version.major << ".";
+    ss << version.minor << ".";
+    ss << version.build << ".";
+    ss << version.revision;
+
+    return ss.str();
+}
+
 XBOXINTERNALSSHARED_EXPORT string ContentTypeToString(ContentType type)
 {
     switch (type)

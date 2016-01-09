@@ -18,6 +18,8 @@ public:
 
     std::vector<std::string> GetSystemImportLibraries();
 
+    std::vector<XexStaticLibraryInfo> GetStaticLibraries();
+
     DWORD GetModuleFlags();
 
     ESRBRating GetEsrbRating();
@@ -34,6 +36,7 @@ private:
     XexHeader header;
     std::vector<XexOptionalHeaderEntry> optionalHeaderData;
     std::vector<std::string> systemImportLibraries;
+    std::vector<XexStaticLibraryInfo> staticLibraries;
 
     // ratings
     ESRBRating esrbRating;
@@ -50,6 +53,8 @@ private:
     void ParseSystemImportLibraryTable(DWORD address);
 
     void ParseRatingInformation(DWORD address);
+
+    void ParseStaticLibraryTable(DWORD address);
 };
 
 #endif // XEX_H

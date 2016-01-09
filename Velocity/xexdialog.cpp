@@ -31,6 +31,17 @@ XexDialog::XexDialog(Xbox360Executable *xex, QWidget *parent) :
 
     QString pegiRatingIconPath = ":/Images/pegi_" + QString::fromStdString(xex->GetPegiRatingText()) + ".jpg";
     ui->imgPegiRating->setPixmap(QPixmap(pegiRatingIconPath));
+
+    // load the static libraries
+    std::vector<XexStaticLibraryInfo> staticLibs = xex->GetStaticLibraries();
+    for (size_t i = 0; i < staticLibs.size(); i++)
+    {
+        XexStaticLibraryInfo staticLib = staticLibs.at(i);
+
+        QTreeWidgetItem *staticLibItem = new QTreeWidgetItem(ui->treStaticLibraries);
+        staticLibItem->setText(0, QString::fromStdString(staticLib.name));
+        staticLibItem->setText(1, QString::fromStdString(VersionToString(staticLib.version)));
+    }
 }
 
 XexDialog::~XexDialog()

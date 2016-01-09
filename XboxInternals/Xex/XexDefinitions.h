@@ -2,6 +2,7 @@
 #define XEXDEFINITIONS_H
 
 #include "winnames.h"
+#include "Stfs/StfsDefinitions.h"
 
 #include <string>
 #include <vector>
@@ -9,11 +10,13 @@
 #define XEX_HEADER_MAGIC 					0x58455832 		// 'XEX2'
 #define XEX_HEADER_SIZE  					0x18
 #define XEX_OPTIONAL_HEADER_ENTRY_SIZE		0x8
+#define XEX_STATIC_LIBRARY_ENTRY_SIZE		0x10
 
 enum XexOptionHeaderEntryID
 {
     ResourceInfo = 0x2FF,					// out
     SystemImportLibraries = 0x103FF,		// out
+    StaticLibraries = 0x200FF,				// out
     ImageBaseAddress = 0x10201,				// in
     OriginalBaseAddress = 0x10001,			// in
     EntryPoint = 0x10100,					// in
@@ -152,6 +155,12 @@ struct XexOptionalHeaderEntry
 
         return false;
     }
+};
+
+struct XexStaticLibraryInfo
+{
+    std::string name;
+    Version version;
 };
 
 struct XexRatingBlock
