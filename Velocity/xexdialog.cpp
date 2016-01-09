@@ -62,6 +62,7 @@ XexDialog::XexDialog(Xbox360Executable *xex, QWidget *parent) :
 
 XexDialog::~XexDialog()
 {
+    delete xex;
     delete ui;
 }
 
