@@ -240,7 +240,12 @@ UINT64 ISO::GetTotalSectors(const vector<GdfxFileEntry> *entryList)
         GdfxFileEntry entry = entryList->at(i);
         if (entry.attributes & GdfxDirectory)
             totalSectors += GetTotalSectors(&entry.files);
-        totalSectors += entry.size / ISO_SECTOR_SIZE;
+
+        DWORD sectorsPerFile = entry.size / ISO_SECTOR_SIZE;
+        if (entry.size % ISO_SECTOR_SIZE != 0)
+            sectorsPerFile++;
+
+        totalSectors += sectorsPerFile;
     }
 
     return totalSectors;
