@@ -35,6 +35,7 @@ struct GdfxFileEntry
     vector<GdfxFileEntry> files;
     DWORD address;
     DWORD fileIndex;
+    DWORD magic;
 };
 
 enum GdfxDirentAttributesutes
