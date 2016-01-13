@@ -52,6 +52,8 @@ private:
     void LoadISO();
 
     void LoadDirectory(QObject *parent, std::vector<GdfxFileEntry> directoryContents, bool root=false);
+
+    DWORD GetISOFileMagic(QString pathInIso);
 };
 
 #endif // ISODIALOG_H

@@ -27,6 +27,11 @@ void ISODialog::LoadISO()
 
     ui->lblXGDVersion->setText(QString::fromStdString(iso->GetXGDVersion()));
 
+    QString title = "ISO Dialog";
+    if (iso->GetTitleName().size() != 0)
+        title += " [ "+ QString::fromStdWString(iso->GetTitleName()) + " ]";
+    setWindowTitle(title);
+
     statusBar->showMessage("ISO parsed successfully", 5000);
 }
 
@@ -55,7 +60,6 @@ void ISODialog::LoadDirectory(QObject *parent, std::vector<GdfxFileEntry> direct
         QString pathInISO = QString::fromStdString(curEntry.filePath + curEntry.name);
         item->setData(IsoTreeWidgetItemDataPathInISO, Qt::UserRole, pathInISO);
 
-        DWORD magic = 0;
         if (curEntry.attributes & GdfxDirectory)
         {
             LoadDirectory((QObject*)item, curEntry.files);
@@ -63,19 +67,12 @@ void ISODialog::LoadDirectory(QObject *parent, std::vector<GdfxFileEntry> direct
         }
         else
         {
-            // if it isn't a directory then read the file magic
-            IsoIO *curIO = iso->GetIO(pathInISO.toStdString());
-            curIO->SetEndian(BigEndian);
-
-            magic = curIO->ReadDword();
-            delete curIO;
-
             QIcon icon;
-            QtHelpers::GetFileIcon(magic, QString::fromStdString(curEntry.name), icon, *item, FileSystemSTFS);
+            QtHelpers::GetFileIcon(curEntry.magic, QString::fromStdString(curEntry.name), icon, *item, FileSystemSTFS);
             item->setIcon(0, icon);
         }
 
-        item->setData(IsoTreeWidgetItemDataMagic, Qt::UserRole, (quint32)magic);
+        item->setData(IsoTreeWidgetItemDataMagic, Qt::UserRole, (quint32)curEntry.magic);
     }
 }
 
