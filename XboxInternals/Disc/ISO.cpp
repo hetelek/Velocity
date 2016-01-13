@@ -2,13 +2,13 @@
 #include "IO/IsoIO.h"
 
 ISO::ISO(BaseIO *io) :
-    freeIO(false), didReadFileListing(false)
+    freeIO(false), didReadFileListing(false), titleName(L"")
 {
     ParseISO();
 }
 
 ISO::ISO(std::string filePath) :
-    io(new BigFileIO(filePath)), freeIO(true), didReadFileListing(false)
+    io(new BigFileIO(filePath)), freeIO(true), didReadFileListing(false), titleName(L"")
 {
     ParseISO();
 }
@@ -119,8 +119,8 @@ IsoIO *ISO::GetIO(std::string filePath)
 
 IsoIO *ISO::GetIO(GdfxFileEntry *entry)
 {
-    IsoIO *io = new IsoIO(io, entry, this);
-    return io;
+    IsoIO *toReturn = new IsoIO(io, entry, this);
+    return toReturn;
 }
 
 std::string ISO::GetXGDVersion()
@@ -131,6 +131,59 @@ std::string ISO::GetXGDVersion()
 UINT64 ISO::GetTotalSectors()
 {
     return (io->Length() - gdfxHeaderAddress) / ISO_SECTOR_SIZE;
+}
+
+std::wstring ISO::GetTitleName()
+{
+    if (titleName.size() != 0)
+        return titleName;
+
+    // look through all the packages in the root
+    for (size_t i = 0; i < root.size(); i++)
+    {
+        GdfxFileEntry entry = root.at(i);
+        switch (entry.magic)
+        {
+        case CON:
+        case LIVE:
+        case PIRS:
+            IsoIO *io = GetIO(&entry);
+            StfsPackage package(io);
+
+            // if the title name isn't null then use that one
+            if (package.metaData->titleName.size() != 0)
+            {
+                titleName = package.metaData->titleName;
+                delete io;
+
+                return titleName;
+            }
+
+            delete io;
+        }
+    }
+
+    return titleName;
+}
+
+DWORD ISO::GetFileMagic(GdfxFileEntry *entry)
+{
+    std::string lowercasePath = entry->filePath;
+    std::transform(lowercasePath.begin(), lowercasePath.end(), lowercasePath.begin(), ::tolower);
+
+    // only read the magic if we're in the root or system update folder
+    DWORD magic = 0;
+    if (lowercasePath == "" || lowercasePath == "$systemupdate/")
+    {
+        IsoIO *curIO = GetIO(entry);
+        curIO->SetEndian(BigEndian);
+
+        magic = curIO->ReadDword();
+        delete curIO;
+    }
+
+    entry->magic = magic;
+    return magic;
 }
 
 void ISO::ParseISO()
@@ -198,6 +251,8 @@ void ISO::ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int si
         }
 
         current.filePath = path;
+        GetFileMagic(&current);
+
         entryList->push_back(current);
 
         // seek to the next entry

@@ -5,10 +5,12 @@
 
 #include "IO/BaseIO.h"
 #include "IO/BigFileIO.h"
+#include "Stfs/StfsPackage.h"
 #include "Gdfx.h"
 #include "Utils.h"
 
 #include <string>
+#include <algorithm>
 
 #include "XboxInternals_global.h"
 
@@ -52,6 +54,10 @@ public:
 
     UINT64 GetTotalSectors();
 
+    // this will attempt to locate Stfs packages in the root and read their title name
+    // older games don't have the packages there, they are usually avatar items and/or disc art
+    std::wstring GetTitleName();
+
 private:
     BaseIO *io;
     bool freeIO;
@@ -59,6 +65,9 @@ private:
     GdfxHeader gdfxHeader;
     bool didReadFileListing;
     std::string xgdVersion;
+    std::wstring titleName;
+
+    DWORD GetFileMagic(GdfxFileEntry *entry);
 
     void ParseISO();
 
