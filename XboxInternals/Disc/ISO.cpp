@@ -152,14 +152,7 @@ std::wstring ISO::GetTitleName()
 
             // if the title name isn't null then use that one
             if (package.metaData->titleName.size() != 0)
-            {
-                titleName = package.metaData->titleName;
-                delete io;
-
-                return titleName;
-            }
-
-            delete io;
+                return package.metaData->titleName;
         }
     }
 
@@ -178,7 +171,9 @@ DWORD ISO::GetFileMagic(GdfxFileEntry *entry)
         IsoIO *curIO = GetIO(entry);
         curIO->SetEndian(BigEndian);
 
-        magic = curIO->ReadDword();
+        // make sure the file is at least 4 bytes (the size of a DWORD)
+        if (curIO->Length() >= 4)
+            magic = curIO->ReadDword();
         delete curIO;
     }
 
