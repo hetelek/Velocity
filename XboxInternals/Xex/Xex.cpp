@@ -244,6 +244,31 @@ DWORD Xbox360Executable::GetImageFlags() const
     return securityInfo.imageFlags;
 }
 
+DWORD Xbox360Executable::GetImageSize() const
+{
+    return securityInfo.imageSize;
+}
+
+BYTE *Xbox360Executable::GetMediaID() const
+{
+    return securityInfo.mediaID;
+}
+
+BYTE *Xbox360Executable::GetKey() const
+{
+    return securityInfo.key;
+}
+
+BYTE *Xbox360Executable::GetHeaderHash() const
+{
+    return securityInfo.headerHash;
+}
+
+BYTE *Xbox360Executable::GetLANKey() const
+{
+    return lanKey;
+}
+
 void Xbox360Executable::Parse()
 {
     io->SetPosition(0);

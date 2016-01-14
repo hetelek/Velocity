@@ -71,6 +71,18 @@ public:
 
     DWORD GetImageFlags() const;
 
+    DWORD GetImageSize() const;
+
+    DWORD GetLoadAddress() const;
+
+    BYTE* GetMediaID() const;
+
+    BYTE* GetKey() const;
+
+    BYTE* GetHeaderHash() const;
+
+    BYTE* GetLANKey() const;
+
 private:
     bool deleteIO;
     BaseIO *io;

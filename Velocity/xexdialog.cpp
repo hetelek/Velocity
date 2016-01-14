@@ -100,6 +100,13 @@ XexDialog::XexDialog(Xbox360Executable *xex, QWidget *parent) :
     ui->chkRestOfEurope->setChecked(xex->HasRegion(XexRegionRestOfEurope));
     ui->chkRestOfWorld->setChecked(xex->HasRegion(XexRegionRestOfWorld));
 
+    // load the security info
+    ui->lblImageSize->setText("0x" + QString::fromStdString(Utils::ConvertToHexString(xex->GetImageSize())));
+    ui->lblLoadAddress->setText("0x" + QString::fromStdString(Utils::ConvertToHexString(xex->GetImageSize())));
+    ui->lblMediaID->setText(QString::fromStdString(Utils::ConvertToHexString(xex->GetMediaID(), 0x10)));
+    ui->lblKey->setText(QString::fromStdString(Utils::ConvertToHexString(xex->GetKey(), XEX_AES_BLOCK_SIZE)));
+    ui->lblLANKey->setText(QString::fromStdString(Utils::ConvertToHexString(xex->GetLANKey(), 0x10)));
+
     // load the allowed media types
     DWORD allowedMediaTypes = xex->GetAllowedMediaTypes();
     ui->chkHardDisk->setChecked(!!(allowedMediaTypes & HardDisk));
