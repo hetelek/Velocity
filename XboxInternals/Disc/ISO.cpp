@@ -171,7 +171,9 @@ DWORD ISO::GetFileMagic(GdfxFileEntry *entry)
         IsoIO *curIO = GetIO(entry);
         curIO->SetEndian(BigEndian);
 
-        magic = curIO->ReadDword();
+        // make sure the file is at least 4 bytes (the size of a DWORD)
+        if (curIO->Length() >= 4)
+            magic = curIO->ReadDword();
         delete curIO;
     }
 
