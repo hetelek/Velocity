@@ -11,10 +11,20 @@
 #define XEX_HEADER_SIZE  					0x18
 #define XEX_OPTIONAL_HEADER_ENTRY_SIZE		0x8
 #define XEX_STATIC_LIBRARY_ENTRY_SIZE		0x10
+#define XEX_RESOURCE_FILE_ENTRY_SIZE		0x10
+#define XEX_AES_BLOCK_SIZE					0x10
+#define XEX_LAN_KEY_SIZE					0x10
+
+const BYTE XEX_RETAIL_KEY[XEX_AES_BLOCK_SIZE] = { 0x20, 0xB1, 0x85, 0xA5, 0x9D, 0x28, 0xFD, 0xC3,
+                                              0x40, 0x58, 0x3F, 0xBB, 0x08, 0x96, 0xBF, 0x91 };
+
+const BYTE XEX_DEVKIT_KEY[XEX_AES_BLOCK_SIZE] = { 0xA2, 0x6C, 0x10, 0xF7, 0x1F, 0xD9, 0x35, 0xE9,
+                                              0x8B, 0x99, 0x92, 0x2C, 0xE9, 0x32, 0x15 ,0x72};
 
 enum XexOptionHeaderEntryID
 {
     ResourceInfo = 0x2FF,					// out
+    BaseFileDescriptor = 0x3FF,				// out
     SystemImportLibraries = 0x103FF,		// out
     StaticLibraries = 0x200FF,				// out
     ImageBaseAddress = 0x10201,				// in
@@ -27,15 +37,16 @@ enum XexOptionHeaderEntryID
     DefaultHeapSize = 0x20401,				// in
     PageHeapData = 0x28002,					// out
     TitleWorkspaceSize = 0x40201,			// in
-    BaseFileDescriptor = 0x3FF,				// out
     CallcapInformation = 0x18102,			// out, not sure how long this is but if the entry exists then the "Image is enabled for callcap"
     FastcapInformation = 0x18200,			// out, not sure how long this is but if the entry exists then the "Image is enabled for fastcap"
     OriginalPEImageName = 0x183FF,			// out
     Xbox360Logo = 0x405FF,					// out, not sure on the format of this, most likely a variation of a bitmap
-    RatingInformation = 0x40310
+    ExecutionInfo = 0x40006,
+    RatingInformation = 0x40310,
+    LANKey = 0x40404
 };
 
-enum ModuleFlags
+enum XexModuleFlag
 {
     ModuleTitle = 1,
     ModuleExportsToTitle = 2,
@@ -47,15 +58,59 @@ enum ModuleFlags
     ModuleUserMode = 128
 };
 
-enum XexRegionMasks
+enum XexAllowedMediaType
 {
-    XexRegionMaskNorthAmerica = 0xFF,
-    XexRegionMaskJapan = 0x100,
-    XexRegionMaskChina = 0x200,
-    XexRegionMaskRestOfAsia = 0xFC00,
-    XexRegionMaskAustraliaNewZealand = 0x10000,
-    XexRegionMaskRestOfEurope = 0xFE0000,
-    XexRegionMaskRestOfWorld = 0xFF000000
+    HardDisk = 1,
+    DVDX2 = 2,
+    DVDCD = 4,
+    DVD5 = 8,
+    DVD9 = 0x10,
+    SystemFlash = 0x20,
+    MemoryUnit = 0x80,
+    MassStorageDevice = 0x100,
+    SMBFileSystem = 0x200,
+    DirectFromRAM = 0x400,
+    SecureVirtualOpticalDevice = 0x1000,
+    WirelessNStorageDevice = 0x2000,
+    SystemExtendedPartition = 0x4000,
+    SystemAuxillaryPartition = 0x8000,
+    InsecurePackage = 0x10000,
+    SaveGamePackage = 0x20000,
+    LocallySignedPackage = 0x40000,
+    LiveSignedPackage = 0x80000,
+    XboxPlatformPackage = 0x100000
+};
+
+enum XexImageFlag
+{
+    ManufacturingType = 6,					// 0 is nothing, 2 is ManufacturingUtility, 4 is ManufacturingSupportTool, 6 is ManufacturingAwareModule
+    XGD2MediaOnly = 8,
+    CardeaKey = 0x100,
+    XeikaKey = 0x200,
+    TitleUserMode = 0x400,
+    SystemUserMode = 0x800,
+    Orange0 = 0x1000,
+    Orange1 = 0x2000,
+    Orange2 = 0x4000,
+    IPTVSignupApplication = 0x10000,
+    IPTVTitleApplication = 0x20000,
+    KeyvaultPrivilegesRequired = 0x4000000,
+    OnlineActivationRequired = 0x8000000,
+    PageSize4KB = 0x10000000,				// if not then the page size is 64KB
+    NoGameRegion = 0x20000000,
+    RevocationCheckOptional = 0x40000000,
+    RevocationCheckRequired = 0x80000000
+};
+
+enum XexRegion
+{
+    XexRegionNorthAmerica = 0xFF,
+    XexRegionJapan = 0x100,
+    XexRegionChina = 0x200,
+    XexRegionRestOfAsia = 0xFC00,
+    XexRegionAustraliaNewZealand = 0x10000,
+    XexRegionRestOfEurope = 0xFE0000,
+    XexRegionRestOfWorld = 0xFF000000
 };
 
 enum ESRBRating
@@ -111,13 +166,39 @@ enum PEGIBBFCRating
     PEGIBBF_Unrated = 0xFF
 };
 
+enum OFLCAURating
+{
+    OFLCAU_G = 0,
+    OFLCAU_PG = 3,
+    OFLCAU_M = 4,
+    OFLCAU_MA15_PLUS = 6,
+    OFLCAU_UNRATED = 0xFF
+};
+
+enum OFLCNZRating
+{
+    OFLCNZ_G = 0,
+    OFLCNZ_PG = 2,
+    OFLCNZ_M = 4,
+    OFLCNZ_MA15_PLUS = 6,
+    OFLCNZ_R16 = 0x20,
+    OFLCNZ_UNRATED = 0xFF
+};
+
+enum XexCompressionState
+{
+    XexDecompressed,
+    XexCompressed,
+    XexSupercompressed
+};
+
 struct XexHeader
 {
     DWORD magic;
     DWORD moduleFlags;
     DWORD dataAddress;
     DWORD reserved;
-    DWORD fileHeaderAddress;
+    DWORD headerAddress;
     DWORD optionalHeaderEntryCount;
 };
 
@@ -140,6 +221,60 @@ struct XexRatingBlock
     PEGIFIRating PEGIFI;
     PEGIPTRating PEGIPT;
     PEGIBBFCRating PEGIBBFC;
+};
+
+struct XexExecutionInfo
+{
+    DWORD mediaID;
+    DWORD version;
+    DWORD baseVersion;
+    DWORD titleID;
+    BYTE executionTable;
+    BYTE platform;
+    BYTE discNumber;
+    BYTE discCount;
+    DWORD savegameID;
+};
+
+struct XexResourceFileEntry
+{
+    std::string name; 	// max length is 8 characters
+    DWORD address;
+    DWORD size;
+    DWORD dataOffset;
+};
+
+struct XexSecurityInfo
+{
+    DWORD size;
+    DWORD imageSize;
+    BYTE pirsRsaSignature[0x100];
+    DWORD imageInfoSize;
+    DWORD imageFlags;
+    DWORD loadAddress;
+    BYTE sectionHash[0x14];
+    DWORD importTableSize;
+    BYTE importTableHash[0x14];
+    BYTE mediaID[0x10];
+    BYTE key[XEX_AES_BLOCK_SIZE];
+    DWORD exportTableSize;
+    BYTE headerHash[0x14];
+    DWORD regions;
+    DWORD allowedMediaTypes;
+};
+
+enum XexSectionType
+{
+    XexSectionCode = 1,
+    XexSectionData = 2,
+    XexSectionReadOnlyData = 3
+};
+
+struct XexSectionEntry
+{
+    XexSectionType type;
+    DWORD totalSize;
+    BYTE hash[0x14];
 };
 
 #endif // XEXDEFINITIONS_H

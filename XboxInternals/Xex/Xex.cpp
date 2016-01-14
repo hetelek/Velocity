@@ -30,6 +30,11 @@ std::vector<XexStaticLibraryInfo> Xbox360Executable::GetStaticLibraries() const
     return staticLibraries;
 }
 
+std::vector<XexResourceFileEntry> Xbox360Executable::GetResourceFileInfo() const
+{
+    return resourceFiles;
+}
+
 DWORD Xbox360Executable::GetModuleFlags() const
 {
     return header.moduleFlags;
@@ -83,6 +88,52 @@ std::string Xbox360Executable::GetPegiRatingText() const
     }
 }
 
+OFLCAURating Xbox360Executable::GetOflcAURating() const
+{
+    return oflcAURating;
+}
+
+std::string Xbox360Executable::GetOflcAURatingText() const
+{
+    switch (oflcAURating)
+    {
+        case OFLCAU_G:
+            return "G";
+        case OFLCAU_PG:
+            return "PG";
+        case OFLCAU_M:
+            return "M";
+        case OFLCAU_MA15_PLUS:
+            return "MA15";
+        default:
+            return "Unrated";
+    }
+}
+
+OFLCNZRating Xbox360Executable::GetOflcNZRating() const
+{
+    return oflcNZRating;
+}
+
+std::string Xbox360Executable::GetOflcNZRatingText() const
+{
+    switch (oflcNZRating)
+    {
+        case OFLCNZ_G:
+            return "G";
+        case OFLCNZ_PG:
+            return "PG";
+        case OFLCNZ_M:
+            return "M";
+        case OFLCNZ_MA15_PLUS:
+            return "MA15";
+        case OFLCNZ_R16:
+            return "R16";
+        default:
+            return "Unrated";
+    }
+}
+
 std::string Xbox360Executable::GetOriginalPEImageName() const
 {
     return originalPEImageName;
@@ -123,6 +174,71 @@ DWORD Xbox360Executable::GetTitleWorkspaceSize() const
     return titleWorkspaceSize;
 }
 
+DWORD Xbox360Executable::GetAllowedMediaTypes() const
+{
+    return securityInfo.allowedMediaTypes;
+}
+
+void Xbox360Executable::ExtractDecryptedData(std::string path) const
+{
+    BYTE retailKey[XEX_AES_BLOCK_SIZE] = { 0x20, 0xB1, 0x85, 0xA5, 0x9D, 0x28, 0xFD, 0xC3,
+            0x40, 0x58, 0x3F, 0xBB, 0x08, 0x96, 0xBF, 0x91 };
+
+    BYTE sessionKey[XEX_AES_BLOCK_SIZE] = {0};
+    BYTE bufferEnc[XEX_AES_BLOCK_SIZE];
+    BYTE bufferDec[XEX_AES_BLOCK_SIZE];
+
+    // decrypt the file key
+    Botan::AES_128 aes;
+    aes.set_key(retailKey, XEX_AES_BLOCK_SIZE);
+    aes.decrypt(securityInfo.key, sessionKey);
+
+    // set the key to the decrypted one
+    aes.set_key(sessionKey, XEX_AES_BLOCK_SIZE);
+
+    // seek to the beginning of the data
+    io->SetPosition(header.dataAddress);
+
+    // calculate how many blocks there are
+    DWORD blockCount = (io->Length() - header.dataAddress) / XEX_AES_BLOCK_SIZE;
+
+    // open an out file
+    FileIO outFile(path, true);
+
+    // wrong base file size
+
+    // decrypt the data
+    BYTE initializationVector[XEX_AES_BLOCK_SIZE] = {0};
+    for (DWORD i = 0; i < blockCount; i++)
+    {
+        io->ReadBytes(bufferEnc, XEX_AES_BLOCK_SIZE);
+        aes.decrypt(bufferEnc, bufferDec);
+
+        for (DWORD x = 0; x < XEX_AES_BLOCK_SIZE; x++)
+        {
+            // xor the data with the old IV
+            bufferDec[x] ^= initializationVector[x];
+
+            // update the IV
+            initializationVector[x] =  bufferEnc[x];
+        }
+
+        outFile.Write(bufferDec, XEX_AES_BLOCK_SIZE);
+    }
+
+    outFile.Close();
+}
+
+bool Xbox360Executable::HasRegion(XexRegion region)
+{
+    return !!(securityInfo.regions & region);
+}
+
+void Xbox360Executable::SetRegion(XexRegion region)
+{
+    securityInfo.regions |= region;
+}
+
 void Xbox360Executable::Parse()
 {
     io->SetPosition(0);
@@ -135,7 +251,7 @@ void Xbox360Executable::Parse()
     header.moduleFlags = io->ReadDword();
     header.dataAddress = io->ReadDword();
     header.reserved = io->ReadDword();
-    header.fileHeaderAddress = io->ReadDword();
+    header.headerAddress = io->ReadDword();
     header.optionalHeaderEntryCount = io->ReadDword();
 
     // read in all the optional header entries
@@ -143,6 +259,46 @@ void Xbox360Executable::Parse()
     {
         XexOptionalHeaderEntry entry;
         ParseOptionalHeaderEntry(&entry, i);
+    }
+
+    // read the security info
+    io->SetPosition(header.headerAddress);
+    securityInfo.size = io->ReadDword();
+    securityInfo.imageSize = io->ReadDword();
+    io->ReadBytes(securityInfo.pirsRsaSignature, 0x100);
+    securityInfo.imageInfoSize = io->ReadDword();
+    securityInfo.imageFlags = io->ReadDword();
+    securityInfo.loadAddress = io->ReadDword();
+    io->ReadBytes(securityInfo.sectionHash, 0x14);
+    securityInfo.importTableSize = io->ReadDword();
+    io->ReadBytes(securityInfo.importTableHash, 0x14);
+    io->ReadBytes(securityInfo.mediaID, 0x10);
+    io->ReadBytes(securityInfo.key, XEX_AES_BLOCK_SIZE);
+    securityInfo.exportTableSize = io->ReadDword();
+    io->ReadBytes(securityInfo.headerHash, 0x14);
+    securityInfo.regions = io->ReadDword();
+    securityInfo.allowedMediaTypes = io->ReadDword();
+
+    // determine the page size
+    if (securityInfo.imageFlags & PageSize4KB)
+        pageSize = 0x1000;
+    else
+        pageSize = 0x10000;
+
+    // read the sections
+    DWORD sectionCount = io->ReadDword();
+    for (DWORD i = 0; i < sectionCount; i++)
+    {
+        XexSectionEntry entry;
+
+        // the bottom 4 bits are the type, the rest are the size of the entry in pages
+        DWORD entryInfo = io->ReadDword();
+
+        entry.type = (XexSectionType)(entryInfo & 0x0F);
+        entry.totalSize = (entryInfo >> 4) * pageSize;
+
+        io->ReadBytes(entry.hash, 0x14);
+        sections.push_back(entry);
     }
 }
 
@@ -168,6 +324,12 @@ void Xbox360Executable::ParseOptionalHeaderEntry(XexOptionalHeaderEntry *entry, 
             break;
         case OriginalPEImageName:
             ParseOriginalPEImageName(headerEntry.data);
+            break;
+        case ResourceInfo:
+            ParseResourceFileTable(headerEntry.data);
+            break;
+        case BaseFileDescriptor:
+            ParseBaseFileDescriptor(headerEntry.data);
             break;
         case ImageBaseAddress:
             imageBaseAddress = headerEntry.data;
@@ -218,6 +380,12 @@ void Xbox360Executable::ParseRatingInformation(DWORD address)
     pegiptRating = (PEGIPTRating)io->ReadByte();
     pegibbfcRating = (PEGIBBFCRating)io->ReadByte();
 
+    /*Cero*/	io->ReadByte();
+    /*USK*/		io->ReadByte();
+
+    oflcAURating = io->ReadByte();
+    oflcNZRating = io->ReadByte();
+
     // there are more
 }
 
@@ -248,4 +416,46 @@ void Xbox360Executable::ParseOriginalPEImageName(DWORD address)
     io->SetPosition(address + 4);
 
     originalPEImageName = io->ReadString();
+}
+
+void Xbox360Executable::ParseResourceFileTable(DWORD address)
+{
+    io->SetPosition(address);
+    DWORD tableSize = io->ReadDword();
+    DWORD entryCount = (tableSize - 4) / XEX_RESOURCE_FILE_ENTRY_SIZE;
+
+    for (DWORD i = 0; i < entryCount; i++)
+    {
+        // read the info from the file table
+        XexResourceFileEntry entry;
+        entry.name = io->ReadString(8);
+        entry.address = io->ReadDword();
+        entry.size = io->ReadDword();
+
+        entry.dataOffset = entry.address - GetEntryPoint();
+        resourceFiles.push_back(entry);
+    }
+}
+
+void Xbox360Executable::ParseBaseFileDescriptor(DWORD address)
+{
+    io->SetPosition(address);
+
+    // unknown
+    io->ReadDword();
+
+    encrypted = !!(io->ReadWord());
+
+    if (io->ReadWord() != 2)
+        compressionState = XexDecompressed;
+    else if (io->ReadDword() <= 0x8000)
+        compressionState = XexCompressed;
+    else
+        compressionState = XexSupercompressed;
+}
+
+void Xbox360Executable::ParseLANKey(DWORD address)
+{
+    io->SetPosition(address);
+    io->ReadBytes(lanKey, XEX_LAN_KEY_SIZE);
 }

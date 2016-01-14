@@ -114,5 +114,14 @@
         <file>Images/pegi_12.jpg</file>
         <file>Images/pegi_16.jpg</file>
         <file>Images/pegi_18.jpg</file>
+        <file>Images/rating_oflc_au_G.jpg</file>
+        <file>Images/rating_oflc_au_M.png</file>
+        <file>Images/rating_oflc_au_MA15.png</file>
+        <file>Images/rating_oflc_au_PG.png</file>
+        <file>Images/rating_oflc_nz_G.png</file>
+        <file>Images/rating_oflc_nz_M.png</file>
+        <file>Images/rating_oflc_nz_MA15.png</file>
+        <file>Images/rating_oflc_nz_PG.png</file>
+        <file>Images/rating_oflc_nz_R16.png</file>
     </qresource>
 </RCC>

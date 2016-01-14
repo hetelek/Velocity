@@ -7,6 +7,8 @@ XexDialog::XexDialog(Xbox360Executable *xex, QWidget *parent) :
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
+    setWindowTitle("XEX Dialog [" + QString::fromStdString(xex->GetOriginalPEImageName()) + "]");
+
     // load the system import libraries
     std::vector<std::string> systemImportLibraries = xex->GetSystemImportLibraries();
     for (size_t i = 0; i < systemImportLibraries.size(); i++)
@@ -29,8 +31,27 @@ XexDialog::XexDialog(Xbox360Executable *xex, QWidget *parent) :
     QString esrbRatingIconPath = ":/Images/esrb_rating_" + QString::fromStdString(xex->GetEsrbRatingText()) + ".png";
     ui->imgEsrbRating->setPixmap(QPixmap(esrbRatingIconPath));
 
-    QString pegiRatingIconPath = ":/Images/pegi_" + QString::fromStdString(xex->GetPegiRatingText()) + ".jpg";
+    QString pegiRatingIconPath;
+    if (xex->GetPegiRating() == PEGI_Unrated)
+        pegiRatingIconPath = ":/Images/HiddenAchievement.png";
+    else
+        pegiRatingIconPath = ":/Images/pegi_" + QString::fromStdString(xex->GetPegiRatingText()) + ".jpg";
     ui->imgPegiRating->setPixmap(QPixmap(pegiRatingIconPath));
+
+    QString oflcAuRating;
+    if (xex->GetOflcAURating() == OFLCAU_UNRATED)
+        pegiRatingIconPath = ":/Images/HiddenAchievement.png";
+    else
+        oflcAuRating = ":/Images/rating_oflc_au_" + QString::fromStdString(xex->GetOflcAURatingText()) + ".png";
+    ui->imgOflcAU->setPixmap(QPixmap(oflcAuRating));
+
+    QString oflcNzRating;
+    if (xex->GetOflcNZRating() == OFLCNZ_UNRATED)
+        oflcNzRating = ":/Images/HiddenAchievement.png";
+    else
+        oflcNzRating = ":/Images/rating_oflc_nz_" + QString::fromStdString(xex->GetOflcNZRatingText()) + ".png";
+    ui->imgOflcNZ->setPixmap(QPixmap(oflcNzRating));
+
 
     // load the static libraries
     std::vector<XexStaticLibraryInfo> staticLibs = xex->GetStaticLibraries();
@@ -41,6 +62,17 @@ XexDialog::XexDialog(Xbox360Executable *xex, QWidget *parent) :
         QTreeWidgetItem *staticLibItem = new QTreeWidgetItem(ui->treStaticLibraries);
         staticLibItem->setText(0, QString::fromStdString(staticLib.name));
         staticLibItem->setText(1, QString::fromStdString(VersionToString(staticLib.version)));
+    }
+
+    // load resources
+    std::vector<XexResourceFileEntry> resources = xex->GetResourceFileInfo();
+    for (size_t i = 0; i < resources.size(); i++)
+    {
+        XexResourceFileEntry resourceEntry = resources.at(i);
+
+        QTreeWidgetItem *resourceItem = new QTreeWidgetItem(ui->treResources);
+        resourceItem->setText(0, QString::fromStdString(resourceEntry.name));
+        resourceItem->setText(1, QString::fromStdString(ByteSizeToString(resourceEntry.size)));
     }
 
     // load executable information
@@ -58,8 +90,37 @@ XexDialog::XexDialog(Xbox360Executable *xex, QWidget *parent) :
         AddExecutableProperty("Default Heap Size", xex->GetDefaultHeapSize());
     if (xex->GetTitleWorkspaceSize() != 0)
         AddExecutableProperty("Title Workspace Size", xex->GetTitleWorkspaceSize());
-    if (xex->GetOriginalPEImageName().size() != 0)
-        AddExecutableProperty("Original PE Image Name", QString::fromStdString(xex->GetOriginalPEImageName()));
+
+    // load game regions
+    ui->chkNorthAmerica->setChecked(xex->HasRegion(XexRegionNorthAmerica));
+    ui->chkJapan->setChecked(xex->HasRegion(XexRegionJapan));
+    ui->chkChina->setChecked(xex->HasRegion(XexRegionChina));
+    ui->chkRestOfAsia->setChecked(xex->HasRegion(XexRegionRestOfAsia));
+    ui->chkAustraliaNewZealand->setChecked(xex->HasRegion(XexRegionAustraliaNewZealand));
+    ui->chkRestOfEurope->setChecked(xex->HasRegion(XexRegionRestOfEurope));
+    ui->chkRestOfWorld->setChecked(xex->HasRegion(XexRegionRestOfWorld));
+
+    // load the allowed media types
+    DWORD allowedMediaTypes = xex->GetAllowedMediaTypes();
+    ui->chkHardDisk->setChecked(!!(allowedMediaTypes & HardDisk));
+    ui->chkDVDX2->setChecked(!!(allowedMediaTypes & DVDX2));
+    ui->chkDVDCD->setChecked(!!(allowedMediaTypes & DVDCD));
+    ui->chkDVD5->setChecked(!!(allowedMediaTypes & DVD5));
+    ui->chkDVD9->setChecked(!!(allowedMediaTypes & DVD9));
+    ui->chkSystemFlash->setChecked(!!(allowedMediaTypes & SystemFlash));
+    ui->chkMemoryUnit->setChecked(!!(allowedMediaTypes & MemoryUnit));
+    ui->chkMassStorageDevice->setChecked(!!(allowedMediaTypes & MassStorageDevice));
+    ui->chkSMBFileSystem->setChecked(!!(allowedMediaTypes & SMBFileSystem));
+    ui->chkDirectFromRAM->setChecked(!!(allowedMediaTypes & DirectFromRAM));
+    ui->chkSecureOpticalDevice->setChecked(!!(allowedMediaTypes & SecureVirtualOpticalDevice));
+    ui->chkWirelessNStorageDevice->setChecked(!!(allowedMediaTypes & WirelessNStorageDevice));
+    ui->chkSystemExtendedPartition->setChecked(!!(allowedMediaTypes & SystemExtendedPartition));
+    ui->chkSystemAuxillaryPartition->setChecked(!!(allowedMediaTypes & SystemAuxillaryPartition));
+    ui->chkInsecurePackage->setChecked(!!(allowedMediaTypes & InsecurePackage));
+    ui->chkSaveGamePackage->setChecked(!!(allowedMediaTypes & SaveGamePackage));
+    ui->chkLocallySignedPackage->setChecked(!!(allowedMediaTypes & LocallySignedPackage));
+    ui->chkLiveSignedPackage->setChecked(!!(allowedMediaTypes & LiveSignedPackage));
+    ui->chkXboxPlatformPackage->setChecked(!!(allowedMediaTypes & XboxPlatformPackage));
 }
 
 XexDialog::~XexDialog()
@@ -78,4 +139,23 @@ void XexDialog::AddExecutableProperty(QString name, QString value)
     QTreeWidgetItem *property = new QTreeWidgetItem(ui->treExecutableInfo);
     property->setText(0, name);
     property->setText(1, value);
+}
+
+void XexDialog::on_pushButton_clicked()
+{
+    QString suggestedBaseFilePath = QtHelpers::DesktopLocation() + "/" + QString::fromStdString(xex->GetOriginalPEImageName());
+    QString outBaseFilePath = QFileDialog::getSaveFileName(this, "Save the base file", suggestedBaseFilePath);
+
+    if (outBaseFilePath.isEmpty())
+        return;
+
+    try
+    {
+        xex->ExtractDecryptedData(outBaseFilePath.toStdString());
+    }
+    catch (std::string error)
+    {
+        QMessageBox::critical(this, "Error Extracting Base File", "An error occurred while extracting the base file.\n\n" +
+                              QString::fromStdString(error));
+    }
 }

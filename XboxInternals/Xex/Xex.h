@@ -4,8 +4,13 @@
 #include "IO/BaseIO.h"
 #include "IO/FileIO.h"
 #include "XexDefinitions.h"
+#include "Utils.h"
 
 #include <string>
+
+#include <botan/botan.h>
+#include <botan/sha160.h>
+#include <botan/aes.h>
 
 #include "XboxInternals_global.h"
 
@@ -20,6 +25,8 @@ public:
 
     std::vector<XexStaticLibraryInfo> GetStaticLibraries() const;
 
+    std::vector<XexResourceFileEntry> GetResourceFileInfo() const;
+
     DWORD GetModuleFlags() const;
 
     ESRBRating GetEsrbRating() const;
@@ -29,6 +36,14 @@ public:
     PEGIRating GetPegiRating() const;
 
     std::string GetPegiRatingText() const;
+
+    OFLCAURating GetOflcAURating() const;
+
+    std::string GetOflcAURatingText() const;
+
+    OFLCNZRating GetOflcNZRating() const;
+
+    std::string GetOflcNZRatingText() const;
 
     std::string GetOriginalPEImageName() const;
 
@@ -46,13 +61,25 @@ public:
 
     DWORD GetTitleWorkspaceSize() const;
 
+    DWORD GetAllowedMediaTypes() const;
+
+    void ExtractDecryptedData(std::string path) const;
+
+    bool HasRegion(XexRegion region);
+
+    void SetRegion(XexRegion region);
+
 private:
     bool deleteIO;
     BaseIO *io;
     XexHeader header;
+    DWORD pageSize;
+
     std::vector<XexOptionalHeaderEntry> optionalHeaderData;
-    std::vector<std::string> systemImportLibraries;
     std::vector<XexStaticLibraryInfo> staticLibraries;
+    std::vector<XexResourceFileEntry> resourceFiles;
+    std::vector<XexSectionEntry> sections;
+    std::vector<std::string> systemImportLibraries;
     std::string originalPEImageName;
 
     // ratings
@@ -61,6 +88,8 @@ private:
     PEGIFIRating pegifiRating;
     PEGIPTRating pegiptRating;
     PEGIBBFCRating pegibbfcRating;
+    OFLCAURating oflcAURating;
+    OFLCNZRating oflcNZRating;
     // there are still more
 
     DWORD imageBaseAddress;
@@ -70,6 +99,11 @@ private:
     DWORD defaultFileSystemCacheSize;
     DWORD defaultHeapSize;
     DWORD titleWorkspaceSize;
+
+    XexSecurityInfo securityInfo;
+    bool encrypted;
+    XexCompressionState compressionState;
+    BYTE lanKey[XEX_LAN_KEY_SIZE];
 
 
     void Parse();
@@ -83,6 +117,12 @@ private:
     void ParseStaticLibraryTable(DWORD address);
 
     void ParseOriginalPEImageName(DWORD address);
+
+    void ParseResourceFileTable(DWORD address);
+
+    void ParseBaseFileDescriptor(DWORD address);
+
+    void ParseLANKey(DWORD address);
 };
 
 #endif // XEX_H

@@ -2,6 +2,9 @@
 #define XEXDIALOG_H
 
 #include <QDialog>
+#include <QFileDialog>
+#include <QMessageBox>
+#include "qthelpers.h"
 
 #include "Xex/Xex.h"
 #include "Utils.h"
@@ -17,6 +20,9 @@ class XexDialog : public QDialog
 public:
     explicit XexDialog(Xbox360Executable *xex, QWidget *parent = 0);
     ~XexDialog();
+
+private slots:
+    void on_pushButton_clicked();
 
 private:
     Ui::XexDialog *ui;
