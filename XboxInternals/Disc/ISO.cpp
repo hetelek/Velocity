@@ -152,14 +152,7 @@ std::wstring ISO::GetTitleName()
 
             // if the title name isn't null then use that one
             if (package.metaData->titleName.size() != 0)
-            {
-                titleName = package.metaData->titleName;
-                delete io;
-
-                return titleName;
-            }
-
-            delete io;
+                return package.metaData->titleName;
         }
     }
 
