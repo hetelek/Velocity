@@ -239,6 +239,11 @@ void Xbox360Executable::SetRegion(XexRegion region)
     securityInfo.regions |= region;
 }
 
+DWORD Xbox360Executable::GetImageFlags() const
+{
+    return securityInfo.imageFlags;
+}
+
 void Xbox360Executable::Parse()
 {
     io->SetPosition(0);

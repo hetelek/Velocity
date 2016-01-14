@@ -69,6 +69,8 @@ public:
 
     void SetRegion(XexRegion region);
 
+    DWORD GetImageFlags() const;
+
 private:
     bool deleteIO;
     BaseIO *io;

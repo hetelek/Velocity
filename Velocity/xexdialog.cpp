@@ -121,6 +121,25 @@ XexDialog::XexDialog(Xbox360Executable *xex, QWidget *parent) :
     ui->chkLocallySignedPackage->setChecked(!!(allowedMediaTypes & LocallySignedPackage));
     ui->chkLiveSignedPackage->setChecked(!!(allowedMediaTypes & LiveSignedPackage));
     ui->chkXboxPlatformPackage->setChecked(!!(allowedMediaTypes & XboxPlatformPackage));
+
+    // load the image flags
+    DWORD imageFlags = xex->GetImageFlags();
+    ui->chkXgd2MediaOnly->setChecked(!!(imageFlags & XGD2MediaOnly));
+    ui->chkCardeaKey->setChecked(!!(imageFlags & CardeaKey));
+    ui->chkXeikaKey->setChecked(!!(imageFlags & XeikaKey));
+    ui->chkTitleUserMode->setChecked(!!(imageFlags & TitleUserMode));
+    ui->chkSystemUserMode->setChecked(!!(imageFlags & SystemUserMode));
+    ui->chkOrange0->setChecked(!!(imageFlags & Orange0));
+    ui->chkOrange1->setChecked(!!(imageFlags & Orange1));
+    ui->chkOrange2->setChecked(!!(imageFlags & Orange2));
+    ui->chkIptvSignupApplication->setChecked(!!(imageFlags & IPTVSignupApplication));
+    ui->chkIptvTitleApplication->setChecked(!!(imageFlags & IPTVTitleApplication));
+    ui->chkKeyvaultPrivilegesRequired->setChecked(!!(imageFlags & KeyvaultPrivilegesRequired));
+    ui->chkOnlineActivationRequired->setChecked(!!(imageFlags & OnlineActivationRequired));
+    ui->chkPageSize4KB->setChecked(!!(imageFlags & PageSize4KB));
+    ui->chkNoGameRegion->setChecked(!!(imageFlags & NoGameRegion));
+    ui->chkRevocationCheckOptional->setChecked(!!(imageFlags & RevocationCheckOptional));
+    ui->chkRevocationCheckRequired->setChecked(!!(imageFlags & RevocationCheckRequired));
 }
 
 XexDialog::~XexDialog()
