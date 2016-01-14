@@ -533,8 +533,17 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 
                     break;
                 }
+                case XUIZ_MAGIC:
+                {
+                    Xuiz *xuiz = new Xuiz(fileName);
+                    XuizDialog *dialog = new XuizDialog(ui->statusBar, xuiz, this);
+                    ui->mdiArea->addSubWindow(dialog);
+                    dialog->show();
+
+                    break;
+                }
                 default:
-                    QMessageBox::warning(this, "Unknown File Format", "The following file is an unknown format. Velocity can only read STFS, SVOD, Xdbf, Ytgr, and STRB files.\n\n" + QString::fromStdString(fileName));
+                    QMessageBox::warning(this, "Unknown File Format", "The following file is an unknown format. Velocity can only read ISO, STFS, STRB, SVOD, XEX, XDBF, XUIZ, and YTGR files.\n\n" + QString::fromStdString(fileName));
                     break;
             }
         }
@@ -986,6 +995,27 @@ void MainWindow::on_actionXEX_triggered()
         catch (std::string error)
         {
             QMessageBox::critical(this, "Error Opening XEX", QString::fromStdString(error));
+        }
+    }
+}
+
+void MainWindow::on_actionXUIZ_triggered()
+{
+    QString xuizPath = QFileDialog::getOpenFileName(this, "Open an XUIZ File", QtHelpers::DesktopLocation());
+
+    if (!xuizPath.isEmpty())
+    {
+        try
+        {
+            Xuiz *xuiz = new Xuiz(xuizPath.toStdString());
+            XuizDialog *dialog = new XuizDialog(ui->statusBar, xuiz, this);
+            ui->mdiArea->addSubWindow(dialog);
+            dialog->show();
+
+        }
+        catch (std::string error)
+        {
+            QMessageBox::critical(this, "Error Opening XUIZ", QString::fromStdString(error));
         }
     }
 }

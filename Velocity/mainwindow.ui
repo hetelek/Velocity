@@ -94,6 +94,7 @@
      <addaction name="actionPackage"/>
      <addaction name="actionSVOD_System"/>
      <addaction name="actionXEX"/>
+     <addaction name="actionXUIZ"/>
      <addaction name="actionYTGR"/>
     </widget>
     <addaction name="menuOpen"/>
@@ -386,6 +387,11 @@
    </property>
    <property name="text">
     <string>Xbox360 Executable</string>
+   </property>
+  </action>
+  <action name="actionXUIZ">
+   <property name="text">
+    <string>XUIZ</string>
    </property>
   </action>
  </widget>

@@ -106,7 +106,8 @@ SOURCES += main.cpp \
     profileselectiondialog.cpp \
     isodialog.cpp \
     isosectordialog.cpp \
-    xexdialog.cpp
+    xexdialog.cpp \
+    xuizdialog.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -163,7 +164,8 @@ HEADERS  += mainwindow.h \
     profileselectiondialog.h \
     isodialog.h \
     isosectordialog.h \
-    xexdialog.h
+    xexdialog.h \
+    xuizdialog.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \
@@ -209,7 +211,8 @@ FORMS    += mainwindow.ui \
     profileselectiondialog.ui \
     isodialog.ui \
     isosectordialog.ui \
-    xexdialog.ui
+    xexdialog.ui \
+    xuizdialog.ui
 
 RESOURCES += \
     Resources.qrc
