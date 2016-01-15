@@ -234,7 +234,7 @@ void ISO::ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int si
             break;
 
         // if it's a directory, then seek to it and read it's contents
-        if (current.attributes & GdfxDirectory)
+        if (current.attributes & GdfxDirectory && current.size != 0)
         {
             // preserve the current positon
             UINT64 seekAddr = io->GetPosition();
