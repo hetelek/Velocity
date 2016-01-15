@@ -1,13 +1,13 @@
 #include "Xex.h"
 
 Xbox360Executable::Xbox360Executable(BaseIO *io) :
-    io(io), deleteIO(false)
+    io(io), deleteIO(false), rawDataIO(NULL)
 {
     Parse();
 }
 
 Xbox360Executable::Xbox360Executable(std::string fileName) :
-    deleteIO(true)
+    deleteIO(true), rawDataIO(NULL)
 {
     io = new FileIO(fileName);
 
@@ -18,6 +18,12 @@ Xbox360Executable::~Xbox360Executable()
 {
     if (deleteIO)
         delete io;
+
+    if (rawDataIO)
+        delete rawDataIO;
+
+    if (!rawDataPath.empty())
+        Utils::DeleteLocalFile(rawDataPath);
 }
 
 std::vector<std::string> Xbox360Executable::GetSystemImportLibraries() const
@@ -177,6 +183,53 @@ DWORD Xbox360Executable::GetTitleWorkspaceSize() const
 DWORD Xbox360Executable::GetAllowedMediaTypes() const
 {
     return securityInfo.allowedMediaTypes;
+}
+
+void Xbox360Executable::ExtractResource(std::string resourceName, std::string outPath)
+{
+    // get the resource info
+    XexResourceFileEntry entry;
+    bool found = false;
+    for (size_t i = 0; i < resourceFiles.size(); i++)
+    {
+        XexResourceFileEntry curEntry = resourceFiles.at(i);
+        if (curEntry.name == resourceName)
+        {
+            found = true;
+            entry = curEntry;
+        }
+    }
+
+    if (!found)
+        throw std::string("XEX: Couldn't find resource to extract.");
+
+    BaseIO *rawDataIO = GetRawDataIO();
+    DWORD offset = rawDataIO->GetPosition();
+
+    rawDataIO->SetPosition(offset + entry.address - GetImageBaseAddress());
+
+    // extract the data
+    BYTE *copyBuffer = new BYTE[XEX_COPY_BUFFER_SIZE];
+
+    // determine how many copy iterations it will take
+    DWORD copyIterations = entry.size / XEX_COPY_BUFFER_SIZE;
+    if (entry.size % XEX_COPY_BUFFER_SIZE != 0)
+        copyIterations++;
+
+    FileIO outFile(outPath, true);
+    for (DWORD i = 0; i < copyIterations; i++)
+    {
+        // determine the amount of bytes to copy
+        DWORD bytesToCopy = XEX_COPY_BUFFER_SIZE;
+        if (i + 1 == copyIterations && entry.size % XEX_COPY_BUFFER_SIZE != 0)
+            bytesToCopy = entry.size % XEX_COPY_BUFFER_SIZE;
+
+        rawDataIO->ReadBytes(copyBuffer, bytesToCopy);
+        outFile.WriteBytes(copyBuffer, bytesToCopy);
+    }
+
+    outFile.Close();
+    delete copyBuffer;
 }
 
 void Xbox360Executable::ExtractData(std::string path)
@@ -577,7 +630,6 @@ void Xbox360Executable::ParseResourceFileTable(DWORD address)
         entry.address = io->ReadDword();
         entry.size = io->ReadDword();
 
-        entry.dataOffset = entry.address - GetEntryPoint();
         resourceFiles.push_back(entry);
     }
 }
@@ -622,4 +674,30 @@ void Xbox360Executable::ParseExecutionInfo(DWORD address)
     executionInfo.discNumber = io->ReadByte();
     executionInfo.discCount = io->ReadByte();
     executionInfo.savegameID = io->ReadDword();
+}
+
+BaseIO *Xbox360Executable::GetRawDataIO()
+{
+    // check if we need to decompress/decrypt anything
+    if (compressionState == XexDecompressed && !IsEncrypted())
+    {
+        io->SetPosition(header.dataAddress);
+        return io;
+    }
+    else
+    {
+        // check to see if a rawDataIO already exists
+        if (rawDataIO != NULL)
+        {
+            rawDataIO->SetPosition(0);
+            return rawDataIO;
+        }
+
+        // create a temporary file with the cleaned data
+        rawDataPath = Utils::GetTemporaryFileName();
+        ExtractData(rawDataPath);
+
+        rawDataIO = new FileIO(rawDataPath);
+        return rawDataIO;
+    }
 }

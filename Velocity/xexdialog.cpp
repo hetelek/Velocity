@@ -162,6 +162,10 @@ XexDialog::XexDialog(Xbox360Executable *xex, QWidget *parent) :
         ui->lblEncrypted->setText("Decrypted");
 
     ui->lblCompressed->setText(QString::fromStdString(xex->GetCompressionStateStr()));
+
+    // set up the context menu for the resources
+    ui->treResources->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->treResources, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
 }
 
 XexDialog::~XexDialog()
@@ -205,4 +209,35 @@ void XexDialog::onLargeBoxArtRetrieved(QPixmap boxArt)
 {
     if (!boxArt.isNull())
         ui->imgBoxArt->setPixmap(boxArt);
+}
+
+void XexDialog::showContextMenu(QPoint point)
+{
+    QPoint globalPos = ui->treResources->mapToGlobal(point);
+    QMenu contextMenu;
+
+    if (ui->treResources->selectedItems().size() == 1)
+        contextMenu.addAction(QPixmap(":/Images/extract.png"), "Extract");
+
+    QAction *selectedItem = contextMenu.exec(globalPos);
+    if (selectedItem == NULL)
+        return;
+
+    if (selectedItem->text() == "Extract")
+    {
+        QString fileName = ui->treResources->selectedItems().at(0)->text(0);
+        QString outPath = QFileDialog::getSaveFileName(this, "Choose a place to extract the file to", QtHelpers::DesktopLocation() + "/" + fileName);
+        if (!outPath.isEmpty())
+        {
+            try
+            {
+                xex->ExtractResource(fileName.toStdString(), outPath.toStdString());
+            }
+            catch (std::string error)
+            {
+                QMessageBox::critical(this, "Extracting Error", "An error occurred while extracted a file.\n\n" +
+                                      QString::fromStdString(error));
+            }
+        }
+    }
 }

@@ -25,7 +25,7 @@ void Xdbf::Clean()
     string tempFileName;
 
 #ifdef _WIN32
-    // Opening a file using the path returned by tmpnam() may result in a "permission denied" error on Windows.
+    // Opening a file using the path returned by tmpnam() may result in a "permission denied" error on Windows
     // Not sure why it happens but tweaking the manifest/UAC properties makes a difference.
     char *tempFileName_c = _tempnam(NULL, NULL);
     if (!tempFileName_c)

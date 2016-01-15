@@ -72,3 +72,34 @@ bool Utils::CreateLocalDirectory(std::string filePath)
     return (bool)CreateDirectoryA(filePath.c_str(), NULL);
 #endif
 }
+
+
+std::string Utils::GetTemporaryFileName()
+{
+    std::string tempFileName;
+#ifdef _WIN32
+    // Opening a file using the path returned by tmpnam() may result in a "permission denied" error on Windows
+    // Not sure why it happens but tweaking the manifest/UAC properties makes a difference.
+    char *tempFileName_c = _tempnam(NULL, NULL);
+    if (!tempFileName_c)
+        throw std::string("Utils: Failed to generate temporary file name.\n");
+    tempFileName = std::string(tempFileName_c);
+    free(tempFileName_c);
+    tempFileName_c = NULL;
+#else
+    char tempFileName_c[L_tmpnam];
+    if (!tmpnam(tempFileName_c))
+        throw string("Utils: Failed to generate temporary file name.\n");
+    tempFileName = std::string(tempFileName_c);
+#endif
+
+    return tempFileName;
+}
+
+
+bool Utils::DeleteLocalFile(std::string path)
+{
+#ifdef _WIN32
+    return (bool)DeleteFileA(path.c_str());
+#endif
+}

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <dirent.h>
+#include <stdio.h>
 
 namespace Utils
 {
@@ -24,6 +25,10 @@ namespace Utils
     UINT64 RoundToNearestHex1000(UINT64 num);
 
     bool CreateLocalDirectory(std::string filePath);
+
+    std::string GetTemporaryFileName();
+
+    bool DeleteLocalFile(std::string path);
 }
 
 #endif // UTILS_H

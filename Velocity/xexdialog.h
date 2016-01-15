@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QMenu>
+#include <QAction>
 #include "qthelpers.h"
 
 #include "boxartretriever.h"
@@ -27,6 +29,8 @@ private slots:
     void on_pushButton_clicked();
 
     void onLargeBoxArtRetrieved(QPixmap boxArt);
+
+    void showContextMenu(QPoint point);
 
 private:
     Ui::XexDialog *ui;

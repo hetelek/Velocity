@@ -63,6 +63,8 @@ public:
 
     DWORD GetAllowedMediaTypes() const;
 
+    void ExtractResource(std::string resourceName, std::string outPath);
+
     void ExtractData(std::string path);
 
     void ExtractDecryptedData(std::string path) const;
@@ -100,6 +102,9 @@ private:
     BaseIO *io;
     XexHeader header;
     DWORD pageSize;
+
+    FileIO *rawDataIO;
+    std::string rawDataPath;
 
     std::vector<XexOptionalHeaderEntry> optionalHeaderData;
     std::vector<XexStaticLibraryInfo> staticLibraries;
@@ -157,6 +162,10 @@ private:
     void ParseLANKey(DWORD address);
 
     void ParseExecutionInfo(DWORD address);
+
+
+    // Get an IO pointing to the beginning of the decrypted and fully decompressed data in an XEX
+    BaseIO* GetRawDataIO();
 };
 
 #endif // XEX_H

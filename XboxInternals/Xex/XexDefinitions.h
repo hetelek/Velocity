@@ -243,7 +243,6 @@ struct XexResourceFileEntry
     std::string name; 	// max length is 8 characters
     DWORD address;
     DWORD size;
-    DWORD dataOffset;
 };
 
 struct XexSecurityInfo
