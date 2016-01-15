@@ -63,7 +63,11 @@ public:
 
     DWORD GetAllowedMediaTypes() const;
 
+    void ExtractData(std::string path);
+
     void ExtractDecryptedData(std::string path) const;
+
+    void ExtractDecompressedData(std::string path);
 
     bool HasRegion(XexRegion region);
 
@@ -84,6 +88,12 @@ public:
     BYTE* GetLANKey() const;
 
     DWORD GetTitleID() const;
+
+    bool IsEncrypted() const;
+
+    XexCompressionState GetCompressionState() const;
+
+    std::string GetCompressionStateStr() const;
 
 private:
     bool deleteIO;
@@ -119,10 +129,14 @@ private:
     XexSecurityInfo securityInfo;
     bool encrypted;
     XexCompressionState compressionState;
+    std::vector<XexCompressionBlock> compressionBlocks;
     BYTE lanKey[XEX_LAN_KEY_SIZE];
+    BYTE decryptedKey[XEX_AES_BLOCK_SIZE];
 
     XexExecutionInfo executionInfo;
 
+
+    void AesCbc(Botan::AES_128 *aes, BYTE *initializationVector, const BYTE *bufferEnc, BYTE *bufferDec);
 
     void Parse();
 

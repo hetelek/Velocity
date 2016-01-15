@@ -154,6 +154,14 @@ XexDialog::XexDialog(Xbox360Executable *xex, QWidget *parent) :
 
     DWORD titleID = xex->GetTitleID();
     boxArtRetriever->FetchBoxArt(titleID, BoxArtLarge);
+
+    // load the state
+    if (xex->IsEncrypted())
+        ui->lblEncrypted->setText("Encrypted");
+    else
+        ui->lblEncrypted->setText("Decrypted");
+
+    ui->lblCompressed->setText(QString::fromStdString(xex->GetCompressionStateStr()));
 }
 
 XexDialog::~XexDialog()
@@ -184,7 +192,7 @@ void XexDialog::on_pushButton_clicked()
 
     try
     {
-        xex->ExtractDecryptedData(outBaseFilePath.toStdString());
+        xex->ExtractData(outBaseFilePath.toStdString());
     }
     catch (std::string error)
     {

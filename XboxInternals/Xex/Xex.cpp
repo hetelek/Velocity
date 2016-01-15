@@ -179,22 +179,22 @@ DWORD Xbox360Executable::GetAllowedMediaTypes() const
     return securityInfo.allowedMediaTypes;
 }
 
+void Xbox360Executable::ExtractData(std::string path)
+{
+    if (compressionState == XexDecompressed && IsEncrypted())
+        ExtractDecryptedData(path);
+    else if (compressionState == XexCompressed)
+        ExtractDecompressedData(path);
+}
+
 void Xbox360Executable::ExtractDecryptedData(std::string path) const
 {
-    BYTE retailKey[XEX_AES_BLOCK_SIZE] = { 0x20, 0xB1, 0x85, 0xA5, 0x9D, 0x28, 0xFD, 0xC3,
-            0x40, 0x58, 0x3F, 0xBB, 0x08, 0x96, 0xBF, 0x91 };
-
-    BYTE sessionKey[XEX_AES_BLOCK_SIZE] = {0};
     BYTE bufferEnc[XEX_AES_BLOCK_SIZE];
     BYTE bufferDec[XEX_AES_BLOCK_SIZE];
 
-    // decrypt the file key
+    // set up the cipher
     Botan::AES_128 aes;
-    aes.set_key(retailKey, XEX_AES_BLOCK_SIZE);
-    aes.decrypt(securityInfo.key, sessionKey);
-
-    // set the key to the decrypted one
-    aes.set_key(sessionKey, XEX_AES_BLOCK_SIZE);
+    aes.set_key(decryptedKey, XEX_AES_BLOCK_SIZE);
 
     // seek to the beginning of the data
     io->SetPosition(header.dataAddress);
@@ -205,28 +205,88 @@ void Xbox360Executable::ExtractDecryptedData(std::string path) const
     // open an out file
     FileIO outFile(path, true);
 
-    // wrong base file size
-
-    // decrypt the data
+    // decrypt the data (AES-128 cbc)
     BYTE initializationVector[XEX_AES_BLOCK_SIZE] = {0};
     for (DWORD i = 0; i < blockCount; i++)
     {
         io->ReadBytes(bufferEnc, XEX_AES_BLOCK_SIZE);
-        aes.decrypt(bufferEnc, bufferDec);
-
-        for (DWORD x = 0; x < XEX_AES_BLOCK_SIZE; x++)
-        {
-            // xor the data with the old IV
-            bufferDec[x] ^= initializationVector[x];
-
-            // update the IV
-            initializationVector[x] =  bufferEnc[x];
-        }
+        AesCbc(&aes, initializationVector, bufferEnc, bufferDec);
 
         outFile.Write(bufferDec, XEX_AES_BLOCK_SIZE);
     }
 
     outFile.Close();
+}
+
+void Xbox360Executable::ExtractDecompressedData(std::string path)
+{
+    BYTE *copyBuffer = new BYTE[XEX_COPY_BUFFER_SIZE];
+    FileIO outFile(path, true);
+
+    // if it's encrypted we'll have to decrypt it
+    Botan::AES_128 aes;
+    BYTE iv[XEX_AES_BLOCK_SIZE] = {0};
+    aes.set_key(decryptedKey, XEX_AES_BLOCK_SIZE);
+
+    // seek to the beginning of the data
+    io->SetPosition(header.dataAddress);
+
+    // decompress the data
+    for (DWORD i = 0; i < compressionBlocks.size(); i++)
+    {
+        XexCompressionBlock block = compressionBlocks.at(i);
+
+        // determine how many copy iterations it will take
+        DWORD copyIterations = block.size / XEX_COPY_BUFFER_SIZE;
+        if (block.size % XEX_COPY_BUFFER_SIZE != 0)
+            copyIterations++;
+
+        // copy over the data
+        for (DWORD x = 0; x < copyIterations; x++)
+        {
+            // determine the amount of bytes to copy
+            DWORD bytesToCopy = XEX_COPY_BUFFER_SIZE;
+            if (x + 1 == copyIterations && block.size % XEX_COPY_BUFFER_SIZE != 0)
+                bytesToCopy = block.size % XEX_COPY_BUFFER_SIZE;
+
+            // read in the data
+            io->ReadBytes(copyBuffer, bytesToCopy);
+
+            // decrypt it if necessary
+            if (IsEncrypted())
+            {
+                // could be problematic
+                DWORD aesBlocksInBuffer = bytesToCopy / XEX_AES_BLOCK_SIZE;
+                for (DWORD y = 0; y < aesBlocksInBuffer; y++)
+                {
+                    BYTE *currentAesBlock = copyBuffer + y * XEX_AES_BLOCK_SIZE;
+                    AesCbc(&aes, iv, currentAesBlock, currentAesBlock);
+                }
+            }
+
+            outFile.WriteBytes(copyBuffer, bytesToCopy);
+        }
+
+        // calculate the copy iterations for the null data
+        memset(copyBuffer, 0, XEX_COPY_BUFFER_SIZE);
+        copyIterations = block.nullSize / XEX_COPY_BUFFER_SIZE;
+        if (block.nullSize % XEX_COPY_BUFFER_SIZE != 0)
+            copyIterations++;
+
+        // write all the null data
+        for (DWORD x = 0; x < copyIterations; x++)
+        {
+            // determine the amount of bytes to copy
+            DWORD bytesToCopy = XEX_COPY_BUFFER_SIZE;
+            if (x + 1 == copyIterations && block.nullSize % XEX_COPY_BUFFER_SIZE != 0)
+                bytesToCopy = block.nullSize % XEX_COPY_BUFFER_SIZE;
+
+            outFile.WriteBytes(copyBuffer, bytesToCopy);
+        }
+    }
+
+    outFile.Close();
+    delete copyBuffer;
 }
 
 bool Xbox360Executable::HasRegion(XexRegion region)
@@ -274,6 +334,48 @@ DWORD Xbox360Executable::GetTitleID() const
     return executionInfo.titleID;
 }
 
+bool Xbox360Executable::IsEncrypted() const
+{
+    return encrypted;
+}
+
+XexCompressionState Xbox360Executable::GetCompressionState() const
+{
+    return compressionState;
+}
+
+std::string Xbox360Executable::GetCompressionStateStr() const
+{
+    switch (compressionState)
+    {
+        case XexCompressed:
+            return "Compressed";
+        case XexSupercompressed:
+            return "Super compressed";
+        case XexDecompressed:
+            return "Decompressed";
+        default:
+            throw std::string("XEX: Invalid compression state.");
+    }
+}
+
+void Xbox360Executable::AesCbc(Botan::AES_128 *aes, BYTE *initializationVector, const BYTE *bufferEnc, BYTE *bufferDec)
+{
+    BYTE encCopy[XEX_AES_BLOCK_SIZE];
+    memcpy(encCopy, bufferEnc, XEX_AES_BLOCK_SIZE);
+
+    aes->decrypt(bufferEnc, bufferDec);
+
+    for (DWORD x = 0; x < XEX_AES_BLOCK_SIZE; x++)
+    {
+        // xor the data with the old IV
+        bufferDec[x] ^= initializationVector[x];
+
+        // update the IV
+        initializationVector[x] = encCopy[x];
+    }
+}
+
 void Xbox360Executable::Parse()
 {
     io->SetPosition(0);
@@ -313,6 +415,11 @@ void Xbox360Executable::Parse()
     io->ReadBytes(securityInfo.headerHash, 0x14);
     securityInfo.regions = io->ReadDword();
     securityInfo.allowedMediaTypes = io->ReadDword();
+
+    // decrypt the key in the file
+    Botan::AES_128 aes;
+    aes.set_key(XEX_RETAIL_KEY, XEX_AES_BLOCK_SIZE);
+    aes.decrypt(securityInfo.key, decryptedKey);
 
     // determine the page size
     if (securityInfo.imageFlags & PageSize4KB)
@@ -479,17 +586,21 @@ void Xbox360Executable::ParseBaseFileDescriptor(DWORD address)
 {
     io->SetPosition(address);
 
-    // unknown
-    io->ReadDword();
+    DWORD baseFileDescriptorSize = io->ReadDword();
 
     encrypted = !!(io->ReadWord());
+    compressionState = (XexCompressionState)io->ReadWord();
 
-    if (io->ReadWord() != 2)
-        compressionState = XexDecompressed;
-    else if (io->ReadDword() <= 0x8000)
-        compressionState = XexCompressed;
-    else
-        compressionState = XexSupercompressed;
+    // read all the compression blocks
+    DWORD blockCount = (baseFileDescriptorSize - 8) / XEX_COMPRESSION_BLOCK_SIZE;
+    for (DWORD i = 0; i < blockCount; i++)
+    {
+        XexCompressionBlock block;
+        block.size = io->ReadDword();
+        block.nullSize = io->ReadDword();
+
+        compressionBlocks.push_back(block);
+    }
 }
 
 void Xbox360Executable::ParseLANKey(DWORD address)

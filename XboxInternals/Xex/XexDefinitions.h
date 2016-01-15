@@ -14,6 +14,8 @@
 #define XEX_RESOURCE_FILE_ENTRY_SIZE		0x10
 #define XEX_AES_BLOCK_SIZE					0x10
 #define XEX_LAN_KEY_SIZE					0x10
+#define XEX_COMPRESSION_BLOCK_SIZE			0x8
+#define XEX_COPY_BUFFER_SIZE				0x100000
 
 const BYTE XEX_RETAIL_KEY[XEX_AES_BLOCK_SIZE] = { 0x20, 0xB1, 0x85, 0xA5, 0x9D, 0x28, 0xFD, 0xC3,
                                               0x40, 0x58, 0x3F, 0xBB, 0x08, 0x96, 0xBF, 0x91 };
@@ -187,7 +189,7 @@ enum OFLCNZRating
 
 enum XexCompressionState
 {
-    XexDecompressed,
+    XexDecompressed = 0,
     XexCompressed,
     XexSupercompressed
 };
@@ -275,6 +277,12 @@ struct XexSectionEntry
     XexSectionType type;
     DWORD totalSize;
     BYTE hash[0x14];
+};
+
+struct XexCompressionBlock
+{
+    DWORD size;
+    DWORD nullSize;
 };
 
 #endif // XEXDEFINITIONS_H
