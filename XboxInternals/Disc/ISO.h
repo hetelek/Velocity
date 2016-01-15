@@ -75,8 +75,8 @@ private:
 
     void ReadFileListing(std::vector<GdfxFileEntry> *entryList, DWORD sector, int size, string path);
 
-    // recursively get the total number of sectors that the files occupy (excluding the file entries)
-    UINT64 GetTotalSectors(const vector<GdfxFileEntry> *entryList);
+    // recursively get the total number of copy iterations for all the files
+    DWORD GetTotalCopyIterations(const vector<GdfxFileEntry> *entryList);
 
     void ExtractAllHelper(std::string outDirectory, std::vector<GdfxFileEntry> *entryList, void (*progress)(void *, DWORD, DWORD) = NULL, void *arg = NULL, DWORD *curProgress = NULL, DWORD totalProgress = 0);
 
