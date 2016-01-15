@@ -107,7 +107,8 @@ SOURCES += main.cpp \
     isodialog.cpp \
     isosectordialog.cpp \
     xexdialog.cpp \
-    xuizdialog.cpp
+    xuizdialog.cpp \
+    boxartretriever.cpp
 
 HEADERS  += mainwindow.h \
     packageviewer.h \
@@ -165,7 +166,8 @@ HEADERS  += mainwindow.h \
     isodialog.h \
     isosectordialog.h \
     xexdialog.h \
-    xuizdialog.h
+    xuizdialog.h \
+    boxartretriever.h
 
 FORMS    += mainwindow.ui \
     packageviewer.ui \

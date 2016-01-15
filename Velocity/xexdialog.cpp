@@ -147,6 +147,13 @@ XexDialog::XexDialog(Xbox360Executable *xex, QWidget *parent) :
     ui->chkNoGameRegion->setChecked(!!(imageFlags & NoGameRegion));
     ui->chkRevocationCheckOptional->setChecked(!!(imageFlags & RevocationCheckOptional));
     ui->chkRevocationCheckRequired->setChecked(!!(imageFlags & RevocationCheckRequired));
+
+    // load the box art
+    boxArtRetriever = new BoxArtRetriever(this);
+    connect(boxArtRetriever, SIGNAL(largeBoxArtRetrieved(QPixmap)), this, SLOT(onLargeBoxArtRetrieved(QPixmap)));
+
+    DWORD titleID = xex->GetTitleID();
+    boxArtRetriever->FetchBoxArt(titleID, BoxArtLarge);
 }
 
 XexDialog::~XexDialog()
@@ -184,4 +191,10 @@ void XexDialog::on_pushButton_clicked()
         QMessageBox::critical(this, "Error Extracting Base File", "An error occurred while extracting the base file.\n\n" +
                               QString::fromStdString(error));
     }
+}
+
+void XexDialog::onLargeBoxArtRetrieved(QPixmap boxArt)
+{
+    if (!boxArt.isNull())
+        ui->imgBoxArt->setPixmap(boxArt);
 }

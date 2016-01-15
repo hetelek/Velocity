@@ -123,5 +123,6 @@
         <file>Images/rating_oflc_nz_MA15.png</file>
         <file>Images/rating_oflc_nz_PG.png</file>
         <file>Images/rating_oflc_nz_R16.png</file>
+        <file>Images/default_boxartlg.jpg</file>
     </qresource>
 </RCC>

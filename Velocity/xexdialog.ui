@@ -30,202 +30,265 @@
       <attribute name="title">
        <string>Basic</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBox_7">
-         <property name="title">
-          <string>Regions</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <widget class="QCheckBox" name="chkNorthAmerica">
-            <property name="text">
-             <string>North America</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chkJapan">
-            <property name="text">
-             <string>Japan</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chkChina">
-            <property name="text">
-             <string>China</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chkRestOfAsia">
-            <property name="text">
-             <string>The Rest of Asia</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chkAustraliaNewZealand">
-            <property name="text">
-             <string>Australia and New Zealand</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chkRestOfEurope">
-            <property name="text">
-             <string>The Rest of Europe</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chkRestOfWorld">
-            <property name="text">
-             <string>The Rest of the World</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_12">
+         <item>
+          <widget class="QGroupBox" name="groupBox_7">
+           <property name="title">
+            <string>Regions</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QCheckBox" name="chkNorthAmerica">
+              <property name="text">
+               <string>North America</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="chkJapan">
+              <property name="text">
+               <string>Japan</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="chkChina">
+              <property name="text">
+               <string>China</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="chkRestOfAsia">
+              <property name="text">
+               <string>The Rest of Asia</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="chkAustraliaNewZealand">
+              <property name="text">
+               <string>Australia and New Zealand</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="chkRestOfEurope">
+              <property name="text">
+               <string>The Rest of Europe</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="chkRestOfWorld">
+              <property name="text">
+               <string>The Rest of the World</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_6">
+           <property name="title">
+            <string>Resources</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="QTreeWidget" name="treResources">
+              <attribute name="headerVisible">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="headerDefaultSectionSize">
+               <number>100</number>
+              </attribute>
+              <column>
+               <property name="text">
+                <string>Name</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Size</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
        </item>
-       <item row="0" column="1">
-        <widget class="QGroupBox" name="groupBox_6">
-         <property name="title">
-          <string>Resources</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_5">
-          <item>
-           <widget class="QTreeWidget" name="treResources">
-            <attribute name="headerVisible">
-             <bool>false</bool>
-            </attribute>
-            <attribute name="headerDefaultSectionSize">
-             <number>100</number>
-            </attribute>
-            <column>
-             <property name="text">
-              <string>Name</string>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_13">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Size</string>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
              </property>
-            </column>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QGroupBox" name="groupBox_3">
-         <property name="title">
-          <string>Ratings</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="2">
-           <widget class="QLabel" name="imgOflcAU">
-            <property name="minimumSize">
-             <size>
-              <width>64</width>
-              <height>64</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>64</width>
-              <height>64</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Australian Office of Film and Literature Classification Board</string>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="imgEsrbRating">
-            <property name="minimumSize">
-             <size>
-              <width>50</width>
-              <height>70</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>70</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>North America Entertainment Software Rating Board</string>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="imgPegiRating">
-            <property name="minimumSize">
-             <size>
-              <width>64</width>
-              <height>66</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>64</width>
-              <height>66</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Great Britan's Pan European Games Information</string>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QLabel" name="imgOflcNZ">
-            <property name="minimumSize">
-             <size>
-              <width>69</width>
-              <height>64</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>69</width>
-              <height>64</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>New Zealand Office of Film and Literature Classification Board</string>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="imgBoxArt">
+             <property name="minimumSize">
+              <size>
+               <width>219</width>
+               <height>300</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>219</width>
+               <height>300</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="Resources.qrc">:/Images/default_boxartlg.jpg</pixmap>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_3">
+           <property name="title">
+            <string>Ratings</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="0" column="2">
+             <widget class="QLabel" name="imgOflcAU">
+              <property name="minimumSize">
+               <size>
+                <width>64</width>
+                <height>64</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>64</width>
+                <height>64</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>Australian Office of Film and Literature Classification Board</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="imgEsrbRating">
+              <property name="minimumSize">
+               <size>
+                <width>50</width>
+                <height>70</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>70</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>North America Entertainment Software Rating Board</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="imgPegiRating">
+              <property name="minimumSize">
+               <size>
+                <width>64</width>
+                <height>66</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>64</width>
+                <height>66</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>Great Britan's Pan European Games Information</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QLabel" name="imgOflcNZ">
+              <property name="minimumSize">
+               <size>
+                <width>69</width>
+                <height>64</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>69</width>
+                <height>64</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>New Zealand Office of Film and Literature Classification Board</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>

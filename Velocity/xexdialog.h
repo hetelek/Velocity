@@ -6,6 +6,8 @@
 #include <QMessageBox>
 #include "qthelpers.h"
 
+#include "boxartretriever.h"
+
 #include "Xex/Xex.h"
 #include "Utils.h"
 
@@ -24,9 +26,12 @@ public:
 private slots:
     void on_pushButton_clicked();
 
+    void onLargeBoxArtRetrieved(QPixmap boxArt);
+
 private:
     Ui::XexDialog *ui;
     Xbox360Executable *xex;
+    BoxArtRetriever *boxArtRetriever;
 
     void AddExecutableProperty(QString name, DWORD value);
 

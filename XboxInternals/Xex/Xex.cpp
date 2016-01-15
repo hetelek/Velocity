@@ -269,6 +269,11 @@ BYTE *Xbox360Executable::GetLANKey() const
     return lanKey;
 }
 
+DWORD Xbox360Executable::GetTitleID() const
+{
+    return executionInfo.titleID;
+}
+
 void Xbox360Executable::Parse()
 {
     io->SetPosition(0);
@@ -360,6 +365,9 @@ void Xbox360Executable::ParseOptionalHeaderEntry(XexOptionalHeaderEntry *entry, 
             break;
         case BaseFileDescriptor:
             ParseBaseFileDescriptor(headerEntry.data);
+            break;
+        case ExecutionInfo:
+            ParseExecutionInfo(headerEntry.data);
             break;
         case ImageBaseAddress:
             imageBaseAddress = headerEntry.data;
@@ -488,4 +496,19 @@ void Xbox360Executable::ParseLANKey(DWORD address)
 {
     io->SetPosition(address);
     io->ReadBytes(lanKey, XEX_LAN_KEY_SIZE);
+}
+
+void Xbox360Executable::ParseExecutionInfo(DWORD address)
+{
+    io->SetPosition(address);
+
+    executionInfo.mediaID = io->ReadDword();
+    executionInfo.version = io->ReadDword();
+    executionInfo.baseVersion = io->ReadDword();
+    executionInfo.titleID = io->ReadDword();
+    executionInfo.executionTable = io->ReadByte();
+    executionInfo.platform = io->ReadByte();
+    executionInfo.discNumber = io->ReadByte();
+    executionInfo.discCount = io->ReadByte();
+    executionInfo.savegameID = io->ReadDword();
 }

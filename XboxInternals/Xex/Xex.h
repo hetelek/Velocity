@@ -83,6 +83,8 @@ public:
 
     BYTE* GetLANKey() const;
 
+    DWORD GetTitleID() const;
+
 private:
     bool deleteIO;
     BaseIO *io;
@@ -119,6 +121,8 @@ private:
     XexCompressionState compressionState;
     BYTE lanKey[XEX_LAN_KEY_SIZE];
 
+    XexExecutionInfo executionInfo;
+
 
     void Parse();
 
@@ -137,6 +141,8 @@ private:
     void ParseBaseFileDescriptor(DWORD address);
 
     void ParseLANKey(DWORD address);
+
+    void ParseExecutionInfo(DWORD address);
 };
 
 #endif // XEX_H
