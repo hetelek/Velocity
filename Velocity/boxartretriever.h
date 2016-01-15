@@ -22,7 +22,7 @@ class BoxArtRetriever : public QObject
 public:
     explicit BoxArtRetriever(QObject *parent = 0);
 
-    QPixmap FetchBoxArt(DWORD titleID, BoxArtSize size);
+    void FetchBoxArt(DWORD titleID, BoxArtSize size);
 
 signals:
     void largeBoxArtRetrieved(QPixmap boxart);

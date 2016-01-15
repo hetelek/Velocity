@@ -7,7 +7,7 @@ BoxArtRetriever::BoxArtRetriever(QObject *parent) :
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(onNetworkManagerFinished(QNetworkReply*)));
 }
 
-QPixmap BoxArtRetriever::FetchBoxArt(DWORD titleID, BoxArtSize size)
+void BoxArtRetriever::FetchBoxArt(DWORD titleID, BoxArtSize size)
 {
     QString url;
     QString titleIDStr = QString::number(titleID, 16).toLower();
