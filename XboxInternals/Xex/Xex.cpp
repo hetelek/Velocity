@@ -1,13 +1,13 @@
 #include "Xex.h"
 
 Xbox360Executable::Xbox360Executable(BaseIO *io) :
-    io(io), deleteIO(false), rawDataIO(NULL)
+    io(io), deleteIO(false), rawDataIO(NULL), firstResourceFileAddr(0xFFFFFFFF)
 {
     Parse();
 }
 
 Xbox360Executable::Xbox360Executable(std::string fileName) :
-    deleteIO(true), rawDataIO(NULL)
+    deleteIO(true), rawDataIO(NULL), firstResourceFileAddr(0xFFFFFFFF)
 {
     io = new FileIO(fileName);
 
@@ -185,6 +185,21 @@ DWORD Xbox360Executable::GetAllowedMediaTypes() const
     return securityInfo.allowedMediaTypes;
 }
 
+void Xbox360Executable::ExtractBaseImageFile(std::string outPath)
+{
+    BaseIO *rawDataIO = GetRawDataIO();
+    DWORD baseImageSize = rawDataIO->Length();
+
+    // if there are resources then the PE file runs right up until the first resource
+    if (firstResourceFileAddr != 0xFFFFFFFF)
+    {
+        DWORD firstResourceFileDataOffset = firstResourceFileAddr - GetImageBaseAddress();
+        baseImageSize = firstResourceFileDataOffset;
+    }
+
+    ExtractFromRawData(outPath, 0, baseImageSize);
+}
+
 void Xbox360Executable::ExtractResource(std::string resourceName, std::string outPath)
 {
     // get the resource info
@@ -203,33 +218,7 @@ void Xbox360Executable::ExtractResource(std::string resourceName, std::string ou
     if (!found)
         throw std::string("XEX: Couldn't find resource to extract.");
 
-    BaseIO *rawDataIO = GetRawDataIO();
-    DWORD offset = rawDataIO->GetPosition();
-
-    rawDataIO->SetPosition(offset + entry.address - GetImageBaseAddress());
-
-    // extract the data
-    BYTE *copyBuffer = new BYTE[XEX_COPY_BUFFER_SIZE];
-
-    // determine how many copy iterations it will take
-    DWORD copyIterations = entry.size / XEX_COPY_BUFFER_SIZE;
-    if (entry.size % XEX_COPY_BUFFER_SIZE != 0)
-        copyIterations++;
-
-    FileIO outFile(outPath, true);
-    for (DWORD i = 0; i < copyIterations; i++)
-    {
-        // determine the amount of bytes to copy
-        DWORD bytesToCopy = XEX_COPY_BUFFER_SIZE;
-        if (i + 1 == copyIterations && entry.size % XEX_COPY_BUFFER_SIZE != 0)
-            bytesToCopy = entry.size % XEX_COPY_BUFFER_SIZE;
-
-        rawDataIO->ReadBytes(copyBuffer, bytesToCopy);
-        outFile.WriteBytes(copyBuffer, bytesToCopy);
-    }
-
-    outFile.Close();
-    delete copyBuffer;
+    ExtractFromRawData(outPath, entry.address - GetImageBaseAddress(), entry.size);
 }
 
 void Xbox360Executable::ExtractData(std::string path)
@@ -630,6 +619,9 @@ void Xbox360Executable::ParseResourceFileTable(DWORD address)
         entry.address = io->ReadDword();
         entry.size = io->ReadDword();
 
+        if (entry.address < firstResourceFileAddr)
+            firstResourceFileAddr = entry.address;
+
         resourceFiles.push_back(entry);
     }
 }
@@ -674,6 +666,37 @@ void Xbox360Executable::ParseExecutionInfo(DWORD address)
     executionInfo.discNumber = io->ReadByte();
     executionInfo.discCount = io->ReadByte();
     executionInfo.savegameID = io->ReadDword();
+}
+
+void Xbox360Executable::ExtractFromRawData(std::string outPath, DWORD address, DWORD size)
+{
+    BaseIO *rawDataIO = GetRawDataIO();
+    DWORD offset = rawDataIO->GetPosition();
+
+    rawDataIO->SetPosition(offset + address);
+
+    // extract the data
+    BYTE *copyBuffer = new BYTE[XEX_COPY_BUFFER_SIZE];
+
+    // determine how many copy iterations it will take
+    DWORD copyIterations = size / XEX_COPY_BUFFER_SIZE;
+    if (size % XEX_COPY_BUFFER_SIZE != 0)
+        copyIterations++;
+
+    FileIO outFile(outPath, true);
+    for (DWORD i = 0; i < copyIterations; i++)
+    {
+        // determine the amount of bytes to copy
+        DWORD bytesToCopy = XEX_COPY_BUFFER_SIZE;
+        if (i + 1 == copyIterations && size % XEX_COPY_BUFFER_SIZE != 0)
+            bytesToCopy = size % XEX_COPY_BUFFER_SIZE;
+
+        rawDataIO->ReadBytes(copyBuffer, bytesToCopy);
+        outFile.WriteBytes(copyBuffer, bytesToCopy);
+    }
+
+    outFile.Close();
+    delete copyBuffer;
 }
 
 BaseIO *Xbox360Executable::GetRawDataIO()

@@ -934,7 +934,7 @@
      <item>
       <widget class="QPushButton" name="pushButton">
        <property name="text">
-        <string>Extract Raw Data</string>
+        <string>Extract PE File</string>
        </property>
        <property name="icon">
         <iconset resource="Resources.qrc">

@@ -196,7 +196,7 @@ void XexDialog::on_pushButton_clicked()
 
     try
     {
-        xex->ExtractData(outBaseFilePath.toStdString());
+        xex->ExtractBaseImageFile(outBaseFilePath.toStdString());
     }
     catch (std::string error)
     {

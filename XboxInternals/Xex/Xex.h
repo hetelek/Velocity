@@ -1,6 +1,10 @@
 #ifndef XEX_H
 #define XEX_H
 
+/* Most of the algorithms and file structure information I got from the Xbox360 emulator project found here:
+ * https://github.com/benvanik/xenia
+ **/
+
 #include "IO/BaseIO.h"
 #include "IO/FileIO.h"
 #include "XexDefinitions.h"
@@ -63,6 +67,8 @@ public:
 
     DWORD GetAllowedMediaTypes() const;
 
+    void ExtractBaseImageFile(std::string outPath);
+
     void ExtractResource(std::string resourceName, std::string outPath);
 
     void ExtractData(std::string path);
@@ -102,6 +108,7 @@ private:
     BaseIO *io;
     XexHeader header;
     DWORD pageSize;
+    DWORD firstResourceFileAddr;
 
     FileIO *rawDataIO;
     std::string rawDataPath;
@@ -162,6 +169,8 @@ private:
     void ParseLANKey(DWORD address);
 
     void ParseExecutionInfo(DWORD address);
+
+    void ExtractFromRawData(std::string outPath, DWORD address, DWORD size);
 
 
     // Get an IO pointing to the beginning of the decrypted and fully decompressed data in an XEX
