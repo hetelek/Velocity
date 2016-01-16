@@ -1,13 +1,13 @@
 #include "Xex.h"
 
 Xbox360Executable::Xbox360Executable(BaseIO *io) :
-    io(io), deleteIO(false), rawDataIO(NULL), firstResourceFileAddr(0xFFFFFFFF)
+    deleteIO(false), io(io), firstResourceFileAddr(0xFFFFFFFF), rawDataIO(NULL)
 {
     Parse();
 }
 
 Xbox360Executable::Xbox360Executable(std::string fileName) :
-    deleteIO(true), rawDataIO(NULL), firstResourceFileAddr(0xFFFFFFFF)
+    deleteIO(true), firstResourceFileAddr(0xFFFFFFFF), rawDataIO(NULL)
 {
     io = new FileIO(fileName);
 
@@ -351,22 +351,22 @@ DWORD Xbox360Executable::GetImageSize() const
     return securityInfo.imageSize;
 }
 
-BYTE *Xbox360Executable::GetMediaID() const
+BYTE *Xbox360Executable::GetMediaID()
 {
     return securityInfo.mediaID;
 }
 
-BYTE *Xbox360Executable::GetKey() const
+BYTE *Xbox360Executable::GetKey()
 {
     return securityInfo.key;
 }
 
-BYTE *Xbox360Executable::GetHeaderHash() const
+BYTE *Xbox360Executable::GetHeaderHash()
 {
     return securityInfo.headerHash;
 }
 
-BYTE *Xbox360Executable::GetLANKey() const
+BYTE *Xbox360Executable::GetLANKey()
 {
     return lanKey;
 }
@@ -401,7 +401,7 @@ std::string Xbox360Executable::GetCompressionStateStr() const
     }
 }
 
-void Xbox360Executable::AesCbc(Botan::AES_128 *aes, BYTE *initializationVector, const BYTE *bufferEnc, BYTE *bufferDec)
+void Xbox360Executable::AesCbc(Botan::AES_128 *aes, BYTE *initializationVector, const BYTE *bufferEnc, BYTE *bufferDec) const
 {
     BYTE encCopy[XEX_AES_BLOCK_SIZE];
     memcpy(encCopy, bufferEnc, XEX_AES_BLOCK_SIZE);
@@ -549,7 +549,7 @@ void Xbox360Executable::ParseSystemImportLibraryTable(DWORD address)
     // unknown
     io->ReadDword();
 
-    DWORD totalLength = io->ReadDword();
+    /*DWORD totalLength = */ io->ReadDword();
     DWORD importLibraryCount = io->ReadDword();
 
     // read the import library names
@@ -570,8 +570,8 @@ void Xbox360Executable::ParseRatingInformation(DWORD address)
     /*Cero*/	io->ReadByte();
     /*USK*/		io->ReadByte();
 
-    oflcAURating = io->ReadByte();
-    oflcNZRating = io->ReadByte();
+    oflcAURating = (OFLCAURating)io->ReadByte();
+    oflcNZRating = (OFLCNZRating)io->ReadByte();
 
     // there are more
 }

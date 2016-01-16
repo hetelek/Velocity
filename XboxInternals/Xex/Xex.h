@@ -87,13 +87,13 @@ public:
 
     DWORD GetLoadAddress() const;
 
-    BYTE* GetMediaID() const;
+    BYTE* GetMediaID();
 
-    BYTE* GetKey() const;
+    BYTE* GetKey();
 
-    BYTE* GetHeaderHash() const;
+    BYTE* GetHeaderHash();
 
-    BYTE* GetLANKey() const;
+    BYTE* GetLANKey();
 
     DWORD GetTitleID() const;
 
@@ -148,7 +148,7 @@ private:
     XexExecutionInfo executionInfo;
 
 
-    void AesCbc(Botan::AES_128 *aes, BYTE *initializationVector, const BYTE *bufferEnc, BYTE *bufferDec);
+    void AesCbc(Botan::AES_128 *aes, BYTE *initializationVector, const BYTE *bufferEnc, BYTE *bufferDec) const;
 
     void Parse();
 
