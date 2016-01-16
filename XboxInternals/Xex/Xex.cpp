@@ -252,7 +252,7 @@ void Xbox360Executable::ExtractDecryptedData(std::string path) const
     for (DWORD i = 0; i < blockCount; i++)
     {
         io->ReadBytes(bufferEnc, XEX_AES_BLOCK_SIZE);
-        AesCbc(&aes, initializationVector, bufferEnc, bufferDec);
+        AesCbcDecrypt(&aes, initializationVector, bufferEnc, bufferDec);
 
         outFile.Write(bufferDec, XEX_AES_BLOCK_SIZE);
     }
@@ -302,7 +302,7 @@ void Xbox360Executable::ExtractDecompressedData(std::string path)
                 for (DWORD y = 0; y < aesBlocksInBuffer; y++)
                 {
                     BYTE *currentAesBlock = copyBuffer + y * XEX_AES_BLOCK_SIZE;
-                    AesCbc(&aes, iv, currentAesBlock, currentAesBlock);
+                    AesCbcDecrypt(&aes, iv, currentAesBlock, currentAesBlock);
                 }
             }
 
@@ -376,6 +376,26 @@ DWORD Xbox360Executable::GetTitleID() const
     return executionInfo.titleID;
 }
 
+XexEncryptionState Xbox360Executable::GetEncryptionState() const
+{
+    return encryptionState;
+}
+
+std::string Xbox360Executable::GetEncryptionStateStr() const
+{
+    switch (encryptionState)
+    {
+        case RetailEncrypted:
+            return "Retail Encrypted";
+        case DevKitEncrypted:
+            return "DevKit Encrypted";
+        case Decrypted:
+            return "Decrypted";
+        default:
+            throw std::string("XEX: Unknown encryption state");
+    }
+}
+
 bool Xbox360Executable::IsEncrypted() const
 {
     return encrypted;
@@ -401,7 +421,7 @@ std::string Xbox360Executable::GetCompressionStateStr() const
     }
 }
 
-void Xbox360Executable::AesCbc(Botan::AES_128 *aes, BYTE *initializationVector, const BYTE *bufferEnc, BYTE *bufferDec) const
+void Xbox360Executable::AesCbcDecrypt(Botan::AES_128 *aes, BYTE *initializationVector, const BYTE *bufferEnc, BYTE *bufferDec) const
 {
     BYTE encCopy[XEX_AES_BLOCK_SIZE];
     memcpy(encCopy, bufferEnc, XEX_AES_BLOCK_SIZE);
@@ -458,9 +478,37 @@ void Xbox360Executable::Parse()
     securityInfo.regions = io->ReadDword();
     securityInfo.allowedMediaTypes = io->ReadDword();
 
+    // if it's encrypted figure out which key it uses
+    const BYTE *key = XEX_RETAIL_KEY;
+    if (IsEncrypted())
+    {
+        // preserve the position in the file, TryKey() changes it
+        UINT64 position = io->GetPosition();
+
+        // I don't think it says in the header which key it uses so we'll just try both
+        if (TryKey(XEX_RETAIL_KEY))
+        {
+            encryptionState = RetailEncrypted;
+            key = XEX_RETAIL_KEY;
+        }
+        else if (TryKey(XEX_DEVKIT_KEY))
+        {
+            encryptionState = DevKitEncrypted;
+            key = XEX_DEVKIT_KEY;
+        }
+        else
+            throw std::string("XEX: Unable to decrypt.");
+
+        io->SetPosition(position);
+    }
+    else
+    {
+        encryptionState = Decrypted;
+    }
+
     // decrypt the key in the file
     Botan::AES_128 aes;
-    aes.set_key(XEX_RETAIL_KEY, XEX_AES_BLOCK_SIZE);
+    aes.set_key(key, XEX_AES_BLOCK_SIZE);
     aes.decrypt(securityInfo.key, decryptedKey);
 
     // determine the page size
@@ -697,6 +745,33 @@ void Xbox360Executable::ExtractFromRawData(std::string outPath, DWORD address, D
 
     outFile.Close();
     delete copyBuffer;
+}
+
+bool Xbox360Executable::TryKey(const BYTE *key)
+{
+    Botan::AES_128 aes;
+    BYTE decryptedKeyBuffer[XEX_AES_BLOCK_SIZE];
+
+    aes.set_key(key, XEX_AES_BLOCK_SIZE);
+    aes.decrypt(securityInfo.key, decryptedKeyBuffer);
+
+    aes.set_key(decryptedKeyBuffer, XEX_AES_BLOCK_SIZE);
+
+    BYTE iv[XEX_AES_BLOCK_SIZE] = {0};
+    BYTE encryptedBuffer[XEX_AES_BLOCK_SIZE] = {0};
+    BYTE decryptedBuffer[XEX_AES_BLOCK_SIZE] = {0};
+
+    // read in the first block
+    io->SetPosition(header.dataAddress);
+    io->ReadBytes(encryptedBuffer, XEX_AES_BLOCK_SIZE);
+
+    AesCbcDecrypt(&aes, iv, encryptedBuffer, decryptedBuffer);
+
+    // check to see if the windows PE magic is there
+    MemoryIO peIO(decryptedBuffer, XEX_AES_BLOCK_SIZE);
+    peIO.SetEndian(BigEndian);
+
+    return peIO.ReadWord() == 0x4D5A; 	// 'MZ'
 }
 
 BaseIO *Xbox360Executable::GetRawDataIO()

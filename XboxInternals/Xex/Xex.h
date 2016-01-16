@@ -7,6 +7,7 @@
 
 #include "IO/BaseIO.h"
 #include "IO/FileIO.h"
+#include "IO/MemoryIO.h"
 #include "XexDefinitions.h"
 #include "Utils.h"
 
@@ -99,6 +100,10 @@ public:
 
     bool IsEncrypted() const;
 
+    XexEncryptionState GetEncryptionState() const;
+
+    std::string GetEncryptionStateStr() const;
+
     XexCompressionState GetCompressionState() const;
 
     std::string GetCompressionStateStr() const;
@@ -140,6 +145,7 @@ private:
 
     XexSecurityInfo securityInfo;
     bool encrypted;
+    XexEncryptionState encryptionState;
     XexCompressionState compressionState;
     std::vector<XexCompressionBlock> compressionBlocks;
     BYTE lanKey[XEX_LAN_KEY_SIZE];
@@ -148,7 +154,7 @@ private:
     XexExecutionInfo executionInfo;
 
 
-    void AesCbc(Botan::AES_128 *aes, BYTE *initializationVector, const BYTE *bufferEnc, BYTE *bufferDec) const;
+    void AesCbcDecrypt(Botan::AES_128 *aes, BYTE *initializationVector, const BYTE *bufferEnc, BYTE *bufferDec) const;
 
     void Parse();
 
@@ -171,6 +177,8 @@ private:
     void ParseExecutionInfo(DWORD address);
 
     void ExtractFromRawData(std::string outPath, DWORD address, DWORD size);
+
+    bool TryKey(const BYTE *key);
 
 
     // Get an IO pointing to the beginning of the decrypted and fully decompressed data in an XEX

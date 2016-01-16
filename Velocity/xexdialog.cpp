@@ -156,11 +156,7 @@ XexDialog::XexDialog(Xbox360Executable *xex, QWidget *parent) :
     boxArtRetriever->FetchBoxArt(titleID, BoxArtLarge);
 
     // load the state
-    if (xex->IsEncrypted())
-        ui->lblEncrypted->setText("Encrypted");
-    else
-        ui->lblEncrypted->setText("Decrypted");
-
+    ui->lblEncrypted->setText(QString::fromStdString(xex->GetEncryptionStateStr()));
     ui->lblCompressed->setText(QString::fromStdString(xex->GetCompressionStateStr()));
 
     // set up the context menu for the resources

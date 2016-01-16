@@ -20,6 +20,7 @@
 const BYTE XEX_RETAIL_KEY[XEX_AES_BLOCK_SIZE] = { 0x20, 0xB1, 0x85, 0xA5, 0x9D, 0x28, 0xFD, 0xC3,
                                               0x40, 0x58, 0x3F, 0xBB, 0x08, 0x96, 0xBF, 0x91 };
 
+// this key is wrong
 const BYTE XEX_DEVKIT_KEY[XEX_AES_BLOCK_SIZE] = { 0xA2, 0x6C, 0x10, 0xF7, 0x1F, 0xD9, 0x35, 0xE9,
                                               0x8B, 0x99, 0x92, 0x2C, 0xE9, 0x32, 0x15 ,0x72};
 
@@ -269,6 +270,13 @@ enum XexSectionType
     XexSectionCode = 1,
     XexSectionData = 2,
     XexSectionReadOnlyData = 3
+};
+
+enum XexEncryptionState
+{
+    RetailEncrypted,
+    DevKitEncrypted,
+    Decrypted
 };
 
 struct XexSectionEntry
