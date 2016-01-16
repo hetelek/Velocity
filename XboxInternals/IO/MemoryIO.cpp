@@ -3,12 +3,12 @@
 MemoryIO::MemoryIO(BYTE *data, size_t length) :
     BaseIO(), memory(data), length(length)
 {
-
+    SetPosition(0);
 }
 
 MemoryIO::~MemoryIO()
 {
-
+    SetPosition(0);
 }
 
 void MemoryIO::SetPosition(UINT64 pos, std::ios_base::seek_dir dir)
