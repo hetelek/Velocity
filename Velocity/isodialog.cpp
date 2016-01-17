@@ -134,10 +134,22 @@ void ISODialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colum
             case CON:
             case LIVE:
             case PIRS:
+            {
                 StfsPackage *package = new StfsPackage(io);
+
                 PackageViewer viewer(statusBar, package);
                 viewer.exec();
                 break;
+            }
+            case XEX_HEADER_MAGIC:
+            {
+                Xbox360Executable *xex = new Xbox360Executable(io);
+
+                // the dialog will free xex
+                XexDialog dialog(xex, this);
+                dialog.exec();
+                break;
+            }
         }
     }
     catch (std::string error)

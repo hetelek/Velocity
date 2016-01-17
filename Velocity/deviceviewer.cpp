@@ -394,7 +394,7 @@ void DeviceViewer::on_treeWidget_doubleClicked(const QModelIndex &index)
         FatxFileEntry *currentParent = GetFatxFileEntry(item);
 
         QString type = item->data(1, Qt::UserRole).toString();
-        if (item->data(1, Qt::UserRole).toString() == "STFS")
+        if (type == "STFS")
         {
             FatxIO io = currentDrive->GetFatxIO(currentParent);
             StfsPackage package(&io);
@@ -405,12 +405,21 @@ void DeviceViewer::on_treeWidget_doubleClicked(const QModelIndex &index)
             package.Close();
             io.Close();
         }
-        else if (item->data(1, Qt::UserRole).toString() == "SVOD")
+        else if (type == "SVOD")
         {
             std::string rootFilePath = currentParent->path + currentParent->name;
 
             SVOD *svodSystem = new SVOD(rootFilePath, currentDrive);
             SvodDialog dialog(svodSystem, statusBar, this);
+            dialog.exec();
+        }
+        else if (type == "XEX")
+        {
+            FatxIO io = currentDrive->GetFatxIO(currentParent);
+            Xbox360Executable *xex = new Xbox360Executable(&io);
+
+            // the dialog will free xex
+            XexDialog dialog(xex, this);
             dialog.exec();
         }
 

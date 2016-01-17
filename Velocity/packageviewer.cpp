@@ -821,6 +821,25 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
             QMessageBox::critical(this, "Error", "Failed to open Stfs Package.\n\n" + QString::fromStdString(error));
         }
     }
+    else if (item->data(1, Qt::UserRole).toString() == "XEX")
+    {
+        QString packagePath;
+        GetPackagePath(item, &packagePath);
+
+        try
+        {
+            StfsIO *io = package->GetStfsIO(packagePath.toStdString());
+            Xbox360Executable *xex = new Xbox360Executable(io);
+
+            // the dialog will free xex
+            XexDialog dialog(xex, this);
+            dialog.exec();
+        }
+        catch(string error)
+        {
+            QMessageBox::critical(this, "Error", "Failed to open XEX.\n\n" + QString::fromStdString(error));
+        }
+    }
 }
 
 void PackageViewer::on_btnStfsTools_clicked()

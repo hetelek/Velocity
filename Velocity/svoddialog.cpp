@@ -201,18 +201,15 @@ void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
     else if (item->data(1, Qt::UserRole).toString() == "STFS")
     {
         SvodIO io = svod->GetSvodIO(*entry);
-        io.SaveFile(tempName.toStdString());
 
         try
         {
-            StfsPackage package(tempName.toStdString());
+            StfsPackage package(&io);
 
             PackageViewer viewer(statusBar, &package, QList<QAction*>(), QList<QAction*>(), this, false);
             viewer.exec();
 
             package.Close();
-
-            io.OverWriteFile(tempName.toStdString());
         }
         catch (string error)
         {
@@ -220,6 +217,22 @@ void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
         }
 
         QFile::remove(tempName);
+    }
+    else if (item->data(1, Qt::UserRole).toString() == "XEX")
+    {
+        try
+        {
+            SvodIO io = svod->GetSvodIO(*entry);
+            Xbox360Executable *xex = new Xbox360Executable(&io);
+
+            // the dialog will free xex
+            XexDialog dialog(xex, this);
+            dialog.exec();
+        }
+        catch(string error)
+        {
+            QMessageBox::critical(this, "Error", "Failed to open XEX.\n\n" + QString::fromStdString(error));
+        }
     }
 }
 
