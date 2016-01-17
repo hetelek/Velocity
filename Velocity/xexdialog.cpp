@@ -172,7 +172,8 @@ XexDialog::~XexDialog()
 
 void XexDialog::AddExecutableProperty(QString name, DWORD value)
 {
-    AddExecutableProperty(name, "0x" + QString::fromStdString(Utils::ConvertToHexString(value)));
+    //if (value != 0)
+        AddExecutableProperty(name, "0x" + QString::fromStdString(Utils::ConvertToHexString(value)));
 }
 
 void XexDialog::AddExecutableProperty(QString name, QString value)

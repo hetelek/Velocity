@@ -1,13 +1,17 @@
 #include "Xex.h"
 
 Xbox360Executable::Xbox360Executable(BaseIO *io) :
-    deleteIO(false), io(io), firstResourceFileAddr(0xFFFFFFFF), rawDataIO(NULL)
+    deleteIO(false), io(io), firstResourceFileAddr(0xFFFFFFFF), rawDataIO(NULL), imageBaseAddress(0),
+    entryPoint(0), originalBaseAddress(0), defaultStackSize(0), defaultFileSystemCacheSize(0),
+    defaultHeapSize(0), titleWorkspaceSize(0)
 {
     Parse();
 }
 
 Xbox360Executable::Xbox360Executable(std::string fileName) :
-    deleteIO(true), firstResourceFileAddr(0xFFFFFFFF), rawDataIO(NULL)
+    deleteIO(true), firstResourceFileAddr(0xFFFFFFFF), rawDataIO(NULL), imageBaseAddress(0),
+    entryPoint(0), originalBaseAddress(0), defaultStackSize(0), defaultFileSystemCacheSize(0),
+    defaultHeapSize(0), titleWorkspaceSize(0)
 {
     io = new FileIO(fileName);
 
