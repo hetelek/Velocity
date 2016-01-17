@@ -192,7 +192,8 @@ enum XexCompressionState
 {
     XexDecompressed = 0,
     XexCompressed,
-    XexSupercompressed
+    XexSupercompressed,
+    XexDeltaCompressed
 };
 
 struct XexHeader

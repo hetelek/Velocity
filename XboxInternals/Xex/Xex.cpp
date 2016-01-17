@@ -418,6 +418,8 @@ std::string Xbox360Executable::GetCompressionStateStr() const
             return "Compressed";
         case XexSupercompressed:
             return "Super compressed";
+        case XexDeltaCompressed:
+            return "Delta compressed";
         case XexDecompressed:
             return "Decompressed";
         default:

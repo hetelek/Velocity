@@ -76,20 +76,13 @@ XexDialog::XexDialog(Xbox360Executable *xex, QWidget *parent) :
     }
 
     // load executable information
-    if (xex->GetImageBaseAddress() != 0)
-        AddExecutableProperty("Image Base Address", xex->GetImageBaseAddress());
-    if (xex->GetEntryPoint() != 0)
-        AddExecutableProperty("EntryPoint", xex->GetEntryPoint());
-    if (xex->GetOriginalBaseAddress() != 0)
-        AddExecutableProperty("Original Base Address", xex->GetOriginalBaseAddress());
-    if (xex->GetDefaultStackSize() != 0)
-        AddExecutableProperty("Default Stack Size", xex->GetDefaultStackSize());
-    if (xex->GetDefaultFileSystemCacheSize() != 0)
-        AddExecutableProperty("Default File System Cache Size", xex->GetDefaultFileSystemCacheSize());
-    if (xex->GetDefaultHeapSize() != 0)
-        AddExecutableProperty("Default Heap Size", xex->GetDefaultHeapSize());
-    if (xex->GetTitleWorkspaceSize() != 0)
-        AddExecutableProperty("Title Workspace Size", xex->GetTitleWorkspaceSize());
+    AddExecutableProperty("Image Base Address", xex->GetImageBaseAddress());
+    AddExecutableProperty("EntryPoint", xex->GetEntryPoint());
+    AddExecutableProperty("Original Base Address", xex->GetOriginalBaseAddress());
+    AddExecutableProperty("Default Stack Size", xex->GetDefaultStackSize());
+    AddExecutableProperty("Default File System Cache Size", xex->GetDefaultFileSystemCacheSize());
+    AddExecutableProperty("Default Heap Size", xex->GetDefaultHeapSize());
+    AddExecutableProperty("Title Workspace Size", xex->GetTitleWorkspaceSize());
 
     // load game regions
     ui->chkNorthAmerica->setChecked(xex->HasRegion(XexRegionNorthAmerica));
@@ -172,7 +165,7 @@ XexDialog::~XexDialog()
 
 void XexDialog::AddExecutableProperty(QString name, DWORD value)
 {
-    //if (value != 0)
+    if (value != 0)
         AddExecutableProperty(name, "0x" + QString::fromStdString(Utils::ConvertToHexString(value)));
 }
 
