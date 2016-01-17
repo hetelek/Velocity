@@ -48,15 +48,8 @@ void ISO::ExtractFile(std::string outDirectory, std::string filePath, void (*pro
 
 void ISO::ExtractAll(std::string outDirectory, void (*progress)(void*, DWORD, DWORD), void *arg)
 {
-    // calculate the total number of copy iterations for reporting progress
-    UINT64 totalSectors = GetTotalSectors(&root);
-    DWORD totalCopyIterations = (totalSectors * ISO_SECTOR_SIZE) / ISO_COPY_BUFFER_SIZE;
-
-    if (totalCopyIterations % ISO_COPY_BUFFER_SIZE != 0)
-        totalCopyIterations++;
-
     DWORD curProgress = 0;
-    ExtractAllHelper(outDirectory, &root, progress, arg, &curProgress, totalCopyIterations);
+    ExtractAllHelper(outDirectory, &root, progress, arg, &curProgress, GetTotalCopyIterations(&root));
 }
 
 GdfxFileEntry* ISO::GetFileEntry(std::string filePath)
@@ -233,8 +226,8 @@ void ISO::ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int si
         if (!GdfxReadFileEntry(io, &current) && size != 0)
             break;
 
-        // if it's a directory, then seek to it and read it's contents
-        if (current.attributes & GdfxDirectory)
+        // if it's a non-empty directory, then seek to it and read it's contents
+        if (current.attributes & GdfxDirectory && current.size != 0)
         {
             // preserve the current positon
             UINT64 seekAddr = io->GetPosition();
@@ -282,23 +275,27 @@ void ISO::ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int si
     std::sort(entryList->begin(), entryList->end(), DirectoryFirstCompareGdfxEntries);
 }
 
-UINT64 ISO::GetTotalSectors(const vector<GdfxFileEntry> *entryList)
+DWORD ISO::GetTotalCopyIterations(const vector<GdfxFileEntry> *entryList)
 {
-    UINT64 totalSectors = 0;
+    DWORD totalCopyIterations = 0;
     for (size_t i = 0; i < entryList->size(); i++)
     {
         GdfxFileEntry entry = entryList->at(i);
         if (entry.attributes & GdfxDirectory)
-            totalSectors += GetTotalSectors(&entry.files);
+        {
+            totalCopyIterations += GetTotalCopyIterations(&entry.files);
+        }
+        else
+        {
+            DWORD sectionsPerFile = entry.size / ISO_COPY_BUFFER_SIZE;
+            if (entry.size % ISO_COPY_BUFFER_SIZE != 0)
+                sectionsPerFile++;
 
-        DWORD sectorsPerFile = entry.size / ISO_SECTOR_SIZE;
-        if (entry.size % ISO_SECTOR_SIZE != 0)
-            sectorsPerFile++;
-
-        totalSectors += sectorsPerFile;
+            totalCopyIterations += sectionsPerFile;
+        }
     }
 
-    return totalSectors;
+    return totalCopyIterations;
 }
 
 void ISO::ExtractAllHelper(std::string outDirectory, std::vector<GdfxFileEntry> *entryList, void (*progress)(void*, DWORD, DWORD), void *arg, DWORD *curProgress, DWORD totalProgress)
