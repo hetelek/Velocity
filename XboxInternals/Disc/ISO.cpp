@@ -217,7 +217,10 @@ void ISO::ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int si
     io->SetPosition(entryAddress);
 
     GdfxFileEntry current;
-    while (true)
+    DWORD bytesLeft = size;
+    int i = 0;
+
+    while (bytesLeft != 0)
     {
         current.address = io->GetPosition();
         current.fileIndex = 0;
@@ -264,6 +267,9 @@ void ISO::ReadFileListing(vector<GdfxFileEntry> *entryList, DWORD sector, int si
                 io->SetPosition(entryAddress);
             }
         }
+
+        // calculate the amount of bytes left in the block to process
+        bytesLeft -= entryAddress - current.address;
 
         // back up to the entry
         io->SetPosition(entryAddress);
