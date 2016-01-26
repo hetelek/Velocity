@@ -625,6 +625,9 @@ void Xbox360Executable::ParseOptionalHeaderEntry(XexOptionalHeaderEntry *entry, 
         case ExecutionInfo:
             ParseExecutionInfo(headerEntry.data);
             break;
+        case LANKey:
+            ParseLANKey(headerEntry.data);
+            break;
         case ImageBaseAddress:
             imageBaseAddress = headerEntry.data;
             break;
