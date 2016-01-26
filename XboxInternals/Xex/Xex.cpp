@@ -1,4 +1,5 @@
 #include "Xex.h"
+#include "IO/XexZeroBasedCompressionIO.h"
 
 Xbox360Executable::Xbox360Executable(BaseIO *io) :
     deleteIO(false), io(io), firstResourceFileAddr(0xFFFFFFFF), rawDataIO(NULL), imageBaseAddress(0),
@@ -332,6 +333,58 @@ void Xbox360Executable::ExtractDecompressedData(std::string path)
     }
 
     outFile.Close();
+    delete copyBuffer;
+}
+
+void Xbox360Executable::ExtractData2(std::string path)
+{
+    // create an io to read the data as it is in the file
+    BaseIO *plaintextDataIO = io;
+    plaintextDataIO->SetPosition(header.dataAddress);
+
+    // check to see if it needs to be zero decompressed
+    if (compressionBlocks.size() != 0)
+        plaintextDataIO = new XexZeroBasedCompressionIO(plaintextDataIO, this);
+
+    // calculate the total data size
+    DWORD dataSize;
+    if (compressionBlocks.size() == 0)
+    {
+        dataSize = io->Length() - header.dataAddress;
+    }
+    else
+    {
+        dataSize = 0;
+        for (size_t i = 0; i < compressionBlocks.size(); i++)
+        {
+            dataSize += compressionBlocks.at(i).size;
+            dataSize += compressionBlocks.at(i).nullSize;
+        }
+    }
+
+    DWORD copyIterations = dataSize / XEX_COPY_BUFFER_SIZE;
+    if (dataSize % XEX_COPY_BUFFER_SIZE != 0)
+        copyIterations++;
+
+    BYTE *copyBuffer = new BYTE[XEX_COPY_BUFFER_SIZE];
+
+    // copy the data over in chunks
+    FileIO outFile(path, true);
+    for (DWORD i = 0; i < copyIterations; i++)
+    {
+        // determine the amount of bytes to copy
+        DWORD bytesToCopy = XEX_COPY_BUFFER_SIZE;
+        if (i + 1 == copyIterations && dataSize % XEX_COPY_BUFFER_SIZE != 0)
+            bytesToCopy = dataSize % XEX_COPY_BUFFER_SIZE;
+
+        // copy the bytes to the out file
+        plaintextDataIO->ReadBytes(copyBuffer, bytesToCopy);
+        outFile.Write(copyBuffer, bytesToCopy);
+    }
+
+    // cleanup
+    if (plaintextDataIO != io)
+        delete plaintextDataIO;
     delete copyBuffer;
 }
 

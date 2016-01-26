@@ -19,6 +19,8 @@
 
 #include "XboxInternals_global.h"
 
+class XexZeroBasedCompressionIO;
+
 class XBOXINTERNALSSHARED_EXPORT Xbox360Executable
 {
 public:
@@ -77,6 +79,8 @@ public:
     void ExtractDecryptedData(std::string path) const;
 
     void ExtractDecompressedData(std::string path);
+
+    void ExtractData2(std::string path);
 
     bool HasRegion(XexRegion region);
 
@@ -183,6 +187,8 @@ private:
 
     // Get an IO pointing to the beginning of the decrypted and fully decompressed data in an XEX
     BaseIO* GetRawDataIO();
+
+    friend class XexZeroBasedCompressionIO;
 };
 
 #endif // XEX_H
