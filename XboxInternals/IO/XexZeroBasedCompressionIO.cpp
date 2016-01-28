@@ -1,9 +1,9 @@
 #include "XexZeroBasedCompressionIO.h"
 
 XexZeroBasedCompressionIO::XexZeroBasedCompressionIO(BaseIO *io, Xbox360Executable *xex) :
-    io(io), xex(xex), position(0)
+    XexBaseIO(io, xex)
 {
-
+    xex->io->SetPosition(xex->header.dataAddress);
 }
 
 void XexZeroBasedCompressionIO::ReadBytes(BYTE *outBuffer, DWORD readLength)
@@ -111,29 +111,6 @@ void XexZeroBasedCompressionIO::ReadBytes(BYTE *outBuffer, DWORD readLength)
 }
 
 void XexZeroBasedCompressionIO::WriteBytes(BYTE *buffer, DWORD len)
-{
-
-}
-
-void XexZeroBasedCompressionIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir)
-{
-    if (position != 0 || dir != std::ios_base::beg)
-        throw std::string("XexZeroBasedCompressionIO: Can only seek to the beginning.");
-
-    xex->io->SetPosition(xex->header.dataAddress);
-}
-
-UINT64 XexZeroBasedCompressionIO::GetPosition()
-{
-    return position;
-}
-
-void XexZeroBasedCompressionIO::Flush()
-{
-
-}
-
-void XexZeroBasedCompressionIO::Close()
 {
 
 }

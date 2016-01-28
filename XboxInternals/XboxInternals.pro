@@ -78,7 +78,8 @@ SOURCES += \
     IO/IsoIO.cpp \
     Xex/Xex.cpp \
     Xex/Xuiz.cpp \
-    IO/XexZeroBasedCompressionIO.cpp
+    IO/XexZeroBasedCompressionIO.cpp \
+    IO/XexBaseIO.cpp
 
 HEADERS +=\
         XboxInternals_global.h \
@@ -136,4 +137,5 @@ HEADERS +=\
     Xex/Xex.h \
     Xex/XexDefinitions.h \
     Xex/Xuiz.h \
-    IO/XexZeroBasedCompressionIO.h
+    IO/XexZeroBasedCompressionIO.h \
+    IO/XexBaseIO.h
