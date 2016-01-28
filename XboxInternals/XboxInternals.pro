@@ -79,6 +79,7 @@ SOURCES += \
     Xex/Xex.cpp \
     Xex/Xuiz.cpp \
     IO/XexZeroBasedCompressionIO.cpp \
+    IO/XexAesIO.cpp \
     IO/XexBaseIO.cpp
 
 HEADERS +=\
@@ -138,4 +139,5 @@ HEADERS +=\
     Xex/XexDefinitions.h \
     Xex/Xuiz.h \
     IO/XexZeroBasedCompressionIO.h \
+    IO/XexAesIO.h \
     IO/XexBaseIO.h

@@ -1,5 +1,6 @@
 #include "Xex.h"
 #include "IO/XexZeroBasedCompressionIO.h"
+#include "IO/XexAesIO.h"
 
 Xbox360Executable::Xbox360Executable(BaseIO *io) :
     deleteIO(false), io(io), firstResourceFileAddr(0xFFFFFFFF), rawDataIO(NULL), imageBaseAddress(0),
@@ -341,6 +342,10 @@ void Xbox360Executable::ExtractData2(std::string path)
     // create an io to read the data as it is in the file
     BaseIO *plaintextDataIO = io;
     plaintextDataIO->SetPosition(header.dataAddress);
+
+    // check to see if it needs be to decrypted
+    if (GetEncryptionState() == RetailEncrypted || GetEncryptionState() == DevKitEncrypted)
+        plaintextDataIO = new XexAesIO(plaintextDataIO, this, decryptedKey);
 
     // check to see if it needs to be zero decompressed
     if (compressionBlocks.size() != 0)

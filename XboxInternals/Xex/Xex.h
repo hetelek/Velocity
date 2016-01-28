@@ -19,6 +19,8 @@
 
 #include "XboxInternals_global.h"
 
+class XexBaseIO;
+class XexAesIO;
 class XexZeroBasedCompressionIO;
 
 class XBOXINTERNALSSHARED_EXPORT Xbox360Executable
@@ -188,6 +190,8 @@ private:
     // Get an IO pointing to the beginning of the decrypted and fully decompressed data in an XEX
     BaseIO* GetRawDataIO();
 
+    friend class XexBaseIO;
+    friend class XexAesIO;
     friend class XexZeroBasedCompressionIO;
 };
 
