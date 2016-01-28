@@ -11,9 +11,6 @@ void XexZeroBasedCompressionIO::ReadBytes(BYTE *outBuffer, DWORD readLength)
     if (Length() < (position + readLength))
         throw std::string("XexZeroBasedCompressionIO: Cannot read beyond end of data.");
 
-    if (GetPosition() + readLength >= 0x2E08000)
-        std::cout << "yol" << std::endl;
-
     DWORD bytesRemaining = readLength;
     while (bytesRemaining > 0)
     {
