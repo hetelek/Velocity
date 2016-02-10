@@ -73,6 +73,7 @@ void ISODialog::LoadDirectory(QObject *parent, std::vector<GdfxFileEntry> direct
         }
 
         item->setData(IsoTreeWidgetItemDataMagic, Qt::UserRole, (quint32)curEntry.magic);
+        item->setData(IsoTreeWidgetItemIsDirectory, Qt::UserRole, (bool)(curEntry.attributes & GdfxDirectory));
     }
 }
 
@@ -102,8 +103,13 @@ void ISODialog::showContextMenu(QPoint point)
     QPoint globalPos = ui->treeWidget->mapToGlobal(point);
     QMenu contextMenu;
 
-    if (ui->treeWidget->selectedItems().size() != 0)
-        contextMenu.addAction(QPixmap(":/Images/extract.png"), "Extract");
+    if (ui->treeWidget->selectedItems().size() == 1)
+    {
+        QTreeWidgetItem *selectedTreeWidgetItem = ui->treeWidget->selectedItems().at(0);
+        bool isDirectory = selectedTreeWidgetItem->data(IsoTreeWidgetItemIsDirectory, Qt::UserRole).toBool();
+        if (!isDirectory)
+            contextMenu.addAction(QPixmap(":/Images/extract.png"), "Extract");
+    }
 
     QAction *selectedItem = contextMenu.exec(globalPos);
     if (selectedItem == NULL)
@@ -115,7 +121,11 @@ void ISODialog::showContextMenu(QPoint point)
         QString pathInISO = selectedItem->data(IsoTreeWidgetItemDataPathInISO, Qt::UserRole).toString();
 
         QString outDirectory = QFileDialog::getExistingDirectory(this, "Choose a place to extract the file to", QtHelpers::DesktopLocation());
-        iso->ExtractFile(outDirectory.toStdString(), pathInISO.toStdString());
+
+        SingleProgressDialog *progressDialog = new SingleProgressDialog(FileSystemISO, iso, OpExtract, pathInISO, outDirectory, NULL, this);
+        progressDialog->setModal(true);
+        progressDialog->show();
+        progressDialog->start();
 
         statusBar->showMessage("File extracted successfully", 5000);
     }

@@ -24,7 +24,8 @@ class ISODialog;
 enum IsoTreeWidgetItemData
 {
     IsoTreeWidgetItemDataPathInISO = 0,
-    IsoTreeWidgetItemDataMagic = 1
+    IsoTreeWidgetItemDataMagic = 1,
+    IsoTreeWidgetItemIsDirectory = 2
 };
 
 class ISODialog : public QDialog
