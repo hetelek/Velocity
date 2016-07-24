@@ -383,7 +383,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 #ifdef __WIN32__
         std::string fileName = QString(filePaths.at(i).toEncoded()).mid(1).replace("%20", " ").toStdString();
 #else
-        std::string fileName = QString(filePaths.at(i).toEncoded()).replace("%20", " ").toStdString();
+        std::string fileName = filePaths.at(i).toLocalFile().toStdString();
 #endif
 
         // make sure the file exists
