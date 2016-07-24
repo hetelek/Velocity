@@ -122,6 +122,10 @@ void ISODialog::showContextMenu(QPoint point)
 
         QString outDirectory = QFileDialog::getExistingDirectory(this, "Choose a place to extract the file to", QtHelpers::DesktopLocation());
 
+#ifndef _WIN32
+        outDirectory += "/";
+#endif
+
         SingleProgressDialog *progressDialog = new SingleProgressDialog(FileSystemISO, iso, OpExtract, pathInISO, outDirectory, NULL, this);
         progressDialog->setModal(true);
         progressDialog->show();
