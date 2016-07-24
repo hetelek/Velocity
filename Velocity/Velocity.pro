@@ -4,7 +4,10 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network xml
+QT       += core gui network xml widgets
+
+CONFIG += c++11
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
 
 # application
 TARGET = Velocity
@@ -16,7 +19,6 @@ VERSION = 0.1.0.0
 DEFINES += VERSION=\\\"$$VERSION\\\"
 
 # flags
-#QMAKE_CXXFLAGS += -std=c++11
 macx {
     QMAKE_CFLAGS_X86_64 += -mmacosx-version-min=10.7
     QMAKE_CXXFLAGS_X86_64 = $$QMAKE_CFLAGS_X86_64
@@ -26,16 +28,15 @@ macx {
 INCLUDEPATH += $$PWD/../XboxInternals
 
 win32 {
-        LIBS += -LC:/botan/ -lbotan-1.10
+    LIBS += -LC:/botan/ -lbotan-1.10
     INCLUDEPATH += C:/botan/include
 }
 macx|unix {
-    INCLUDEPATH += /usr/local/include/botan-1.10
-    LIBS += /usr/local/lib/libbotan-1.10.a
+    INCLUDEPATH += /usr/local/Cellar/botan/1.10.12/include/botan-1.10
+    LIBS += /usr/local/Cellar/botan/1.10.12/lib/libbotan-1.10.1.dylib
 }
 
 
-macx|win32:QT += phonon
 win32:RC_FILE = velocity.rc
 macx:ICON = velocity.icns
 

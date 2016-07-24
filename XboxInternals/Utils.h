@@ -12,6 +12,12 @@
 
 #include <dirent.h>
 
+#ifndef _WIN32
+    #include <sys/types.h>
+    #include <sys/stat.h>
+    #include <unistd.h>
+#endif
+
 namespace Utils
 {
     std::string XBOXINTERNALSSHARED_EXPORT NormalizeFilePath(std::string path, char cur_separater='/', char replacement_separator='\\');

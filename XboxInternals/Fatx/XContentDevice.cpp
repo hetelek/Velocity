@@ -308,7 +308,7 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
 
         devicePath = contentFile.GetFatxFilePath();
 
-        profileID = Utils::ConvertToHexString(contentFile.metaData->profileID);
+        profileID = Utils::ConvertToHexString((BYTE*)contentFile.metaData->profileID, 8);
         titleID = Utils::ConvertToHexString(contentFile.metaData->titleID);
     }
 
@@ -353,7 +353,7 @@ void XContentDevice::CopyFileToDevice(std::string outPath, void (*progress)(void
         }
 
         // if the profile is entirely new, then just add it to the end
-        XContentDeviceProfile profile(fileEntry, contentOnDevice);
+        XContentDeviceProfile profile(fileEntry, static_cast<StfsPackage*>(contentOnDevice));
         profiles->push_back(profile);
     }
     else if (memcmp(contentOnDevice->metaData->profileID, sharedProfileID, 8) != 0)

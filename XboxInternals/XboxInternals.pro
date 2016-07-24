@@ -4,7 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       -= gui core
+QT      += gui core
+
+CONFIG += c++11
 
 TARGET = XboxInternals
 TEMPLATE = lib
@@ -29,8 +31,8 @@ win32 {
     INCLUDEPATH += C:/botan/include
 }
 macx|unix {
-    INCLUDEPATH += /usr/local/include/botan-1.10
-    LIBS += /usr/local/lib/libbotan-1.10.a
+    INCLUDEPATH += /usr/local/Cellar/botan/1.10.12/include/botan-1.10
+    LIBS += /usr/local/Cellar/botan/1.10.12/lib/libbotan-1.10.1.dylib
 }
 
 SOURCES += \

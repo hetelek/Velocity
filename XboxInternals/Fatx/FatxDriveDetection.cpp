@@ -101,7 +101,7 @@ std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
                     {
                         // make sure the data files are loaded in the right order
                         std::sort(dataFiles.begin(), dataFiles.end());
-                        MultiFileIO *io = new MultiFileIO(dataFiles);
+                        JoinedMultiFileIO *io = new JoinedMultiFileIO(dataFiles);
                         FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
                         drives.push_back(usbDrive);
                     }
