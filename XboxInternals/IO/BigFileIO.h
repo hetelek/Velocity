@@ -3,8 +3,6 @@
 
 #ifdef _WIN32
     #include <windows.h>
-#elif __APPLE__
-    #include <unistd.h>
 #endif
 
 #include <string>
@@ -37,8 +35,6 @@ private:
 
 #ifdef _WIN32
     HANDLE hFile;
-#elif __APPLE__
-    FILE *file;
 #endif
 };
 

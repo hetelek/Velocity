@@ -45,7 +45,7 @@ void QtHelpers::ParseHexStringBuffer(QString bytes, BYTE *outBuffer, DWORD len)
 
 QString QtHelpers::DesktopLocation()
 {
-    return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation).replace("\\", "/");
+    return QDesktopServices::storageLocation(QDesktopServices::DesktopLocation).replace("\\", "/");
 }
 
 bool QtHelpers::VerifyHexStringBuffer(QString bytes)
@@ -57,7 +57,7 @@ bool QtHelpers::VerifyHexString(QString str)
 {
     str = str.replace("0x", "");
     for (int i = 0; i < str.length(); i++)
-        if (!isxdigit(str.at(i).toLatin1()))
+        if (!isxdigit(str.at(i).toAscii()))
             return false;
     return true;
 }

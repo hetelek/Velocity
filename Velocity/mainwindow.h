@@ -18,7 +18,6 @@
 #include <QNetworkRequest>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QMimeData>
 
 // forms
 #include "profileeditor.h"

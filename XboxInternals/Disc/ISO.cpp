@@ -332,14 +332,8 @@ void ISO::ExtractFileHelper(std::string outDirectory, const GdfxFileEntry *toExt
     // this is so this function can work with ExtractAllHelper
     Utils::CreateLocalDirectory(outDirectory);
 
-    // TODO: this shouldn't be neccessary
-#if _WIN32
-    std::string outFilePath = outDirectory + "/" + toExtract->name;
-#else
-    std::string outFilePath = outDirectory + toExtract->name;
-#endif
-
     // create a new file on the local disk
+    std::string outFilePath = outDirectory + "/" + toExtract->name;
     BigFileIO extractedFile(outFilePath, true);
 
     DWORD totalReads = toExtract->size / ISO_COPY_BUFFER_SIZE;

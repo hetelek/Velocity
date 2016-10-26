@@ -246,7 +246,7 @@ MemoryIO* Account::decryptAccount(BaseIO *io, ConsoleType type)
 
     // decrypt using rc4
     Botan::ARC4 rc4;
-    // rc4.set_key(rc4Key, 0x10);
+    rc4.set_key(rc4Key, 0x10);
 
     rc4.cipher(restOfFile, restOfFile, 0x184);
 
@@ -362,7 +362,7 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
 
     // encrypt the data
     Botan::ARC4 rc4;
-    // rc4.set_key(rc4Key, 0x10);
+    rc4.set_key(rc4Key, 0x10);
 
     rc4.cipher1(decryptedData, 0x184);
 

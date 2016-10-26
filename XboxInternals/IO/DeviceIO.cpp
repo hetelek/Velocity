@@ -334,9 +334,6 @@ void DeviceIO::SetPosition(UINT64 address, std::ios_base::seek_dir dir)
     #ifdef _WIN32
         impl->offset.Offset = (DWORD)address;
         impl->offset.OffsetHigh = (DWORD)(address >> 32);
-    #elif __APPLE__
-        impl->offset = address;
-        lseek(impl->device, address, SEEK_SET);
     #else
         impl->offset = address;
         lseek64(impl->device, address, SEEK_SET);

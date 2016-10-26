@@ -397,7 +397,7 @@ void FatxIO::ReplaceFile(std::string sourcePath, void (*progress)(void *, DWORD,
 
     std::vector<Range> WriteRanges;
     BYTE *buffer = new BYTE[bufferSize];
-    UINT64 pos;
+    INT64 pos;
 
     // generate the read ranges
     for (DWORD i = 0; i < entry->clusterChain.size() - 1; i++)
@@ -417,7 +417,7 @@ void FatxIO::ReplaceFile(std::string sourcePath, void (*progress)(void *, DWORD,
     }
 
     DWORD finalClusterSize = entry->fileSize % entry->partition->clusterSize;
-    UINT64 finalClusterOffset = FatxIO::ClusterToOffset(entry->partition, entry->clusterChain.at(entry->clusterChain.size() - 1));
+    INT64 finalClusterOffset = FatxIO::ClusterToOffset(entry->partition, entry->clusterChain.at(entry->clusterChain.size() - 1));
     Range lastRange = { finalClusterOffset , (finalClusterSize == 0) ? entry->partition->clusterSize : finalClusterSize };
     WriteRanges.push_back(lastRange);
 
@@ -526,10 +526,10 @@ void FatxIO::WriteClusterChain(Partition *part, DWORD startingCluster, std::vect
 
 void FatxIO::GetConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges, bool includeNonConsec)
 {
-    for (UINT64 i = 0; i < list.size(); i++)
+    for (int i = 0; i < list.size(); i++)
     {
-        UINT64 start = i++;
-        UINT64 streak = 1;
+        int start = i++;
+        int streak = 1;
 
         while (i < list.size() && list[i] - list[start] == i - start)
         {
@@ -549,8 +549,8 @@ void FatxIO::GetConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRan
 void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD), void *arg)
 {
     // get the current position
-    UINT64 pos;
-    UINT64 originalPos = device->GetPosition();
+    INT64 pos;
+    INT64 originalPos = device->GetPosition();
 
     // seek to the beggining of the file
     SetPosition(0);
@@ -583,7 +583,7 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
     }
 
     DWORD finalClusterSize = entry->fileSize % entry->partition->clusterSize;
-    UINT64 finalClusterOffset = ClusterToOffset(entry->partition, entry->clusterChain.at(entry->clusterChain.size() - 1));
+    INT64 finalClusterOffset = ClusterToOffset(entry->partition, entry->clusterChain.at(entry->clusterChain.size() - 1));
     Range lastRange = { finalClusterOffset , (finalClusterSize == 0) ? entry->partition->clusterSize : finalClusterSize};
     readRanges.push_back(lastRange);
 

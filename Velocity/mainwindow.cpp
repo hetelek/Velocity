@@ -117,7 +117,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                 {
                     if (!fromPackageViewer)
                     {
-                        QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Save Game"), QStandardPaths::writableLocation(QStandardPaths::DesktopLocation), "All Files (*)");
+                        QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Save Game"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
                         if (fileName.isNull())
                             return;
 
@@ -194,7 +194,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
                     // if it's not from the package viewer, ask for a file
                     if (!fromPackageViewer)
                     {
-                        QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Profile"), QStandardPaths::writableLocation(QStandardPaths::DesktopLocation), "All Files (*)");
+                        QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Profile"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
                         if (fileName.isNull())
                             return;
 
@@ -203,6 +203,7 @@ void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *packa
 
                     // generate temporary path
                     QString tempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+
                     // set arguments
                     Arguments *args = new Arguments;
                     args->package = package;
@@ -364,8 +365,7 @@ void MainWindow::dropEvent(QDropEvent *event)
 {
     ui->statusBar->showMessage("");
 
-    const QMimeData *mimeData = event->mimeData();
-    QList<QUrl> filePaths = mimeData->urls();
+    QList<QUrl> filePaths = event->mimeData()->urls();
 
     // iterate through all of the files dropped
     LoadFiles(filePaths);
@@ -381,9 +381,9 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
     for (int i = 0; i < filePaths.size(); i++)
     {
 #ifdef __WIN32__
-        std::string fileName = QString(filePaths.at(i).toEncoded()).mid(1).replace("%20", " ").toStdString();
+        std::string fileName = QString(filePaths.at(i).encodedPath()).mid(1).replace("%20", " ").toStdString();
 #else
-        std::string fileName = QString(filePaths.at(i).toEncoded()).replace("%20", " ").toStdString();
+        std::string fileName = QString(filePaths.at(i).encodedPath()).replace("%20", " ").toStdString();
 #endif
 
         // make sure the file exists
@@ -538,7 +538,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 
 void MainWindow::on_actionProfile_Editor_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Profile"), QStandardPaths::writableLocation(QStandardPaths::DesktopLocation), "All Files (*)");
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open a Profile"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
 
     if (fileName.isEmpty())
         return;
@@ -571,7 +571,7 @@ void MainWindow::on_actionAbout_triggered()
 }
 void MainWindow::on_actionPackage_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QStandardPaths::writableLocation(QStandardPaths::DesktopLocation), "All Files (*)");
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
 
     if (fileName.isEmpty())
         return;
@@ -594,7 +594,7 @@ void MainWindow::on_actionPackage_triggered()
 
 void MainWindow::on_actionXDBF_File_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Xdbf File"), QStandardPaths::writableLocation(QStandardPaths::DesktopLocation), "Gpd File (*.gpd *.fit);;All Files (*)");
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Xdbf File"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "Gpd File (*.gpd *.fit);;All Files (*)");
 
     if (fileName.isEmpty())
         return;
@@ -619,7 +619,7 @@ void MainWindow::on_actionSTRB_File_triggered()
 {
     try
     {
-        QString fileName = QFileDialog::getOpenFileName(this, tr("Open an Avatar Asset"), QStandardPaths::writableLocation(QStandardPaths::DesktopLocation), "BIN File (*.bin);;All Files (*)");
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Open an Avatar Asset"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "BIN File (*.bin);;All Files (*)");
         if (fileName.isEmpty())
             return;
 
@@ -684,7 +684,7 @@ void MainWindow::on_actionProfile_Creator_triggered()
 
 void MainWindow::on_actionGame_Adder_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QStandardPaths::writableLocation(QStandardPaths::DesktopLocation), "All Files (*)");
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
     if (fileName.isEmpty())
         return;
 
@@ -733,7 +733,7 @@ void MainWindow::on_actionPreferences_triggered()
 
 void MainWindow::on_actionFATX_File_Path_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QStandardPaths::writableLocation(QStandardPaths::DesktopLocation), "All Files (*)");
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Package"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), "All Files (*)");
 
     if (fileName.isEmpty())
         return;

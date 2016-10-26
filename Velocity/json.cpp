@@ -553,7 +553,7 @@ int Json::nextToken(const QString &json, int &index)
 
         QChar c = json[index];
         index++;
-        switch(c.toLatin1())
+        switch(c.toAscii())
         {
                 case '{': return JsonTokenCurlyOpen;
                 case '}': return JsonTokenCurlyClose;

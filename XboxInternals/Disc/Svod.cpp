@@ -10,7 +10,7 @@ std::vector<std::string> SVOD::GetDataFilePaths(std::string rootDescriptorPath)
     bool dataFileDirectoryExists = PathFileExistsA(dataFileDirectoryPath.c_str());
 #else
     struct stat sb;
-    bool dataFileDirectoryExists = stat(dataFileDirectoryPath.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode);
+    bool dataFileDirectoryExists = stat(dataFileDirectoryPath.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode));
 #endif
 
     std::vector<std::string> dataFiles;

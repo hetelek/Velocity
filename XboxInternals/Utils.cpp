@@ -70,7 +70,5 @@ bool Utils::CreateLocalDirectory(std::string filePath)
 {
 #ifdef _WIN32
     return (bool)CreateDirectoryA(filePath.c_str(), NULL);
-#else
-    return mkdir(filePath.c_str(), 0777) == 0;
 #endif
 }

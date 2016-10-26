@@ -1100,7 +1100,7 @@ FatxFileEntry* FatxDrive::GetFileEntry(std::string filePath)
 
     // if there is no corresponding partition, then the path is invalid
     if (part == NULL)
-        return NULL;
+        return false;
 
     FatxFileEntry *parent = &part->root;
     while ((int)filePath.find('\\') >= 0 || filePath.size() > 0)
