@@ -30,6 +30,10 @@ SingleProgressDialog::SingleProgressDialog(FileSystem system, void *device, Oper
             setWindowTitle("Extracting All Files");
             ui->lblIcon->setPixmap(QPixmap(":/Images/extract.png"));
             break;
+        case OpExtract:
+            setWindowTitle("Extracting File");
+            ui->lblIcon->setPixmap(QPixmap(":/Images/extract.png"));
+            break;
     }
 }
 
@@ -106,12 +110,18 @@ void SingleProgressDialog::start()
                 break;
             }
             case FileSystemISO:
+            {
+                ISO *iso = reinterpret_cast<ISO*>(device);
                 if (op == OpExtractAll)
                 {
-                    ISO *iso = reinterpret_cast<ISO*>(device);
                     iso->ExtractAll(externalPath.toStdString(), UpdateProgress, this);
                 }
+                else if (op == OpExtract)
+                {
+                    iso->ExtractFile(externalPath.toStdString(), internalPath.toStdString(), UpdateProgress, this);
+                }
                 break;
+            }
         }
     }
     catch (string error)
