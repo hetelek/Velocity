@@ -10,18 +10,12 @@ TARGET = XboxInternals
 TEMPLATE = lib
 DEFINES += XBOXINTERNALS_LIBRARY
 
-unix {
-    CONFIG += staticlib app_bundle
-}
+unix:CONFIG += staticlib app_bundle
 
-# flags
-#QMAKE_CXXFLAGS += -std=c++11
-QMAKE_CFLAGS_RELEASE = -O3
+# flags (lets step it up a notch)
+QMAKE_CXXFLAGS = -O3
 
-# library version
-#VERSION = 0.1.0.0
-#DEFINES += VERSION=\\\"$$VERSION\\\"
-
+# linking against botan (and adding to include path)
 win32 {
     include(Stfs/Botan.pri)
     LIBS += C:/botan/libbotan-1.10.a "C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v7.0A\\Lib\\ShLwApi.Lib"
