@@ -116,32 +116,23 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
         item->setText(1, totalGamerscore);
         item->setText(2, totalAwardCount);
 
-        TitleEntry entry =
-        {
-            .entry =
-            {
-                .type = (EntryType)0,
-                .id = 0,
-                .addressSpecifier = 0,
-                .length = 0
-            },
-            .initialLength = 0,
-            .titleID = titleId,
-            .achievementCount = (DWORD)achievementCount.toULong(),
-            .achievementsUnlocked = 0,
-            .totalGamerscore = (DWORD)totalGamerscore.toULong(),
-            .gamerscoreUnlocked = 0,
-            .achievementsUnlockedOnline = 0,
-            .avatarAwardsEarned = 0,
-            .avatarAwardCount = (BYTE)totalAwardCount.toInt(),
-            .maleAvatarAwardsEarned = 0,
-            .maleAvatarAwardCount = (BYTE)maleAwardCount.toInt(),
-            .femaleAvatarAwardsEarned = 0,
-            .femaleAvatarAwardCount = (BYTE)femaleAwardCount.toInt(),
-            .flags = 0,
-            .lastPlayed = QDateTime::currentDateTime().toTime_t(),
-            .gameName = gameName.toStdWString()
-        };
+        TitleEntry entry = { (EntryType)0 };
+        entry.initialLength = 0;
+        entry.titleID = titleId;
+        entry.achievementCount = (DWORD)achievementCount.toULong();
+        entry.achievementsUnlocked = 0;
+        entry.totalGamerscore = (DWORD)totalGamerscore.toULong();
+        entry.gamerscoreUnlocked = 0;
+        entry.achievementsUnlockedOnline = 0;
+        entry.avatarAwardsEarned = 0;
+        entry.avatarAwardCount = (BYTE)totalAwardCount.toInt();
+        entry.maleAvatarAwardsEarned = 0;
+        entry.maleAvatarAwardCount = (BYTE)maleAwardCount.toInt();
+        entry.femaleAvatarAwardsEarned = 0;
+        entry.femaleAvatarAwardCount = (BYTE)femaleAwardCount.toInt();
+        entry.flags = 0;
+        entry.lastPlayed = QDateTime::currentDateTime().toTime_t();
+        entry.gameName = gameName.toStdWString();
 
         item->setData(0, Qt::UserRole, QVariant::fromValue(entry));
 

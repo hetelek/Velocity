@@ -74,7 +74,7 @@ std::string QtHelpers::GetKVPath(ConsoleType type, QWidget *parent)
 
     if (!QFile::exists(QString::fromStdString(kvName)))
     {
-        QFileDialog dialog(parent, "KV Location", DefaultLocation() + "/KV.bin");
+        QFileDialog dialog(parent, "KV Location", DesktopLocation() + "/KV.bin");
         dialog.setFileMode(QFileDialog::ExistingFile);
         dialog.setViewMode(QFileDialog::Detail);
 

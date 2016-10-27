@@ -81,6 +81,12 @@ public:
     
     static void AddSubWindow(QMdiArea *mdiArea, QWidget *widget);
 
+    static QStringList StdStringArrayToQStringList(std::vector<std::string> strings);
+
+    static void DrawFreeMemoryGraph(FatxDrive *drive, QLabel *graph, QColor backgroundColor, QLabel *freeMemLegendColor,
+                                    QLabel *freeMemLegend, QLabel *usedMemLengendColor, QLabel *usedMemLegend, bool contentOnly,
+                                    void(*updateUI)(void*, bool));
+                                    
 private:
     class SubWindowEvents : public QObject
     {
@@ -90,12 +96,6 @@ private:
         protected:
             bool eventFilter(QObject *obj, QEvent *event);
     };
-
-    static QStringList StdStringArrayToQStringList(std::vector<std::string> strings);
-
-    static void DrawFreeMemoryGraph(FatxDrive *drive, QLabel *graph, QColor backgroundColor, QLabel *freeMemLegendColor,
-                                    QLabel *freeMemLegend, QLabel *usedMemLengendColor, QLabel *usedMemLegend, bool contentOnly,
-                                    void(*updateUI)(void*, bool));
 };
 
 #endif // QTHELPERS_H

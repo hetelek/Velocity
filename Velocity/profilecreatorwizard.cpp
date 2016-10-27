@@ -111,7 +111,7 @@ void ProfileCreatorWizard::onFinished(int status)
         if (!QFile::exists(QtHelpers::ExecutingDirectory() + "/FFFE07D1.gpd"))
         {
             QString dashGpdPath = QFileDialog::getOpenFileName(this, tr("Open Dashboard GPD"),
-                QtHelpers::DefaultLocation() + "/FFFE07D1.gpd", "Gpd File (*.gpd);;All Files (*.*)");
+                QtHelpers::DesktopLocation() + "/FFFE07D1.gpd", "Gpd File (*.gpd);;All Files (*.*)");
 
             if(dashGpdPath != "")
                 QFile::copy(dashGpdPath, dashGpdTempPath);
@@ -153,7 +153,7 @@ void ProfileCreatorWizard::onFinished(int status)
         ImageEntry image;
         image.image = new BYTE[ba3.length()];
         memcpy(image.image, (BYTE*)ba3.data(), ba3.length());
-        image.length = ba3.length()
+        image.length = ba3.length();
 
         dashGpd.CreateImageEntry(&image, AvatarImage);
 
