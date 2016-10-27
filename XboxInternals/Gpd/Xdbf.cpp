@@ -322,7 +322,7 @@ void Xdbf::WriteSyncList(SyncList *syncs)
     }
 
     // Write the toSync ones
-    for (int i = 0; i < syncs->toSync.size(); i++)
+    for (size_t i = 0; i < syncs->toSync.size(); i++)
     {
         io->Write(syncs->toSync.at(i).entryID);
         io->Write(syncs->toSync.at(i).syncValue);
@@ -490,10 +490,13 @@ DWORD Xdbf::AllocateMemory(DWORD size)
     DWORD toReturn;
 
     // first checek and see if we can allocate some of the memory in the free memory table
-    int index = 0;
-    for (; index < (int)(freeMemory.size() - 1); index++)
+    size_t index = 0;
+    for (; index < freeMemory.size() - 1; index++)
+    {
         if (freeMemory.at(index).length >= size)
             break;
+    }
+    
     // if the memory wasn't found in the table, then we need to append it to the file
     if (index == (freeMemory.size() - 1))
     {
@@ -787,7 +790,7 @@ void Xdbf::UpdateEntry(XdbfEntry *entry)
     bool syncExists = false;
 
     // find the sync if it isn't already in the queue
-    for (int i = 0; i < group->syncs.synced.size(); i++)
+    for (size_t i = 0; i < group->syncs.synced.size(); i++)
     {
         if (group->syncs.synced.at(i).entryID == entry->id)
         {
