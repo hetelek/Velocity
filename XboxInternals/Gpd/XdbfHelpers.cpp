@@ -36,6 +36,18 @@ time_t XdbfHelpers::FILETIMEtoTimeT(WINFILETIME time)
     return (time_t)((i64 - 116444736000000000) / 10000000);
 }
 
+unsigned int XdbfHelpers::FILETIMEtoMilliseconds(WINFILETIME time)
+{
+    /* Effectively the same as FILETIMEtoTimeT, but we're leaving
+      the milliseconds on, and stripping them out with a modulus.
+
+      TODO: Maybe just make this void with two reference parameters
+      to fill a time_t and unsigned int.
+      */
+    INT64 i64 = (((INT64)(time.dwHighDateTime)) << 32) + time.dwLowDateTime;
+    return (unsigned int)(((i64 - 116444736000000000) / 10000) % 1000);
+}
+
 WINFILETIME XdbfHelpers::TimeTtoFILETIME(time_t time)
 {
     WINFILETIME toReturn;
@@ -44,6 +56,19 @@ WINFILETIME XdbfHelpers::TimeTtoFILETIME(time_t time)
     toReturn.dwLowDateTime = (DWORD)ll;
     toReturn.dwHighDateTime = ll >> 32;
 	return toReturn;
+}
+
+WINFILETIME XdbfHelpers::TimeTtoFILETIME(time_t time, unsigned int millis)
+{
+    // TODO: Can just have the old function call this with 0ms
+    millis = millis % 1000; // make sure 0-999 ms
+
+    WINFILETIME toReturn;
+
+    UINT64 ll = ((UINT64)(time * (UINT64)10000000)) + ((UINT64)(millis * (UINT64)10000)) + 116444736000000000;
+    toReturn.dwLowDateTime = (DWORD)ll;
+    toReturn.dwHighDateTime = ll >> 32;
+    return toReturn;
 }
 
 string XdbfHelpers::GetAchievementState(AchievementEntry *entry)

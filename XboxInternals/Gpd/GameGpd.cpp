@@ -41,6 +41,7 @@ AchievementEntry GameGpd::readAchievementEntry(XdbfEntry entry)
 	
     WINFILETIME timeStamp = { io->ReadDword(), io->ReadDword() };
 	toReturn.unlockTime = XdbfHelpers::FILETIMEtoTimeT(timeStamp);
+    toReturn.unlockTimeMilliseconds = XdbfHelpers::FILETIMEtoMilliseconds(timeStamp);
 
     toReturn.name = io->ReadWString();
     toReturn.unlockedDescription = io->ReadWString();
@@ -78,10 +79,15 @@ void GameGpd::WriteAchievementEntry(AchievementEntry *entry)
     if (entry->flags & UnlockedOnline)
     {
         if (entry->unlockTime == 0)
+            /*
+              Not worrying about whether the milliseconds are 0,
+              because a timestamp of 0000-00-00 00:00:00.123
+              surely wouldn't be suspicious.
+            */
             io->Write((UINT64)0);
         else
         {
-            WINFILETIME time = XdbfHelpers::TimeTtoFILETIME(entry->unlockTime);
+            WINFILETIME time = XdbfHelpers::TimeTtoFILETIME(entry->unlockTime, entry->unlockTimeMilliseconds);
             io->Write(time.dwHighDateTime);
             io->Write(time.dwLowDateTime);
         }
