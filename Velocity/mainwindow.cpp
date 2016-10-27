@@ -327,13 +327,14 @@ void MainWindow::LoadAllPlugins()
     gpdActions.clear();
     gameActions.clear();
 	
-    QDir path(settings->value("PluginPath").toString());
-    qDebug() << "Plugin Directory: " << path.absolutePath();
+    QDir path(QtHelpers::ExecutingDirectory());
+    QDir pluginPath(path.absoluteFilePath(settings->value("PluginPath").toString()));
+    qDebug() << "Plugin Directory: " << pluginPath.absolutePath();
 
-    foreach (QString filename, path.entryList(QDir::Files))
+    foreach (QString filename, pluginPath.entryList(QDir::Files))
     {
         qDebug() << filename;
-        LoadPlugin(path.absoluteFilePath(filename), true);
+        LoadPlugin(pluginPath.absoluteFilePath(filename), true);
     }
 }
 
