@@ -202,7 +202,7 @@ FatxFileEntry* FatxDrive::createFileEntry(FatxFileEntry *parent, FatxFileEntry *
     // get the child entries
     GetChildFileEntries(parent);
 
-    for (int i = 0; i < parent->cachedFiles.size(); i++)
+    for (size_t i = 0; i < parent->cachedFiles.size(); i++)
         if (parent->cachedFiles.at(i).name == newEntry->name)
         {
             // if it's deleted, it's okay!
@@ -284,7 +284,7 @@ FatxFileEntry* FatxDrive::CreatePath(std::string folderPath)
 
     std::string currentPath = elems.at(0) + "\\" + elems.at(1);
 
-    for (int i = 2; i < elems.size(); i++)
+    for (size_t i = 2; i < elems.size(); i++)
     {
         if (GetFileEntry(currentPath + "\\" + elems.at(i)) == NULL)
             lastEntry = CreateFolder(GetFileEntry(currentPath), elems.at(i));
@@ -304,7 +304,7 @@ void FatxDrive::RemoveFile(FatxFileEntry *entry, void(*progress)(void*), void *a
     GetChildFileEntries(entry);
     ReadClusterChain(entry);
 
-    for (int i = 0; i < entry->cachedFiles.size(); i++)
+    for (size_t i = 0; i < entry->cachedFiles.size(); i++)
         RemoveFile(&entry->cachedFiles.at(i), progress, arg);
 
     // set all the clusters to available
@@ -407,14 +407,14 @@ void FatxDrive::GetChildFileEntries(FatxFileEntry *entry, void(*progress)(void*,
     bool doneForGood = false;
 
     // read all entries
-    for (int i = 0; i < entry->clusterChain.size(); i++)
+    for (size_t i = 0; i < entry->clusterChain.size(); i++)
     {
         UINT64 posCur = FatxIO::ClusterToOffset(entry->partition, entry->clusterChain.at(i));
 
         // go to the cluster offset
         io->SetPosition(posCur);
 
-        for (int x = 0; x < entriesInCluster; x++)
+        for (DWORD x = 0; x < entriesInCluster; x++)
         {
             // read the name length
             FatxFileEntry newEntry;
@@ -749,14 +749,14 @@ void FatxDrive::loadProfiles()
 
     // get the content partition's root
     for (DWORD i = 0; i < partitions.size(); i++)
+    {
         if (partitions.at(i)->name == "Content")
             contentRoot = &partitions.at(i)->root;
+    }
 
     // if the content partition doesn't exist, then return
     if (contentRoot == NULL)
         return;
-
-    FatxFileEntry *contentFolder = NULL;
 
     // get the content folder in the content partition
     GetChildFileEntries(contentRoot);
@@ -805,8 +805,6 @@ void FatxDrive::loadFatxDrive(std::wstring drivePath)
         }
 
         io = new JoinedMultiFileIO(dataFiles);
-        DWORD  a = io->ReadDword();
-        DWORD b = 5;
     }
 
     loadFatxDrive();
@@ -937,7 +935,7 @@ void FatxDrive::loadFatxDrive()
     }
 
     // process all bootsectors
-    for (int i = 0; i < this->partitions.size(); )
+    for (size_t i = 0; i < this->partitions.size(); )
     {
         processBootSector(this->partitions.at(i));
 
@@ -1053,7 +1051,7 @@ bool FatxDrive::FileExists(FatxFileEntry *folder, std::string fileName, bool che
 {
     GetChildFileEntries(folder);
 
-    for (int i = 0; i < folder->cachedFiles.size(); i++)
+    for (size_t i = 0; i < folder->cachedFiles.size(); i++)
     {
         // there's a better way to do this, but...
         if (folder->cachedFiles.at(i).name == fileName)
@@ -1083,7 +1081,7 @@ FatxFileEntry* FatxDrive::GetFileEntry(std::string filePath)
     // get the partition
     std::string partitionName = filePath.substr(0, filePath.find('\\'));
 
-    if (filePath.find('\\') == -1)
+    if (filePath.find('\\') == std::string::npos)
         filePath = "";
     else
         filePath = filePath.substr(filePath.find('\\') + 1);
@@ -1100,7 +1098,7 @@ FatxFileEntry* FatxDrive::GetFileEntry(std::string filePath)
 
     // if there is no corresponding partition, then the path is invalid
     if (part == NULL)
-        return false;
+        return NULL;
 
     FatxFileEntry *parent = &part->root;
     while ((int)filePath.find('\\') >= 0 || filePath.size() > 0)
@@ -1111,7 +1109,7 @@ FatxFileEntry* FatxDrive::GetFileEntry(std::string filePath)
         // get the next file name
         std::string fileName = filePath.substr(0, filePath.find('\\'));
 
-        if (filePath.find('\\') == -1)
+        if (filePath.find('\\') == std::string::npos)
             filePath = "";
         else
             filePath = filePath.substr(filePath.find('\\') + 1);
