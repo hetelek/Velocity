@@ -316,13 +316,13 @@ int Nightcharts::draw(QPainter *painter)
         painter->setPen(Qt::SolidLine);
         for (int i=1;i<10;i++)
         {
-            painter->drawLine(cX-3,cY+cH/10*i,cX+3,cY+cH/10*i);    //äåëåíèÿ ïî îñè Y
+            painter->drawLine(cX-3,cY+cH/10*i,cX+3,cY+cH/10*i);    //å¦«æ®¨ ð¬ ï²¨ Y
             //painter->drawText(cX-20,cY+cH/10*i,QString::number((10-i)*10)+"%");
         }
-        painter->drawLine(cX,cY+cH,cX,cY);         //îñü Y
-        painter->drawLine(cX,cY,cX+4,cY+10);       //ñòðåëêè
+        painter->drawLine(cX,cY+cH,cX,cY);         //ï²¼ Y
+        painter->drawLine(cX,cY,cX+4,cY+10);       //ò³±¥ì«¨
         painter->drawLine(cX,cY,cX-4,cY+10);
-        painter->drawLine(cX,cY+cH,cX+cW,cY+cH);   //îñü Õ
+        painter->drawLine(cX,cY+cH,cX+cW,cY+cH);   //ï²¼ Ó
 
     }
     return 0;
@@ -401,6 +401,8 @@ int Nightcharts::drawLegend(QPainter *painter)
          }
         break;
     }
+    
+    return 0;
 }
 
 QPointF Nightcharts::GetPoint(double angle, double R1, double R2)
@@ -422,23 +424,14 @@ QPointF Nightcharts::GetPoint(double angle, double R1, double R2)
 
 int Nightcharts::GetQuater(double angle)
 {
-    angle = Angle360(angle);
-
-    if(angle>=0 && angle<90)
-        return 1;
-    if(angle>=90 && angle<180)
-        return 2;
-    if(angle>=180 && angle<270)
-        return 3;
-    if(angle>=270 && angle<360)
-        return 4;
+    return ((int)Angle360(angle) / 90) + 1;
 }
 
 double Nightcharts::Angle360(double angle)
 {
     int i = (int)angle;
     double delta = angle - i;
-    return (i%360 + delta);
+    return (i % 360 + delta);
 }
 
 pieceNC::pieceNC()
