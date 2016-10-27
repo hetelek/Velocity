@@ -839,7 +839,7 @@ void FatxDrive::loadFatxDrive()
         // TODO: verify the signature
 
         // seek to the next sector
-        io->SetPosition(HddOffsets::SecuritySector + 0x200);
+        io->SetPosition(HddOffsets::SecuritySector + FAT_SECTOR_SIZE);
         securityBlob.msLogoSize = io->ReadDword();
         securityBlob.msLogo = new BYTE[securityBlob.msLogoSize];
         io->ReadBytes(securityBlob.msLogo, securityBlob.msLogoSize);
@@ -881,13 +881,13 @@ void FatxDrive::loadFatxDrive()
     if (lastFormatRecoveryVersion.major == 2 && lastFormatRecoveryVersion.build >= 1525 && lastFormatRecoveryVersion.revision >= 1)
     {
         Partition *content = new Partition;
-        content->address = (UINT64)io->ReadDword() * 0x200;
-        content->size = (UINT64)io->ReadDword() * 0x200;
+        content->address = (UINT64)io->ReadDword() * FAT_SECTOR_SIZE;
+        content->size = (UINT64)io->ReadDword() * FAT_SECTOR_SIZE;
         content->name = "Content";
 
         Partition *dashboard = new Partition;
-        dashboard->address = (UINT64)io->ReadDword() * 0x200;
-        dashboard->size = (UINT64)io->ReadDword() * 0x200;
+        dashboard->address = (UINT64)io->ReadDword() * FAT_SECTOR_SIZE;
+        dashboard->size = (UINT64)io->ReadDword() * FAT_SECTOR_SIZE;
         dashboard->name = "Xbox 360 Dashboard";
 
         partitions.push_back(content);

@@ -4,6 +4,8 @@
 #ifndef DEVICEIO_H
 #define DEVICEIO_H
 
+#define FAT_SECTOR_SIZE 0x200
+
 #include "BaseIO.h"
 #include "../Fatx/FatxHelpers.h"
 #include "XboxInternals_global.h"
@@ -41,7 +43,7 @@ private:
     std::string yolo;
 
     UINT64 pos;
-    BYTE lastReadData[0x200];
+    BYTE lastReadData[FAT_SECTOR_SIZE];
     UINT64 lastReadOffset;
 };
 
