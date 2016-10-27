@@ -19,6 +19,7 @@
 #include <QCheckBox>
 #include <QProgressBar>
 #include <QStringList>
+#include <QMdiArea>
 
 // other
 #include "winnames.h"
@@ -77,6 +78,18 @@ public:
     static void CollapseAllChildren(QTreeWidgetItem *item);
 
     static void GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWidgetItem &item, FileSystem fileSystem = FileSystemSTFS);
+    
+    static void AddSubWindow(QMdiArea *mdiArea, QWidget *widget);
+
+private:
+    class SubWindowEvents : public QObject
+    {
+        public:
+            SubWindowEvents(QObject* parent);
+
+        protected:
+            bool eventFilter(QObject *obj, QEvent *event);
+    };
 
     static QStringList StdStringArrayToQStringList(std::vector<std::string> strings);
 
