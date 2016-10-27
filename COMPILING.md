@@ -14,7 +14,6 @@ The Qt Creator IDE is used to create/debug Velocity.
 	2. Download the Botan binary (.a) from http://www.mediafire.com/?o5zhbb4leufk8d7, if available.
 	
 - MAC
-	n/a
 
 - LINUX
 	n/a
