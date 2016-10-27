@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "Binaries/femaleAvatar.h"
+
 namespace Ui {
 class ProfileCreatorWizard;
 }

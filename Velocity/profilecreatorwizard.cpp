@@ -107,7 +107,21 @@ void ProfileCreatorWizard::onFinished(int status)
 
         // make a temporary copy of the dashboard gpd
         QString dashGpdTempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
-        QFile::copy(QtHelpers::ExecutingDirectory() + "/FFFE07D1.gpd", dashGpdTempPath);
+        
+        if (!QFile::exists(QtHelpers::ExecutingDirectory() + "/FFFE07D1.gpd"))
+        {
+            QString dashGpdPath = QFileDialog::getOpenFileName(this, tr("Open Dashboard GPD"),
+                QtHelpers::DefaultLocation() + "/FFFE07D1.gpd", "Gpd File (*.gpd);;All Files (*.*)");
+
+            if(dashGpdPath != "")
+                QFile::copy(dashGpdPath, dashGpdTempPath);
+            else
+                throw string("FFFE07D1.gpd was not found.");
+        }
+        else
+        {
+            QFile::copy(QtHelpers::ExecutingDirectory() + "/FFFE07D1.gpd", dashGpdTempPath);
+        }
 
         // parse the Gpd
         DashboardGpd dashGpd(dashGpdTempPath.toStdString());
@@ -121,36 +135,25 @@ void ProfileCreatorWizard::onFinished(int status)
         if (ui->rdiFemale->isChecked())
         {
             // read in the setting
-            FileIO io((QtHelpers::ExecutingDirectory() + "/femaleAvatar.bin").toStdString());
-            BYTE settingBuffer[0x3E8];
-            io.ReadBytes(settingBuffer, 0x3E8);
-
-            dashGpd.avatarInformation.binaryData.data = settingBuffer;
-            dashGpd.avatarInformation.binaryData.length = 0x3E8;
+            memcpy(dashGpd.avatarInformation.binaryData.data, ___femaleAvatar_bin, ___femaleAvatar_bin_size);
+            dashGpd.avatarInformation.binaryData.length = ___femaleAvatar_bin_size;
             dashGpd.WriteSettingEntry(dashGpd.avatarInformation);
         }
 
         // inject the image of the avatar
-        QString imagePath;
+        QByteArray ba3;
+        QBuffer buffer3(&ba3);
+        buffer3.open(QIODevice::WriteOnly);
         if (ui->rdiMale->isChecked())
-            imagePath = QtHelpers::ExecutingDirectory() + "/male default.png";
+            QPixmap(":/Images/male avatar.png").save(&buffer3, "PNG");
         else
-            imagePath = QtHelpers::ExecutingDirectory() + "/female default.png";
-
-        FileIO io(imagePath.toStdString());
-
-        io.SetPosition(0, ios_base::end);
-        DWORD fileLen = io.GetPosition();
-        BYTE *imageBuff = new BYTE[fileLen];
-
-        io.SetPosition(0);
-        io.ReadBytes(imageBuff, fileLen);
-        io.Close();
+            QPixmap(":/Images/avatar female.png").save(&buffer3, "PNG");
 
         // inject the image
         ImageEntry image;
-        image.image = imageBuff;
-        image.length = fileLen;
+        image.image = new BYTE[ba3.length()];
+        memcpy(image.image, (BYTE*)ba3.data(), ba3.length());
+        image.length = ba3.length()
 
         dashGpd.CreateImageEntry(&image, AvatarImage);
 

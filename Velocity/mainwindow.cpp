@@ -19,12 +19,8 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
     setAcceptDrops(true);
 
     QStringList fileNames;
-    fileNames.append("femaleAvatar.bin");
-    fileNames.append("FFFE07D1.gpd");
     fileNames.append("KV_D.bin");
     fileNames.append("KV_R.bin");
-    fileNames.append("male default.png");
-    fileNames.append("female default.png");
 
     // check for all of the startup files
     QString missingFiles = "";
@@ -695,12 +691,6 @@ void MainWindow::on_actionTitle_ID_Finder_triggered()
 
 void MainWindow::on_actionProfile_Creator_triggered()
 {
-    if (!QFile::exists(QtHelpers::ExecutingDirectory() + "FFFE07D1.gpd"))
-    {
-        QMessageBox::critical(this, "File Not Found", "The file FFFE07D1.gpd was not found. This file must be in the same directory as this application.");
-        return;
-    }
-
     ProfileCreatorWizard wiz(ui->statusBar, this);
     wiz.exec();
 }
