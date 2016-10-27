@@ -428,6 +428,7 @@ struct AvatarAward
 	DWORD imageID;
 	DWORD flags;
     unsigned int unlockTime;
+    unsigned int unlockTimeMilliseconds;
 	AssetSubcategory subcategory;
     DWORD colorizable;
 	wstring name;
