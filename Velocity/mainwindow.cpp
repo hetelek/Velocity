@@ -321,6 +321,9 @@ void MainWindow::PluginFinished()
 
 void MainWindow::LoadAllPlugins()
 {
+    ui->menuProfile_Modders->clear();
+    ui->menuGame_Modders->clear();
+ 
     gpdActions.clear();
     gameActions.clear();
 	
@@ -750,6 +753,8 @@ void MainWindow::on_actionPreferences_triggered()
 {
     PreferencesDialog dialog(this);
     dialog.exec();
+    
+    LoadAllPlugins();
 }
 
 void MainWindow::on_actionFATX_File_Path_triggered()
