@@ -493,7 +493,7 @@ void StfsPackage::ExtractFile(StfsFileEntry *entry, string outPath, void (*extra
         DWORD blockCount = (ComputeLevel0BackingHashBlockNumber(entry->startingBlockNum) + blockStep[0]) - ((startAddress - firstHashTableAddress) >> 0xC);
 
         // pick up the change at the begining, until we hit a hash table
-        if (entry->blocksForFile <= blockCount)
+        if ((DWORD)entry->blocksForFile <= blockCount)
         {
             io->ReadBytes(buffer, entry->fileSize);
             outFile.Write(buffer, entry->fileSize);
