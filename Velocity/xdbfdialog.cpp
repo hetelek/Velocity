@@ -251,7 +251,7 @@ XdbfDialog::~XdbfDialog()
     delete ui;
 }
 
-Entry XdbfDialog::indexToEntry(int index)
+Entry XdbfDialog::indexToEntry(DWORD index)
 {
     Entry toReturn;
 
