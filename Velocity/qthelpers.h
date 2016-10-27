@@ -49,7 +49,7 @@ public:
 
     static QString ToHexString(UINT64 num);
 
-    static void ParseHexStringBuffer(QString bytes, BYTE *outBuffer, DWORD len);
+    static void ParseHexStringBuffer(QString bytes, BYTE *outBuffer, int len);
 
     static QString DesktopLocation();
 
