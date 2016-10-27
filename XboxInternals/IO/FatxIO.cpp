@@ -448,6 +448,7 @@ void FatxIO::ReplaceFile(std::string sourcePath, void (*progress)(void *, DWORD,
 
     // make sure it hits the end
     if (progress)
+        if (progress)
         progress(arg, WriteRanges.size(), WriteRanges.size());
 }
 
@@ -621,6 +622,7 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
 
     // make sure it hits the end
     if (progress)
+        if (progress)
         progress(arg, readRanges.size(), readRanges.size());
 
     outFile.Flush();
