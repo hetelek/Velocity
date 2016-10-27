@@ -472,11 +472,10 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                             }
                             else
                             {
-                                bool ok;
-                                ProfileEditor *editor = new ProfileEditor(ui->statusBar, package, true, &ok, this);
+                                ProfileEditor *editor = new ProfileEditor(ui->statusBar, package, true, this);
                                 editor->setAttribute(Qt::WA_DeleteOnClose);
 
-                                if (ok)
+                                if (editor->isOk())
                                 {
                                     ui->mdiArea->addSubWindow(editor);
                                     editor->show();
@@ -572,12 +571,11 @@ void MainWindow::on_actionProfile_Editor_triggered()
     {
         StfsPackage *package = new StfsPackage(fileName.toStdString());
 
-        bool *ok = new bool;
-        ProfileEditor *editor = new ProfileEditor(ui->statusBar, package, true, ok, this);
+        ProfileEditor *editor = new ProfileEditor(ui->statusBar, package, true, this);
+        editor->setAttribute(Qt::WA_DeleteOnClose);
 
-        if (*ok)
+        if (editor->isOk())
         {
-            editor->setAttribute(Qt::WA_DeleteOnClose);
             ui->mdiArea->addSubWindow(editor);
             editor->show();
         }

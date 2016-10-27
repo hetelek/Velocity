@@ -335,10 +335,9 @@ void PackageViewer::onOpenInSelected(QAction *action)
         }
         else if (action == profileEditor)
         {
-            bool ok;
-            ProfileEditor editor(statusBar, package, false, &ok, this);
+            ProfileEditor editor(statusBar, package, false, this);
 
-            if (ok)
+            if(editor.isOk())
                 editor.exec();
         }
     }

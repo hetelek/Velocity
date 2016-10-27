@@ -1,11 +1,9 @@
 #include "profileeditor.h"
 #include "ui_profileeditor.h"
 
-ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool dispose, bool *ok, QWidget *parent) :
-    QDialog(parent), ui(new Ui::ProfileEditor), profile(profile), PEC(NULL), dashGpd(NULL), account(NULL), downloader(NULL), dispose(dispose), ok(ok), statusBar(statusBar)
+ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool dispose, QWidget *parent) :
+    QDialog(parent), ui(new Ui::ProfileEditor), profile(profile), PEC(NULL), dashGpd(NULL), account(NULL), downloader(NULL), dispose(dispose), statusBar(statusBar)
 {
-    *ok = true;
-
     ui->setupUi(this);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     QtHelpers::GenAdjustWidgetAppearanceToOS(this);
@@ -63,7 +61,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     // verify that the package is a profile
     if (profile->metaData->contentType != Profile)
     {
-        *ok = false;
+        ok = false;
         QMessageBox::critical(this, "Invalid Package", "Package opened isn't a profile.\n");
         return;
     }
@@ -71,7 +69,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     // make sure the dashboard gpd exists
     if (!profile->FileExists("FFFE07D1.gpd"))
     {
-        *ok = false;
+        ok = false;
         QMessageBox::critical(this, "File Not Found", "Dashboard Gpd, FFFE07D1.gpd, wasn't found.\n");
         return;
     }
@@ -79,7 +77,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     // make sure the account file exists
     if (!profile->FileExists("Account"))
     {
-        *ok = false;
+        ok = false;
         QMessageBox::critical(this, "File Not Found", "The Account file wasn't found.\n");
         return;
     }
@@ -237,13 +235,13 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     catch (string error)
     {
         QMessageBox::critical(this, "Error", "An error has occurred while loading the profile.\n\n" + QString::fromStdString(error));
-        *ok = false;
+        ok = false;
         return;
     }
     catch (...)
     {
         QMessageBox::critical(this, "Error", "An unknown error has occurred while loading the profile.");
-        *ok = false;
+        ok = false;
         return;
     }
 
@@ -268,7 +266,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         QString gpdName = titleIDStr + ".gpd";
         if (!profile->FileExists(gpdName.toStdString()))
         {
-            *ok = false;
+            ok = false;
             QMessageBox::critical(this, "File Not Found", "Couldn't find file \"" + gpdName + "\".");
             return;
         }
@@ -292,7 +290,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         }
         catch (string error)
         {
-            *ok = false;
+            ok = false;
             QMessageBox::critical(this, "File Load Error", "Error loading game Gpd, '" + gpdName + "'.\n\n" + QString::fromStdString(error));
             return;
         }
@@ -354,7 +352,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     bool pecExists = profile->FileExists("PEC");
     if (!pecExists && aaGames.size() != 0)
     {
-        *ok = false;
+        ok = false;
         QMessageBox::critical(this, "File Not Found", "Games have been found with avatar awards, but no PEC file exists.\n");
         ui->tabAvatarAwards->setEnabled(false);
         return;
@@ -376,7 +374,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     catch (string error)
     {
         QMessageBox::critical(this, "Error", "An error has occurred while extracting the PEC.\n\n" + QString::fromStdString(error));
-        *ok = false;
+        ok = false;
         return;
     }
 
@@ -388,7 +386,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     }
     catch (string error)
     {
-        *ok = false;
+        ok = false;
         QMessageBox::critical(this, "File Load Error", "Error loading PEC file.\n\n" + QString::fromStdString(error));
         return;
     }
@@ -404,7 +402,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         // make sure the Gpd exists
         if (!PEC->FileExists(gpdName.toStdString()))
         {
-            *ok = false;
+            ok = false;
             QMessageBox::critical(this, "File Not Error", "Avatar Award Gpd '" + gpdName + "' was not found in the PEC.\n");
             return;
         }
@@ -426,7 +424,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         }
         catch (string error)
         {
-            *ok = false;
+            ok = false;
             QMessageBox::critical(this, "File Load Error", "Error loading the Avatar Award Gpd '" + gpdName + "'.\n\n" + QString::fromStdString(error));
             return;
         }
@@ -463,6 +461,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     }
 
     uploader = new GpdUploader(gameGpds, awardGpds, titleIDs, true, this);
+    
+    ok = true;
 }
 
 void ProfileEditor::showAvatarContextMenu(QPoint point)
@@ -599,7 +599,7 @@ void ProfileEditor::addToDashGpd(SettingEntry *entry, SettingEntryType type, UIN
 
 ProfileEditor::~ProfileEditor()
 {
-    if (*ok)
+    if (ok)
     {
         try
         {
@@ -1243,6 +1243,7 @@ void ProfileEditor::saveAll()
     }
 
     string path = QtHelpers::GetKVPath(profile->metaData->certificate.ownerConsoleType, this);
+    
     // save the avatar awards
     if (PEC != NULL)
     {
@@ -1793,4 +1794,9 @@ void ProfileEditor::on_cmbxConsoleType_currentIndexChanged(int index)
         }
 
     }
+}
+
+bool ProfileEditor::isOk()
+{
+    return ok;
 }
