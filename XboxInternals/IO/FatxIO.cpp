@@ -87,7 +87,7 @@ int FatxIO::AllocateMemory(DWORD byteAmount)
         BYTE *ffBuff = new BYTE[entry->partition->clusterSize];
         memset(ffBuff, 0xFF, entry->partition->clusterSize);
 
-        for (int i = 0; i < freeClusters.size(); i++)
+        for (size_t i = 0; i < freeClusters.size(); i++)
         {
             device->SetPosition(ClusterToOffset(entry->partition, freeClusters.at(i)));
             device->WriteBytes(ffBuff, entry->partition->clusterSize);
@@ -97,7 +97,7 @@ int FatxIO::AllocateMemory(DWORD byteAmount)
     }
 
     // add the free clusters to the cluster chain
-    for (int i = 0; i < freeClusters.size(); i++)
+    for (size_t i = 0; i < freeClusters.size(); i++)
         entry->clusterChain.push_back(freeClusters.at(i));
 
     if (fileIsNull)
@@ -397,7 +397,7 @@ void FatxIO::ReplaceFile(std::string sourcePath, void (*progress)(void *, DWORD,
 
     std::vector<Range> WriteRanges;
     BYTE *buffer = new BYTE[bufferSize];
-    INT64 pos;
+    UINT64 pos;
 
     // generate the read ranges
     for (DWORD i = 0; i < entry->clusterChain.size() - 1; i++)
@@ -417,7 +417,7 @@ void FatxIO::ReplaceFile(std::string sourcePath, void (*progress)(void *, DWORD,
     }
 
     DWORD finalClusterSize = entry->fileSize % entry->partition->clusterSize;
-    INT64 finalClusterOffset = FatxIO::ClusterToOffset(entry->partition, entry->clusterChain.at(entry->clusterChain.size() - 1));
+    UINT64 finalClusterOffset = FatxIO::ClusterToOffset(entry->partition, entry->clusterChain.at(entry->clusterChain.size() - 1));
     Range lastRange = { finalClusterOffset , (finalClusterSize == 0) ? entry->partition->clusterSize : finalClusterSize };
     WriteRanges.push_back(lastRange);
 
@@ -527,10 +527,10 @@ void FatxIO::WriteClusterChain(Partition *part, DWORD startingCluster, std::vect
 
 void FatxIO::GetConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRanges, bool includeNonConsec)
 {
-    for (int i = 0; i < list.size(); i++)
+    for (size_t i = 0; i < list.size(); i++)
     {
-        int start = i++;
-        int streak = 1;
+        UINT64 start = i++;
+        UINT64 streak = 1;
 
         while (i < list.size() && list[i] - list[start] == i - start)
         {
@@ -550,8 +550,8 @@ void FatxIO::GetConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRan
 void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD), void *arg)
 {
     // get the current position
-    INT64 pos;
-    INT64 originalPos = device->GetPosition();
+    UINT64 pos;
+    UINT64 originalPos = device->GetPosition();
 
     // seek to the beggining of the file
     SetPosition(0);
@@ -584,7 +584,7 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
     }
 
     DWORD finalClusterSize = entry->fileSize % entry->partition->clusterSize;
-    INT64 finalClusterOffset = ClusterToOffset(entry->partition, entry->clusterChain.at(entry->clusterChain.size() - 1));
+    UINT64 finalClusterOffset = ClusterToOffset(entry->partition, entry->clusterChain.at(entry->clusterChain.size() - 1));
     Range lastRange = { finalClusterOffset , (finalClusterSize == 0) ? entry->partition->clusterSize : finalClusterSize};
     readRanges.push_back(lastRange);
 
@@ -633,7 +633,7 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
     device->SetPosition(originalPos);
 }
 
-INT64 FatxIO::ClusterToOffset(Partition *part, DWORD cluster)
+UINT64 FatxIO::ClusterToOffset(Partition *part, DWORD cluster)
 {
     return part->clusterStartingAddress + (part->clusterSize * (INT64)(cluster - 1));
 }

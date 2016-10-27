@@ -361,7 +361,7 @@ void DeviceIO::Close()
             CloseHandle(impl->deviceHandle);
     #else
         close(impl->device);
-        impl->device = NULL;
+        impl->device = -1;
     #endif
 }
 
