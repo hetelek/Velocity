@@ -246,7 +246,7 @@ void MainWindow::on_actionDonate_triggered()
 
 void MainWindow::on_actionDevice_Viewer_triggered()
 {
-    DeviceViewer *viewer = new DeviceViewer(ui->statusBar, this);
+    DeviceViewer *viewer = new DeviceViewer(ui->statusBar, gpdActions, gameActions, this);
     viewer->setAttribute(Qt::WA_DeleteOnClose);
     ui->mdiArea->addSubWindow(viewer);
 
@@ -321,6 +321,9 @@ void MainWindow::PluginFinished()
 
 void MainWindow::LoadAllPlugins()
 {
+    gpdActions.clear();
+    gameActions.clear();
+	
     QDir path(settings->value("PluginPath").toString());
     qDebug() << "Plugin Directory: " << path.absolutePath();
 
