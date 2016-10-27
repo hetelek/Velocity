@@ -142,7 +142,8 @@ void DeviceViewer::showContextMenu(QPoint point)
         }
         else if (selectedItem->text() == "Copy File(s) Here")
         {
-            QStringList toInjectPaths = QFileDialog::getOpenFileNames(this);
+            QStringList toInjectPaths = QFileDialog::getOpenFileNames(this, "Choose file(s) to copy...",
+                    QtHelpers::DefaultLocation());
             if (toInjectPaths.size() == 0)
                 return;
 
