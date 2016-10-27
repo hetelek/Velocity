@@ -33,7 +33,7 @@ XboxInternals-*/
 *.exp
 
 # Other
-Makefile
+#Makefile
 *.Debug
 *.Release
 *.dll
