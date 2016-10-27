@@ -48,7 +48,12 @@ void PreferencesDialog::on_pushButton_4_clicked()
         return;
 
     QDir dir(QtHelpers::ExecutingDirectory());
-    ui->lineEdit->setText(dir.relativeFilePath(directory));
+    QString relativePath = dir.relativeFilePath(directory);
+
+    if (relativePath.indexOf("..") != relativePath.lastIndexOf("..") || relativePath.isEmpty())
+        relativePath = directory;
+
+    ui->lineEdit->setText(relativePath);
 }
 
 void PreferencesDialog::on_pushButton_2_clicked()
