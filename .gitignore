@@ -34,7 +34,6 @@ XboxInternals-*/
 *.exp
 
 # Other
-#Makefile
 *.Debug
 *.Release
 *.dll
