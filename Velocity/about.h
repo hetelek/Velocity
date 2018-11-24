@@ -8,8 +8,8 @@
 #include "qthelpers.h"
 
 #ifndef __linux
-    #include <phonon/MediaObject>
-    #include <phonon/AudioOutput>
+    //#include <phonon/MediaObject>
+    //#include <phonon/AudioOutput>
 #endif
 
 namespace Ui {
@@ -37,8 +37,8 @@ private:
     Ui::About *ui;
 
 #ifndef __linux
-    Phonon::MediaObject *developers;
-    Phonon::AudioOutput *audioOutput;
+    /*Phonon::MediaObject *developers;
+    Phonon::AudioOutput *audioOutput;*/
 #endif
 };
 

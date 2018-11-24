@@ -405,7 +405,7 @@ void FatxIO::ReplaceFile(std::string sourcePath, void (*progress)(void *, DWORD,
         // calculate cluster's address
         pos = FatxIO::ClusterToOffset(entry->partition, entry->clusterChain.at(i));
 
-        Range range = { pos, 0 };
+        Range range = { (UINT64)pos, 0 };
         do
         {
             range.len += entry->partition->clusterSize;
@@ -418,7 +418,7 @@ void FatxIO::ReplaceFile(std::string sourcePath, void (*progress)(void *, DWORD,
 
     DWORD finalClusterSize = entry->fileSize % entry->partition->clusterSize;
     INT64 finalClusterOffset = FatxIO::ClusterToOffset(entry->partition, entry->clusterChain.at(entry->clusterChain.size() - 1));
-    Range lastRange = { finalClusterOffset , (finalClusterSize == 0) ? entry->partition->clusterSize : finalClusterSize };
+    Range lastRange = { (UINT64)finalClusterOffset , (finalClusterSize == 0) ? entry->partition->clusterSize : finalClusterSize };
     WriteRanges.push_back(lastRange);
 
     DWORD modulus = WriteRanges.size() / 100;
@@ -540,7 +540,7 @@ void FatxIO::GetConsecutive(std::vector<DWORD> &list, std::vector<Range> &outRan
 
         if (includeNonConsec || streak > 1)
         {
-            Range range = { start, streak };
+            Range range = { (UINT64)start, (UINT64)streak };
             outRanges.push_back(range);
         }
     }
@@ -571,7 +571,7 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
         // calculate cluster's address
         pos = ClusterToOffset(entry->partition, entry->clusterChain.at(i));
 
-        Range range = { pos, 0 };
+        Range range = { (UINT64)pos, 0 };
         do
         {
             range.len += entry->partition->clusterSize;
@@ -584,7 +584,7 @@ void FatxIO::SaveFile(std::string savePath, void(*progress)(void*, DWORD, DWORD)
 
     DWORD finalClusterSize = entry->fileSize % entry->partition->clusterSize;
     INT64 finalClusterOffset = ClusterToOffset(entry->partition, entry->clusterChain.at(entry->clusterChain.size() - 1));
-    Range lastRange = { finalClusterOffset , (finalClusterSize == 0) ? entry->partition->clusterSize : finalClusterSize};
+    Range lastRange = { (UINT64)finalClusterOffset , (finalClusterSize == 0) ? entry->partition->clusterSize : finalClusterSize};
     readRanges.push_back(lastRange);
 
     DWORD modulus = readRanges.size() / 100;

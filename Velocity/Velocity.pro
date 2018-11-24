@@ -4,12 +4,13 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network xml
+QT       += core gui network xml widgets
 
 # application
 TARGET = Velocity
 TEMPLATE = app
 win32:UI_DIR = ../Velocity
+
 
 # application version
 VERSION = 0.1.0.0
@@ -30,12 +31,14 @@ win32 {
     INCLUDEPATH += C:/botan/include
 }
 macx|unix {
-    INCLUDEPATH += /usr/local/include/botan-1.10
-    LIBS += /usr/local/lib/libbotan-1.10.a
+    INCLUDEPATH += /usr/local/Cellar/botan/2.8.0/include/botan-2/
+    # INCLUDEPATH += /usr/local/include/botan-1.10
+    # LIBS += /usr/local/lib/libbotan-1.10.a
+    LIBS += /usr/local/lib/libbotan-2.dylib
 }
 
 
-macx|win32:QT += phonon
+# macx|win32:QT += phonon
 win32:RC_FILE = velocity.rc
 macx:ICON = velocity.icns
 

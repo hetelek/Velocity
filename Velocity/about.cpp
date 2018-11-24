@@ -11,7 +11,7 @@ About::About(QWidget *parent) :
     QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
 #ifndef __linux
-    if (!QFile::exists(QtHelpers::ExecutingDirectory() + "Developers.mp3"))
+    /*if (!QFile::exists(QtHelpers::ExecutingDirectory() + "Developers.mp3"))
         return;
 
     developers = new Phonon::MediaObject(this);
@@ -22,7 +22,7 @@ About::About(QWidget *parent) :
     Phonon::createPath(developers, audioOutput);
 
     developers->setCurrentSource(Phonon::MediaSource(QtHelpers::ExecutingDirectory() + "Developers.mp3"));
-    developers->play();
+    developers->play();*/
 #endif
 }
 
@@ -36,9 +36,9 @@ void About::onSongFinished()
 {
 #ifndef __linux
     // for (;;) let's listen to it one more time;
-    developers->clear();
+    /**developers->clear();
     developers->setCurrentSource(Phonon::MediaSource(QtHelpers::ExecutingDirectory() + "Developers.mp3"));
-    developers->play();
+    developers->play();**/
 #endif
 }
 

@@ -245,10 +245,10 @@ MemoryIO* Account::decryptAccount(BaseIO *io, ConsoleType type)
     io->ReadBytes(restOfFile, 0x184);
 
     // decrypt using rc4
-    Botan::ARC4 rc4;
-    rc4.set_key(rc4Key, 0x10);
+    std::unique_ptr<Botan::StreamCipher> rc4(Botan::StreamCipher::create("RC4"));
+    rc4->set_key(rc4Key, 0x10);
 
-    rc4.cipher(restOfFile, restOfFile, 0x184);
+    rc4->cipher(restOfFile, restOfFile, 0x184);
 
     // copy the parts
     memcpy(confounder, restOfFile, 8);
@@ -361,10 +361,9 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
     hmacSha1.final(rc4Key);
 
     // encrypt the data
-    Botan::ARC4 rc4;
-    rc4.set_key(rc4Key, 0x10);
-
-    rc4.cipher1(decryptedData, 0x184);
+    std::unique_ptr<Botan::StreamCipher> rc4(Botan::StreamCipher::create("RC4"));
+    rc4->set_key(rc4Key, 0x10);
+    rc4->cipher1(decryptedData, 0x184);
 
     // Write the confounder and encrypted data
     encrypted.Write(decryptedData, 0x184);

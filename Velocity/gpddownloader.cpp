@@ -5,17 +5,18 @@ GpdDownloader::GpdDownloader(TitleEntry entry, int index, bool hasAwards, QObjec
     gpdDirectory = "/gameadder/";
     gpdWritten = false;
 
+    /*
     http = new QHttp(this);
     http->setHost("velocity.expetelek.com");
 
     connect(http, SIGNAL(done(bool)), this, SLOT(onDone(bool)));
-    connect(http, SIGNAL(requestFinished(int, bool)), this, SLOT(onRequestFinished(int, bool)));
+    connect(http, SIGNAL(requestFinished(int, bool)), this, SLOT(onRequestFinished(int, bool)));*/
 }
 
 void GpdDownloader::BeginDownload()
 {
     QString url = gpdDirectory + "game/" + QString::number(entry.titleID, 16).toUpper() + ".gpd";
-    http->get(url);
+    //http->get(url);
 }
 
 int GpdDownloader::index()
@@ -25,7 +26,7 @@ int GpdDownloader::index()
 
 void GpdDownloader::onRequestFinished(int /* id */, bool error)
 {
-    if (error)
+    /*if (error)
         qDebug() << http->errorString();
     else if (http->bytesAvailable() < 1)
         return;
@@ -69,7 +70,7 @@ void GpdDownloader::onRequestFinished(int /* id */, bool error)
     {
         hasAwards = false;
         http->get(gpdDirectory + "award/" + QString::number(entry.titleID, 16).toUpper() + ".gpd");
-    }
+    }*/
 }
 
 void GpdDownloader::onDone(bool error)

@@ -4,14 +4,20 @@
 #
 #-------------------------------------------------
 
-QT       -= gui core
+QT       -= gui
 
 TARGET = XboxInternals
 TEMPLATE = lib
 DEFINES += XBOXINTERNALS_LIBRARY
 
+
 unix {
     CONFIG += staticlib app_bundle
+}
+
+macx {
+    QMAKE_CFLAGS_X86_64 += -mmacosx-version-min=10.7
+    QMAKE_CXXFLAGS_X86_64 = $$QMAKE_CFLAGS_X86_64
 }
 
 # flags
@@ -29,8 +35,10 @@ win32 {
     INCLUDEPATH += C:/botan/include
 }
 macx|unix {
-    INCLUDEPATH += /usr/local/include/botan-1.10
-    LIBS += /usr/local/lib/libbotan-1.10.a
+    INCLUDEPATH += /usr/local/Cellar/botan/2.8.0/include/botan-2/
+    # INCLUDEPATH += /usr/local/include/botan-1.10
+    # LIBS += /usr/local/lib/libbotan-1.10.a
+    LIBS += /usr/local/lib/libbotan-2.dylib
 }
 
 SOURCES += \

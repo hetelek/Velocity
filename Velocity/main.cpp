@@ -1,5 +1,6 @@
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include <QStringList>
+#include <QString>
 #include <botan/botan.h>
 #include "mainwindow.h"
 
@@ -12,9 +13,10 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     a.addLibraryPath(":/plugins/imageformats");
 
+
     QList<QUrl> args;
     for (int i = 1; i < argc; i++)
-        args.append(QUrl("file:///" + QString::fromAscii(argv[i]).replace("\\", "/")));
+        args.append(QUrl("file:///" + QString::fromLocal8Bit(argv[i]).replace("\\", "/")));
 
     Botan::LibraryInitializer init;
 

@@ -63,8 +63,9 @@ XuizFileEntry* Xuiz::GetFileEntry(std::string xuizFilePath) const
     for (size_t i = 0; i < files.size(); i++)
     {
         XuizFileEntry file = files.at(i);
-        if (file.path == xuizFilePath)
-            return &files.at(i);
+        if (file.path == xuizFilePath) {
+            return new XuizFileEntry(file);
+        }
     }
 
     return NULL;

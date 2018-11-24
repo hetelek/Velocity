@@ -89,7 +89,7 @@ std::string Utils::GetTemporaryFileName()
 #else
     char tempFileName_c[L_tmpnam];
     if (!tmpnam(tempFileName_c))
-        throw string("Utils: Failed to generate temporary file name.\n");
+        throw std::string("Utils: Failed to generate temporary file name.\n");
     tempFileName = std::string(tempFileName_c);
 #endif
 

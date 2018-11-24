@@ -3,7 +3,7 @@
 
 // qt
 #include <QObject>
-#include <QHttp>
+//#include <QHttp>
 #include <QUuid>
 #include <QUrl>
 #include <QDir>
@@ -30,7 +30,7 @@ public slots:
     void onDone(bool);
     void onRequestFinished(int, bool);
 private:
-    QHttp *http;
+    //QHttp *http;
 
     QString titleID;
     QString guid;
