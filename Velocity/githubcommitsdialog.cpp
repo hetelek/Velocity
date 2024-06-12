@@ -103,7 +103,7 @@ void GitHubCommitsDialog::onCommitsReply(QNetworkReply *reply)
 
     if (++retrievedCount == branchCount)
     {
-        qSort(allCommits.begin(), allCommits.end(), commitCompare);
+        std::sort(allCommits.begin(), allCommits.end(), commitCompare);
 
         int iterations = (allCommits.size() > 20) ? 20 : allCommits.size();
         for (int i = 0; i < iterations; i++)
