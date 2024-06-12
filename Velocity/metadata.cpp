@@ -346,7 +346,7 @@ Metadata::Metadata(QStatusBar *statusBar, XContentHeader *header, bool pec, QWid
 
                 // last modified
                 lastModified = new QDateTimeEdit(this);
-                lastModified->setDateTime(QDateTime::fromTime_t(header->lastModified));
+                lastModified->setDateTime(QDateTime::fromSecsSinceEpoch(header->lastModified));
 
                 ui->tableWidget->insertRow(31 + offset);
                 ui->tableWidget->setVerticalHeaderItem(31 + offset, new QTableWidgetItem("Last Modified"));
@@ -652,7 +652,7 @@ void Metadata::on_pushButton_clicked()
             header->currentFileIndex = ui->tableWidget->item(28 + offset, 0)->text().toULong();
             header->currentFileOffset = ui->tableWidget->item(29 + offset, 0)->text().toULongLong();
             header->bytesProcessed = ui->tableWidget->item(30 + offset, 0)->text().toULongLong();
-            header->lastModified = lastModified->dateTime().toTime_t();
+            header->lastModified = lastModified->dateTime().currentSecsSinceEpoch();
         }
     }
 

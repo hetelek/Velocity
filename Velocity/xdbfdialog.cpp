@@ -354,7 +354,7 @@ void XdbfDialog::on_treeWidget_doubleClicked(const QModelIndex &index)
                 }
                 case TimeStamp:
                     QMessageBox::about(this, "Setting",
-                            "<html><center><h3>Timestamp Setting</h3><br />" + QDateTime::fromTime_t(
+                            "<html><center><h3>Timestamp Setting</h3><br />" + QDateTime::fromSecsSinceEpoch(
                                 setting.timeStamp).toString() + "</center></html>");
                     break;
                 default:

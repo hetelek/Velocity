@@ -741,8 +741,8 @@ void ProfileEditor::loadGameInfo(int index)
     if (title->lastPlayed == 0)
         ui->lblGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">N/A</span>");
     else
-        ui->lblGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">" + QDateTime::fromTime_t(
-                    title->lastPlayed).toString(Qt::SystemLocaleShortDate) + "</span>");
+        ui->lblGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">" + QDateTime::fromSecsSinceEpoch(
+                    title->lastPlayed).toString(QLocale::system().dateFormat(QLocale::ShortFormat)) + "</span>");
     ui->lblGameAchvs->setText("<span style=\"color:#4f4f4f;\">" + QString::number(
                 title->achievementsUnlocked) + " out of " + QString::number(title->achievementCount) + " unlocked" +
             "</span>");
@@ -831,7 +831,7 @@ void ProfileEditor::loadAchievementInfo(int gameIndex, unsigned int chievIndex)
         ui->dteAchTimestamp->setEnabled(false);
     }
 
-    ui->dteAchTimestamp->setDateTime(QDateTime::fromTime_t(entry.unlockTime).addMSecs(entry.unlockTimeMilliseconds));
+    ui->dteAchTimestamp->setDateTime(QDateTime::fromSecsSinceEpoch(entry.unlockTime).addMSecs(entry.unlockTimeMilliseconds));
 
     // set the thumbnail
     ImageEntry img;
@@ -888,8 +888,8 @@ void ProfileEditor::loadAwardGameInfo(int index)
     if (title->lastPlayed == 0x67D6Ca80)
         ui->lblAwGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">N/A</span>");
     else
-        ui->lblAwGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">" + QDateTime::fromTime_t(
-                    title->lastPlayed).toString(Qt::SystemLocaleShortDate) + "</span>");
+        ui->lblAwGameLastPlayed->setText("<span style=\"color:#4f4f4f;\">" + QDateTime::fromSecsSinceEpoch(
+                    title->lastPlayed).toString(QLocale::system().dateFormat(QLocale::ShortFormat)) + "</span>");
     ui->lblAwGameAwards->setText("<span style=\"color:#4f4f4f;\">" + QString::number(
                 title->avatarAwardsEarned) + " out of " + QString::number(title->avatarAwardCount) + " unlocked" +
             "</span>");
@@ -966,7 +966,7 @@ void ProfileEditor::loadAvatarAwardInfo(int gameIndex, unsigned int awardIndex)
         ui->dteAwTimestamp->setEnabled(false);
     }
 
-    ui->dteAwTimestamp->setDateTime(QDateTime::fromTime_t(award->unlockTime).addMSecs(award->unlockTimeMilliseconds));
+    ui->dteAwTimestamp->setDateTime(QDateTime::fromSecsSinceEpoch(award->unlockTime).addMSecs(award->unlockTimeMilliseconds));
 
     // download the thumbnail
     string tmp = AvatarAwardGpd::GetLargeAwardImageURL(award);
@@ -1199,7 +1199,7 @@ void ProfileEditor::updateAvatarAward(TitleEntry *entry, AvatarAwardGpd *gpd,
         if (award->subcategory == 0)
             award->subcategory = (AssetSubcategory)0xFFFFFFFF;
         award->colorizable = 0;
-        entry->lastPlayed = QDateTime::currentDateTime().toTime_t();
+        entry->lastPlayed = QDateTime::currentDateTime().currentSecsSinceEpoch();
     }
 
     // Write the entry back to the gpd
@@ -1299,7 +1299,7 @@ void ProfileEditor::updateAchievement(TitleEntry *entry, AchievementEntry *chiev
         else if (toSet == StateUnlockedOnline)
         {
             chiev->flags |= (Unlocked | UnlockedOnline | 0x100000);
-            entry->lastPlayed = QDateTime::currentDateTime().toTime_t();
+            entry->lastPlayed = QDateTime::currentDateTime().currentSecsSinceEpoch();
         }
 
         entry->flags |= (SyncAchievement | DownloadAchievementImage);
@@ -1686,15 +1686,15 @@ void ProfileEditor::on_dteAchTimestamp_dateTimeChanged(const QDateTime &date)
                 ui->achievementsList->currentIndex().row());
 
     // make sure the user changed the time
-    if (date.toTime_t() == entry->unlockTime)
+    if (date.currentSecsSinceEpoch() == entry->unlockTime)
         return;
 
     games.at(ui->gamesList->currentIndex().row()).gpd->StartWriting();
 
-    entry->unlockTime = date.toTime_t();
+    entry->unlockTime = date.currentSecsSinceEpoch();
     entry->unlockTimeMilliseconds = date.time().msec();
 
-    ui->dteAchTimestamp->setDateTime(QDateTime::fromTime_t(entry->unlockTime).addMSecs(entry->unlockTimeMilliseconds));
+    ui->dteAchTimestamp->setDateTime(QDateTime::fromSecsSinceEpoch(entry->unlockTime).addMSecs(entry->unlockTimeMilliseconds));
     games.at(ui->gamesList->currentIndex().row()).gpd->WriteAchievementEntry(entry);
     games.at(ui->gamesList->currentIndex().row()).updated = true;
 
@@ -1712,10 +1712,10 @@ void ProfileEditor::on_dteAwTimestamp_dateTimeChanged(const QDateTime &date)
                 ui->avatarAwardsList->currentIndex().row());
 
     // make sure the user changed the time
-    if (date.toTime_t() == entry->unlockTime)
+    if (date.currentSecsSinceEpoch() == entry->unlockTime)
         return;
 
-    entry->unlockTime = date.toTime_t();
+    entry->unlockTime = date.currentSecsSinceEpoch();
     entry->unlockTimeMilliseconds = date.time().msec();
     aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->WriteAvatarAward(entry);
     aaGames.at(ui->aaGamelist->currentIndex().row()).updated = true;

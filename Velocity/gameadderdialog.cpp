@@ -148,7 +148,7 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
             .femaleAvatarAwardsEarned = 0,
             .femaleAvatarAwardCount = (BYTE)femaleAwardCount.toInt(),
             .flags = 0,
-            .lastPlayed = QDateTime::currentDateTime().toTime_t(),
+            .lastPlayed = QDateTime::currentDateTime().currentSecsSinceEpoch(),
             .gameName = gameName.toStdWString()
         };
 
