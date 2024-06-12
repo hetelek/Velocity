@@ -345,7 +345,7 @@ int Nightcharts::drawLegend(QPainter *painter)
             painter->setBrush(Qt::white);
             float x = cX;
             float y = cY+cH+20+dist;
-            //painter->drawRoundRect(cX+cW+20,cY,dist*2+200,pieces.size()*(fontmetr.height()+2*dist)+dist,15,15);
+            //painter->drawRoundedRect(cX+cW+20,cY,dist*2+200,pieces.size()*(fontmetr.height()+2*dist)+dist,15,15);
             for (int i=0;i<pieces.size();i++)
             {
                 painter->setBrush(pieces[i].rgbColor);
@@ -366,7 +366,7 @@ int Nightcharts::drawLegend(QPainter *painter)
         {
             int dist = 5;
             painter->setBrush(Qt::white);
-            //painter->drawRoundRect(cX+cW+20,cY,dist*2+200,pieces.size()*(painter->fontMetrics().height()+2*dist)+dist,15,15);
+            //painter->drawRoundedRect(cX+cW+20,cY,dist*2+200,pieces.size()*(painter->fontMetrics().height()+2*dist)+dist,15,15);
             for (int i=pieces.size()-1; i>=0; i--)
             {
                 painter->setBrush(pieces[i].rgbColor);
@@ -399,7 +399,7 @@ int Nightcharts::drawLegend(QPainter *painter)
                 p_.setX(p_.x()-recW/2 + recW/2*cos(angle*M_PI/180));
                 p_.setY(p_.y()+recH/2 + recH/2*sin(angle*M_PI/180));
                 painter->setBrush(Qt::white);
-                painter->drawRoundRect(p_.x() ,p_.y(), recW, -recH);
+                painter->drawRoundedRect(p_.x() ,p_.y(), recW, -recH, 25, 25);
                 painter->drawText(p_.x()+5, p_.y()-recH/2+5, label);
                 angle -= pdegree/2;
             }
