@@ -1,4 +1,4 @@
-QMAKE = qmake-qt4
+QMAKE = qmake
 UNAME = $(shell uname -s)
 
 ifeq ($(UNAME), Linux)
