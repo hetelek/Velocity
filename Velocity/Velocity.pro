@@ -10,6 +10,8 @@ QT       += core gui network xml widgets
 TARGET = Velocity
 TEMPLATE = app
 
+CONFIG += c++20
+
 win32:UI_DIR = ../Velocity
 
 # application version
