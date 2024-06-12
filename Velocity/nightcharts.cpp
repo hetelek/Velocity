@@ -317,13 +317,13 @@ int Nightcharts::draw(QPainter *painter)
         painter->setPen(Qt::SolidLine);
         for (int i=1; i<10; i++)
         {
-            painter->drawLine(cX-3,cY+cH/10*i,cX+3,cY+cH/10*i);    //äåëåíèÿ ïî îñè Y
+            painter->drawLine(cX-3,cY+cH/10*i,cX+3,cY+cH/10*i);    //Ã¤Ã¥Ã«Ã¥Ã­Ã¨Ã¿ Ã¯Ã® Ã®Ã±Ã¨ Y
             //painter->drawText(cX-20,cY+cH/10*i,QString::number((10-i)*10)+"%");
         }
-        painter->drawLine(cX,cY+cH,cX,cY);         //îñü Y
-        painter->drawLine(cX,cY,cX+4,cY+10);       //ñòðåëêè
+        painter->drawLine(cX,cY+cH,cX,cY);         //Ã®Ã±Ã¼ Y
+        painter->drawLine(cX,cY,cX+4,cY+10);       //Ã±Ã²Ã°Ã¥Ã«ÃªÃ¨
         painter->drawLine(cX,cY,cX-4,cY+10);
-        painter->drawLine(cX,cY+cH,cX+cW,cY+cH);   //îñü Õ
+        painter->drawLine(cX,cY+cH,cX+cW,cY+cH);   //Ã®Ã±Ã¼ Ã•
 
     }
     return 0;

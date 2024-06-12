@@ -180,8 +180,8 @@ void GamerPicturePackDialog::onTitleIDSearchReturn(QList<TitleData> titlesFound)
     // display all the titles found in the widget
     for (int i = 0; i < titlesFound.size(); i++)
     {
-        QString newStr = ((QString*)&titlesFound.at(i).titleName)->replace("&#174;", "®").replace("&#39;",
-                "'").replace("&amp;","&").replace("&gt;",">").replace("&lt;","<").replace("â", "").replace("¢", "");
+        QString newStr = ((QString*)&titlesFound.at(i).titleName)->replace("&#174;", "Â®").replace("&#39;",
+                "'").replace("&amp;","&").replace("&gt;",">").replace("&lt;","<").replace("Ã¢", "").replace("Â¢", "");
         ui->listGameNames->addItem(newStr);
     }
 }

@@ -330,7 +330,7 @@ void QtHelpers::GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWid
             icon = QIcon(":/Images/XEXFileIcon.png");
             item.setData(1, Qt::UserRole, "XEX");
             break;
-        case 0x89504E47:    // ‰PNG
+        case 0x89504E47:    // Â‰PNG
             icon = QIcon(":/Images/ImageFileIcon.png");
             item.setData(1, Qt::UserRole, "Image");
             break;
