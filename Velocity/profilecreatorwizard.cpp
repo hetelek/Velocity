@@ -208,7 +208,7 @@ bool ProfileCreatorWizard::verifyGamertag(QString gamertag)
     if (gamertag.length() == 0 || gamertag.length() > 15 || !gamertag.at(0).isLetter())
         return false;
 
-    QChar prevChar = 0;
+    QChar prevChar(0);
     for (int i = 1; i < gamertag.length(); i++)
     {
         if (gamertag.at(i) == ' ' && prevChar == ' ')
