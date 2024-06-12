@@ -575,13 +575,13 @@ void ProfileEditor::onAssetsDoneDownloading()
         QByteArray baThumb;
         QBuffer buffThumb(&baThumb);
         buffThumb.open(QIODevice::WriteOnly);
-        ui->imgAw->pixmap()->save(&buffThumb, "PNG");
+        ui->imgAw->pixmap().save(&buffThumb, "PNG");
         newAsset.InjectData((BYTE*)baThumb.data(), baThumb.length(), "icon.png");
 
         QByteArray baScaled;
         QBuffer buffScaled(&baScaled);
         buffScaled.open(QIODevice::WriteOnly);
-        QPixmap scaled = ui->imgAw->pixmap()->scaled(QSize(64, 64));
+        QPixmap scaled = ui->imgAw->pixmap().scaled(QSize(64, 64));
         scaled.save(&buffScaled, "PNG");
         newAsset.metaData->thumbnailImage = (BYTE*)baScaled.data();
         newAsset.metaData->thumbnailImageSize = baScaled.length();
@@ -756,7 +756,7 @@ void ProfileEditor::loadGameInfo(int index)
 
 void ProfileEditor::saveImage(QPoint p, QLabel *imgLabel)
 {
-    if (imgLabel->pixmap()->isNull())
+    if (imgLabel->pixmap().isNull())
         return;
 
     QPoint globalPos = imgLabel->mapToGlobal(p);
@@ -775,7 +775,7 @@ void ProfileEditor::saveImage(QPoint p, QLabel *imgLabel)
         if (saveFileName == "")
             return;
 
-        imgLabel->pixmap()->save(saveFileName, "PNG");
+        imgLabel->pixmap().save(saveFileName, "PNG");
         QMessageBox::information(this, "Success", "Successfully saved thumbnail image");
     }
 }
@@ -987,7 +987,7 @@ void ProfileEditor::replyFinishedAwImg(QNetworkReply *aReply)
                 1001).value<struct AvatarAward*>();
 
         // add the avatar image to the gpd if it isn't already there
-        if (ok && !ui->imgAw->pixmap()->isNull())
+        if (ok && !ui->imgAw->pixmap().isNull())
         {
             for (size_t i = 0; i < games.size(); i++)
             {
@@ -1005,7 +1005,7 @@ void ProfileEditor::replyFinishedAwImg(QNetworkReply *aReply)
                         QBuffer buffer(&ba);
                         buffer.open(QIODevice::WriteOnly);
 
-                        ui->imgAw->pixmap()->scaled(64, 64).save(&buffer, "PNG");
+                        ui->imgAw->pixmap().scaled(64, 64).save(&buffer, "PNG");
                         image.image = new BYTE[ba.length()];
                         image.length = ba.length();
                         image.initialLength = ba.length();

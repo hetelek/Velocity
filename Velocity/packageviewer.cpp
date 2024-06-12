@@ -304,7 +304,7 @@ void PackageViewer::on_btnViewAll_clicked()
 
 void PackageViewer::showSaveImageContextMenu(QPoint point)
 {
-    if (ui->imgTile->pixmap()->isNull())
+    if (ui->imgTile->pixmap().isNull())
         return;
 
     QPoint globalPos = ui->imgTile->mapToGlobal(point);
@@ -323,7 +323,7 @@ void PackageViewer::showSaveImageContextMenu(QPoint point)
         if (imageSavePath == "")
             return;
 
-        ui->imgTile->pixmap()->save(imageSavePath, "PNG");
+        ui->imgTile->pixmap().save(imageSavePath, "PNG");
 
         statusBar->showMessage("Thumbnail image saved successfully", 3000);
     }

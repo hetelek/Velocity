@@ -109,7 +109,7 @@ void AchievementCreationWizard::onFinished(int result)
         achievement->structSize = 0x1C;
 
         // set the thumbnail image
-        *achThumbnail = ui->imgThumbnail->pixmap()->toImage();
+        *achThumbnail = ui->imgThumbnail->pixmap().toImage();
     }
 }
 

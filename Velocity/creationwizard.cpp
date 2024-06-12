@@ -176,14 +176,14 @@ void CreationWizard::onFinished(int status)
         QByteArray ba1;
         QBuffer buffer1(&ba1);
         buffer1.open(QIODevice::WriteOnly);
-        ui->imgThumbnail->pixmap()->save(&buffer1, "PNG");
+        ui->imgThumbnail->pixmap().save(&buffer1, "PNG");
         package.metaData->thumbnailImage = (BYTE*)ba1.data();
         package.metaData->thumbnailImageSize = ba1.length();
 
         QByteArray ba2;
         QBuffer buffer2(&ba2);
         buffer2.open(QIODevice::WriteOnly);
-        ui->imgTitleThumbnail->pixmap()->save(&buffer2, "PNG");
+        ui->imgTitleThumbnail->pixmap().save(&buffer2, "PNG");
         package.metaData->titleThumbnailImage = (BYTE*)ba2.data();
         package.metaData->titleThumbnailImageSize = ba2.length();
 
