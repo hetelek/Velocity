@@ -19,6 +19,8 @@
  */
 #include "nightcharts.h"
 #include <QGraphicsScene>
+#include <QPainterPath>
+#include <QFontMetrics>
 
 Nightcharts::Nightcharts()//QPainter *painter)
 
