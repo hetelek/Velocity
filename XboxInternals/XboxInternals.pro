@@ -12,6 +12,8 @@ DEFINES += XBOXINTERNALS_LIBRARY
 
 unix:CONFIG += staticlib app_bundle
 
+CONFIG += c++20
+
 # flags (lets step it up a notch)
 QMAKE_CXXFLAGS = -O3
 
