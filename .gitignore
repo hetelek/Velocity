@@ -7,6 +7,7 @@ moc_*.h
 moc_*.cpp
 ui_*.h
 qrc_Resources.cpp
+.qmake.stash
 
 # Velocity #
 ############
