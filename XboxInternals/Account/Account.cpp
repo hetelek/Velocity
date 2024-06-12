@@ -3,8 +3,6 @@
 Account::Account(std::string path, bool decrypt, ConsoleType type) : ioPassedIn(false),
     decrypt(decrypt), path(path), type(type)
 {
-    Botan::LibraryInitializer init;
-
     if (decrypt)
     {
         decryptAccount(path, &outPath, type);
@@ -205,18 +203,17 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
     // read the hash
     encIo.ReadBytes(hmacHash, 0x10);
 
-    Botan::SHA_160 *sha1 = new Botan::SHA_160;
-    Botan::HMAC hmacSha1(sha1);
+    auto hmacSha1 = Botan::MessageAuthenticationCode::create_or_throw("HMAC(SHA-1)");
 
     // set the hmac-sha1 key
     if (type == Retail)
-        hmacSha1.set_key(RETAIL_KEY, 0x10);
+        hmacSha1->set_key(RETAIL_KEY, 0x10);
     else
-        hmacSha1.set_key(DEVKIT_KEY, 0x10);
+        hmacSha1->set_key(DEVKIT_KEY, 0x10);
 
     // calculate the hmac
-    hmacSha1.update(hmacHash, 0x10);
-    hmacSha1.final(rc4Key);
+    hmacSha1->update(hmacHash, 0x10);
+    hmacSha1->final(rc4Key);
 
     BYTE restOfFile[0x184];
     BYTE confounder[8];
@@ -226,20 +223,20 @@ void Account::decryptAccount(std::string encryptedPath, std::string *outPath, Co
     encIo.ReadBytes(restOfFile, 0x184);
 
     // decrypt using rc4
-    Botan::ARC4 rc4;
-    rc4.set_key(rc4Key, 0x10);
+    const auto rc4 = Botan::StreamCipher::create_or_throw("RC4");
+    rc4->set_key(rc4Key, 0x10);
 
-    rc4.cipher(restOfFile, restOfFile, 0x184);
+    rc4->cipher(restOfFile, restOfFile, 0x184);
 
     // copy the parts
     memcpy(confounder, restOfFile, 8);
     memcpy(payload, &restOfFile[8], 0x17C);
 
-    hmacSha1.update(confounder, 8);
-    hmacSha1.update(payload, 0x17C);
+    hmacSha1->update(confounder, 8);
+    hmacSha1->update(payload, 0x17C);
 
     BYTE confoundPayloadHash[0x14];
-    hmacSha1.final(confoundPayloadHash);
+    hmacSha1->final(confoundPayloadHash);
 
     if (memcmp(confoundPayloadHash, hmacHash, 0x10) != 0)
         throw string("Account: Account decryption failed.\n");
@@ -283,19 +280,18 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
     decIo.ReadBytes(&decryptedData[8], 0x17C);
 
     // initialization
-    Botan::SHA_160 *sha1 = new Botan::SHA_160;
-    Botan::HMAC hmacSha1(sha1);
+    auto hmacSha1 = Botan::MessageAuthenticationCode::create_or_throw("HMAC(SHA-1)");
 
     // set the hmac-sha1 key
     if (type == Retail)
-        hmacSha1.set_key(RETAIL_KEY, 0x10);
+        hmacSha1->set_key(RETAIL_KEY, 0x10);
     else
-        hmacSha1.set_key(DEVKIT_KEY, 0x10);
+        hmacSha1->set_key(DEVKIT_KEY, 0x10);
 
     // hash the confounder and decrypted data
     BYTE hmacHash[0x14];
-    hmacSha1.update(decryptedData, 0x184);
-    hmacSha1.final(hmacHash);
+    hmacSha1->update(decryptedData, 0x184);
+    hmacSha1->final(hmacHash);
 
     // begin writing the payload
     if (outPath == NULL)
@@ -323,14 +319,14 @@ void Account::encryptAccount(std::string decryptedPath, ConsoleType type, std::s
 
     // generate the rc4 key
     BYTE rc4Key[0x14];
-    hmacSha1.update(hmacHash, 0x10);
-    hmacSha1.final(rc4Key);
+    hmacSha1->update(hmacHash, 0x10);
+    hmacSha1->final(rc4Key);
 
     // encrypt the data
-    Botan::ARC4 rc4;
-    rc4.set_key(rc4Key, 0x10);
+    const auto rc4 = Botan::StreamCipher::create_or_throw("RC4");
+    rc4->set_key(rc4Key, 0x10);
 
-    rc4.cipher1(decryptedData, 0x184);
+    rc4->cipher1(decryptedData, 0x184);
 
     // Write the confounder and encrypted data
     encrypted.Write(decryptedData, 0x184);

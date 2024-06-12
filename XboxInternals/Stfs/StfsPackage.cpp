@@ -1007,12 +1007,11 @@ void StfsPackage::Rehash()
     io->ReadBytes(buffer, headerSize);
 
     // hash the header
-    Botan::SHA_160 sha1;
-    sha1.update(buffer, headerSize);
-    sha1.final(metaData->headerHash);
+    const auto sha1 = Botan::HashFunction::create_or_throw("SHA-1");
+    sha1->update(buffer, headerSize);
+    sha1->final(metaData->headerHash);
 
     delete[] buffer;
-    sha1.clear();
 
     metaData->WriteMetaData();
 }
@@ -1143,10 +1142,9 @@ void StfsPackage::SetBlockStatus(DWORD blockNum, BlockStatusLevelZero status)
 void StfsPackage::HashBlock(BYTE *block, BYTE *outBuffer)
 {
     // hash the block
-    Botan::SHA_160 sha1;
-    sha1.clear();
-    sha1.update(block, 0x1000);
-    sha1.final(outBuffer);
+    const auto sha1 = Botan::HashFunction::create_or_throw("SHA-1");
+    sha1->update(block, 0x1000);
+    sha1->final(outBuffer);
 }
 
 void StfsPackage::BuildTableInMemory(HashTable *table, BYTE *outBuffer)
