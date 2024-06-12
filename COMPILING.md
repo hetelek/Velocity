@@ -22,7 +22,7 @@ The Qt Creator IDE is used to build/debug Velocity. Velocity currently depends o
 	
 	The installation process differs depending on distribution. For example:
 	
-	Ubuntu: `apt-get install libbotan-1.10-0`  
+	Ubuntu: `apt-get install libbotan-3-0`  
 	Arch Linux: `pacman -S botan`
 	
 ==========

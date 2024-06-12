@@ -27,9 +27,9 @@ macx {
     INCLUDEPATH += /opt/homebrew/include/botan-3
     LIBS += /opt/homebrew/lib/libbotan-3.a
 }
-unix {
-    INCLUDEPATH += /usr/include/botan-1.10
-    LIBS += /usr/lib/libbotan-1.10.so.0
+else:unix {
+    INCLUDEPATH += /usr/include/botan-3
+    LIBS += /usr/lib/libbotan-3.so.0
 }
 
 # phonon, icon
