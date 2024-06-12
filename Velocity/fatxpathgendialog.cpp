@@ -9,8 +9,8 @@ FATXPathGenDialog::FATXPathGenDialog(StfsPackage *package, QWidget *parent) :
     // the general path for packages is: Data\Content\ProfileID\TitleID\ContentType
     ui->txtPath->setText("Data\\Content\\" +
             QtHelpers::ByteArrayToString(package->metaData->profileID, 8, false) + "\\" +
-            QString().sprintf("%8X", package->metaData->titleID).replace(" ", "0") + "\\" +
-            QString().sprintf("%8X", package->metaData->contentType).replace(" ", "0") + "\\");
+            QString("%1").arg(package->metaData->titleID, 8, 16, QChar('0')).toUpper() + "\\" +
+            QString("%1").arg(package->metaData->contentType, 8, 16, QChar('0')).toUpper() + "\\");    
 }
 
 FATXPathGenDialog::~FATXPathGenDialog()
