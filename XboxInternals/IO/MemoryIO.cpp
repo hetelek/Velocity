@@ -11,7 +11,7 @@ MemoryIO::~MemoryIO()
 
 }
 
-void MemoryIO::SetPosition(UINT64 pos, std::ios_base::seek_dir dir)
+void MemoryIO::SetPosition(UINT64 pos, std::ios_base::seekdir dir)
 {
     DWORD newPos;
     switch (dir)

@@ -11,7 +11,7 @@ public:
     MemoryIO(BYTE *data, size_t length);
     virtual ~MemoryIO();
 
-    void SetPosition(UINT64 pos, std::ios_base::seek_dir dir = std::ios_base::beg);
+    void SetPosition(UINT64 pos, std::ios_base::seekdir dir = std::ios_base::beg);
     UINT64 GetPosition();
     UINT64 Length();
 

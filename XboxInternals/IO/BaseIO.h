@@ -29,7 +29,7 @@ public:
     void SwapEndian();
 
     // seek to a position in a file
-    virtual void SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios_base::beg) = 0;
+    virtual void SetPosition(UINT64 position, std::ios_base::seekdir dir = std::ios_base::beg) = 0;
 
     // get current address in the file
     virtual UINT64 GetPosition() = 0;

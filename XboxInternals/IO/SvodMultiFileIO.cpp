@@ -148,7 +148,7 @@ DWORD SvodMultiFileIO::FileCount()
     return files.size();
 }
 
-void SvodMultiFileIO::SetPosition(UINT64 position, ios_base::seek_dir dir)
+void SvodMultiFileIO::SetPosition(UINT64 position, ios_base::seekdir dir)
 {
     throw string("MultiFileIO: Unused function has been called.\n");
 }

@@ -21,7 +21,7 @@ MultiFileIO::~MultiFileIO()
     Close();
 }
 
-void MultiFileIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir)
+void MultiFileIO::SetPosition(UINT64 position, std::ios_base::seekdir dir)
 {
     if (dir == std::ios_base::end)
         throw std::string("MultiFileIO: Unsupported seek dir.");
