@@ -265,13 +265,13 @@ void QtHelpers::SearchTreeWidget(QTreeWidget *widget, QLineEdit *searchWidget, Q
         QTreeWidgetItem *parent = itemsMatched.at(i)->parent();
         while (parent != NULL)
         {
-            widget->setItemHidden(parent, false);
+            parent->setHidden(false);
             parent->setExpanded(true);
             parent = parent->parent();
         }
 
         // show the item itself
-        widget->setItemHidden(itemsMatched.at(i), false);
+        itemsMatched.at(i)->setHidden(false);
     }
 }
 

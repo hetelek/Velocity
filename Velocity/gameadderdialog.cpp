@@ -637,7 +637,7 @@ void GameAdderDialog::on_txtSearch_textChanged(const QString & /* arg1 */)
 
     // hide all the items
     for (int i = 0; i < ui->treeWidgetAllGames->topLevelItemCount(); i++)
-        ui->treeWidgetAllGames->setItemHidden(ui->treeWidgetAllGames->topLevelItem(i), true);
+        ui->treeWidgetAllGames->topLevelItem(i)->setHidden(true);
 
     if (itemsMatched.count() == 0)
     {
@@ -654,13 +654,13 @@ void GameAdderDialog::on_txtSearch_textChanged(const QString & /* arg1 */)
         QTreeWidgetItem *parent = itemsMatched.at(i)->parent();
         while (parent != NULL)
         {
-            ui->treeWidgetAllGames->setItemHidden(parent, false);
+            parent->setHidden(false);
             parent->setExpanded(true);
             parent = parent->parent();
         }
 
         // show the item itself
-        ui->treeWidgetAllGames->setItemHidden(itemsMatched.at(i), false);
+        itemsMatched.at(i)->setHidden(false);
     }
 }
 
