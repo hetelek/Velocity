@@ -22,8 +22,8 @@ win32 {
     INCLUDEPATH += C:/botan/include
 }
 macx {
-    INCLUDEPATH += /usr/local/include/botan-1.10
-    LIBS += /usr/local/lib/libbotan-1.10.a
+    INCLUDEPATH += /opt/homebrew/include/botan-3
+    LIBS += /opt/homebrew/lib/libbotan-3.a
 }
 unix {
     INCLUDEPATH += /usr/include/botan-1.10
