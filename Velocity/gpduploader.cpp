@@ -195,9 +195,9 @@ void GpdUploader::sendRequest(QString filePath, QString awardFilePath, QString g
         QByteArray dataToSend;
 
         // add data to the variable to be sent
-        dataToSend.append("\r\n--" + boundary + "\r\n");
-        dataToSend.append("Content-Disposition: form-data; name=\"game\"; filename=\"" + titleID.toUpper() +
-                ".gpd\"\r\n");
+        dataToSend.append(("\r\n--" + boundary + "\r\n").toUtf8());
+        dataToSend.append(("Content-Disposition: form-data; name=\"game\"; filename=\"" + titleID.toUpper() +
+                ".gpd\"\r\n").toUtf8());
         dataToSend.append("Content-Type: application/octet-stream\r\n\r\n");
         dataToSend.append(gpdFile.readAll());
 
@@ -208,13 +208,13 @@ void GpdUploader::sendRequest(QString filePath, QString awardFilePath, QString g
                 qDebug() << "failed to remove gpd file";
 
         // setup next boundary
-        dataToSend.append("\r\n--" + boundary + "\r\n");
+        dataToSend.append(("\r\n--" + boundary + "\r\n").toUtf8());
 
         // add the award gpd to the data to be sent, if there is an award gpd
         if (awardFilePath != "")
         {
-            dataToSend.append("Content-Disposition: form-data; name=\"award\"; filename=\"" + titleID.toUpper()
-                    + ".gpd\"\r\n");
+            dataToSend.append(("Content-Disposition: form-data; name=\"award\"; filename=\"" + titleID.toUpper()
+                    + ".gpd\"\r\n").toUtf8());
             dataToSend.append("Content-Type: application/octet-stream\r\n\r\n");
             dataToSend.append(awardFile.readAll());
 
@@ -229,7 +229,7 @@ void GpdUploader::sendRequest(QString filePath, QString awardFilePath, QString g
         }
 
         // end the data to be sent
-        dataToSend.append("\r\n--" + boundary + "--\r\n");
+        dataToSend.append(("\r\n--" + boundary + "--\r\n").toUtf8());
 
         // set the network request
         QNetworkRequest request(QUrl("http://velocity.expetelek.com/gameadder/add.php" + getData));
