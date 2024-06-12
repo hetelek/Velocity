@@ -83,7 +83,7 @@ void GamerPicturePackDialog::gamercardNetworkReply(QNetworkReply *reply)
     {
         // setup
         QString pageSource(reply->readAll());
-        QRegExp exp("<title>([^<]*).*<img id=\"Gamerpic\" src=\"([^\"]*)");
+        QRegularExpression exp("<title>([^<]*).*<img id=\"Gamerpic\" src=\"([^\"]*)");
 
         exp.indexIn(pageSource, 0);
 

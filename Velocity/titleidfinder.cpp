@@ -17,7 +17,7 @@ void TitleIdFinder::StartSearch()
 void TitleIdFinder::replyFinished(QNetworkReply *reply)
 {
     QString pageSource(reply->readAll());
-    QRegExp exp("66acd000-77fe-1000-9115-d802(.{8})\\?cid=search\"\\>([^<]*)");
+    QRegularExpression exp("66acd000-77fe-1000-9115-d802(.{8})\\?cid=search\"\\>([^<]*)");
 
     QList<TitleData> matches;
 

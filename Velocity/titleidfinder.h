@@ -7,7 +7,7 @@
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
-#include <QRegExp>
+#include <QRegularExpression>
 
 // other
 #include "winnames.h"
