@@ -85,10 +85,12 @@ void GamerPicturePackDialog::gamercardNetworkReply(QNetworkReply *reply)
         QString pageSource(reply->readAll());
         QRegularExpression exp("<title>([^<]*).*<img id=\"Gamerpic\" src=\"([^\"]*)");
 
-        exp.indexIn(pageSource, 0);
+        QRegularExpressionMatch match = exp.match(pageSource);
+        if (!match.hasMatch())
+            return;
 
         // request image
-        QString gamertag = exp.cap(1);
+        QString gamertag = match.captured(1);
         ui->txtSearch->setText(gamertag);
 
         if (searchedGamertags.contains(gamertag))
@@ -96,7 +98,7 @@ void GamerPicturePackDialog::gamercardNetworkReply(QNetworkReply *reply)
 
         searchedGamertags.push_back(gamertag);
 
-        QString urlStr = exp.cap(2);
+        QString urlStr = match.captured(2);
         QUrl url(urlStr);
 
         if (url.host() == "avatar.xboxlive.com")
