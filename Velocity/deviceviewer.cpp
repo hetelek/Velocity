@@ -78,7 +78,7 @@ void DeviceViewer::DrawMemoryGraph()
 
     // draw the insano piechart
     QPixmap chart(750, 500);
-    chart.fill(ui->imgPiechart->palette().background().color());
+    chart.fill(ui->imgPiechart->palette().window().color());
     QPainter painter(&chart);
     Nightcharts pieChart;
     pieChart.setType(Nightcharts::Dpie);
