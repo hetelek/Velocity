@@ -27,7 +27,7 @@ GitHubCommitsDialog::GitHubCommitsDialog(QWidget *parent) :
     label->setWordWrap(true);
 
     // make sure we can connect to the internet
-    if (commitsManager->networkAccessible() == QNetworkAccessManager::NotAccessible)
+    if (QNetworkInformation::instance()->reachability() != QNetworkInformation::Reachability::Online)
     {
         label->setText("<center>Error connecting to GitHub...</center>");
         return;
@@ -103,7 +103,7 @@ void GitHubCommitsDialog::onCommitsReply(QNetworkReply *reply)
 
     if (++retrievedCount == branchCount)
     {
-        qSort(allCommits.begin(), allCommits.end(), commitCompare);
+        std::sort(allCommits.begin(), allCommits.end(), commitCompare);
 
         int iterations = (allCommits.size() > 20) ? 20 : allCommits.size();
         for (int i = 0; i < iterations; i++)

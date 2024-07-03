@@ -1,4 +1,4 @@
-QMAKE = qmake-qt4
+QMAKE = qmake
 UNAME = $(shell uname -s)
 
 ifeq ($(UNAME), Linux)
@@ -17,11 +17,11 @@ libXboxInternals: XboxInternals/
 	mkdir -p XboxInternals-$(OS)/$(CONFIG)
 	cp XboxInternals/libXboxInternals.* XboxInternals-$(OS)/$(CONFIG)
 
-velocity: Velocity/
+velocity_target: Velocity/
 	$(QMAKE) Velocity/Velocity.pro -o Velocity/Makefile CONFIG+=$(CONFIG)
 	make -C Velocity
 
-modules: libXboxInternals velocity
+modules: libXboxInternals velocity_target
 
 debug: CONFIG = debug
 debug: modules

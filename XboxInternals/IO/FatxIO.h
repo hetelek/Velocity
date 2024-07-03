@@ -29,7 +29,7 @@ public:
     FatxFileEntry *GetFatxFileEntry();
 
     // set the position
-    void SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios_base::beg);
+    void SetPosition(UINT64 position, std::ios_base::seekdir dir = std::ios_base::beg);
 
     // get the current position
     UINT64 GetPosition();

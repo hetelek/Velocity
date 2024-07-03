@@ -18,6 +18,7 @@
 #include <QCheckBox>
 #include <QProgressBar>
 #include <QMdiArea>
+#include <QStandardPaths>
 
 // other
 #include "winnames.h"

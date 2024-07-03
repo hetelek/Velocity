@@ -11,7 +11,7 @@ FatxIO::~FatxIO()
 {
 }
 
-void FatxIO::SetPosition(UINT64 position, std::ios_base::seek_dir dir)
+void FatxIO::SetPosition(UINT64 position, std::ios_base::seekdir dir)
 {
     if (dir == std::ios_base::cur)
         position += pos;

@@ -325,7 +325,7 @@ UINT64 DeviceIO::Length()
     return length;
 }
 
-void DeviceIO::SetPosition(UINT64 address, std::ios_base::seek_dir dir)
+void DeviceIO::SetPosition(UINT64 address, std::ios_base::seekdir dir)
 {
     if (dir != std::ios_base::beg)
         throw std::string("DeviceIO: Unsupported seek direction\n");

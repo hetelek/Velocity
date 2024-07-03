@@ -36,7 +36,7 @@ void PartitionDialog::on_comboBox_currentIndexChanged(int index)
 
     // draw the chart
     QPixmap chart(391, 221);
-    chart.fill(ui->imgPiechart->palette().background().color());
+    chart.fill(ui->imgPiechart->palette().window().color());
     QPainter painter(&chart);
     Nightcharts pieChart;
     pieChart.setType(Nightcharts::Dpie);

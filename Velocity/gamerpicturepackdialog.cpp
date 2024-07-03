@@ -83,12 +83,14 @@ void GamerPicturePackDialog::gamercardNetworkReply(QNetworkReply *reply)
     {
         // setup
         QString pageSource(reply->readAll());
-        QRegExp exp("<title>([^<]*).*<img id=\"Gamerpic\" src=\"([^\"]*)");
+        QRegularExpression exp("<title>([^<]*).*<img id=\"Gamerpic\" src=\"([^\"]*)");
 
-        exp.indexIn(pageSource, 0);
+        QRegularExpressionMatch match = exp.match(pageSource);
+        if (!match.hasMatch())
+            return;
 
         // request image
-        QString gamertag = exp.cap(1);
+        QString gamertag = match.captured(1);
         ui->txtSearch->setText(gamertag);
 
         if (searchedGamertags.contains(gamertag))
@@ -96,7 +98,7 @@ void GamerPicturePackDialog::gamercardNetworkReply(QNetworkReply *reply)
 
         searchedGamertags.push_back(gamertag);
 
-        QString urlStr = exp.cap(2);
+        QString urlStr = match.captured(2);
         QUrl url(urlStr);
 
         if (url.host() == "avatar.xboxlive.com")
@@ -180,8 +182,8 @@ void GamerPicturePackDialog::onTitleIDSearchReturn(QList<TitleData> titlesFound)
     // display all the titles found in the widget
     for (int i = 0; i < titlesFound.size(); i++)
     {
-        QString newStr = ((QString*)&titlesFound.at(i).titleName)->replace("&#174;", "®").replace("&#39;",
-                "'").replace("&amp;","&").replace("&gt;",">").replace("&lt;","<").replace("â", "").replace("¢", "");
+        QString newStr = ((QString*)&titlesFound.at(i).titleName)->replace("&#174;", "Â®").replace("&#39;",
+                "'").replace("&amp;","&").replace("&gt;",">").replace("&lt;","<").replace("Ã¢", "").replace("Â¢", "");
         ui->listGameNames->addItem(newStr);
     }
 }
@@ -493,7 +495,7 @@ bool GamerPicturePackDialog::verifyGamertag(QString gamertag)
     if (gamertag.length() == 0 || gamertag.length() > 15 || !gamertag.at(0).isLetter())
         return false;
 
-    QChar prevChar = 0;
+    QChar prevChar(0);
     for (int i = 1; i < gamertag.length(); i++)
     {
         if (gamertag.at(i) == ' ' && prevChar == ' ')

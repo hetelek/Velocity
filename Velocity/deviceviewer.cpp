@@ -78,7 +78,7 @@ void DeviceViewer::DrawMemoryGraph()
 
     // draw the insano piechart
     QPixmap chart(750, 500);
-    chart.fill(ui->imgPiechart->palette().background().color());
+    chart.fill(ui->imgPiechart->palette().window().color());
     QPainter painter(&chart);
     Nightcharts pieChart;
     pieChart.setType(Nightcharts::Dpie);
@@ -273,7 +273,7 @@ void DeviceViewer::showContextMenu(QPoint point)
                     QDate date;
                     date.setDate(createdtime.year, createdtime.month, createdtime.monthDay);
 
-                    entryItem->setText(2, date.toString(Qt::DefaultLocaleShortDate));
+                    entryItem->setText(2, date.toString(QLocale::system().dateFormat(QLocale::ShortFormat)));
                 }
             }
         }
@@ -553,7 +553,7 @@ void DeviceViewer::LoadFolderAll(FatxFileEntry *folder)
             QDate date;
             date.setDate(createdtime.year, createdtime.month, createdtime.monthDay);
 
-            entryItem->setText(2, date.toString(Qt::DefaultLocaleShortDate));
+            entryItem->setText(2, date.toString(QLocale::system().dateFormat(QLocale::ShortFormat)));
 
             if (i % 25 == 0)
                 QApplication::processEvents();

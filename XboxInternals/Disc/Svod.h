@@ -9,8 +9,7 @@
 #include <vector>
 #include "IO/SvodIO.h"
 #include <algorithm>
-#include "botan/botan.h"
-#include "botan/sha160.h"
+#include <botan/hash.h>
 
 #include "XboxInternals_global.h"
 

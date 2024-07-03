@@ -30,7 +30,7 @@ void SvodIO::SectorToAddress(DWORD sector, DWORD *addressInDataFile, DWORD *data
             trueSector != 0) ? 0 : 1)) * 0x1000;
 }
 
-void SvodIO::SetPosition(UINT64 address, ios_base::seek_dir dir)
+void SvodIO::SetPosition(UINT64 address, ios_base::seekdir dir)
 {
     if (dir != std::ios_base::beg)
         throw std::string("SvodIO: Unsupported seek direction\n");

@@ -46,7 +46,7 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
     manager = new QNetworkAccessManager(this);
 
     // check for a connection
-    if (manager->networkAccessible() == QNetworkAccessManager::NotAccessible)
+    if (QNetworkInformation::instance()->reachability() != QNetworkInformation::Reachability::Online)
     {
         QMessageBox::warning(this, "Listing Error",
                 "The listing could not be parsed. Try again later, as the servers may be down and make sure Velocity has access to the internet.");
@@ -148,7 +148,7 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply)
             .femaleAvatarAwardsEarned = 0,
             .femaleAvatarAwardCount = (BYTE)femaleAwardCount.toInt(),
             .flags = 0,
-            .lastPlayed = QDateTime::currentDateTime().toTime_t(),
+            .lastPlayed = QDateTime::currentDateTime().currentSecsSinceEpoch(),
             .gameName = gameName.toStdWString()
         };
 
@@ -637,7 +637,7 @@ void GameAdderDialog::on_txtSearch_textChanged(const QString & /* arg1 */)
 
     // hide all the items
     for (int i = 0; i < ui->treeWidgetAllGames->topLevelItemCount(); i++)
-        ui->treeWidgetAllGames->setItemHidden(ui->treeWidgetAllGames->topLevelItem(i), true);
+        ui->treeWidgetAllGames->topLevelItem(i)->setHidden(true);
 
     if (itemsMatched.count() == 0)
     {
@@ -654,13 +654,13 @@ void GameAdderDialog::on_txtSearch_textChanged(const QString & /* arg1 */)
         QTreeWidgetItem *parent = itemsMatched.at(i)->parent();
         while (parent != NULL)
         {
-            ui->treeWidgetAllGames->setItemHidden(parent, false);
+            parent->setHidden(false);
             parent->setExpanded(true);
             parent = parent->parent();
         }
 
         // show the item itself
-        ui->treeWidgetAllGames->setItemHidden(itemsMatched.at(i), false);
+        itemsMatched.at(i)->setHidden(false);
     }
 }
 

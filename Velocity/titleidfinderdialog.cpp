@@ -39,8 +39,8 @@ void TitleIdFinderDialog::onRequestFinished(QList<TitleData> matches)
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget);
 
-        QString newStr = ((QString*)&matches.at(i).titleName)->replace("&#174;", "®").replace("&#39;",
-                "'").replace("&amp;","&").replace("&gt;",">").replace("&lt;","<").replace("â", "").replace("¢", "");
+        QString newStr = ((QString*)&matches.at(i).titleName)->replace("&#174;", "Â®").replace("&#39;",
+                "'").replace("&amp;","&").replace("&gt;",">").replace("&lt;","<").replace("Ã¢", "").replace("Â¢", "");
         item->setText(0, newStr);
         item->setText(1, QString::number(matches.at(i).titleID, 16).toUpper());
 

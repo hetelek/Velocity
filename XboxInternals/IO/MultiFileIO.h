@@ -15,7 +15,7 @@ public:
     virtual ~MultiFileIO();
 
     // seek to a position in a file
-    void SetPosition(UINT64 position, std::ios_base::seek_dir dir = std::ios_base::beg);
+    void SetPosition(UINT64 position, std::ios_base::seekdir dir = std::ios_base::beg);
 
     // get current address in the file
     UINT64 GetPosition();

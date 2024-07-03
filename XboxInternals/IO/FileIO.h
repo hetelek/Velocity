@@ -17,7 +17,7 @@ class XBOXINTERNALSSHARED_EXPORT FileIO : public BaseIO
 {
 public:
     FileIO(string path, bool truncate = false);
-    void SetPosition(UINT64 pos, ios_base::seek_dir dir = ios_base::beg);
+    void SetPosition(UINT64 pos, ios_base::seekdir dir = ios_base::beg);
     UINT64 GetPosition();
     UINT64 Length();
 

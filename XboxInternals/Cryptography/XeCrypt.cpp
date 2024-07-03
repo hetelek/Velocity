@@ -21,7 +21,7 @@ void XeCrypt::BnQw_SwapDwQwLeBe(BYTE *data, DWORD length)
 bool XeCrypt::Pkcs1Verify(BYTE *pbMessage, DWORD cbMessage, BYTE *pbSignature, DWORD cbSignature,
         UINT64 publicExponent, BYTE *modulus)
 {
-    Botan::RSA_PublicKey pubKey(Botan::BigInt::decode(modulus, cbSignature), publicExponent);
-    Botan::PK_Verifier verifier(pubKey, "EMSA3(SHA-160)");
+    Botan::RSA_PublicKey pubKey(Botan::BigInt(modulus, cbSignature), publicExponent);
+    Botan::PK_Verifier verifier(pubKey, "EMSA3(SHA-1)");
     return verifier.verify_message(pbMessage, cbMessage, pbSignature, cbSignature);
 }

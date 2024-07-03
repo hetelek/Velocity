@@ -25,7 +25,7 @@ public:
 
     void WriteBytes(BYTE *buffer, DWORD len);
 
-    void SetPosition(UINT64 address, std::ios_base::seek_dir dir = std::ios_base::beg);
+    void SetPosition(UINT64 address, std::ios_base::seekdir dir = std::ios_base::beg);
 
     UINT64 GetPosition();
 

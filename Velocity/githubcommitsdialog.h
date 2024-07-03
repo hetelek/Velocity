@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QLabel>
 #include <QNetworkAccessManager>
+#include <QNetworkInformation>
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QDateTime>

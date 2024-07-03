@@ -17,17 +17,16 @@ void TitleIdFinder::StartSearch()
 void TitleIdFinder::replyFinished(QNetworkReply *reply)
 {
     QString pageSource(reply->readAll());
-    QRegExp exp("66acd000-77fe-1000-9115-d802(.{8})\\?cid=search\"\\>([^<]*)");
+    QRegularExpression exp("66acd000-77fe-1000-9115-d802(.{8})\\?cid=search\"\\>([^<]*)");
 
     QList<TitleData> matches;
 
-    int pos = 0;
-    while ((pos = exp.indexIn(pageSource, pos)) != -1)
-    {
+    auto matchIterator = exp.globalMatch(pageSource);
+    while (matchIterator.hasNext()) {
+        QRegularExpressionMatch match = matchIterator.next();
         TitleData t;
-        t.titleID = exp.cap(1).toULong(0, 16);
-        t.titleName = exp.cap(2);
-        pos += exp.matchedLength();
+        t.titleID = match.captured(1).toULong(0, 16);
+        t.titleName = match.captured(2);
 
         if (t.titleName != "Learn More")
             matches.push_back(t);

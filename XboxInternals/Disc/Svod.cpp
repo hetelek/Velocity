@@ -234,20 +234,18 @@ void SVOD::Rehash(void (*progress)(DWORD, DWORD, void*), void *arg)
     rootFile->SetPosition(0x344);
     rootFile->ReadBytes(buff, dataLen);
 
-    Botan::SHA_160 sha1;
-    sha1.clear();
-    sha1.update(buff, dataLen);
-    sha1.final(metadata->headerHash);
+    const auto sha1 = Botan::HashFunction::create_or_throw("SHA-1");
+    sha1->update(buff, dataLen);
+    sha1->final(metadata->headerHash);
 
     metadata->WriteMetaData();
 }
 
 void SVOD::HashBlock(BYTE *block, BYTE *outHash)
 {
-    Botan::SHA_160 sha1;
-    sha1.clear();
-    sha1.update(block, 0x1000);
-    sha1.final(outHash);
+    const auto sha1 = Botan::HashFunction::create_or_throw("SHA-1");
+    sha1->update(block, 0x1000);
+    sha1->final(outHash);
 }
 
 void SVOD::WriteFileEntry(GdfxFileEntry *entry)

@@ -19,6 +19,8 @@
  */
 #include "nightcharts.h"
 #include <QGraphicsScene>
+#include <QPainterPath>
+#include <QFontMetrics>
 
 Nightcharts::Nightcharts()//QPainter *painter)
 
@@ -311,19 +313,19 @@ int Nightcharts::draw(QPainter *painter)
             painter->drawRect(cX+pDist+i*(pW + pDist),cY+cH,pW,-cH/100*pieces[i].pPerc-5);
             QString label = QString::number(pieces[i].pPerc)+"%";
             painter->setPen(Qt::SolidLine);
-            painter->drawText(cX+pDist+i*(pW + pDist)+pW/2-painter->fontMetrics().width(label)/2,
+            painter->drawText(cX+pDist+i*(pW + pDist)+pW/2-painter->fontMetrics().horizontalAdvance(label)/2,
                     cY+cH-cH/100*pieces[i].pPerc-painter->fontMetrics().height()/2,label);
         }
         painter->setPen(Qt::SolidLine);
         for (int i=1; i<10; i++)
         {
-            painter->drawLine(cX-3,cY+cH/10*i,cX+3,cY+cH/10*i);    //äåëåíèÿ ïî îñè Y
+            painter->drawLine(cX-3,cY+cH/10*i,cX+3,cY+cH/10*i);    //Ã¤Ã¥Ã«Ã¥Ã­Ã¨Ã¿ Ã¯Ã® Ã®Ã±Ã¨ Y
             //painter->drawText(cX-20,cY+cH/10*i,QString::number((10-i)*10)+"%");
         }
-        painter->drawLine(cX,cY+cH,cX,cY);         //îñü Y
-        painter->drawLine(cX,cY,cX+4,cY+10);       //ñòðåëêè
+        painter->drawLine(cX,cY+cH,cX,cY);         //Ã®Ã±Ã¼ Y
+        painter->drawLine(cX,cY,cX+4,cY+10);       //Ã±Ã²Ã°Ã¥Ã«ÃªÃ¨
         painter->drawLine(cX,cY,cX-4,cY+10);
-        painter->drawLine(cX,cY+cH,cX+cW,cY+cH);   //îñü Õ
+        painter->drawLine(cX,cY+cH,cX+cW,cY+cH);   //Ã®Ã±Ã¼ Ã•
 
     }
     return 0;
@@ -343,7 +345,7 @@ int Nightcharts::drawLegend(QPainter *painter)
             painter->setBrush(Qt::white);
             float x = cX;
             float y = cY+cH+20+dist;
-            //painter->drawRoundRect(cX+cW+20,cY,dist*2+200,pieces.size()*(fontmetr.height()+2*dist)+dist,15,15);
+            //painter->drawRoundedRect(cX+cW+20,cY,dist*2+200,pieces.size()*(fontmetr.height()+2*dist)+dist,15,15);
             for (int i=0;i<pieces.size();i++)
             {
                 painter->setBrush(pieces[i].rgbColor);
@@ -364,7 +366,7 @@ int Nightcharts::drawLegend(QPainter *painter)
         {
             int dist = 5;
             painter->setBrush(Qt::white);
-            //painter->drawRoundRect(cX+cW+20,cY,dist*2+200,pieces.size()*(painter->fontMetrics().height()+2*dist)+dist,15,15);
+            //painter->drawRoundedRect(cX+cW+20,cY,dist*2+200,pieces.size()*(painter->fontMetrics().height()+2*dist)+dist,15,15);
             for (int i=pieces.size()-1; i>=0; i--)
             {
                 painter->setBrush(pieces[i].rgbColor);
@@ -392,12 +394,12 @@ int Nightcharts::drawLegend(QPainter *painter)
                 }
                 painter->drawLine(p.x(),p.y(),p_.x(),p_.y());
                 QString label = pieces[i].pname + " - " + QString::number(pieces[i].pPerc)+"%";
-                float recW = painter->fontMetrics().width(label)+10;
+                float recW = painter->fontMetrics().horizontalAdvance(label)+10;
                 float recH = painter->fontMetrics().height()+10;
                 p_.setX(p_.x()-recW/2 + recW/2*cos(angle*M_PI/180));
                 p_.setY(p_.y()+recH/2 + recH/2*sin(angle*M_PI/180));
                 painter->setBrush(Qt::white);
-                painter->drawRoundRect(p_.x() ,p_.y(), recW, -recH);
+                painter->drawRoundedRect(p_.x() ,p_.y(), recW, -recH, 25, 25);
                 painter->drawText(p_.x()+5, p_.y()-recH/2+5, label);
                 angle -= pdegree/2;
             }

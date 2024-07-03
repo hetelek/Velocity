@@ -5,13 +5,9 @@
 #include <iostream>
 #include <string.h>
 
-#include <botan/botan.h>
-#include <botan/pubkey.h>
+#include <botan/bigint.h>
 #include <botan/rsa.h>
-#include <botan/emsa.h>
-#include <botan/sha160.h>
-#include <botan/emsa3.h>
-#include <botan/look_pk.h>
+#include <botan/pubkey.h>
 
 #include "XboxInternals_global.h"
 

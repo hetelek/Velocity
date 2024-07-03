@@ -60,8 +60,7 @@ void Ytgr::Parse()
     // verify the hash
     BYTE block[0x1000];
     BYTE calculatedHash[0x14];
-    Botan::SHA_160 sha1;
-    sha1.clear();
+    const auto sha1 = Botan::HashFunction::create_or_throw("SHA-1");
 
     io->SetPosition(0x130);
     DWORD tempLen = contentLength;
@@ -69,16 +68,16 @@ void Ytgr::Parse()
     while (tempLen >= 0x1000)
     {
         io->ReadBytes(block, 0x1000);
-        sha1.update(block, 0x1000);
+        sha1->update(block, 0x1000);
         tempLen -= 0x1000;
     }
     if (tempLen != 0)
     {
         io->ReadBytes(block, tempLen);
-        sha1.update(block, tempLen);
+        sha1->update(block, tempLen);
     }
 
-    sha1.final(calculatedHash);
+    sha1->final(calculatedHash);
 
     // make sure both the signature and hash are valid
     valid = valid && !memcmp(contentHash, calculatedHash, 0x14);

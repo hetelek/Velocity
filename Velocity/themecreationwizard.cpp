@@ -63,7 +63,7 @@ void ThemeCreationWizard::onFinished(int status)
         QByteArray ba1;
         QBuffer buffer1(&ba1);
         buffer1.open(QIODevice::WriteOnly);
-        ui->imgThumbnail->pixmap()->save(&buffer1, "PNG");
+        ui->imgThumbnail->pixmap().save(&buffer1, "PNG");
         theme->metaData->thumbnailImage = (BYTE*)ba1.data();
         theme->metaData->thumbnailImageSize = ba1.length();
 
