@@ -19,10 +19,9 @@ QMAKE_CXXFLAGS = -O3
 
 # linking against botan (and adding to include path)
 win32 {
-    include(Stfs/Botan.pri)
-    LIBS += C:/botan/libbotan-3.a
-    PRE_TARGETDEPS += C:/botan/libbotan-3.a
-    INCLUDEPATH += C:/botan/include
+    LIBS += C:/botan/lib/libbotan-3.a
+    PRE_TARGETDEPS += C:/botan/lib/libbotan-3.a
+    INCLUDEPATH += C:/botan/include/botan-3/
 }
 macx {
     INCLUDEPATH += /opt/homebrew/include/botan-3
