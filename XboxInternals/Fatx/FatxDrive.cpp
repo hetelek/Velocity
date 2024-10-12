@@ -392,7 +392,7 @@ void FatxDrive::InjectFile(FatxFileEntry *parent, std::string name, std::string 
     createFileEntry(parent, &entry);
 
     FatxIO fatxIO = GetFatxIO(&entry);
-    fatxIO.ReplaceFile(filePath, progress, arg);
+    fatxIO.ReplaceFileW(filePath, progress, arg);
 }
 
 void FatxDrive::GetFileEntryMagic(FatxFileEntry *entry)
@@ -566,7 +566,7 @@ void FatxDrive::CreateBackup(std::string outPath, void (*progress)(void *, DWORD
 
     outBackup.Close();
 
-    delete buffer;
+    delete[] buffer;
 }
 
 void FatxDrive::RestoreFromBackup(std::string backupPath, void (*progress)(void *, DWORD, DWORD),
@@ -587,7 +587,7 @@ void FatxDrive::RestoreFromBackup(std::string backupPath, void (*progress)(void 
 #ifdef __WIN32
     std::wstring wBackupPath;
     wBackupPath.assign(backupPath.begin(), backupPath.end());
-    HANDLE hFile = CreateFile(wBackupPath.c_str(), GENERIC_READ, NULL, NULL, OPEN_EXISTING,
+    HANDLE hFile = CreateFile(wBackupPath.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING,
             FILE_ATTRIBUTE_NORMAL, NULL);
 
     if (hFile == INVALID_HANDLE_VALUE)

@@ -377,7 +377,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
     for (int i = 0; i < filePaths.size(); i++)
     {
 #ifdef __WIN32__
-        std::string fileName = QString(filePaths.at(i).encodedPath()).mid(1).replace("%20",
+        std::string fileName = QString(filePaths.at(i).path()).mid(1).replace("%20",
                 " ").toStdString();
 #else
         std::string fileName = QString(filePaths.at(i).toEncoded()).replace("%20", " ").
