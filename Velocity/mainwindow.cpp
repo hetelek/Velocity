@@ -13,7 +13,7 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
     if (!settings->contains("PluginPath"))
         settings->setValue("PluginPath", "./plugins");
     if (!settings->contains("AnonData"))
-        settings->setValue("AnonData", true);
+        settings->setValue("AnonData", false);
 
     setCentralWidget(ui->mdiArea);
     ui->mdiArea->setAcceptDrops(false);
