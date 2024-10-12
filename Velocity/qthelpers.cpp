@@ -363,7 +363,7 @@ void QtHelpers::AddSubWindow(QMdiArea *mdiArea, QWidget *widget)
     mdiArea->addSubWindow(widget);
 }
 
-QtHelpers::SubWindowEvents::SubWindowEvents(QObject *parent)
+QtHelpers::SubWindowEvents::SubWindowEvents([[maybe_unused]] QObject *parent)
 {
 }
 
