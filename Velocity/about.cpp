@@ -33,5 +33,5 @@ void About::on_pushButton_2_clicked()
 
 void About::on_pushButton_clicked()
 {
-    QDesktopServices::openUrl(QUrl("http://free60.org/Main_Page"));
+    QDesktopServices::openUrl(QUrl("https://free60.org"));
 }
