@@ -192,7 +192,7 @@ void UpdateProgress(DWORD cur, DWORD total, void *arg)
     QApplication::processEvents();
 }
 
-void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
+void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, [[maybe_unused]] int column)
 {
     GdfxFileEntry *entry = ui->treeWidget->currentItem()->data(0, Qt::UserRole).value<GdfxFileEntry*>();
     QString tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{",

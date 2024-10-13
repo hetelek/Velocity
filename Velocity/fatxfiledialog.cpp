@@ -46,7 +46,7 @@ FatxFileDialog::~FatxFileDialog()
     delete ui;
 }
 
-QString FatxFileDialog::msTimeToString(DWORD time)
+QString FatxFileDialog::msTimeToString([[maybe_unused]] DWORD time)
 {
     MSTime msTime = DWORDToMSTime(entry->creationDate);
 
