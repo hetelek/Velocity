@@ -4,15 +4,18 @@ The Qt Creator IDE is used to build/debug Velocity. Velocity currently depends o
 
 - WINDOWS
 
-	While debugging, Velocity is compiled with 'Qt 6.7 for Desktop - MingGW (Qt SDK) Debug'.
-	While compiling for release mode, Velocity is compiled with 'Qt 6.7 for Desktop - MingGW (Qt SDK) Release'.
+	Velocity/XboxInternals can be compiled with 'Qt 6.7 for Desktop - MingGW (11.2.0)' or higher (tested with QT 6.8.0 MingGW 13.1.0).
 
 	Tool Chain: 'Mingw as a GCC for Windows targets'
 
-	WARNING: Botan must be found in the working directory of Velocity.exe for Velocity to successfully run. To obtain the Botan libraries, you have 2 options:
+	WARNING: Botan must be found in C:/botan/[lib/include] directory for XboxInternals to successfully compile. To obtain the Botan libraries, you have 2 options:
 
 	1. Download the Botan sources from http://botan.randombit.net/download.html.
-	2. Download the Botan binary (.a) from https://www.mediafire.com/file/i77h4kgrsj6vo9l/botan-3.5.0_win64.7z, if available.
+			$ python.exe .\configure.py --cc=gcc --os=mingw --build-tool=ninja  --without-documentation  --without-stack-protector
+			$ ninja
+			$ ninja check
+			$ ninja install
+	2. Download the Botan binary (.a) and headers from https://www.mediafire.com/file/i77h4kgrsj6vo9l/botan-3.5.0_win64.7z, if available.
 
 - MAC
 
