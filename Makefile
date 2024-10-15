@@ -6,7 +6,7 @@ ifeq ($(UNAME), Linux)
 else ifeq ($(UNAME), Darwin)
 	OS = OSX
 else
-	OS = Windows
+	OS = Win
 endif
 
 all: debug
