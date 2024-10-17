@@ -8,8 +8,8 @@ else
     UNAME := $(shell uname -s)
     ifeq ($(UNAME),Linux)
         OS := Linux
-        OS := OSX
     else ifeq ($(UNAME),Darwin)
+        OS := OSX
     endif
     MAKE_CMD := make
 endif
