@@ -5,9 +5,9 @@ GitHubCommitsDialog::GitHubCommitsDialog(QWidget *parent) :
     QDialog(parent), ui(new Ui::GitHubCommitsDialog), branchCount(0), retrievedCount(0)
 {
     // set the fixed size based on the OS
-#ifdef __WIN32__
+#ifdef _WIN32
     QSize appSize(274, 315);
-#elif __unix | __APPLE__
+#elif __unix__ | __APPLE__
     QSize appSize(345, 380);
 #endif
 
