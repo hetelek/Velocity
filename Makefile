@@ -31,7 +31,7 @@ velocity_target: Velocity
 	$(QMAKE) Velocity/Velocity.pro -o Velocity/Makefile CONFIG+=$(CONFIG)
 	$(MAKE_CMD) -C Velocity
 
-modules: libXBoxInternals velocity_target
+modules: libXboxInternals velocity_target
 
 debug: CONFIG = debug
 debug: modules
