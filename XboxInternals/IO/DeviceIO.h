@@ -13,7 +13,7 @@
 class XBOXINTERNALSSHARED_EXPORT DeviceIO : public BaseIO
 {
 public:
-    #ifdef __WIN32
+    #ifdef _WIN32
     DeviceIO(void* deviceHandle);
     #endif
     

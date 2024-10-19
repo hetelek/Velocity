@@ -30,7 +30,7 @@ void SvodMultiFileIO::loadDirectories(string path)
     if (dir != NULL)
     {
         // load the stuff that's always at the begining . ..
-#ifdef __win32
+#ifdef _win32
         readdir(dir);
         readdir(dir);
 #endif
