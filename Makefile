@@ -14,13 +14,15 @@ else
     MAKE_CMD := make
 endif
 
+CONFIG ?= release
+
 all: debug
 
 libXboxInternals: XboxInternals
 	$(QMAKE) XboxInternals/XboxInternals.pro -o XboxInternals/Makefile CONFIG+=$(CONFIG)
 	$(MAKE_CMD) -C XboxInternals
 ifeq ($(OS),Win)
-	if not exist XboxInternals-$(OS)\$(CONFIG) mkdir XboxInternals-$(OS)\$(CONFIG)
+	@if not exist XboxInternals-$(OS)\$(CONFIG) mkdir XboxInternals-$(OS)\$(CONFIG)
 	xcopy XboxInternals\$(CONFIG)\libXBoxInternals.* XboxInternals-$(OS)\$(CONFIG) /Y
 else
 	mkdir -p XboxInternals-$(OS)/$(CONFIG)
@@ -43,9 +45,9 @@ clean:
 	$(MAKE_CMD) clean -C XboxInternals
 	$(MAKE_CMD) clean -C Velocity
 ifeq ($(OS),Win)
-	del /Q XboxInternals\$(CONFIG)\libXBoxInternals.*
-	del /Q Velocity\Velocity
-	for /D %%d in (XboxInternals-*) do rmdir /S /Q "%%d"
+	@if exist XboxInternals\$(CONFIG)\libXBoxInternals.* del /Q XboxInternals\$(CONFIG)\libXBoxInternals.*
+	@if exist Velocity\Velocity del /Q Velocity\Velocity
+	@for /D %%d in (XboxInternals-*) do if exist "%%d" rmdir /S /Q "%%d"
 else
 	rm -f XboxInternals/$(CONFIG)/libXBoxInternals.*
 	rm -f Velocity/Velocity
