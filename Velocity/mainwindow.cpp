@@ -413,7 +413,10 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                             else
                             {
                                 package->Rehash();
-                                package->Resign(QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType, this));
+                                if (fileMagic == CON)
+                                {
+                                    package->Resign(QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType, this));
+                                }
 
                                 delete package;
 
