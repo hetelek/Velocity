@@ -393,7 +393,7 @@ void FatxDrive::InjectFile(FatxFileEntry *parent, std::string name, std::string 
     createFileEntry(parent, &entry);
 
     FatxIO fatxIO = GetFatxIO(&entry);
-    fatxIO.ReplaceFileW(filePath, progress, arg);
+    fatxIO.ReplaceFile(filePath, progress, arg);
 }
 
 void FatxDrive::GetFileEntryMagic(FatxFileEntry *entry)

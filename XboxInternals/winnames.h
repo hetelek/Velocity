@@ -1,18 +1,12 @@
-#pragma once
+#ifndef WINNAMES_H
+#define WINNAMES_H
 
-#ifdef _WIN32
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
-
-#else
-// Define types for non-Windows platforms if necessary.
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
 typedef unsigned long DWORD;
-typedef signed long long INT64;
+typedef int INT32;
+typedef long long INT64;
 typedef unsigned long long UINT64;
-typedef signed int INT32;
-#endif
 
 typedef struct _WINFILETIME {
     DWORD dwHighDateTime;
@@ -21,3 +15,5 @@ typedef struct _WINFILETIME {
 
 typedef short INT16;
 typedef signed int INT24;
+
+#endif // WINNAMES_H
