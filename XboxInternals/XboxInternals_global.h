@@ -1,14 +1,21 @@
-#pragma once
+#ifndef XBOXINTERNALS_GLOBAL_H
+#define XBOXINTERNALS_GLOBAL_H
 
-// No need to export/import symbols when building a static library
 #if defined(XBOXINTERNALS_STATIC)
-#define XBOXINTERNALSSHARED_EXPORT
-#elif defined(XBOXINTERNALS_LIBRARY)
-// Export symbols when building the library
-#include <QtCore/qglobal.h>
-#define XBOXINTERNALSSHARED_EXPORT Q_DECL_EXPORT
+#  define XBOXINTERNALSSHARED_EXPORT
 #else
-// Import symbols when using the library
-#include <QtCore/qglobal.h>
-#define XBOXINTERNALSSHARED_EXPORT Q_DECL_IMPORT
+#  if defined(_MSC_VER) // VC++
+#    define Q_DECL_EXPORT __declspec(dllexport)
+#    define Q_DECL_IMPORT __declspec(dllimport)
+#  else
+#      include <QtCore/qglobal.h>
+#  endif
+
+#  if defined(XBOXINTERNALS_LIBRARY)
+#    define XBOXINTERNALSSHARED_EXPORT Q_DECL_EXPORT
+#  else
+#    define XBOXINTERNALSSHARED_EXPORT Q_DECL_IMPORT
+#  endif
 #endif
+
+#endif // XBOXINTERNALS_GLOBAL_H
