@@ -14,6 +14,7 @@ FileIO::FileIO(string path, bool truncate) :
         ex += "\n";
         throw ex;
     }
+    std::cout << path << std::endl;
 
     endian = BigEndian;
 
