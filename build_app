@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -euxo pipefail
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+cd "$SCRIPT_DIR"
+
+rm -rf vel_build Velocity/build/ XboxInternals/build/
+mkdir vel_build ; cd vel_build
+
+mkdir internals ; cd internals
+qmake6 -config release ../../XboxInternals/XboxInternals.pro
+make -j10
+cd ..
+
+mkdir vel ; cd vel
+qmake6 -config release ../../Velocity/Velocity.pro
+make -j10
+cd ..
+
+cd "$SCRIPT_DIR"
+find ./Velocity/build
+
+open ./Velocity/build/Velocity-OSX/release/Velocity.app/
+# macdeployqt6 ./Velocity/build/Velocity-OSX/release/Velocity.app/
