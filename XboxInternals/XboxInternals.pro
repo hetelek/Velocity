@@ -19,17 +19,27 @@ QMAKE_CXXFLAGS = -O3
 
 # linking against botan (and adding to include path)
 win32 {
+    PLATFORM_BUILD_NAME = Win
     LIBS += C:/botan/lib/libbotan-3.a
     PRE_TARGETDEPS += C:/botan/lib/libbotan-3.a
     INCLUDEPATH += C:/botan/include/botan-3/
 }
 macx {
+    PLATFORM_BUILD_NAME = OSX
     INCLUDEPATH += /opt/homebrew/include/botan-3
     LIBS += /opt/homebrew/lib/libbotan-3.a
 }
 else:unix {
+    PLATFORM_BUILD_NAME = Unix
     INCLUDEPATH += /usr/include/botan-3
     LIBS += /usr/lib/libbotan-3.so.0
+}
+
+TARGET = XboxInternals
+CONFIG(debug, debug|release) {
+    DESTDIR = $$PWD/build/XboxInternals-$$PLATFORM_BUILD_NAME/debug/
+} else:release {
+    DESTDIR = $$PWD/build/XboxInternals-$$PLATFORM_BUILD_NAME/release/
 }
 
 SOURCES += \
