@@ -20,47 +20,35 @@ DEFINES += VERSION=\\\"$$VERSION\\\"
 
 # linking against botan (and adding to include path)
 win32 {
+    PLATFORM_BUILD_NAME = Win
     LIBS += -LC:/botan/lib/ -lbotan-3
     INCLUDEPATH += C:/botan/include/botan-3
+    RC_FILE = velocity.rc
 }
 macx {
+    PLATFORM_BUILD_NAME = OSX
     INCLUDEPATH += /opt/homebrew/include/botan-3
     LIBS += /opt/homebrew/lib/libbotan-3.a
+    QMAKE_INFO_PLIST = Info.plist.app
+    ICON = velocity.icns
 }
 else:unix {
+    PLATFORM_BUILD_NAME = Unix
     INCLUDEPATH += /usr/include/botan-3
     LIBS += /usr/lib/libbotan-3.so.0
 }
 
-# phonon, icon
-win32 {
-    RC_FILE = velocity.rc
-}
-
-# application info, icon
-macx {
-    QMAKE_INFO_PLIST = Info.plist.app
-    ICON = velocity.icns
-}
-
 # linking against XboxInternals (and adding to include path)
-INCLUDEPATH += $$PWD/../XboxInternals
+XBOX_INTERNAL_ROOT = $$PWD/../XboxInternals
+INCLUDEPATH += $$XBOX_INTERNAL_ROOT
 CONFIG(debug, debug|release) {
-    win32:LIBS += -L$$PWD/../XboxInternals-Win/debug/ -lXboxInternals
-    macx:LIBS += -L$$PWD/../XboxInternals-OSX/debug/ -lXboxInternals
-    unix:!macx {
-        LIBS += -L$$PWD/../XboxInternals-Linux/debug/ -lXboxInternals
-        PRE_TARGETDEPS += $$PWD/../XboxInternals-Linux/debug/libXboxInternals.a
-    }
+    LIBS += -L$$XBOX_INTERNAL_ROOT/build/XboxInternals-$$PLATFORM_BUILD_NAME/debug/ -lXboxInternals
+    DESTDIR = $$PWD/build/Velocity-$$PLATFORM_BUILD_NAME/debug/
+} else {
+    LIBS += -L$$XBOX_INTERNAL_ROOT/build/XboxInternals-$$PLATFORM_BUILD_NAME/release/ -lXboxInternals
+    DESTDIR = $$PWD/build/Velocity-$$PLATFORM_BUILD_NAME/release/
 }
-CONFIG(release, debug|release) {
-    win32:LIBS += -L$$PWD/../XboxInternals-Win/release/ -lXboxInternals
-    macx:LIBS += -L$$PWD/../XboxInternals-OSX/release/ -lXboxInternals
-    unix:!macx {
-        LIBS += -L$$PWD/../XboxInternals-Linux/release/ -lXboxInternals
-        PRE_TARGETDEPS += $$PWD/../XboxInternals-Linux/release/libXboxInternals.a
-    }
-}
+
 
 SOURCES += main.cpp \
     mainwindow.cpp \
