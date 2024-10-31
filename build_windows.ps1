@@ -8,7 +8,12 @@ $SCRIPT_DIR = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
 Set-Location -Path $SCRIPT_DIR
 
 if ($CLEAN_BUILD -eq 1) {
-    Remove-Item -Recurse -Force vel_build, "Velocity\build", "XboxInternals\build"
+    $paths = @("vel_build", "Velocity\build", "XboxInternals\build")
+    foreach ($path in $paths) {
+        if (Test-Path $path) {
+            Remove-Item -Recurse -Force $path
+        }
+    }
 }
 
 New-Item -ItemType Directory -Force -Path vel_build
