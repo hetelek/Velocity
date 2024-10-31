@@ -4,6 +4,7 @@
 #include "FatxDrive.h"
 
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #undef DeleteFile
 #undef ReplaceFile
@@ -35,7 +36,7 @@ FatxDrive::FatxDrive(std::wstring drivePath, FatxDriveType type) : type(type)
     loadFatxDrive(drivePath);
 }
 
-#ifdef __WIN32
+#ifdef _WIN32
 FatxDrive::FatxDrive(void* deviceHandle, FatxDriveType type) : type(type)
 {
     loadFatxDrive(deviceHandle);
@@ -359,7 +360,7 @@ void FatxDrive::InjectFile(FatxFileEntry *parent, std::string name, std::string 
 {
     UINT64 fileLength = 0;
 
-#if __WIN32
+#if _WIN32
     // TODO: put windows file length code here
 #else
     struct stat fileInfo;
@@ -566,7 +567,7 @@ void FatxDrive::CreateBackup(std::string outPath, void (*progress)(void *, DWORD
 
     outBackup.Close();
 
-    delete buffer;
+    delete[] buffer;
 }
 
 void FatxDrive::RestoreFromBackup(std::string backupPath, void (*progress)(void *, DWORD, DWORD),
@@ -584,10 +585,10 @@ void FatxDrive::RestoreFromBackup(std::string backupPath, void (*progress)(void 
     BYTE *buffer = new BYTE[0x100000];
     UINT64 bytesLeft;
 
-#ifdef __WIN32
+#ifdef _WIN32
     std::wstring wBackupPath;
     wBackupPath.assign(backupPath.begin(), backupPath.end());
-    HANDLE hFile = CreateFile(wBackupPath.c_str(), GENERIC_READ, NULL, NULL, OPEN_EXISTING,
+    HANDLE hFile = CreateFile(wBackupPath.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING,
             FILE_ATTRIBUTE_NORMAL, NULL);
 
     if (hFile == INVALID_HANDLE_VALUE)
@@ -616,7 +617,7 @@ void FatxDrive::RestoreFromBackup(std::string backupPath, void (*progress)(void 
     DWORD i = 0;
     while (bytesLeft >= 0x100000)
     {
-#ifdef __WIN32
+#ifdef _WIN32
         high = (i * (UINT64)0x100000) >> 32;
         SetFilePointer(hFile, (i * (UINT64)0x100000) & 0xFFFFFFFF, (PLONG)&high, FILE_BEGIN);
 
@@ -635,7 +636,7 @@ void FatxDrive::RestoreFromBackup(std::string backupPath, void (*progress)(void 
 
     if (bytesLeft > 0)
     {
-#ifdef __WIN32
+#ifdef _WIN32
         SetFilePointer(hFile, (i * (UINT64)0x100000) & 0xFFFFFFFF, (PLONG)&high, FILE_BEGIN);
         ReadFile(hFile, buffer, bytesLeft, &high, NULL);
 #else
@@ -648,7 +649,7 @@ void FatxDrive::RestoreFromBackup(std::string backupPath, void (*progress)(void 
     if (progress)
         progress(arg, totalProgress, totalProgress);
 
-#ifdef __WIN32
+#ifdef _WIN32
     CloseHandle(hFile);
 #else
     close(backupFile);
@@ -808,7 +809,7 @@ void FatxDrive::loadFatxDrive(std::wstring drivePath)
     loadFatxDrive();
 }
 
-#ifdef __WIN32
+#ifdef _WIN32
 void FatxDrive::loadFatxDrive(void* deviceHandle)
 {
     // open the device io

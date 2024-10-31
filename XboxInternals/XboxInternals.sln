@@ -1,26 +1,43 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XboxInternals", "XboxInternals.vcxproj", "{3C75E470-3BEE-478E-A329-8FFBB166F549}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		DebugDll|Win32 = DebugDll|Win32
+		DebugDll|x64 = DebugDll|x64
 		DebugLib|Win32 = DebugLib|Win32
+		DebugLib|x64 = DebugLib|x64
 		ReleaseDll|Win32 = ReleaseDll|Win32
+		ReleaseDll|x64 = ReleaseDll|x64
 		ReleaseLibMT|Win32 = ReleaseLibMT|Win32
+		ReleaseLibMT|x64 = ReleaseLibMT|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3C75E470-3BEE-478E-A329-8FFBB166F549}.DebugDll|Win32.ActiveCfg = DebugDll|Win32
 		{3C75E470-3BEE-478E-A329-8FFBB166F549}.DebugDll|Win32.Build.0 = DebugDll|Win32
+		{3C75E470-3BEE-478E-A329-8FFBB166F549}.DebugDll|x64.ActiveCfg = DebugDll|x64
+		{3C75E470-3BEE-478E-A329-8FFBB166F549}.DebugDll|x64.Build.0 = DebugDll|x64
 		{3C75E470-3BEE-478E-A329-8FFBB166F549}.DebugLib|Win32.ActiveCfg = DebugLib|Win32
 		{3C75E470-3BEE-478E-A329-8FFBB166F549}.DebugLib|Win32.Build.0 = DebugLib|Win32
+		{3C75E470-3BEE-478E-A329-8FFBB166F549}.DebugLib|x64.ActiveCfg = DebugLib|x64
+		{3C75E470-3BEE-478E-A329-8FFBB166F549}.DebugLib|x64.Build.0 = DebugLib|x64
 		{3C75E470-3BEE-478E-A329-8FFBB166F549}.ReleaseDll|Win32.ActiveCfg = ReleaseDll|Win32
 		{3C75E470-3BEE-478E-A329-8FFBB166F549}.ReleaseDll|Win32.Build.0 = ReleaseDll|Win32
+		{3C75E470-3BEE-478E-A329-8FFBB166F549}.ReleaseDll|x64.ActiveCfg = ReleaseDll|x64
+		{3C75E470-3BEE-478E-A329-8FFBB166F549}.ReleaseDll|x64.Build.0 = ReleaseDll|x64
 		{3C75E470-3BEE-478E-A329-8FFBB166F549}.ReleaseLibMT|Win32.ActiveCfg = ReleaseLibMT|Win32
 		{3C75E470-3BEE-478E-A329-8FFBB166F549}.ReleaseLibMT|Win32.Build.0 = ReleaseLibMT|Win32
+		{3C75E470-3BEE-478E-A329-8FFBB166F549}.ReleaseLibMT|x64.ActiveCfg = ReleaseLibMT|x64
+		{3C75E470-3BEE-478E-A329-8FFBB166F549}.ReleaseLibMT|x64.Build.0 = ReleaseLibMT|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4E09BF44-8B1A-4A5E-B471-4FB46C37E531}
 	EndGlobalSection
 EndGlobal

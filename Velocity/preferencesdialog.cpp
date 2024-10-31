@@ -8,7 +8,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     ui->setupUi(this);
     QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
-#ifdef __WIN32__
+#ifdef _WIN32
     QSize size(477, 160);
     setFixedSize(size);
 #elif __unix__

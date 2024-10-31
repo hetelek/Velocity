@@ -24,7 +24,7 @@ int GpdDownloader::index()
     return indexIn;
 }
 
-void GpdDownloader::onRequestFinished(int /* id */, bool error)
+void GpdDownloader::onRequestFinished([[maybe_unused]] int /* id */, [[maybe_unused]] bool error)
 {
     /*if (error)
         qDebug() << http->errorString();

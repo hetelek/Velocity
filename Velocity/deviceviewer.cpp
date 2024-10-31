@@ -695,7 +695,7 @@ void DeviceViewer::on_treeWidget_2_itemExpanded(QTreeWidgetItem *item)
     LoadFolderTree(item);
 }
 
-void DeviceViewer::on_treeWidget_2_itemClicked(QTreeWidgetItem *item, int column)
+void DeviceViewer::on_treeWidget_2_itemClicked(QTreeWidgetItem *item, [[maybe_unused]] int column)
 {
     if (!item->parent())
     {
@@ -774,7 +774,7 @@ void DeviceViewer::onDragDropped(QDropEvent *event)
     InjectFiles(files, rootPath);
 }
 
-void DeviceViewer::onDragLeft(QDragLeaveEvent *event)
+void DeviceViewer::onDragLeft([[maybe_unused]] QDragLeaveEvent *event)
 {
     statusBar->showMessage("");
 }
@@ -789,7 +789,7 @@ void DeviceViewer::on_txtPath_returnPressed()
         LoadFolderAll(parent);
 }
 
-void updateUI(void *arg, bool finished)
+void updateUI([[maybe_unused]] void *arg, [[maybe_unused]] bool finished)
 {
     QApplication::processEvents();
 }

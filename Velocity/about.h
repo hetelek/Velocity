@@ -8,11 +8,6 @@
 #include <QMessageBox>
 #include "qthelpers.h"
 
-#ifdef _WIN32
-#include <phonon/MediaObject>
-#include <phonon/AudioOutput>
-#endif
-
 namespace Ui
 {
 class About;
@@ -38,10 +33,6 @@ private slots:
 private:
     Ui::About *ui;
 
-#ifdef _WIN32
-    Phonon::MediaObject *developers;
-    Phonon::AudioOutput *audioOutput;
-#endif
 };
 
 #endif // ABOUT_H

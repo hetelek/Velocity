@@ -13,7 +13,7 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
     if (!settings->contains("PluginPath"))
         settings->setValue("PluginPath", "./plugins");
     if (!settings->contains("AnonData"))
-        settings->setValue("AnonData", true);
+        settings->setValue("AnonData", false);
 
     setCentralWidget(ui->mdiArea);
     ui->mdiArea->setAcceptDrops(false);
@@ -376,13 +376,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
 {
     for (int i = 0; i < filePaths.size(); i++)
     {
-#ifdef __WIN32__
-        std::string fileName = QString(filePaths.at(i).encodedPath()).mid(1).replace("%20",
-                " ").toStdString();
-#else
-        std::string fileName = QString(filePaths.at(i).toEncoded()).replace("%20", " ").
-                replace("file://", "").toStdString();
-#endif
+        std::string fileName = filePaths.at(i).toLocalFile().toStdString();
 
         // make sure the file exists
         if (!QFile::exists(QString::fromStdString(fileName)))
@@ -419,7 +413,10 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                             else
                             {
                                 package->Rehash();
-                                package->Resign(QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType, this));
+                                if (fileMagic == CON)
+                                {
+                                    package->Resign(QtHelpers::GetKVPath(package->metaData->certificate.ownerConsoleType, this));
+                                }
 
                                 delete package;
 

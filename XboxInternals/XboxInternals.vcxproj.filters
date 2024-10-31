@@ -48,9 +48,6 @@
     <ClCompile Include="fatx\FatxDriveDetection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="fatx\fatxhelpers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="gpd\AvatarAwardGPD.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

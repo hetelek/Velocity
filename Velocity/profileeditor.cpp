@@ -30,7 +30,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
     int btnSize = 37;
     setMinimumSize(1000, 520);
     ui->groupBox_3->setMaximumWidth(395);
-#elif __WIN32__
+#elif _WIN32
     int btnSize = 32;
     ui->lblAchName->setFont(QFont("Arial", 10));
     ui->lblAwName->setFont(QFont("Arial", 10));
@@ -535,7 +535,7 @@ void ProfileEditor::onAssetsDoneDownloading()
     try
     {
         struct AvatarAward *award = &aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(
-                    ui->avatarAwardsList->currentIndex().row());
+            ui->avatarAwardsList->currentIndex().row());
 
         StfsPackage newAsset(assetSavePath.toStdString(), StfsPackageCreate | StfsPackageFemale);
         newAsset.metaData->magic = PIRS;
@@ -547,15 +547,12 @@ void ProfileEditor::onAssetsDoneDownloading()
         // set all the needed metadata
         newAsset.metaData->contentType = AvatarItem;
         newAsset.metaData->titleID = award->titleID;
-
-        // not sure why i have to do this, but it triggors an 'Unknown Signal' from the OS if I don't
-        std::wstring *w = new std::wstring(award->name);
-        memcpy(&newAsset.metaData->displayName, w, sizeof(std::wstring));
+        newAsset.metaData->displayName = award->name;
 
         newAsset.metaData->subCategory = award->subcategory;
         newAsset.metaData->colorizable = award->colorizable;
         QtHelpers::ParseHexStringBuffer(downloader->GetGUID().replace("-", "").toUpper(),
-                newAsset.metaData->guid, 0x10);
+                                        newAsset.metaData->guid, 0x10);
         newAsset.metaData->skeletonVersion = (downloader->GetV2TempPath() != "") ? Natal : Nxe;
         newAsset.metaData->WriteMetaData();
 
@@ -600,13 +597,14 @@ void ProfileEditor::onAssetsDoneDownloading()
     catch (string error)
     {
         QMessageBox::critical(this, "Error",
-                "An error occurred while creating the asset package.\n\n" + QString::fromStdString(error));
+                              "An error occurred while creating the asset package.\n\n" + QString::fromStdString(error));
     }
     catch (...)
     {
         QMessageBox::critical(this, "Error", "An unknown error occurred while creating the asset package.");
     }
 }
+
 
 void ProfileEditor::addToDashGpd(SettingEntry *entry, SettingEntryType type, UINT64 id)
 {

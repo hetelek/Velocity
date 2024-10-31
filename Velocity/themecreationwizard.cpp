@@ -52,10 +52,7 @@ void ThemeCreationWizard::onFinished(int status)
         theme->metaData->contentType = Theme;
         theme->metaData->metaDataVersion = 2;
         theme->metaData->titleID = 0xFFFE07D1;
-
-        // had to do some glitch hacks in order to get this to work. If I don't do this, the OS gives an 'Unknown Signal'
-        std::wstring *w = new std::wstring(ui->txtName->text().toStdWString());
-        memcpy(&theme->metaData->displayName, w, sizeof(std::wstring));
+        theme->metaData->displayName = ui->txtName->text().toStdWString();
 
         theme->metaData->transferFlags = 0x40;
 

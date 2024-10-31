@@ -30,7 +30,7 @@ void SvodMultiFileIO::loadDirectories(string path)
     if (dir != NULL)
     {
         // load the stuff that's always at the begining . ..
-#ifdef __win32
+#ifdef _win32
         readdir(dir);
         readdir(dir);
 #endif
@@ -148,7 +148,7 @@ DWORD SvodMultiFileIO::FileCount()
     return files.size();
 }
 
-void SvodMultiFileIO::SetPosition(UINT64 position, ios_base::seekdir dir)
+void SvodMultiFileIO::SetPosition([[maybe_unused]] UINT64 position, [[maybe_unused]] ios_base::seekdir dir)
 {
     throw string("MultiFileIO: Unused function has been called.\n");
 }

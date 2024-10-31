@@ -20,8 +20,8 @@ DEFINES += VERSION=\\\"$$VERSION\\\"
 
 # linking against botan (and adding to include path)
 win32 {
-    LIBS += -LC:/botan/ -lbotan-1.10
-    INCLUDEPATH += C:/botan/include
+    LIBS += -LC:/botan/lib/ -lbotan-3
+    INCLUDEPATH += C:/botan/include/botan-3
 }
 macx {
     INCLUDEPATH += /opt/homebrew/include/botan-3
@@ -34,7 +34,6 @@ else:unix {
 
 # phonon, icon
 win32 {
-    QT += phonon
     RC_FILE = velocity.rc
 }
 

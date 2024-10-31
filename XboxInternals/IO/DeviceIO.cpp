@@ -1,8 +1,8 @@
 #include "DeviceIO.h"
 #include <string.h>
-#include <errno.h>
 
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <WinIoCtl.h>
 #else
@@ -37,7 +37,7 @@ public:
 #endif
 };
 
-#ifdef __WIN32
+#ifdef _WIN32
 DeviceIO::DeviceIO(void* deviceHandle) :
     impl(new Impl), lastReadOffset(-1)
 {
@@ -409,7 +409,7 @@ void DeviceIO::loadDevice(std::wstring devicePath)
 
 void DeviceIO::Flush()
 {
-#ifdef __WIN32
+#ifdef _WIN32
     FlushFileBuffers(impl->deviceHandle);
 #endif
 }

@@ -261,7 +261,7 @@ DWORD SVOD::GetSectorCount()
     return (io->FileCount() * 0x14388) + ((fileLen - (0x1000 * (fileLen / 0xCD000))) / 0x800);
 }
 
-int compareFileEntries(GdfxFileEntry a, GdfxFileEntry b)
+int compareFileEntries(GdfxFileEntry a, [[maybe_unused]] GdfxFileEntry b)
 {
     return !(a.attributes & GdfxDirectory);
 }

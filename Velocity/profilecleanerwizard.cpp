@@ -147,67 +147,63 @@ void ProfileCleanerWizard::clean()
         }
     }
 
-    // rebuild the profile
-    QString newProfilePath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{",
-            "").replace("}", "").replace("-", "");
+    // Rebuild the profile
+    QString newProfilePath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
     StfsPackage newProfile(newProfilePath.toStdString(), StfsPackageCreate);
 
-    // copy all the metadata over to the new profile
-    newProfile.metaData->certificate.publicKeyCertificateSize =
-        profile->metaData->certificate.publicKeyCertificateSize;
+    // Copy all the metadata over to the new profile
+    newProfile.metaData->certificate.publicKeyCertificateSize = profile->metaData->certificate.publicKeyCertificateSize;
 
-    std::string *s = new std::string(profile->metaData->certificate.ownerConsolePartNumber);
-    memcpy(&newProfile.metaData->certificate.ownerConsolePartNumber, s, sizeof(std::string));
-
+    // Use assignment for std::string instead of memcpy
+    newProfile.metaData->certificate.ownerConsolePartNumber = profile->metaData->certificate.ownerConsolePartNumber;
     newProfile.metaData->certificate.ownerConsoleType = profile->metaData->certificate.ownerConsoleType;
     newProfile.metaData->certificate.consoleTypeFlags = profile->metaData->certificate.consoleTypeFlags;
 
-    s = new std::string(profile->metaData->certificate.dateGeneration);
-    memcpy(&newProfile.metaData->certificate.dateGeneration, s, sizeof(std::string));
+    // Use assignment for std::string
+    newProfile.metaData->certificate.dateGeneration = profile->metaData->certificate.dateGeneration;
 
-    memcpy(newProfile.metaData->certificate.ownerConsoleID,
-           profile->metaData->certificate.ownerConsoleID, 5);
+    // Use std::copy for arrays
+    std::copy(profile->metaData->certificate.ownerConsoleID, profile->metaData->certificate.ownerConsoleID + 5, newProfile.metaData->certificate.ownerConsoleID);
+    std::copy(profile->metaData->consoleID, profile->metaData->consoleID + 5, newProfile.metaData->consoleID);
 
-    memcpy(newProfile.metaData->consoleID, profile->metaData->consoleID, 5);
+    // Use assignment for std::wstring
+    newProfile.metaData->displayDescription = profile->metaData->displayDescription;
+    newProfile.metaData->displayName = profile->metaData->displayName;
+
+    // Use std::copy for licenseData array
+    std::copy(profile->metaData->licenseData, profile->metaData->licenseData + 0x10, newProfile.metaData->licenseData);
+
+    // Copy other metadata fields
     newProfile.metaData->contentSize = profile->metaData->contentSize;
     newProfile.metaData->contentType = Profile;
     newProfile.metaData->titleID = profile->metaData->titleID;
-    memcpy(newProfile.metaData->deviceID, profile->metaData->deviceID, 20);
 
-    std::wstring *w = new std::wstring(profile->metaData->displayDescription);
-    memcpy(&newProfile.metaData->displayDescription, w, sizeof(std::wstring));
+    // Use std::copy for deviceID array
+    std::copy(profile->metaData->deviceID, profile->metaData->deviceID + 20, newProfile.metaData->deviceID);
 
-    w = new std::wstring(profile->metaData->displayName);
-    memcpy(&newProfile.metaData->displayName, w, sizeof(std::wstring));
+    // Use assignment for std::wstring
+    newProfile.metaData->publisherName = profile->metaData->publisherName;
 
-    newProfile.metaData->executableType = profile->metaData->executableType;
-    newProfile.metaData->headerSize = profile->metaData->headerSize;
-    memcpy(newProfile.metaData->licenseData, profile->metaData->licenseData,
-           sizeof(LicenseEntry) * 0x10);
-    newProfile.metaData->metaDataVersion = profile->metaData->metaDataVersion;
-    memcpy(newProfile.metaData->profileID, profile->metaData->profileID, 8);
-
-    w = new std::wstring(profile->metaData->publisherName);
-    memcpy(&newProfile.metaData->publisherName, w, sizeof(std::wstring));
-
-    newProfile.metaData->savegameID = profile->metaData->savegameID;
-
-    newProfile.metaData->thumbnailImage = new BYTE[profile->metaData->thumbnailImageSize];
-    newProfile.metaData->titleThumbnailImage = new BYTE[profile->metaData->titleThumbnailImageSize];
-    memcpy(newProfile.metaData->thumbnailImage, profile->metaData->thumbnailImage,
-           profile->metaData->thumbnailImageSize);
-    memcpy(newProfile.metaData->titleThumbnailImage, profile->metaData->titleThumbnailImage,
-           profile->metaData->titleThumbnailImageSize);
+    // Handle thumbnail images
     newProfile.metaData->thumbnailImageSize = profile->metaData->thumbnailImageSize;
     newProfile.metaData->titleThumbnailImageSize = profile->metaData->titleThumbnailImageSize;
 
-    w = new std::wstring(profile->metaData->titleName);
-    memcpy(&newProfile.metaData->titleName, w, sizeof(std::wstring));
+    // Allocate and copy thumbnail images
+    newProfile.metaData->thumbnailImage = new BYTE[profile->metaData->thumbnailImageSize];
+    newProfile.metaData->titleThumbnailImage = new BYTE[profile->metaData->titleThumbnailImageSize];
+
+    // Use std::copy for thumbnail images
+    std::copy(profile->metaData->thumbnailImage, profile->metaData->thumbnailImage + profile->metaData->thumbnailImageSize, newProfile.metaData->thumbnailImage);
+    std::copy(profile->metaData->titleThumbnailImage, profile->metaData->titleThumbnailImage + profile->metaData->titleThumbnailImageSize, newProfile.metaData->titleThumbnailImage);
+
+    // Use assignment for std::wstring
+    newProfile.metaData->titleName = profile->metaData->titleName;
 
     newProfile.metaData->transferFlags = profile->metaData->transferFlags;
     newProfile.metaData->version = profile->metaData->version;
 
     newProfile.metaData->WriteMetaData();
+
 
     // inject all of the old files into the profile
     injectAll(&newProfile, directory, "");

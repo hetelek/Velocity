@@ -31,7 +31,6 @@
  */
 
 #include "json.h"
-#include <iostream>
 
 namespace QtJson
 {
@@ -110,19 +109,19 @@ QByteArray Json::serialize(const QVariant &data, bool &success)
     QByteArray str;
     success = true;
 
-    if(!data.isValid()) // invalid or null?
+    if (!data.isValid()) // invalid or null?
     {
         str = "null";
     }
-    else if((data.type() == QVariant::List) ||
-            (data.type() == QVariant::StringList)) // variant is a list?
+    else if ((data.metaType().id() == QMetaType::QVariantList) ||
+             (data.metaType().id() == QMetaType::QStringList)) // variant is a list?
     {
         QList<QByteArray> values;
         const QVariantList list = data.toList();
-        Q_FOREACH(const QVariant& v, list)
+        Q_FOREACH (const QVariant &v, list)
         {
             QByteArray serializedValue = serialize(v);
-            if(serializedValue.isNull())
+            if (serializedValue.isNull())
             {
                 success = false;
                 break;
@@ -130,21 +129,21 @@ QByteArray Json::serialize(const QVariant &data, bool &success)
             values << serializedValue;
         }
 
-        str = "[ " + join( values, ", " ) + " ]";
+        str = "[ " + join(values, ", ") + " ]";
     }
-    else if(data.type() == QVariant::Hash) // variant is a hash?
+    else if (data.metaType().id() == QMetaType::QVariantHash) // variant is a hash?
     {
         const QVariantHash vhash = data.toHash();
-        QHashIterator<QString, QVariant> it( vhash );
+        QHashIterator<QString, QVariant> it(vhash);
         str = "{ ";
         QList<QByteArray> pairs;
 
-        while(it.hasNext())
+        while (it.hasNext())
         {
             it.next();
             QByteArray serializedValue = serialize(it.value());
 
-            if(serializedValue.isNull())
+            if (serializedValue.isNull())
             {
                 success = false;
                 break;
@@ -156,17 +155,17 @@ QByteArray Json::serialize(const QVariant &data, bool &success)
         str += join(pairs, ", ");
         str += " }";
     }
-    else if(data.type() == QVariant::Map) // variant is a map?
+    else if (data.metaType().id() == QMetaType::QVariantMap) // variant is a map?
     {
         const QVariantMap vmap = data.toMap();
-        QMapIterator<QString, QVariant> it( vmap );
+        QMapIterator<QString, QVariant> it(vmap);
         str = "{ ";
         QList<QByteArray> pairs;
-        while(it.hasNext())
+        while (it.hasNext())
         {
             it.next();
             QByteArray serializedValue = serialize(it.value());
-            if(serializedValue.isNull())
+            if (serializedValue.isNull())
             {
                 success = false;
                 break;
@@ -176,28 +175,28 @@ QByteArray Json::serialize(const QVariant &data, bool &success)
         str += join(pairs, ", ");
         str += " }";
     }
-    else if((data.type() == QVariant::String) ||
-            (data.type() == QVariant::ByteArray)) // a string or a byte array?
+    else if ((data.metaType().id() == QMetaType::QString) ||
+             (data.metaType().id() == QMetaType::QByteArray)) // a string or a byte array?
     {
         str = sanitizeString(data.toString()).toUtf8();
     }
-    else if(data.type() == QVariant::Double) // double?
+    else if (data.metaType().id() == QMetaType::Double) // double?
     {
         str = QByteArray::number(data.toDouble(), 'g', 20);
-        if(!str.contains(".") && ! str.contains("e"))
+        if (!str.contains(".") && !str.contains("e"))
         {
             str += ".0";
         }
     }
-    else if (data.type() == QVariant::Bool) // boolean value?
+    else if (data.metaType().id() == QMetaType::Bool) // boolean value?
     {
         str = data.toBool() ? "true" : "false";
     }
-    else if (data.type() == QVariant::ULongLong) // large unsigned number?
+    else if (data.metaType().id() == QMetaType::ULongLong) // large unsigned number?
     {
         str = QByteArray::number(data.value<qulonglong>());
     }
-    else if ( data.canConvert<qlonglong>() ) // any signed number?
+    else if (data.canConvert<qlonglong>()) // any signed number?
     {
         str = QByteArray::number(data.value<qlonglong>());
     }
@@ -223,6 +222,7 @@ QByteArray Json::serialize(const QVariant &data, bool &success)
         return QByteArray();
     }
 }
+
 
 /**
  * parseValue
