@@ -155,8 +155,8 @@ void Account::SetXUID(UINT64 xuid)
 
 void Account::SetSubscriptionTeir(SubscriptionTeir teir)
 {
-    account.cachedUserFlags &= (~0xF00000);
-    account.cachedUserFlags |= (teir << 20);
+    account.cachedUserFlags &= (~0xF0000);
+    account.cachedUserFlags |= (teir << 16);
 }
 
 void Account::SetCountry(XboxLiveCountry country)
@@ -374,7 +374,7 @@ void Account::WriteFile()
 
 SubscriptionTeir Account::GetSubscriptionTeir()
 {
-    return (SubscriptionTeir)((account.cachedUserFlags & 0xF00000) >> 20);
+    return (SubscriptionTeir)((account.cachedUserFlags & 0xF0000) >> 16);
 }
 
 XboxLiveCountry Account::GetCountry()
