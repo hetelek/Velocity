@@ -1,4 +1,4 @@
-QMAKE = qmake
+QMAKE = qmake6
 
 # Detect the operating system
 ifeq ($(OS),Windows_NT)
