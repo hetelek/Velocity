@@ -1,9 +1,4 @@
 #include "titleidfinder.h"
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
-#include <QDebug>
 
 TitleIdFinder::TitleIdFinder(QString gameName, QObject* parent) : QObject(parent), gameName(gameName) {
     loadGameDatabase();
@@ -17,14 +12,16 @@ void TitleIdFinder::loadGameDatabase() {
     }
 
     QByteArray jsonData = file.readAll();
-    QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonData));
-    QJsonObject rootObject = jsonDoc.object();
-    QJsonArray gamesArray = rootObject["games"].toArray();
+    QVariant parsedData = QtJson::Json::parse(jsonData); // Use the Json class within the QtJson namespace
 
-    for (const QJsonValue& value : gamesArray) {
-        QJsonObject obj = value.toObject();
-        QString name = obj["nm"].toString();
-        DWORD id = obj["tid"].toString().toUInt(nullptr, 16); // Parse as hex
+    // Convert parsed data to a QVariantMap and access the "games" array
+    QVariantMap rootMap = parsedData.toMap();
+    QVariantList gamesArray = rootMap["games"].toList();
+
+    for (const QVariant& game : gamesArray) {
+        QVariantMap gameMap = game.toMap();
+        QString name = gameMap["nm"].toString();
+        DWORD id = gameMap["tid"].toString().toUInt(nullptr, 16); // Parse as hex
 
         TitleData data;
         data.titleName = name;

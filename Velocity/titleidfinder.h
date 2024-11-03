@@ -8,6 +8,10 @@
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
 #include <QRegularExpression>
+#include <QFile>
+#include <QVariantMap>
+#include <QVariantList>
+#include "json.h"
 
 // other
 #include "winnames.h"
