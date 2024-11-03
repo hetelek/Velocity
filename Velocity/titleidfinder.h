@@ -35,6 +35,12 @@ public slots:
 
 private:
     QString gameName;
+
+private:
+    void loadGameDatabase();
+
+private:
+    QHash<QString, TitleData> nameToData;
 };
 
 #endif // TITLEIDFINDER_H

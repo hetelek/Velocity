@@ -1,43 +1,57 @@
 #include "titleidfinder.h"
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QDebug>
 
-TitleIdFinder::TitleIdFinder(QString gameName, QObject *parent) : QObject(parent),
-    gameName(gameName)
-{
-
+TitleIdFinder::TitleIdFinder(QString gameName, QObject* parent) : QObject(parent), gameName(gameName) {
+    loadGameDatabase();
+    QMetaObject::invokeMethod(this, "replyFinished", Qt::QueuedConnection); // Trigger replyFinished
 }
 
-void TitleIdFinder::StartSearch()
-{
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
-    QUrl url("http://marketplace.xbox.com/en-US/Search?query=" + gameName + "&DownloadType=Game");
-    manager->get(QNetworkRequest(url));
-}
-
-void TitleIdFinder::replyFinished(QNetworkReply *reply)
-{
-    QString pageSource(reply->readAll());
-    QRegularExpression exp("66acd000-77fe-1000-9115-d802(.{8})\\?cid=search\"\\>([^<]*)");
-
-    QList<TitleData> matches;
-
-    auto matchIterator = exp.globalMatch(pageSource);
-    while (matchIterator.hasNext()) {
-        QRegularExpressionMatch match = matchIterator.next();
-        TitleData t;
-        t.titleID = match.captured(1).toULong(0, 16);
-        t.titleName = match.captured(2);
-
-        if (t.titleName != "Learn More")
-            matches.push_back(t);
+void TitleIdFinder::loadGameDatabase() {
+    QFile file("gamedatabase.json");
+    if (!file.open(QIODevice::ReadOnly)) {
+        return; // Exit if the file can't be opened
     }
 
-    reply->deleteLater();
+    QByteArray jsonData = file.readAll();
+    QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonData));
+    QJsonObject rootObject = jsonDoc.object();
+    QJsonArray gamesArray = rootObject["games"].toArray();
+
+    for (const QJsonValue& value : gamesArray) {
+        QJsonObject obj = value.toObject();
+        QString name = obj["nm"].toString();
+        DWORD id = obj["tid"].toString().toUInt(nullptr, 16); // Parse as hex
+
+        TitleData data;
+        data.titleName = name;
+        data.titleID = id;
+
+        nameToData.insert(name, data); // Store data for name-based lookup
+    }
+}
+
+void TitleIdFinder::StartSearch() {
+    QList<TitleData> matches;
+
+    // Iterate over each entry in nameToData for partial and case-insensitive matches
+    for (auto it = nameToData.begin(); it != nameToData.end(); ++it) {
+        if (it.key().contains(gameName, Qt::CaseInsensitive)) {
+            matches.append(it.value());
+        }
+    }
 
     emit SearchFinished(matches);
 }
 
-void TitleIdFinder::SetGameName(QString gameName)
-{
-    this->gameName = gameName;
+void TitleIdFinder::SetGameName(QString newGameName) {
+    gameName = newGameName;
+}
+
+void TitleIdFinder::replyFinished(QNetworkReply* /*reply*/) {
+    // Process data using the loaded JSON database as if it were a network response
+    StartSearch(); // Re-use the StartSearch method for compatibility
 }
