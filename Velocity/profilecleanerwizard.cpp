@@ -10,7 +10,7 @@ ProfileCleanerWizard::ProfileCleanerWizard(QWidget *parent) :
 
 #ifdef __APPLE__
     ui->label->setText("<font size=3>" + ui->label->text() + "</font>");
-#elif __WIN32
+#elif _WIN32
     ui->label->setFont(QFont("MS Shell Dlg 2", 10));
     setFixedSize(588, 480);
 #endif

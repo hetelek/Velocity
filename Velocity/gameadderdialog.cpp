@@ -12,7 +12,7 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
     warned = false;
 
     QFont f = ui->lblGameName->font();
-#ifdef __WIN32
+#ifdef _WIN32
     f.setPointSize(10);
 #endif
     ui->lblGameName->setFont(f);

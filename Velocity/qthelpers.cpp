@@ -167,7 +167,7 @@ void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
     int cmbxHeight = 30;
     QFont cntrlFont("Myriad Pro", 14);
     QFont txtFont("Myriad Pro", 14);
-#elif _WIN32 // Win XP/7
+#elif _WIN32
     int ButtonHeight = 24;
     int cmbxHeight = 20;
     QFont cntrlFont("MS Shell Dlg 2", 8);
