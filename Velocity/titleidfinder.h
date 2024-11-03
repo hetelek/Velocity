@@ -8,6 +8,10 @@
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
 #include <QRegularExpression>
+#include <QFile>
+#include <QVariantMap>
+#include <QVariantList>
+#include "json.h"
 
 // other
 #include "winnames.h"
@@ -35,6 +39,12 @@ public slots:
 
 private:
     QString gameName;
+
+private:
+    void loadGameDatabase();
+
+private:
+    QHash<QString, TitleData> nameToData;
 };
 
 #endif // TITLEIDFINDER_H

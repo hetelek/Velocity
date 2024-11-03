@@ -21,13 +21,6 @@ all: debug
 libXboxInternals: XboxInternals
 	$(QMAKE) XboxInternals/XboxInternals.pro -o XboxInternals/Makefile CONFIG+=$(CONFIG)
 	$(MAKE_CMD) -C XboxInternals
-ifeq ($(OS),Win)
-	@if not exist XboxInternals-$(OS)\$(CONFIG) mkdir XboxInternals-$(OS)\$(CONFIG)
-	xcopy XboxInternals\$(CONFIG)\libXBoxInternals.* XboxInternals-$(OS)\$(CONFIG) /Y
-else
-	mkdir -p XboxInternals-$(OS)/$(CONFIG)
-	cp XboxInternals/$(CONFIG)/libXBoxInternals.* XboxInternals-$(OS)/$(CONFIG)
-endif
 
 velocity_target: Velocity
 	$(QMAKE) Velocity/Velocity.pro -o Velocity/Makefile CONFIG+=$(CONFIG)
