@@ -7,11 +7,11 @@ Each game entry in the games array contains the following fields:
 
 nm: (String) The name of the game.
 tid: (String) The title ID of the game in hexadecimal format.
-achc: (String) The count of achievements associated with the game.
-ttlgs: (String) The total gamerscore available in the game.
-ttlac: (String) The total number of achievements in the game.
-ttlmac: (String) The total number of multiplayer achievements in the game.
-ttlfac: (String) The total number of friend achievements in the game.
+achc: (String) The number of achievements available for the game.
+ttlgs: (String) The total gamerscore available for the game.
+ttlac: (String) The total number of awards associated with the game.
+ttlmac: (String) The count of male-specific avatar awards.
+ttlfac: (String) The count of female-specific avatar awards.
 
 ## JSON Structure
 
@@ -23,9 +23,9 @@ ttlfac: (String) The total number of friend achievements in the game.
             "tid": "TitleID",
             "achc": "AchievementCount",
             "ttlgs": "TotalGamerscore",
-            "ttlac": "TotalAchievements",
-            "ttlmac": "TotalMultiplayerAchievements",
-            "ttlfac": "TotalFriendAchievements"
+            "ttlac": "TotalAwards",
+            "ttlmac": "MaleAwardCount",
+            "ttlfac": "FemaleAwardCount"
         },
         ...
     ]
