@@ -1,54 +1,44 @@
 #include "titleidfinder.h"
 
-TitleIdFinder::TitleIdFinder(QString gameName, QObject* parent) : QObject(parent), gameName(gameName) {
-    loadGameDatabase();
-    QMetaObject::invokeMethod(this, "replyFinished", Qt::QueuedConnection); // Trigger replyFinished
-}
-
-void TitleIdFinder::loadGameDatabase() {
-    QFile file("gamedatabase.json");
-    if (!file.open(QIODevice::ReadOnly)) {
-        return; // Exit if the file can't be opened
-    }
-
-    QByteArray jsonData = file.readAll();
-    QVariant parsedData = QtJson::Json::parse(jsonData); // Use the Json class within the QtJson namespace
-
-    // Convert parsed data to a QVariantMap and access the "games" array
-    QVariantMap rootMap = parsedData.toMap();
-    QVariantList gamesArray = rootMap["games"].toList();
-
-    for (const QVariant& game : gamesArray) {
-        QVariantMap gameMap = game.toMap();
-        QString name = gameMap["nm"].toString();
-        DWORD id = gameMap["tid"].toString().toUInt(nullptr, 16); // Parse as hex
-
-        TitleData data;
-        data.titleName = name;
-        data.titleID = id;
-
-        nameToData.insert(name, data); // Store data for name-based lookup
-    }
+TitleIdFinder::TitleIdFinder(QString gameName, QObject* parent)
+    : QObject(parent), gameName(gameName) {
+    // Initialize the network manager
+    networkManager = new QNetworkAccessManager(this);
+    connect(networkManager, &QNetworkAccessManager::finished, this, &TitleIdFinder::replyFinished);
 }
 
 void TitleIdFinder::StartSearch() {
-    QList<TitleData> matches;
+    // Construct the URL for the API request
+    QString url = QString("https://dbox.tools/api/title_ids/?name=%1&system=XBOX360&limit=100&offset=0").arg(gameName);
+    QNetworkRequest request((QUrl(url)));
+    networkManager->get(request);
+}
 
-    // Iterate over each entry in nameToData for partial and case-insensitive matches
-    for (auto it = nameToData.begin(); it != nameToData.end(); ++it) {
-        if (it.key().contains(gameName, Qt::CaseInsensitive)) {
-            matches.append(it.value());
+void TitleIdFinder::replyFinished(QNetworkReply* reply) {
+    if (reply->error() == QNetworkReply::NoError) {
+        QByteArray response = reply->readAll();
+        QJsonDocument jsonResponse = QJsonDocument::fromJson(response);
+        QJsonObject jsonObject = jsonResponse.object();
+
+        QJsonArray itemsArray = jsonObject["items"].toArray();
+        QList<TitleData> matches;
+
+        for (const QJsonValue& value : itemsArray) {
+            QJsonObject item = value.toObject();
+            TitleData data;
+            data.titleName = item["name"].toString();
+            data.titleID = item["title_id"].toString().toUInt(nullptr, 16); // Parse as hex, just like the local JSON
+
+            matches.append(data);
         }
-    }
 
-    emit SearchFinished(matches);
+        emit SearchFinished(matches);
+    } else {
+        // Handle errors (optional)
+    }
+    reply->deleteLater();
 }
 
 void TitleIdFinder::SetGameName(QString newGameName) {
     gameName = newGameName;
-}
-
-void TitleIdFinder::replyFinished(QNetworkReply* /*reply*/) {
-    // Process data using the loaded JSON database as if it were a network response
-    StartSearch(); // Re-use the StartSearch method for compatibility
 }

@@ -615,12 +615,13 @@ void GameAdderDialog::showAllItems()
         ui->treeWidgetAllGames->topLevelItem(i)->setHidden(false);
 }
 
-void GameAdderDialog::getListing()
-{
+void GameAdderDialog::getListing() {
     ui->treeWidgetAllGames->clear();
     ui->tabWidget->setEnabled(false);
-    manager->get(QNetworkRequest(QUrl("http://velocity.expetelek.com/gameadder/listing.php" +
-            getParams)));
+
+    // Updated URL to fetch the JSON from the GitHub repository
+    QString url = "https://raw.githubusercontent.com/Pandoriaantje/xbox360-gpd-files/main/gameadder.json";
+    manager->get(QNetworkRequest(QUrl(url)));
 }
 
 void GameAdderDialog::on_btnShowAll_clicked()

@@ -8,6 +8,9 @@ XdbfDialog::XdbfDialog(QStatusBar *statusBar, GpdBase *gpd, bool *modified, QWid
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->treeWidget->header()->resizeSection(0, 260);
 
+    // Enable sorting
+    ui->treeWidget->setSortingEnabled(true);
+
     loadEntries();
 
     // display the gpd name

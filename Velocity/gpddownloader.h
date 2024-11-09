@@ -3,36 +3,42 @@
 
 // qt
 #include <QObject>
-#include <QUuid>
-#include <QUrl>
+#include <QFile>
 #include <QDir>
-#include <QDebug>
+#include <QUuid>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 // other
 #include "winnames.h"
 #include "Gpd/DashboardGpd.h"
 #include "IO/FileIO.h"
 
-class GpdDownloader : public QObject
-{
+class GpdDownloader : public QObject {
     Q_OBJECT
 public:
-    explicit GpdDownloader(TitleEntry entry, int index, bool hasAwards = false, QObject *parent = 0);
+    explicit GpdDownloader(TitleEntry entry, int index, bool hasAwards, QObject *parent = nullptr);
     void BeginDownload();
     int index();
 
 signals:
-    void FinishedDownloading(QString, QString, TitleEntry, bool);
+    void FinishedDownloading(const QString &gameGpd, const QString &awardGpd, TitleEntry entry, bool error);
 
-public slots:
-    void onDone(bool);
-    void onRequestFinished(int, bool);
+private slots:
+    void onRequestFinished(QNetworkReply *reply);
+    void onDone();
 
 private:
-    QString gpdDirectory, titleID, awardGpd, gameGpd;
+    static const QString BASE_GITHUB_URL;
     TitleEntry entry;
-    bool hasAwards, gpdWritten;
+    bool hasAwards;
+    bool gpdWritten;
     int indexIn;
+    QString gameGpd;
+    QString awardGpd;
+    QString gpdDirectory;
+    QNetworkAccessManager *networkManager;
 };
 
-#endif // GpdDOWNLOADER_H
+#endif // GPDDOWNLOADER_H

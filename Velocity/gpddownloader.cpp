@@ -1,79 +1,72 @@
 #include "gpddownloader.h"
 
-GpdDownloader::GpdDownloader(TitleEntry entry, int index, bool hasAwards,
-        QObject * /* parent */ ) : entry(entry), hasAwards(hasAwards), indexIn(index)
-{
+const QString GpdDownloader::BASE_GITHUB_URL = "https://raw.githubusercontent.com/Pandoriaantje/xbox360-gpd-files/main";
+
+GpdDownloader::GpdDownloader(TitleEntry entry, int index, bool hasAwards, QObject *parent)
+    : QObject(parent), entry(entry), hasAwards(hasAwards), gpdWritten(false), indexIn(index) {
     gpdDirectory = "/gameadder/";
-    gpdWritten = false;
+    networkManager = new QNetworkAccessManager(this);
 
-    /*http = new QHttp(this);
-    http->setHost("velocity.expetelek.com");
-
-    connect(http, SIGNAL(done(bool)), this, SLOT(onDone(bool)));
-    connect(http, SIGNAL(requestFinished(int, bool)), this, SLOT(onRequestFinished(int, bool)));*/
+    // Connect the finished signal to the slot for handling the response
+    connect(networkManager, &QNetworkAccessManager::finished, this, &GpdDownloader::onRequestFinished);
 }
 
-void GpdDownloader::BeginDownload()
-{
-    QString url = gpdDirectory + "game/" + QString::number(entry.titleID, 16).toUpper() + ".gpd";
-    //http->get(url);
+void GpdDownloader::BeginDownload() {
+    QString url = QString("%1/game/%2.gpd")
+    .arg(BASE_GITHUB_URL, QString::number(entry.titleID, 16).toUpper());
+    QNetworkRequest request((QUrl(url)));
+    networkManager->get(request);
 }
 
-int GpdDownloader::index()
-{
+int GpdDownloader::index() {
     return indexIn;
 }
 
-void GpdDownloader::onRequestFinished([[maybe_unused]] int /* id */, [[maybe_unused]] bool error)
-{
-    /*if (error)
-        qDebug() << http->errorString();
-    else if (http->bytesAvailable() < 1)
+void GpdDownloader::onRequestFinished(QNetworkReply *reply) {
+    if (reply->error() != QNetworkReply::NoError) {
+        // Handle network error
+        emit FinishedDownloading("", "", entry, true);
+        reply->deleteLater();
         return;
+    }
 
-    QString tempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "");
+    QString tempPath = QDir::tempPath() + "/" + QUuid::createUuid().toString().remove("{").remove("}").remove("-");
 
-    if (!gpdWritten)
-    {
+    if (!gpdWritten) {
         gameGpd = tempPath;
 
-        // create a new temporary file
-        QFile v1File(tempPath);
-        v1File.open(QFile::Truncate | QFile::WriteOnly);
-
-        // Write the gpd to disk
-        v1File.write(http->readAll());
-
-        // clean up
-        v1File.flush();
-        v1File.close();
+        QFile file(tempPath);
+        if (file.open(QFile::Truncate | QFile::WriteOnly)) {
+            file.write(reply->readAll());
+            file.close();
+        }
 
         gpdWritten = true;
-    }
-    else
-    {
+        if (hasAwards) {
+            // Download the avatar award GPD
+            QString awardUrl = QString("%1/award/%2.gpd")
+                                   .arg(BASE_GITHUB_URL, QString::number(entry.titleID, 16).toUpper());
+            QNetworkRequest awardRequest((QUrl(awardUrl)));
+            networkManager->get(awardRequest);
+        } else {
+            emit FinishedDownloading(gameGpd, "", entry, false);
+        }
+    } else {
         awardGpd = tempPath;
 
-        // create a new temporary file
-        QFile v1File(tempPath);
-        v1File.open(QFile::Truncate | QFile::WriteOnly);
+        QFile file(tempPath);
+        if (file.open(QFile::Truncate | QFile::WriteOnly)) {
+            file.write(reply->readAll());
+            file.close();
+        }
 
-        // Write the gpd to disk
-        v1File.write(http->readAll());
-
-        // clean up
-        v1File.flush();
-        v1File.close();
+        emit FinishedDownloading(gameGpd, awardGpd, entry, false);
     }
 
-    if (hasAwards)
-    {
-        hasAwards = false;
-        http->get(gpdDirectory + "award/" + QString::number(entry.titleID, 16).toUpper() + ".gpd");
-    }*/
+    reply->deleteLater();
 }
 
-void GpdDownloader::onDone(bool error)
-{
-    emit FinishedDownloading(gameGpd, awardGpd, entry, error);
+void GpdDownloader::onDone() {
+    // Emit the signal indicating that the download is complete
+    emit FinishedDownloading(gameGpd, awardGpd, entry, false);
 }
