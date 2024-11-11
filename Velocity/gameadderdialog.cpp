@@ -4,45 +4,27 @@
 GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dispose, bool *ok)
     : QDialog(parent), ui(std::make_unique<Ui::GameAdderDialog>()), package(package), dispose(dispose) {
 
+    // Set up the dialog window
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
+    // Configure the font for the game name label
     QFont font = ui->lblGameName->font();
 #ifdef _WIN32
     font.setPointSize(10);
 #endif
     ui->lblGameName->setFont(font);
 
+    // Initialize member variables
     allowInjection = false;
     pecPackage = nullptr;
 
+    // Set up the headers of the tree widgets
     ui->treeWidgetAllGames->header()->resizeSection(0, 182);
     ui->treeWidgetQueue->header()->resizeSection(0, 182);
 
-    try {
-        // Check if the temporary directory is valid and writable
-        QDir tempDir(QDir::tempPath());
-        QFileInfo tempDirInfo(tempDir.absolutePath());
-        if (!tempDir.exists() || !tempDirInfo.isWritable()) {
-            QMessageBox::critical(this, "Path Error", "The temporary path is not valid or not writable.");
-            close();
-            return;
-        }
-
-        // Generate and clean temporary paths
-        dashGpdTempPath = QDir::cleanPath(tempDir.path() + "/" + QUuid::createUuid().toString().remove('{').remove('}').remove('-'));
-        package->ExtractFile("FFFE07D1.gpd", dashGpdTempPath.toStdString());
-        dashGpd = std::make_unique<DashboardGpd>(dashGpdTempPath.toStdString());
-    } catch (const std::string &error) {
-        QMessageBox::critical(this, "File Error", "The dashboard Gpd could not be extracted/opened.\n\n" + QString::fromStdString(error));
-        close();
-        return;
-    }
-
-    // Declare tempDir at a broader scope within the constructor
-    QDir tempDir(QDir::tempPath());
-
     // Check if the temporary directory is valid and writable
+    QDir tempDir(QDir::tempPath());
     QFileInfo tempDirInfo(tempDir.absolutePath());
     if (!tempDir.exists() || !tempDirInfo.isWritable()) {
         QMessageBox::critical(this, "Path Error", "The temporary path is not valid or not writable.");
@@ -50,8 +32,8 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
         return;
     }
 
+    // Extract and initialize the dashboard GPD
     try {
-        // Generate and clean the temporary path for dashGpdTempPath
         dashGpdTempPath = QDir::cleanPath(tempDir.path() + "/" + QUuid::createUuid().toString().remove('{').remove('}').remove('-'));
         package->ExtractFile("FFFE07D1.gpd", dashGpdTempPath.toStdString());
         dashGpd = std::make_unique<DashboardGpd>(dashGpdTempPath.toStdString());
@@ -63,6 +45,8 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
 
     // Generate and clean the PEC temporary path
     pecTempPath = QDir::cleanPath(tempDir.path() + "/" + QUuid::createUuid().toString().remove('{').remove('}').remove('-'));
+
+    // Initialize the network manager
     manager = std::make_unique<QNetworkAccessManager>(this);
 
     // Check for network reachability
@@ -72,25 +56,35 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
         return;
     }
 
+    // Connect network signals and initialize network operations
     connect(manager.get(), &QNetworkAccessManager::finished, this, &GameAdderDialog::gameReplyFinished);
     getListing();
 
-    // Set up context menus using Qt 6 syntax
+    // Set up the context menus for the tree widgets
     ui->treeWidgetAllGames->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->treeWidgetQueue->setContextMenuPolicy(Qt::CustomContextMenu);
 
+    // Set up the image manager for handling thumbnails
     imageManager = std::make_unique<QNetworkAccessManager>(this);
     connect(imageManager.get(), &QNetworkAccessManager::finished, this, &GameAdderDialog::thumbnailReplyFinished);
 
+    // Connect custom context menu signals to their respective slots
     connect(ui->treeWidgetAllGames, &QWidget::customContextMenuRequested, this, &GameAdderDialog::showRemoveContextMenu_AllGames);
     connect(ui->treeWidgetQueue, &QWidget::customContextMenuRequested, this, &GameAdderDialog::showRemoveContextMenu_QueuedGames);
 
     *ok = true;
 }
-
 GameAdderDialog::~GameAdderDialog() = default;
 
 void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply) {
+    // Check for network errors
+    if (aReply->error() != QNetworkReply::NoError) {
+        QMessageBox::critical(this, "Network Error",
+                              "Failed to fetch game data. Error: " + aReply->errorString());
+        aReply->deleteLater();
+        return;
+    }
+
     // Read the JSON data from the reply
     QString jsonStr = aReply->readAll();
 
@@ -179,12 +173,21 @@ void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply) {
     }
     ui->treeWidgetAllGames->sortByColumn(0, Qt::AscendingOrder);
     ui->tabWidget->setEnabled(true);
+
+    aReply->deleteLater();
 }
 
 
 
 
 void GameAdderDialog::thumbnailReplyFinished(QNetworkReply *aReply) {
+    // Check for network errors
+    if (aReply->error() != QNetworkReply::NoError) {
+        ui->imgThumbnail->setText("<i>Unable to download image. Error: " + aReply->errorString() + "</i>");
+        aReply->deleteLater();
+        return;
+    }
+
     int count = ui->treeWidgetAllGames->selectedItems().count();
     if (count != 1) {
         ui->imgThumbnail->setPixmap(QPixmap(":/Images/watermark.png"));
@@ -196,6 +199,7 @@ void GameAdderDialog::thumbnailReplyFinished(QNetworkReply *aReply) {
             ui->imgThumbnail->setText("<i>Unable to download image.</i>");
         }
     }
+    aReply->deleteLater();
 }
 
 void GameAdderDialog::showRemoveContextMenu_AllGames(QPoint point) {
@@ -242,12 +246,12 @@ void GameAdderDialog::finishedDownloadingGpd(QString gamePath, QString awardPath
     } else {
         try {
             QMutexLocker locker(&m);
-            package->InjectFile(gamePath.toStdString(), QString::number(entry.titleID, 16).toUpper().toStdString());
+            package->InjectFile(gamePath.toStdString(), QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd");
             QFile::remove(gamePath);
 
             if (!awardPath.isEmpty()) {
                 if (!pecPackage) initializePecPackage();
-                pecPackage->InjectFile(awardPath.toStdString(), QString::number(entry.titleID, 16).toUpper().toStdString());
+                pecPackage->InjectFile(awardPath.toStdString(), QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd");
                 QFile::remove(awardPath);
             }
 
@@ -529,8 +533,25 @@ void GameAdderDialog::showAllItems() {
 void GameAdderDialog::getListing() {
     ui->treeWidgetAllGames->clear();
     ui->tabWidget->setEnabled(false);
+
     QString url = "https://raw.githubusercontent.com/Pandoriaantje/xbox360-gpd-files/main/gameadder.json";
-    manager->get(QNetworkRequest(QUrl(url)));
+    QNetworkRequest request((QUrl(url)));
+
+    QNetworkReply *reply = manager->get(request);
+
+    // Create a timeout timer
+    QTimer *timeoutTimer = new QTimer(this);
+    timeoutTimer->setSingleShot(true);
+    connect(timeoutTimer, &QTimer::timeout, this, [this, reply]() {
+        if (reply->isRunning()) {
+            reply->abort();
+            QMessageBox::warning(this, "Timeout Error", "The network request timed out. Please check your connection.");
+        }
+    });
+    timeoutTimer->start(10000); // 10 seconds timeout
+
+    // Clean up the timer when the request is finished
+    connect(reply, &QNetworkReply::finished, timeoutTimer, &QTimer::deleteLater);
 }
 
 void GameAdderDialog::on_btnShowAll_clicked() {
