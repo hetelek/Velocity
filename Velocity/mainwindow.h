@@ -46,7 +46,6 @@
 #include "PluginInterfaces/igpdmodder.h"
 #include "qthelpers.h"
 #include "IO/FileIO.h"
-#include "json.h"
 #include "Stfs/StfsPackage.h"
 #include "Gpd/GpdBase.h"
 #include "IO/SvodMultiFileIO.h"
@@ -77,7 +76,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QList<QUrl> arguments, QWidget *parent = 0);
-    void LoadPlugin(QString filename, bool addToMenu, StfsPackage *package = NULL);
+    void LoadPlugin(QString filename, bool addToMenu, StfsPackage *package = nullptr);
     void LoadAllPlugins();
     ~MainWindow();
 

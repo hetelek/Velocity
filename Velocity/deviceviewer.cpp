@@ -5,7 +5,7 @@
 
 DeviceViewer::DeviceViewer(QStatusBar *statusBar, QList<QAction *> gpdActions,
         QList<QAction *> gameActions, QWidget *parent) :
-    QDialog(parent), ui(new Ui::DeviceViewer), currentDrive(NULL), parentEntry(NULL),
+    QDialog(parent), ui(new Ui::DeviceViewer), currentDrive(nullptr), parentEntry(nullptr),
     gpdActions(gpdActions), gameActions(gameActions), statusBar(statusBar), drivesLoaded(false)
 {
     ui->setupUi(this);
@@ -115,7 +115,7 @@ void DeviceViewer::showContextMenu(QPoint point)
         if (item->data(5, Qt::UserRole).toBool())
             return;
 
-    if (parentEntry == NULL || parentEntry->name == "Drive Root")
+    if (parentEntry == nullptr || parentEntry->name == "Drive Root")
         return;
 
     if (items.size() >= 1)
@@ -146,7 +146,7 @@ void DeviceViewer::showContextMenu(QPoint point)
     contextMenu.addAction(QPixmap(":/Images/refresh.png"), "Refresh");
 
     QAction *selectedItem = contextMenu.exec(globalPos);
-    if(selectedItem == NULL)
+    if(selectedItem == nullptr)
         return;
 
     try
@@ -284,7 +284,7 @@ void DeviceViewer::showContextMenu(QPoint point)
             do
             {
                 name = QInputDialog::getText(this, "New File Name", label, QLineEdit::Normal, items.at(0)->text(0),
-                        NULL, windowFlags() & ~Qt::WindowContextHelpButtonHint);
+                        nullptr, windowFlags() & ~Qt::WindowContextHelpButtonHint);
                 label = "<font color=\"red\">Invalid File Name</font>";
             }
             while (!FatxDrive::ValidFileName(name.toStdString()));
@@ -701,7 +701,7 @@ void DeviceViewer::on_treeWidget_2_itemClicked(QTreeWidgetItem *item, [[maybe_un
     {
         ui->imgPiechart->setPixmap(QPixmap());
         currentDrive = item->data(0, Qt::UserRole).value<FatxDrive*>();
-        parentEntry = NULL;
+        parentEntry = nullptr;
         currentDriveItem = item;
         DrawHeader(item->text(0));
         LoadPartitions();
@@ -736,7 +736,7 @@ void DeviceViewer::on_btnPartitions_clicked()
 
 void DeviceViewer::onDragEntered(QDragEnterEvent *event)
 {
-    if (parentEntry != NULL && parentEntry->name != "Drive Root" &&
+    if (parentEntry != nullptr && parentEntry->name != "Drive Root" &&
             event->mimeData()->hasFormat("text/uri-list"))
     {
         event->acceptProposedAction();
@@ -782,7 +782,7 @@ void DeviceViewer::onDragLeft([[maybe_unused]] QDragLeaveEvent *event)
 void DeviceViewer::on_txtPath_returnPressed()
 {
     FatxFileEntry *parent = currentDrive->GetFileEntry(ui->txtPath->text().toStdString());
-    if (parent == NULL || !(parent->fileAttributes & FatxDirectory))
+    if (parent == nullptr || !(parent->fileAttributes & FatxDirectory))
         QMessageBox::critical(this, "Error",
                 "Velocity can't find " + ui->txtPath->text() + ". Check the spelling and try again.");
     else
@@ -811,7 +811,7 @@ void DeviceViewer::on_btnBackup_clicked()
         return;
 
     SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemFATX, currentDrive, OpBackup, "",
-            savePath, NULL, this);
+            savePath, nullptr, this);
     dialog->setModal(true);
     dialog->show();
     dialog->start();
@@ -826,7 +826,7 @@ void DeviceViewer::on_btnRestore_clicked()
         return;
 
     SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemFATX, currentDrive, OpRestore, "",
-            openPath, NULL, this);
+            openPath, nullptr, this);
     dialog->setModal(true);
     dialog->show();
     dialog->start();

@@ -22,7 +22,7 @@ class SingleProgressDialog : public QDialog
 
 public:
     explicit SingleProgressDialog(FileSystem system, void *device, Operation op, QString internalPath,
-            QString externalPath, void *outEntry = NULL, QWidget *parent = 0);
+            QString externalPath, void *outEntry = nullptr, QWidget *parent = 0);
     void start();
     ~SingleProgressDialog();
 

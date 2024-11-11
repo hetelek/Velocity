@@ -20,7 +20,7 @@ ProfileCreatorWizard::ProfileCreatorWizard(QStatusBar *statusBar, QWidget *paren
 
     // generate profile ID
     profileID = 0xE000000000000000;
-    srand(time(NULL));
+    srand(time(nullptr));
     profileID |= ((UINT64)rand() & 0xFFFF) + (((UINT64)rand() & 0xFFFF) + (((
                 UINT64)rand() & 0xFFFF) << 32));
 

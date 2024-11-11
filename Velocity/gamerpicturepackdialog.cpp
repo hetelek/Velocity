@@ -325,7 +325,7 @@ void GamerPicturePackDialog::showContextMenu(QPoint p, QListWidget *current, QLi
     }
 
     QAction *selectedItem = contextMenu.exec(globalPos);
-    if (selectedItem == NULL)
+    if (selectedItem == nullptr)
         return;
 
     if (selectedItem->text() == ((forward) ? "Add to Pack" : "Remove from Pack"))

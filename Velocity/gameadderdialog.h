@@ -1,7 +1,6 @@
 #ifndef GAMEADDERDIALOG_H
 #define GAMEADDERDIALOG_H
 
-// qt
 #include <QDialog>
 #include <QNetworkRequest>
 #include <QNetworkAccessManager>

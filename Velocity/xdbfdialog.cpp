@@ -8,9 +8,6 @@ XdbfDialog::XdbfDialog(QStatusBar *statusBar, GpdBase *gpd, bool *modified, QWid
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->treeWidget->header()->resizeSection(0, 260);
 
-    // Enable sorting
-    ui->treeWidget->setSortingEnabled(true);
-
     loadEntries();
 
     // display the gpd name
@@ -73,7 +70,7 @@ void XdbfDialog::showContextMenu(QPoint p)
 
     QAction *selectedItem = contextMenu.exec(globalPos);
 
-    if (selectedItem == NULL)
+    if (selectedItem == nullptr)
         return;
     else if (selectedItem->text() == "Extract Selected")
     {
@@ -190,7 +187,7 @@ void XdbfDialog::showContextMenu(QPoint p)
             // cleanup
             delete[] entryBuff;
             io.Close();
-            if (modified != NULL)
+            if (modified != nullptr)
                 *modified = true;
 
             // get the xdbf entry again so we can update the UI
@@ -251,7 +248,7 @@ void XdbfDialog::showContextMenu(QPoint p)
         ui->treeWidget->clear();
         loadEntries();
 
-        if (modified != NULL)
+        if (modified != nullptr)
             *modified = true;
 
         statusBar->showMessage("Cleaned Gpd successfully", 3000);

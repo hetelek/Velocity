@@ -1,17 +1,24 @@
-#if QT_VERSION >= 0x050000
 #include <QtWidgets/QApplication>
-#else
-#include <QApplication>
-#endif
-
 #include <QStringList>
 #include <QNetworkInformation>
 #include "mainwindow.h"
 
-int main(int argc, char *argv[])
-{
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#error This project requires Qt 5.0.0 or higher.
+#endif
+
+int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     a.addLibraryPath(":/plugins/imageformats");
+
+    // It's good practice to register custom types in main
+    qRegisterMetaType<FatxFileEntry*>("FatxFileEntry*");
+    qRegisterMetaType<FatxDrive*>("FatxDrive*");
+    qRegisterMetaType<Partition*>("Partition*");
+    qRegisterMetaType<TitleEntry>("TitleEntry");
+    qRegisterMetaType<StfsPackage*>("StfsPackage*");
+    qRegisterMetaType<StfsFileEntry*>("StfsFileEntry*");
+    qRegisterMetaType<struct AvatarAward*>("AvatarAward*");
 
     // Quick Windows hack to enforce light mode until dark mode is properly implemented to aid in text visibility issues
     a.setStyle("Fusion");
