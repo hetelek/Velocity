@@ -14,7 +14,7 @@ ThemeCreationWizard::ThemeCreationWizard(QStatusBar *statusBar, QWidget *parent)
     ui->label_5->setText("<font size=3>" + ui->label_5->text() + "</font>");
     ui->label_7->setText("<font size=3>" + ui->label_7->text() + "</font>");
     ui->lblSavePath->setText("<font size=3>" + ui->lblSavePath->text() + "</font>");
-#elif __WIN32
+#elif _WIN32
     ui->label_3->setFont(QFont("MS Shell Dlg 2", 10));
 #endif
 

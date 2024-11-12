@@ -34,7 +34,7 @@ GpdUploader::GpdUploader(QStringList gamePaths, QStringList avatarPaths, QString
 
 void GpdUploader::uploadGpd(QString gamePath, QString awardPath, QString titleID)
 {
-    GameGpd *gpd = NULL;
+    GameGpd *gpd = nullptr;
     try
     {
         // open the Gpd
@@ -128,7 +128,7 @@ void GpdUploader::uploadGpd(QString gamePath, QString awardPath, QString titleID
         QString titleName = QString::fromStdWString(gpd->gameName.ws);
         DWORD achievementCount = gpd->achievements.size();
         delete gpd;
-        gpd = NULL;
+        gpd = nullptr;
 
         // send the Gpd(s) to the server
         sendRequest(gamePath, (QFile::exists(awardPath)) ? awardPath : "", titleName, titleID,

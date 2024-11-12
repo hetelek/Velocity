@@ -15,10 +15,10 @@ public:
     IGPDModder() { }
     virtual ~IGPDModder() { }
 
-    virtual void LoadGPD(GameGpd * /* gpd*/, bool */*ok */= NULL, void * /*args*/ = NULL) { }
+    virtual void LoadGPD(GameGpd * /* gpd*/, bool */*ok */= nullptr, void * /*args*/ = nullptr) { }
     virtual QWidget* GetDialog()
     {
-        return NULL;
+        return nullptr;
     }
     virtual QString Version() const = 0;
     virtual QString ToolAuthor() const = 0;

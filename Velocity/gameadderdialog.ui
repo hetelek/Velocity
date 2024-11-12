@@ -21,7 +21,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="tabShape">
-      <enum>QTabWidget::Rounded</enum>
+      <enum>QTabWidget::TabShape::Rounded</enum>
      </property>
      <property name="currentIndex">
       <number>0</number>
@@ -36,13 +36,13 @@
          <item>
           <widget class="QTreeWidget" name="treeWidgetAllGames">
            <property name="editTriggers">
-            <set>QAbstractItemView::NoEditTriggers</set>
+            <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
            </property>
            <property name="alternatingRowColors">
             <bool>true</bool>
            </property>
            <property name="selectionMode">
-            <enum>QAbstractItemView::ExtendedSelection</enum>
+            <enum>QAbstractItemView::SelectionMode::ExtendedSelection</enum>
            </property>
            <attribute name="headerDefaultSectionSize">
             <number>100</number>
@@ -81,13 +81,13 @@
               </size>
              </property>
              <property name="frameShape">
-              <enum>QFrame::NoFrame</enum>
+              <enum>QFrame::Shape::NoFrame</enum>
              </property>
              <property name="text">
               <string/>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -259,22 +259,8 @@
               <string>Awards Only</string>
              </property>
              <property name="icon">
-              <iconset resource="Resources.qrc">
+              <iconset>
                <normaloff>:/Images/trophy.png</normaloff>:/Images/trophy.png</iconset>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_3">
-             <property name="text">
-              <string>Developer Mode</string>
-             </property>
-             <property name="icon">
-              <iconset resource="Resources.qrc">
-               <normaloff>:/Images/hammer.png</normaloff>:/Images/hammer.png</iconset>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -297,13 +283,13 @@
          <item>
           <widget class="QTreeWidget" name="treeWidgetQueue">
            <property name="editTriggers">
-            <set>QAbstractItemView::NoEditTriggers</set>
+            <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
            </property>
            <property name="alternatingRowColors">
             <bool>true</bool>
            </property>
            <property name="selectionMode">
-            <enum>QAbstractItemView::ExtendedSelection</enum>
+            <enum>QAbstractItemView::SelectionMode::ExtendedSelection</enum>
            </property>
            <attribute name="headerDefaultSectionSize">
             <number>100</number>

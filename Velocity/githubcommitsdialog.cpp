@@ -49,24 +49,30 @@ GitHubCommitsDialog::~GitHubCommitsDialog()
 
 void GitHubCommitsDialog::onBrachesReply(QNetworkReply *reply)
 {
-    // parse the response
-    bool ok;
-    QList<QVariant> branches = QtJson::Json::parse(QString(reply->readAll()), ok).toList();
+    // Parse the response using Qt's built-in JSON functionality
+    QByteArray jsonData = reply->readAll();
+    QJsonParseError parseError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &parseError);
 
-    if (!ok)
+    if (parseError.error != QJsonParseError::NoError || !jsonDoc.isArray())
     {
         label->setText("<center>Error connecting to GitHub...</center>");
         return;
     }
 
-    // iterate through all of the branches
-    foreach (QVariant branch, branches)
+    // Convert the JSON array to a QList<QVariant>
+    QJsonArray jsonArray = jsonDoc.array();
+    QList<QVariant> branches = jsonArray.toVariantList();
+
+    // Iterate through all of the branches
+    for (const QVariant &branch : branches)
     {
         QVariantMap map = branch.toMap();
+        QString url = map.value("commit").toMap().value("url").toString();
 
-        QString url = map["commit"].toMap()["url"].toString();
         url = url.mid(0, url.lastIndexOf("/")) + "?per_page=20&sha=" + url.mid(url.lastIndexOf("/") + 1);
 
+        // Send a network request to fetch commit details
         commitsManager->get(QNetworkRequest(QUrl(url)));
 
         branchCount++;
@@ -75,42 +81,53 @@ void GitHubCommitsDialog::onBrachesReply(QNetworkReply *reply)
 
 void GitHubCommitsDialog::onCommitsReply(QNetworkReply *reply)
 {
-    // parse the response
-    bool ok;
-    QList<QVariant> commits = QtJson::Json::parse(QString(reply->readAll()), ok).toList();
+    // Parse the response using Qt's built-in JSON functionality
+    QByteArray jsonData = reply->readAll();
+    QJsonParseError parseError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &parseError);
 
-    if (!ok)
+    if (parseError.error != QJsonParseError::NoError || !jsonDoc.isArray())
     {
         label->setText("<center>Error connecting to GitHub...</center>");
         return;
     }
 
-    // iterate through all of the commits
-    foreach (QVariant commit, commits)
+    // Convert the JSON array to a QList<QVariant>
+    QJsonArray jsonArray = jsonDoc.array();
+    QList<QVariant> commits = jsonArray.toVariantList();
+
+    // Iterate through all of the commits
+    for (const QVariant &commit : commits)
     {
         QVariantMap map = commit.toMap();
         Commit c;
 
-        // get all the data we need
-        c.author = map["committer"].toMap()["login"].toString();
-        c.message = map["commit"].toMap()["message"].toString();
-        QString date = map["commit"].toMap()["author"].toMap()["date"].toString();
+        // Extract the necessary data
+        c.author = map.value("committer").toMap().value("login").toString();
+        c.message = map.value("commit").toMap().value("message").toString();
+        QString date = map.value("commit").toMap().value("author").toMap().value("date").toString();
 
         c.timestamp = QDateTime::fromString(date, Qt::ISODate);
 
         allCommits.push_back(c);
     }
 
+    // Check if all branches have been retrieved
     if (++retrievedCount == branchCount)
     {
+        // Sort the commits by timestamp
         std::sort(allCommits.begin(), allCommits.end(), commitCompare);
 
+        // Display up to 20 commits
         int iterations = (allCommits.size() > 20) ? 20 : allCommits.size();
-        for (int i = 0; i < iterations; i++)
+        for (int i = 0; i < iterations; ++i)
         {
-            // update the label with all the information
-            label->setText(label->text() + "<b>" + allCommits.at(i).author + "</b> - " + allCommits.at(
-                        i).timestamp.toString("MM/dd/yyyy") + "<br />" + allCommits.at(i).message + "<br /><br />");
+            // Update the label with commit details
+            label->setText(
+                label->text() + "<b>" + allCommits.at(i).author + "</b> - " +
+                allCommits.at(i).timestamp.toString("MM/dd/yyyy") + "<br />" +
+                allCommits.at(i).message + "<br /><br />"
+                );
         }
     }
 }

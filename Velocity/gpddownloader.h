@@ -1,38 +1,49 @@
-#ifndef GpdDOWNLOADER_H
-#define GpdDOWNLOADER_H
+#ifndef GPDDOWNLOADER_H
+#define GPDDOWNLOADER_H
 
-// qt
+#include "Gpd/XdbfDefininitions.h"
 #include <QObject>
-#include <QUuid>
-#include <QUrl>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QFile>
 #include <QDir>
-#include <QDebug>
+#include <QUuid>
+#include <QString>
 
-// other
-#include "winnames.h"
-#include "Gpd/DashboardGpd.h"
-#include "IO/FileIO.h"
-
-class GpdDownloader : public QObject
-{
+class GpdDownloader : public QObject {
     Q_OBJECT
+
 public:
-    explicit GpdDownloader(TitleEntry entry, int index, bool hasAwards = false, QObject *parent = 0);
+    // Constructor
+    explicit GpdDownloader(TitleEntry entry, int index, bool hasAwards, QObject *parent = nullptr);
+
+    // Start the download process
     void BeginDownload();
-    int index();
+
+    // Get the index of the download
+    [[nodiscard]] int index() const noexcept { return indexIn; }
 
 signals:
-    void FinishedDownloading(QString, QString, TitleEntry, bool);
+    void FinishedDownloading(QString gamePath, QString awardPath, TitleEntry entry, bool error);
 
-public slots:
-    void onDone(bool);
-    void onRequestFinished(int, bool);
+private slots:
+    // Handle the network request completion
+    void onRequestFinished(QNetworkReply *reply);
 
 private:
-    QString gpdDirectory, titleID, awardGpd, gameGpd;
+    // Static base URL for GPD files
+    static inline const QString BASE_GITHUB_URL = "https://raw.githubusercontent.com/Pandoriaantje/xbox360-gpd-files/main";
+
     TitleEntry entry;
-    bool hasAwards, gpdWritten;
     int indexIn;
+    bool hasAwards;
+    bool gpdWritten = false;
+
+    QString gameGpd;
+    QString awardGpd;
+    QString gpdDirectory = "/gameadder/";
+
+    QNetworkAccessManager networkManager;
 };
 
-#endif // GpdDOWNLOADER_H
+#endif // GPDDOWNLOADER_H

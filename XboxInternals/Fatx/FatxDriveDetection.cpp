@@ -13,7 +13,7 @@
 #include <sys/ioctl.h>
 #endif
 
-#ifdef __linux
+#ifdef __linux__
 #include <mntent.h>
 #endif
 #endif
@@ -138,7 +138,7 @@ std::vector<DeviceIO*> FatxDriveDetection::getPhysicalDisks()
 #ifdef __APPLE__
             // the disks start with 'disk'
             if (std::string(ent->d_name).substr(0, 4) == "disk")
-#elif __linux
+#elif __linux__
             // the disks start with 'sd'
             if (std::string(ent->d_name).substr(0, 2) == "sd")
 #endif
@@ -146,7 +146,7 @@ std::vector<DeviceIO*> FatxDriveDetection::getPhysicalDisks()
                 std::ostringstream ss;
 #ifdef __APPLE__
                 ss << "/dev/r";
-#elif __linux
+#elif __linux__
                 ss << "/dev/";
 #endif
                 ss << ent->d_name;
@@ -233,7 +233,7 @@ std::vector<std::wstring> FatxDriveDetection::getLogicalDrives()
         if (ent)
             delete ent;
     }
-#elif __linux
+#elif __linux__
     DIR *dir;
     struct mntent *ent;
     std::stringstream path;

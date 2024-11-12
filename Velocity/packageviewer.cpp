@@ -4,7 +4,7 @@
 PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package,
         QList<QAction *> gpdActions, QList<QAction *> gameActions, QWidget *parent, bool disposePackage) :
     QDialog(parent),ui(new Ui::PackageViewer), package(package), disposePackage(disposePackage),
-    parent (parent), statusBar(statusBar), openInMenu(NULL), gpdActions(gpdActions),
+    parent (parent), statusBar(statusBar), openInMenu(nullptr), gpdActions(gpdActions),
     gameActions(gameActions)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -104,7 +104,7 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package,
     }
 
 
-    if (openInMenu != NULL && openInMenu->actions().size() > 0)
+    if (openInMenu != nullptr && openInMenu->actions().size() > 0)
     {
         ui->btnOpenIn->setEnabled(true);
         ui->btnOpenIn->setMenu(openInMenu);
@@ -197,7 +197,7 @@ void PackageViewer::PopulateTreeWidget(StfsFileListing *entry, QTreeWidgetItem *
 
 void PackageViewer::GetPackagePath(QTreeWidgetItem *item, QString *out, bool folderOnly)
 {
-    bool hasParent = item->parent() != NULL;
+    bool hasParent = item->parent() != nullptr;
 
     if (!hasParent && folderOnly)
         return;
@@ -313,7 +313,7 @@ void PackageViewer::showSaveImageContextMenu(QPoint point)
     contextMenu.addAction(QPixmap(":/Images/save.png"), "Save Image");
     QAction *selectedItem = contextMenu.exec(globalPos);
 
-    if (selectedItem == NULL)
+    if (selectedItem == nullptr)
         return;
     else if (selectedItem->text() == "Save Image")
     {
@@ -429,7 +429,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
     }
 
     QAction *selectedItem = contextMenu.exec(globalPos);
-    if(selectedItem == NULL)
+    if(selectedItem == nullptr)
         return;
 
     QList <QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
@@ -569,7 +569,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
         try
         {
             SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSTFS, package, OpReplace,
-                    packagePath, path, NULL, this);
+                    packagePath, path, nullptr, this);
             dialog->setModal(true);
             dialog->show();
             dialog->start();
@@ -595,7 +595,7 @@ void PackageViewer::showRemoveContextMenu(QPoint point)
             GetPackagePath(items.at(0), &packagePath, true);
             packagePath += "\\";
 
-            if (isFolder && items.at(0)->parent() == NULL)
+            if (isFolder && items.at(0)->parent() == nullptr)
                 packagePath.append(items.at(0)->text(0) + "\\");
         }
 

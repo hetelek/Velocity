@@ -11,7 +11,7 @@ CreationWizard::CreationWizard(QString *fileName, QWidget *parent) :
 
     magic = CON;
     ui->setupUi(this);
-#ifdef __WIN32
+#ifdef _WIN32
     ui->label_4->setFont(QFont("Arial", 10));
 #elif __APPLE__
     QFont f = ui->label_4->font();

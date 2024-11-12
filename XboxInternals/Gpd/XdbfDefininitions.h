@@ -13,7 +13,8 @@ using std::wstring;
 // Description: different types of entries in an Xdbf file
 enum EntryType
 {
-    Achievement = 1,
+    Undefined,
+    Achievement,
     Image,
     Setting,
     Title,

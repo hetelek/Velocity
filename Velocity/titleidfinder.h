@@ -4,22 +4,24 @@
 // qt
 #include <QObject>
 #include <QList>
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkRequest>
-#include <QtNetwork/QNetworkReply>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 #include <QRegularExpression>
+#include <QFile>
+#include <QJsonDocument>  // Updated to use Qt's built-in JSON parsing
+#include <QJsonObject>    // Updated to use Qt's built-in JSON parsing
+#include <QJsonArray>     // Updated to use Qt's built-in JSON parsing
 
 // other
 #include "winnames.h"
 
-struct TitleData
-{
+struct TitleData {
     QString titleName;
     DWORD titleID;
 };
 
-class TitleIdFinder : public QObject
-{
+class TitleIdFinder : public QObject {
     Q_OBJECT
 public:
     explicit TitleIdFinder(QString gameName, QObject *parent = 0);
@@ -35,6 +37,9 @@ public slots:
 
 private:
     QString gameName;
+    QNetworkAccessManager *networkManager;
+    void loadGameDatabase();  // You may remove this if not needed for remote JSON
+    QHash<QString, TitleData> nameToData;
 };
 
 #endif // TITLEIDFINDER_H

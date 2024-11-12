@@ -146,12 +146,12 @@ QString QtHelpers::ExecutingDirectory()
 
 void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
 {
-    if (rootWidget == NULL)
+    if (rootWidget == nullptr)
         return;
 
-    QObject *child = NULL;
+    QObject *child = nullptr;
     QObjectList Containers;
-    QObject *container  = NULL;
+    QObject *container  = nullptr;
     QStringList DoNotAffect;
 
     // Make an exception list (Objects not to be affected)
@@ -167,7 +167,7 @@ void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
     int cmbxHeight = 30;
     QFont cntrlFont("Myriad Pro", 14);
     QFont txtFont("Myriad Pro", 14);
-#elif _WIN32 // Win XP/7
+#elif _WIN32
     int ButtonHeight = 24;
     int cmbxHeight = 20;
     QFont cntrlFont("MS Shell Dlg 2", 8);
@@ -184,7 +184,7 @@ void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
     while (!Containers.isEmpty())
     {
         container = Containers.takeFirst();
-        if (container != NULL)
+        if (container != nullptr)
         {
             for (int ChIdx=0; ChIdx < container->children().size(); ChIdx++)
             {
@@ -197,7 +197,7 @@ void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
                 else
                 {
                     // Cast child object to button and label
-                    // (if the object is not of the correct type, it will be NULL)
+                    // (if the object is not of the correct type, it will be nullptr)
                     QPushButton *button = qobject_cast<QPushButton *>(child);
                     QLabel *label = qobject_cast<QLabel *>(child);
                     QComboBox *cmbx = qobject_cast<QComboBox *>(child);
@@ -206,30 +206,30 @@ void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
                     QPlainTextEdit *plain = qobject_cast<QPlainTextEdit *>(child);
                     QCheckBox *check = qobject_cast<QCheckBox *>(child);
                     QProgressBar *progress = qobject_cast<QProgressBar *>(child);
-                    if (button != NULL)
+                    if (button != nullptr)
                     {
                         button->setMinimumHeight(ButtonHeight); // Win
                         button->setMaximumHeight(ButtonHeight); // Win
                         button->setFont(cntrlFont);
                     }
-                    else if (cmbx != NULL)
+                    else if (cmbx != nullptr)
                     {
                         cmbx->setFont(cntrlFont);
                         cmbx->setMaximumHeight(cmbxHeight);
                     }
-                    else if (label != NULL)
+                    else if (label != nullptr)
                         label->setFont(txtFont);
-                    else if (ln != NULL)
+                    else if (ln != nullptr)
                         ln->setFont(txtFont);
-                    else if (tree != NULL)
+                    else if (tree != nullptr)
                     {
                         tree->header()->setFont(txtFont);
                     }
-                    else if (plain != NULL)
+                    else if (plain != nullptr)
                         plain->setFont(txtFont);
-                    else if (check != NULL)
+                    else if (check != nullptr)
                         check->setFont(txtFont);
-                    else if (progress != NULL)
+                    else if (progress != nullptr)
                         progress->setMinimumHeight(20);
                 }
             }
@@ -263,7 +263,7 @@ void QtHelpers::SearchTreeWidget(QTreeWidget *widget, QLineEdit *searchWidget, Q
     {
         // show all the item's parents
         QTreeWidgetItem *parent = itemsMatched.at(i)->parent();
-        while (parent != NULL)
+        while (parent != nullptr)
         {
             parent->setHidden(false);
             parent->setExpanded(true);

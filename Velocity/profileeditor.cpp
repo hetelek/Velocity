@@ -3,8 +3,8 @@
 
 ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool dispose,
         QWidget *parent) :
-    QDialog(parent), ui(new Ui::ProfileEditor), profile(profile), PEC(NULL), dashGpd(NULL),
-    account(NULL), downloader(NULL), dispose(dispose), statusBar(statusBar)
+    QDialog(parent), ui(new Ui::ProfileEditor), profile(profile), PEC(nullptr), dashGpd(nullptr),
+    account(nullptr), downloader(nullptr), dispose(dispose), statusBar(statusBar)
 {
     ui->setupUi(this);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -322,7 +322,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         // if there are avatar awards then add it to the vector
         if (dashGpd->gamesPlayed.at(i).avatarAwardCount != 0)
         {
-            AvatarAwardGameEntry a = { gpd, &dashGpd->gamesPlayed.at(i), NULL, false, string(""), string("") };
+            AvatarAwardGameEntry a = { gpd, &dashGpd->gamesPlayed.at(i), nullptr, false, string(""), string("") };
             aaGames.push_back(a);
         }
 
@@ -331,7 +331,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         item->setText(0, QString::fromStdWString(gpd->gameName.ws));
 
         // set the thumbnail
-        if (gpd->thumbnail.image != NULL)
+        if (gpd->thumbnail.image != nullptr)
         {
             QByteArray imageBuff((char*)gpd->thumbnail.image, (size_t)gpd->thumbnail.length);
             item->setIcon(0, QIcon(QPixmap::fromImage(QImage::fromData(imageBuff))));
@@ -497,7 +497,7 @@ void ProfileEditor::showAvatarContextMenu(QPoint point)
     contextMenu.addAction(QPixmap(":/Images/download.png"), "Download Award");
     QAction *selectedItem = contextMenu.exec(globalPos);
 
-    if (selectedItem == NULL)
+    if (selectedItem == nullptr)
         return;
     else if (selectedItem->text() == "Download Award")
     {
@@ -623,7 +623,7 @@ void ProfileEditor::addToDashGpd(SettingEntry *entry, SettingEntryType type, UIN
             break;
         case Binary:
             entry->binaryData.length = 0;
-            entry->binaryData.data = NULL;
+            entry->binaryData.data = nullptr;
             break;
         case UnicodeString:
             entry->str = new wstring(L"");
@@ -661,13 +661,13 @@ ProfileEditor::~ProfileEditor()
         delete aaGames.at(i).gpd;
     }
 
-    if (dashGpd != NULL)
+    if (dashGpd != nullptr)
     {
         dashGpd->Close();
         delete dashGpd;
     }
 
-    if (account != NULL)
+    if (account != nullptr)
         delete account;
 
     if (dispose)
@@ -763,7 +763,7 @@ void ProfileEditor::saveImage(QPoint p, QLabel *imgLabel)
     contextMenu.addAction(QPixmap(":/Images/save.png"), "Save Image");
     QAction *selectedItem = contextMenu.exec(globalPos);
 
-    if (selectedItem == NULL)
+    if (selectedItem == nullptr)
         return;
     else if (selectedItem->text() == "Save Image")
     {
@@ -1332,7 +1332,7 @@ void ProfileEditor::saveAll()
     string path = QtHelpers::GetKVPath(profile->metaData->certificate.ownerConsoleType, this);
 
     // save the avatar awards
-    if (PEC != NULL)
+    if (PEC != nullptr)
     {
         // put all the avatar award gpds back in the PEC
         for (DWORD i = 0; i < aaGames.size(); i++)
