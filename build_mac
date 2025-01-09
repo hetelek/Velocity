@@ -3,7 +3,6 @@
 set -euxo pipefail
 
 CLEAN_BUILD=1
-QT_BIN_PATH="$HOME/Qt/6.8.0/macos/bin"
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd "$SCRIPT_DIR"
@@ -12,19 +11,19 @@ cd "$SCRIPT_DIR"
 mkdir -p vel_build ; cd vel_build
 
 mkdir -p internals ; cd internals
-"$QT_BIN_PATH/qmake6" -config release ../../XboxInternals/XboxInternals.pro
+qmake6 -config release ../../XboxInternals/XboxInternals.pro
 make -j10
 cd ..
 
 mkdir -p vel || true ; cd vel
-"$QT_BIN_PATH/qmake6" -config release ../../Velocity/Velocity.pro
+qmake6 -config release ../../Velocity/Velocity.pro
 make -j10
 cd ..
 
 cd "$SCRIPT_DIR"
 find ./Velocity/build
 
-"$QT_BIN_PATH/macdeployqt6" ./Velocity/build/Velocity-OSX/release/Velocity.app
+$QT_BIN_PATH/macdeployqt6 ./Velocity/build/Velocity-OSX/release/Velocity.app
 codesign --entitlements app.entitlements --deep --force --options runtime --sign "DEVELOPER_ID_HERE" ./Velocity/build/Velocity-OSX/release/Velocity.app
 
 [ "$CLEAN_BUILD" == 1 ] && open ./Velocity/build/Velocity-OSX/release/Velocity.app/
