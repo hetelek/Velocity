@@ -1,7 +1,7 @@
 Velocity
 ========
 
-**This repository is not actively monitored and development ceased quite some time ago. Please do not expect issues or PRs to be actioned on.**
+**This repository is not regularly monitored and active development ceased quite some time ago. Please do not expect issues or PRs to be actioned on.**
 
 
 About
