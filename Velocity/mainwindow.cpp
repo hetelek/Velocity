@@ -45,7 +45,7 @@ MainWindow::MainWindow(QList<QUrl> arguments, QWidget *parent) : QMainWindow(par
 void MainWindow::LoadPlugin(QString filename, bool addToMenu, StfsPackage *package)
 {
     // check if it's from the package viewer
-    bool fromPackageViewer = package != NULL;
+    bool fromPackageViewer = package != nullptr;
 
     // create a plugin loader/instance of plugin
     QPluginLoader loader(filename);
@@ -272,7 +272,7 @@ void MainWindow::PluginFinished()
         }
         catch (string error)
         {
-            QMessageBox::critical(NULL, "Couldn't Repalce Gpd",
+            QMessageBox::critical(nullptr, "Couldn't Repalce Gpd",
                     "The Gpd could not be replaced.\n\n" + QString::fromStdString(error));
             try
             {
@@ -333,7 +333,7 @@ MainWindow::~MainWindow()
     QList<QMdiSubWindow*> subWindows = ui->mdiArea->subWindowList();
     for (int i = 0; i < subWindows.length(); i++)
     {
-        subWindows.at(i)->setParent(NULL);
+        subWindows.at(i)->setParent(nullptr);
         delete subWindows.at(i);
     }
     delete ui;
@@ -472,7 +472,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                     GpdBase *gpd = new GpdBase(fileName);
                     ui->statusBar->showMessage("Gpd parsed successfully", 3000);
 
-                    XdbfDialog *dialog = new XdbfDialog(ui->statusBar, gpd, NULL, this);
+                    XdbfDialog *dialog = new XdbfDialog(ui->statusBar, gpd, nullptr, this);
                     dialog->setAttribute(Qt::WA_DeleteOnClose);
                     QtHelpers::AddSubWindow(ui->mdiArea, dialog);
                     dialog->show();
@@ -590,7 +590,7 @@ void MainWindow::on_actionXDBF_File_triggered()
         GpdBase *gpd = new GpdBase(fileName.toStdString());
         ui->statusBar->showMessage("Gpd parsed successfully", 3000);
 
-        XdbfDialog *dialog = new XdbfDialog(ui->statusBar, gpd, NULL, this);
+        XdbfDialog *dialog = new XdbfDialog(ui->statusBar, gpd, nullptr, this);
         dialog->setAttribute(Qt::WA_DeleteOnClose);
         QtHelpers::AddSubWindow(ui->mdiArea, dialog);
         dialog->show();
@@ -701,11 +701,11 @@ void MainWindow::on_actionModder_triggered()
         QAction *menuAction = (QAction*)sender();
 
         // get package
-        StfsPackage *package = NULL;
+        StfsPackage *package = nullptr;
         if (menuAction->property("package").isValid() &&
                 menuAction->property("fromPackageViewer").isValid())
         {
-            menuAction->setProperty("fromPackageViewer", QVariant::Invalid);
+            menuAction->setProperty("fromPackageViewer", QVariant());
             package = menuAction->property("package").value<StfsPackage*>();
         }
 
@@ -746,41 +746,57 @@ void MainWindow::on_actionFATX_File_Path_triggered()
 
 void MainWindow::versionReplyFinished(QNetworkReply *aReply)
 {
-    QString jsonStr(aReply->readAll());
+    // Read the JSON response
+    QByteArray jsonData = aReply->readAll();
+    QJsonParseError parseError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &parseError);
 
-    bool ok, ok1;
-    QVariantMap result = QtJson::Json::parse(jsonStr, ok).toMap();
-
-    if (!ok)
+    if (parseError.error != QJsonParseError::NoError)
         return;
 
-    QString version = result["version"].toString();
-    QString downloadPage = result["dl_page"].toString();
+    QJsonObject jsonObject = jsonDoc.object();
+    QVariantMap result = jsonObject.toVariantMap(); // Convert to QVariantMap
 
+    QString version = result.value("version").toString();
+    QString downloadPage = result.value("dl_page").toString();
+
+    // Check if a message is present
     bool hasMessage = result.contains("message");
     QString message = "<br><br>";
     if (hasMessage)
-        message += result["message"].toString();
+        message += result.value("message").toString();
 
+    // Convert version strings to integers for comparison
+    bool ok, ok1;
     int versionNum = version.replace('.', "").toInt(&ok);
-    int currentVerisonNum = QString(VERSION).replace('.', "").toInt(&ok1);
+    int currentVersionNum = QString(VERSION).replace('.', "").toInt(&ok1);
 
     if (!ok || !ok1)
         return;
 
-    if (versionNum > currentVerisonNum)
+    // Check if a newer version is available
+    if (versionNum > currentVersionNum)
     {
-        QMessageBox::StandardButton selection = (QMessageBox::StandardButton)QMessageBox::question(this,
-                "Version " + version, "Version " + version +
-                " of Velocity is available for download. Your current version is " + VERSION +
-                ". Would you like to be brought to the download page?" + (hasMessage ? message : ""),
-                QMessageBox::Yes, QMessageBox::No);
+        auto selection = QMessageBox::question(
+            this,
+            "Version " + version,
+            "Version " + version + " of Velocity is available for download. Your current version is " +
+                VERSION + ". Would you like to be brought to the download page?" + (hasMessage ? message : ""),
+            QMessageBox::Yes,
+            QMessageBox::No
+            );
+
         if (selection == QMessageBox::Yes)
             QDesktopServices::openUrl(QUrl(downloadPage));
     }
     else if (!firstUpdateCheck)
-        QMessageBox::information(this, "Already Up-to-Date",
-                "This version of Velocity is already the latest.");
+    {
+        QMessageBox::information(
+            this,
+            "Already Up-to-Date",
+            "This version of Velocity is already the latest."
+            );
+    }
 
     firstUpdateCheck = false;
 }
@@ -793,23 +809,38 @@ void MainWindow::pluginVersionReplyFinished(QNetworkReply *aReply)
     QString name = sender()->property("name").toString();
     QString currVersion = sender()->property("version").toString();
 
-    QString jsonStr(aReply->readAll());
+    // Read all the data from the reply
+    QByteArray jsonData = aReply->readAll();
 
-    bool ok;
-    QVariantMap result = QtJson::Json::parse(jsonStr, ok).toMap();
+    // Parse the JSON data
+    QJsonParseError parseError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &parseError);
 
-    if (!ok || result.contains("data"))
+    if (parseError.error != QJsonParseError::NoError)
         return;
 
-    QString version = result["version"].toString();
-    QString downloadPage = result["dl_page"].toString();
+    QJsonObject jsonObject = jsonDoc.object();
+    QVariantMap result = jsonObject.toVariantMap(); // Convert to QVariantMap
 
+    // Check if "data" is present
+    if (result.contains("data"))
+        return;
+
+    QString version = result.value("version").toString();
+    QString downloadPage = result.value("dl_page").toString();
+
+    // Check if the current version is different from the new version
     if (currVersion != version)
     {
-        QMessageBox::StandardButton selection = (QMessageBox::StandardButton)QMessageBox::question(this,
-                "Version " + version, "Version " + version + " of the tool, " + name +
-                ", is available for download. Would you like to be brought to the download page?", QMessageBox::Yes,
-                QMessageBox::No);
+        auto selection = QMessageBox::question(
+            this,
+            "Version " + version,
+            "Version " + version + " of the tool, " + name +
+                ", is available for download. Would you like to be brought to the download page?",
+            QMessageBox::Yes,
+            QMessageBox::No
+            );
+
         if (selection == QMessageBox::Yes)
             QDesktopServices::openUrl(QUrl(downloadPage));
     }

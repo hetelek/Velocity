@@ -1,43 +1,44 @@
 #include "titleidfinder.h"
 
-TitleIdFinder::TitleIdFinder(QString gameName, QObject *parent) : QObject(parent),
-    gameName(gameName)
-{
-
+TitleIdFinder::TitleIdFinder(QString gameName, QObject* parent)
+    : QObject(parent), gameName(gameName) {
+    // Initialize the network manager
+    networkManager = new QNetworkAccessManager(this);
+    connect(networkManager, &QNetworkAccessManager::finished, this, &TitleIdFinder::replyFinished);
 }
 
-void TitleIdFinder::StartSearch()
-{
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
-    QUrl url("http://marketplace.xbox.com/en-US/Search?query=" + gameName + "&DownloadType=Game");
-    manager->get(QNetworkRequest(url));
+void TitleIdFinder::StartSearch() {
+    // Construct the URL for the API request
+    QString url = QString("https://dbox.tools/api/title_ids/?name=%1&system=XBOX360&limit=100&offset=0").arg(gameName);
+    QNetworkRequest request((QUrl(url)));
+    networkManager->get(request);
 }
 
-void TitleIdFinder::replyFinished(QNetworkReply *reply)
-{
-    QString pageSource(reply->readAll());
-    QRegularExpression exp("66acd000-77fe-1000-9115-d802(.{8})\\?cid=search\"\\>([^<]*)");
+void TitleIdFinder::replyFinished(QNetworkReply* reply) {
+    if (reply->error() == QNetworkReply::NoError) {
+        QByteArray response = reply->readAll();
+        QJsonDocument jsonResponse = QJsonDocument::fromJson(response);
+        QJsonObject jsonObject = jsonResponse.object();
 
-    QList<TitleData> matches;
+        QJsonArray itemsArray = jsonObject["items"].toArray();
+        QList<TitleData> matches;
 
-    auto matchIterator = exp.globalMatch(pageSource);
-    while (matchIterator.hasNext()) {
-        QRegularExpressionMatch match = matchIterator.next();
-        TitleData t;
-        t.titleID = match.captured(1).toULong(0, 16);
-        t.titleName = match.captured(2);
+        for (const QJsonValue& value : itemsArray) {
+            QJsonObject item = value.toObject();
+            TitleData data;
+            data.titleName = item["name"].toString();
+            data.titleID = item["title_id"].toString().toUInt(nullptr, 16); // Parse as hex, just like the local JSON
 
-        if (t.titleName != "Learn More")
-            matches.push_back(t);
+            matches.append(data);
+        }
+
+        emit SearchFinished(matches);
+    } else {
+        // Handle errors (optional)
     }
-
     reply->deleteLater();
-
-    emit SearchFinished(matches);
 }
 
-void TitleIdFinder::SetGameName(QString gameName)
-{
-    this->gameName = gameName;
+void TitleIdFinder::SetGameName(QString newGameName) {
+    gameName = newGameName;
 }

@@ -80,8 +80,8 @@ OnlineResumeStateStruct resumeStates[] =
 };
 
 Metadata::Metadata(QStatusBar *statusBar, XContentHeader *header, bool pec, QWidget *parent) :
-    QDialog(parent), ui(new Ui::Metadata), header(header), pec(pec), statusBar(statusBar), cmbxSubcategory(NULL),
-    cmbxSkeletonVersion(NULL), cmbxResumeState(NULL), lastModified(NULL), offset(0)
+    QDialog(parent), ui(new Ui::Metadata), header(header), pec(pec), statusBar(statusBar), cmbxSubcategory(nullptr),
+    cmbxSkeletonVersion(nullptr), cmbxResumeState(nullptr), lastModified(nullptr), offset(0)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);

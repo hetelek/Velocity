@@ -79,7 +79,6 @@ SOURCES += main.cpp \
     titleidfinderdialog.cpp \
     gamerpicturepackdialog.cpp \
     preferencesdialog.cpp \
-    json.cpp \
     githubcommitsdialog.cpp \
     gpduploader.cpp \
     fatxpathgendialog.cpp \
@@ -128,7 +127,6 @@ HEADERS  += mainwindow.h \
     titleidfinderdialog.h \
     gamerpicturepackdialog.h \
     preferencesdialog.h \
-    json.h \
     githubcommitsdialog.h \
     gpduploader.h \
     fatxpathgendialog.h \

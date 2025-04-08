@@ -60,7 +60,7 @@ void TitleIdFinderDialog::showContextMenu(QPoint p)
     contextMenu.addAction(QPixmap(":/Images/xbox.png"), "View on Xbox.com");
     QAction *selectedItem = contextMenu.exec(globalPos);
 
-    if (selectedItem == NULL)
+    if (selectedItem == nullptr)
         return;
     else if (selectedItem->text() == "Copy Title ID")
     {

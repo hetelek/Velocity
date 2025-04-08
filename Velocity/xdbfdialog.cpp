@@ -70,7 +70,7 @@ void XdbfDialog::showContextMenu(QPoint p)
 
     QAction *selectedItem = contextMenu.exec(globalPos);
 
-    if (selectedItem == NULL)
+    if (selectedItem == nullptr)
         return;
     else if (selectedItem->text() == "Extract Selected")
     {
@@ -187,7 +187,7 @@ void XdbfDialog::showContextMenu(QPoint p)
             // cleanup
             delete[] entryBuff;
             io.Close();
-            if (modified != NULL)
+            if (modified != nullptr)
                 *modified = true;
 
             // get the xdbf entry again so we can update the UI
@@ -248,7 +248,7 @@ void XdbfDialog::showContextMenu(QPoint p)
         ui->treeWidget->clear();
         loadEntries();
 
-        if (modified != NULL)
+        if (modified != nullptr)
             *modified = true;
 
         statusBar->showMessage("Cleaned Gpd successfully", 3000);
