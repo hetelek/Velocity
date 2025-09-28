@@ -1,0 +1,49 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 20,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "windows-mingw",
+      "displayName": "MinGW (Qt MinGW 13.1)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/windows-mingw",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_STANDARD": "20",
+        "CMAKE_PREFIX_PATH": "C:/Qt/6.8.0/mingw_64",
+        "BOTAN_VERSION": "3.9.0",
+        "BOTAN_SUBMODULE_DIR": "${sourceDir}/botan",
+        "BOTAN_FALLBACK_DIR": "${sourceDir}/botan"
+      }
+    },
+    {
+      "name": "windows-msvc",
+      "displayName": "MSVC (VS2022 x64 + Ninja)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/windows-msvc",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_STANDARD": "20",
+        "CMAKE_PREFIX_PATH": "C:/Qt/6.8.0/msvc2022_64",
+        "BOTAN_VERSION": "3.9.0",
+        "BOTAN_SUBMODULE_DIR": "${sourceDir}/botan",
+        "BOTAN_FALLBACK_DIR": "${sourceDir}/botan"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-mingw",
+      "configurePreset": "windows-mingw"
+    },
+    {
+      "name": "windows-msvc",
+      "configurePreset": "windows-msvc"
+    }
+  ],
+  "testPresets": []
+}
