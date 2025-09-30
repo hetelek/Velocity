@@ -197,7 +197,7 @@ void CreationWizard::onFinished(int status)
     catch (string error)
     {
         QMessageBox::critical(this, "Error",
-                "An error occured while creating the package.\n\n" + QString::fromStdString(error));
+                "An error occurred while creating the package.\n\n" + QString::fromStdString(error));
         return;
     }
 

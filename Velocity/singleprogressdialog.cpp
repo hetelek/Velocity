@@ -115,7 +115,7 @@ void SingleProgressDialog::start()
     catch (string error)
     {
         QMessageBox::critical(this, "Error",
-                "An error occured during the operation.\n\n" + QString::fromStdString(error));
+                "An error occurred during the operation.\n\n" + QString::fromStdString(error));
         close();
     }
 }

@@ -120,7 +120,7 @@ cmake --preset windows-mingw-release -DBOTAN_VERSION=3.10.0
 
 ### Windows
 - **MinGW**: Use windows-mingw-release or windows-mingw-debug presets
-- **Compiler**: Use MingGW compilers matching your Qt installation
+- **Compiler**: Use MinGW compilers matching your Qt installation
 - **Output**: Executable with Windows resource data
 
 ### macOS
@@ -182,7 +182,7 @@ python3 --version
 
 ### Compiler Issues
 - Ensure your compiler supports C++20
-- Match Qt kit with your compiler (MingGW Qt with MingGW compiler)
+- Match Qt kit with your compiler (MinGW Qt with MingGW compiler)
 
 ## Output Locations
 

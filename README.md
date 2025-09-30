@@ -23,4 +23,4 @@ Velocity is licensed and distributed under the GNU General Public License (v3).
 
 Velocity is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-If no copy of the GNU General Public License was recieved with this program (FILE: COPYING), it is available at <http://www.gnu.org/licenses/>.
+If no copy of the GNU General Public License was received with this program (FILE: COPYING), it is available at <http://www.gnu.org/licenses/>.

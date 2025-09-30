@@ -240,7 +240,7 @@ void XdbfDialog::showContextMenu(QPoint p)
         catch (std::string error)
         {
             QMessageBox::critical(this, "Clean Error",
-                    "An error occured while cleaning the Gpd.\n\n" + QString::fromStdString(error));
+                    "An error occurred while cleaning the Gpd.\n\n" + QString::fromStdString(error));
             return;
         }
 

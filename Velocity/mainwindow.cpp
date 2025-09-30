@@ -622,7 +622,7 @@ void MainWindow::on_actionSTRB_File_triggered()
     catch (string error)
     {
         QMessageBox::critical(this, "Error",
-                "An error occured while opening the STRB package.\n\n" + QString::fromStdString(error));
+                "An error occurred while opening the STRB package.\n\n" + QString::fromStdString(error));
     }
 }
 
