@@ -11,11 +11,7 @@
 
 #include <iostream>
 
-#include <botan/hash.h>
-#include <botan/bigint.h>
-#include <botan/auto_rng.h>
-#include <botan/rsa.h>
-#include <botan/pubkey.h>
+#include <botan_all.h>
 
 #include "XboxInternals_global.h"
 

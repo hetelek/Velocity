@@ -9,8 +9,7 @@
 #include "Stfs/StfsConstants.h"
 
 // botan
-#include <botan/mac.h>
-#include <botan/stream_cipher.h>
+#include <botan_all.h>
 
 #include "XboxInternals_global.h"
 

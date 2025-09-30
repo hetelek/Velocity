@@ -7,43 +7,90 @@
   },
   "configurePresets": [
     {
-      "name": "windows-mingw",
-      "displayName": "MinGW (Qt MinGW 13.1)",
+      "name": "windows-mingw-release",
+      "displayName": "Windows MinGW Release",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/out/build/windows-mingw",
+      "binaryDir": "${sourceDir}/out/build/windows-mingw-release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_STANDARD": "20",
-        "CMAKE_PREFIX_PATH": "C:/Qt/6.8.0/mingw_64",
-        "BOTAN_VERSION": "3.9.0",
-        "BOTAN_SUBMODULE_DIR": "${sourceDir}/botan",
-        "BOTAN_FALLBACK_DIR": "${sourceDir}/botan"
+        "CMAKE_CXX_STANDARD": "20"
       }
     },
     {
-      "name": "windows-msvc",
-      "displayName": "MSVC (VS2022 x64 + Ninja)",
+      "name": "windows-mingw-debug",
+      "displayName": "Windows MinGW Debug", 
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/out/build/windows-msvc",
+      "binaryDir": "${sourceDir}/out/build/windows-mingw-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_STANDARD": "20"
+      }
+    },
+    {
+      "name": "macos-release",
+      "displayName": "macOS Release", 
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/macos-release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_STANDARD": "20",
-        "CMAKE_PREFIX_PATH": "C:/Qt/6.8.0/msvc2022_64",
-        "BOTAN_VERSION": "3.9.0",
-        "BOTAN_SUBMODULE_DIR": "${sourceDir}/botan",
-        "BOTAN_FALLBACK_DIR": "${sourceDir}/botan"
+        "CMAKE_CXX_STANDARD": "20"
+      }
+    },
+    {
+      "name": "macos-debug",
+      "displayName": "macOS Debug", 
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/macos-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_STANDARD": "20"
+      }
+    },
+    {
+      "name": "linux-release",
+      "displayName": "Linux Release",
+      "generator": "Ninja", 
+      "binaryDir": "${sourceDir}/out/build/linux-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_STANDARD": "20"
+      }
+    },
+    {
+      "name": "linux-debug",
+      "displayName": "Linux Debug",
+      "generator": "Ninja", 
+      "binaryDir": "${sourceDir}/out/build/linux-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_STANDARD": "20"
       }
     }
   ],
   "buildPresets": [
     {
-      "name": "windows-mingw",
-      "configurePreset": "windows-mingw"
+      "name": "windows-mingw-release",
+      "configurePreset": "windows-mingw-release"
     },
     {
-      "name": "windows-msvc",
-      "configurePreset": "windows-msvc"
+      "name": "windows-mingw-debug",
+      "configurePreset": "windows-mingw-debug"
+    },
+    {
+      "name": "macos-release", 
+      "configurePreset": "macos-release"
+    },
+    {
+      "name": "macos-debug", 
+      "configurePreset": "macos-debug"
+    },
+    {
+      "name": "linux-release",
+      "configurePreset": "linux-release"
+    },
+    {
+      "name": "linux-debug",
+      "configurePreset": "linux-debug"
     }
-  ],
-  "testPresets": []
+  ]
 }
