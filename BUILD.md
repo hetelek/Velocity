@@ -12,7 +12,7 @@
 
 # Clone the repository
 git clone https://github.com/Pandoriaantje/Velocity
-cd velocity
+cd Velocity
 
 # Build using CMake presets (choose one)
 cmake --preset windows-mingw-release    # Windows MinGW Release
@@ -127,6 +127,35 @@ cmake --preset windows-mingw-release -DBOTAN_VERSION=3.10.0
 - **Bundle**: Creates .app bundle with proper metadata
 - **Icons**: Uses velocity.icns for application icon
 - **Output**: Velocity.app bundle
+
+#### macOS Distribution
+
+**Prerequisites:**
+- Qt 6.7.3 or higher installed on your system
+- Xcode command line tools installed
+- Build the project first using the presets above
+- `app.entitlements` file exists in project root
+
+**Note**: The deployment script will automatically find Qt in:
+- Your PATH
+- QT6_PREFIX_PATH environment variable  
+- Common installation locations (~/Qt, Homebrew, etc.)
+
+If needed, you can explicitly set your Qt path:
+export PATH="$HOME/Qt/[version]/macos/bin:$PATH"
+# or
+export QT6_PREFIX_PATH="/path/to/your/qt"
+
+# Make the deployment script executable (first time only)
+chmod +x deploy_mac.sh
+
+# Deploy and sign (from project root)
+./deploy_mac.sh
+
+# For debug builds
+./deploy_mac.sh out/build/macos-debug
+
+**Note**: Uses ad-hoc signing by default. For distribution, replace `-` with your Developer ID in the script.
 
 ### Linux
 - **Standard**: Creates standard Linux executable
