@@ -4,6 +4,9 @@
 cmake_minimum_required(VERSION 3.20)
 project(Velocity VERSION 0.1.0.0 LANGUAGES CXX)
 
+# Export compilation database for clang-tidy / clangd
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Platform-specific settings
 if(APPLE)
     set(PLATFORM_BUILD_NAME "OSX" CACHE STRING "Platform build name")
