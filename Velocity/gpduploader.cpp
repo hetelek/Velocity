@@ -153,12 +153,12 @@ void GpdUploader::reply(QNetworkReply *reply)
     if (reply->error() || reply->bytesAvailable() < 1)
     {
         failures++;
-        qDebug() << "error occured: " << reply->errorString();
+        qDebug() << "error occurred: " << reply->errorString();
     }
     else
     {
         success++;
-        qDebug() << "response recieved: " + reply->readAll();
+        qDebug() << "response received: " + reply->readAll();
     }
 
     // begin the next request, if there is one
@@ -188,7 +188,7 @@ void GpdUploader::sendRequest(QString filePath, QString awardFilePath, QString g
         if (awardFilePath != "")
             awardFile.open(QIODevice::ReadWrite);
 
-        // initialize boundrary
+        // initialize boundary
         QString boundary = "-----------------------------7d935033608e2";
 
         // byte array to be sent in POST

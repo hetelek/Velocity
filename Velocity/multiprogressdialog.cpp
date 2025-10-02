@@ -211,7 +211,7 @@ void MultiProgressDialog::operateOnNextFile()
                         FatxFileEntry *pEntry = parentEntry;
                         if (rootPath != "")
                         {
-                            // fix the path seperators
+                            // fix the path separators
                             rootPath = rootPath.replace("/", "\\");
                             *fileName = fileName->replace("/", "\\");
 

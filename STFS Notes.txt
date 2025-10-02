@@ -63,17 +63,17 @@ struct r31Struct
 	(BLOCKINFO*)	0x30 = blockInfoArray // parallel to blockArray
 	(char*) 		0x34 = blockArray (cache thing)	
 	
-	(byte)			0x8C = (blockSeperation & 8) >> 3
-	(byte)			0x8D = Block Step (blockSeperation == 0 = 0xAC), else = 0xAB
-	(WORD)			0x8E = Block Step (blockSeperation == 0 = 0x723A), else = 0x718F blockSeperation == 0 = {0xAC, 0x723A} ), else = {0xAB, 0x718F}
+	(byte)			0x8C = (blockSeparation & 8) >> 3
+	(byte)			0x8D = Block Step (blockSeparation == 0 = 0xAC), else = 0xAB
+	(WORD)			0x8E = Block Step (blockSeparation == 0 = 0x723A), else = 0x718F blockSeparation == 0 = {0xAC, 0x723A} ), else = {0xAB, 0x718F}
 	
 	(DWORD)			0x94 = Allocated Block Count
 	(DWORD)			0x98 = Unallocated Block Count
 	
 	(byte)			0xA0 = fileTableBlockCount
-	(byte)			0xA3 = (~blockSeperation) & 1
+	(byte)			0xA3 = (~blockSeparation) & 1
 	(char[14]) 		0xA4 = topHashTableHash
-	(BLOCK_STATUS)	0xB8 = '2' bit of blockSeperation
+	(BLOCK_STATUS)	0xB8 = '2' bit of blockSeparation
 	(byte)			0xBC = blockInfoLength // number of elements in blockInfo array
 	(byte)			0xBD = indexOfLastBlockPutInCache?
 	(byte)			0xBE = Tree levels? (totalAllocatedBlocks <= 0xAA = 0), (totalAllocatedBlocks <= 0x0x70E4 = 1), 2
