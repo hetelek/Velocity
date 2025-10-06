@@ -14,7 +14,7 @@
 
 // xbox360
 #include "Gpd/Xdbf.h"
-#include "Gpd/XdbfDefininitions.h"
+#include "Gpd/XdbfDefinitions.h"
 #include "Gpd/XdbfHelpers.h"
 #include "Gpd/GpdBase.h"
 #include "IO/FileIO.h"

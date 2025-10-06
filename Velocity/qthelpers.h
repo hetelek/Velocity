@@ -21,7 +21,7 @@
 #include <QStandardPaths>
 
 // other
-#include "winnames.h"
+#include "TypeDefinitions.h"
 #include <Stfs/StfsConstants.h>
 #include <ctype.h>
 

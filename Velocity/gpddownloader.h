@@ -1,7 +1,7 @@
 #ifndef GPDDOWNLOADER_H
 #define GPDDOWNLOADER_H
 
-#include "Gpd/XdbfDefininitions.h"
+#include "Gpd/XdbfDefinitions.h"
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>

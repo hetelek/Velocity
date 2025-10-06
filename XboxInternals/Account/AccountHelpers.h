@@ -2,7 +2,7 @@
 
 #include "AccountDefinitions.h"
 #include "Gpd/XdbfHelpers.h"
-#include "Gpd/XdbfDefininitions.h"
+#include "Gpd/XdbfDefinitions.h"
 #include "IO/FileIO.h"
 #include <iostream>
 #include <stdlib.h>

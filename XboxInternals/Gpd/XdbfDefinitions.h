@@ -1,7 +1,7 @@
 #pragma once
 
-#include "winnames.h"
-#include "../AvatarAsset/AvatarAssetDefinintions.h"
+#include "TypeDefinitions.h"
+#include "../AvatarAsset/AvatarAssetDefinitions.h"
 #include <iostream>
 #include <vector>
 
@@ -417,7 +417,7 @@ enum Gamerzone
     Underground
 };
 
-struct AvatarAward
+struct AvatarAwardData
 {
     XdbfEntry entry;
     DWORD initialSize;

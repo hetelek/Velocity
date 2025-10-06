@@ -534,7 +534,7 @@ void ProfileEditor::onAssetsDoneDownloading()
 {
     try
     {
-        struct AvatarAward *award = &aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(
+        AvatarAwardData *award = &aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(
             ui->avatarAwardsList->currentIndex().row());
 
         StfsPackage newAsset(assetSavePath.toStdString(), StfsPackageCreate | StfsPackageFemale);
@@ -924,7 +924,7 @@ void ProfileEditor::loadAvatarAwardInfo(int gameIndex, unsigned int awardIndex)
         return;
 
     // get the current award
-    struct AvatarAward *award = &aaGames.at(gameIndex).gpd->avatarAwards.at(awardIndex);
+    AvatarAwardData *award = &aaGames.at(gameIndex).gpd->avatarAwards.at(awardIndex);
 
     // update the ui
     ui->lblAwName->setText(QString::fromStdWString(award->name));
@@ -981,8 +981,8 @@ void ProfileEditor::replyFinishedAwImg(QNetworkReply *aReply)
         ui->imgAw->clear();
         ui->imgAw->setPixmap(QPixmap::fromImage(QImage::fromData(img)));
 
-        struct AvatarAward *award = aReply->request().attribute((QNetworkRequest::Attribute)
-                1001).value<struct AvatarAward*>();
+        AvatarAwardData *award = aReply->request().attribute((QNetworkRequest::Attribute)
+                1001).value<AvatarAwardData*>();
 
         // add the avatar image to the gpd if it isn't already there
         if (ok && !ui->imgAw->pixmap().isNull())
@@ -1155,7 +1155,7 @@ void ProfileEditor::on_btnUnlockAllAwards_clicked()
 }
 
 void ProfileEditor::updateAvatarAward(TitleEntry *entry, AvatarAwardGpd *gpd,
-        struct AvatarAward *award, State toSet)
+        AvatarAwardData *award, State toSet)
 {
     AssetGender g = AvatarAwardGpd::GetAssetGender(award);
     State current = getStateFromFlags(award->flags);
@@ -1706,7 +1706,7 @@ void ProfileEditor::on_dteAwTimestamp_dateTimeChanged(const QDateTime &date)
     if (ui->aaGamelist->currentIndex().row() < 0 || ui->avatarAwardsList->currentIndex().row() < 0)
         return;
 
-    struct AvatarAward *entry = &aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(
+    AvatarAwardData *entry = &aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(
                 ui->avatarAwardsList->currentIndex().row());
 
     // make sure the user changed the time

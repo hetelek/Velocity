@@ -1,5 +1,9 @@
 #include "SvodMultiFileIO.h"
+#if defined(_WIN32)
+#include <windows.h>
+#else
 #include <dirent.h>
+#endif
 
 using namespace std;
 
@@ -24,18 +28,27 @@ SvodMultiFileIO::~SvodMultiFileIO()
 
 void SvodMultiFileIO::loadDirectories(string path)
 {
+    files.clear();
+#if defined(_WIN32)
+    WIN32_FIND_DATAA findFileData;
+    HANDLE hFind;
+    std::string searchPath = path + "\\*";
+    hFind = FindFirstFileA(searchPath.c_str(), &findFileData);
+    if (hFind == INVALID_HANDLE_VALUE) {
+        throw string("MultiFileIO: Error opening directory\n");
+    }
+    do {
+        if (!(findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+            files.push_back(path + "\\" + findFileData.cFileName);
+        }
+    } while (FindNextFileA(hFind, &findFileData) != 0);
+    FindClose(hFind);
+#else
     DIR *dir;
     struct dirent *ent;
     dir = opendir(path.c_str());
     if (dir != NULL)
     {
-        // load the stuff that's always at the begining . ..
-#ifdef _win32
-        readdir(dir);
-        readdir(dir);
-#endif
-
-        // load only the files, don't want the folders
         while ((ent = readdir(dir)) != NULL)
         {
             string fullName(path);
@@ -43,10 +56,11 @@ void SvodMultiFileIO::loadDirectories(string path)
             if (opendir(fullName.c_str()) == NULL)
                 files.push_back(fullName);
         }
-        closedir (dir);
+        closedir(dir);
     }
     else
         throw string("MultiFileIO: Error opening directory\n");
+#endif
 }
 
 void SvodMultiFileIO::SetPosition(DWORD addressInFile, DWORD fileIndex)

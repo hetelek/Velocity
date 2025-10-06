@@ -1,7 +1,7 @@
 #pragma once
 
-#include "winnames.h"
-#include "Gpd/XdbfDefininitions.h"
+#include "TypeDefinitions.h"
+#include "Gpd/XdbfDefinitions.h"
 #include <iostream>
 #include <time.h>
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include "AvatarAssetDefinintions.h"
+#include "AvatarAssetDefinitions.h"
 
 #include "XboxInternals_global.h"
 

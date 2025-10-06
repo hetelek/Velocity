@@ -68,7 +68,7 @@ void GpdUploader::uploadGpd(QString gamePath, QString awardPath, QString titleID
 
             for (DWORD x = 0; x < agpd.avatarAwards.size(); x++)
             {
-                struct AvatarAward award = agpd.avatarAwards.at(x);
+                AvatarAwardData award = agpd.avatarAwards.at(x);
                 AssetGender g = AvatarAwardGpd::GetAssetGender(&award);
 
                 // lock all awards

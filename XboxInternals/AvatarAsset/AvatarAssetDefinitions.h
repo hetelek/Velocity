@@ -1,6 +1,6 @@
 #pragma once
 
-#include "winnames.h"
+#include "TypeDefinitions.h"
 
 enum AssetSubcategory
 {

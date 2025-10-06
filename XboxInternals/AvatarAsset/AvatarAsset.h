@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IO/FileIO.h"
-#include "AvatarAssetDefinintions.h"
+#include "AvatarAssetDefinitions.h"
 #include <iostream>
 #include <vector>
 

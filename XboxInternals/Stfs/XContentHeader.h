@@ -1,11 +1,11 @@
 #pragma once
 
-#include "winnames.h"
+#include "TypeDefinitions.h"
 
 #include "StfsConstants.h"
 #include "StfsDefinitions.h"
 #include "IO/FileIO.h"
-#include "../AvatarAsset/AvatarAssetDefinintions.h"
+#include "../AvatarAsset/AvatarAssetDefinitions.h"
 #include "../Gpd/XdbfHelpers.h"
 #include "../Cryptography/XeCrypt.h"
 

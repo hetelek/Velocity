@@ -1,7 +1,7 @@
 #ifndef XECRYPT_H
 #define XECRYPT_H
 
-#include "winnames.h"
+#include "TypeDefinitions.h"
 #include <iostream>
 #include <string.h>
 

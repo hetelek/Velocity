@@ -14,7 +14,7 @@
 #include <QJsonArray>     // Updated to use Qt's built-in JSON parsing
 
 // other
-#include "winnames.h"
+#include "TypeDefinitions.h"
 
 struct TitleData {
     QString titleName;

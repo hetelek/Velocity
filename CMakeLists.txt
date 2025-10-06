@@ -21,6 +21,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Ensure MSVC reports correct __cplusplus value for C++20 compliance
+if(MSVC)
+    add_compile_options(/Zc:__cplusplus)
+endif()
+
 # ------------------------------
 # Options
 # ------------------------------

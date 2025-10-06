@@ -8,7 +8,7 @@
 #include "qthelpers.h"
 
 // other
-#include "winnames.h"
+#include "TypeDefinitions.h"
 #include <iostream>
 #include <vector>
 

@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-StfsPackage::StfsPackage(BaseIO *io, DWORD flags) :
+StfsPackage::StfsPackage(BaseIO* io, DWORD flags) :
     metaData(NULL), io(io), ioPassedIn(true), flags(flags)
 {
     try
@@ -39,8 +39,8 @@ void StfsPackage::Init()
     if (flags & StfsPackageCreate)
     {
         DWORD headerSize = (flags & StfsPackagePEC) ? ((flags & StfsPackageFemale) ? 0x2000 : 0x1000) : ((
-                    flags & StfsPackageFemale) ? 0xB000 : 0xA000);
-        BYTE zeroBuffer[0x1000] = {0};
+            flags & StfsPackageFemale) ? 0xB000 : 0xA000);
+        BYTE zeroBuffer[0x1000] = { 0 };
 
         // Write all null bytes for the header
         for (DWORD i = 0; i < ((headerSize >> 0xC) + ((flags & StfsPackageFemale) ? 1 : 2) + 1); i++)
@@ -68,7 +68,7 @@ void StfsPackage::Parse()
 {
     if (flags & StfsPackageCreate)
         metaData = new XContentHeader(io,
-                (flags & StfsPackagePEC) | MetadataSkipRead | MetadataDontFreeThumbnails);
+            (flags & StfsPackagePEC) | MetadataSkipRead | MetadataDontFreeThumbnails);
     else
         metaData = new XContentHeader(io, (flags & StfsPackagePEC));
 
@@ -161,11 +161,11 @@ void StfsPackage::Parse()
 
     // calculate the number of tables per level
     tablesPerLevel[0] = (metaData->stfsVolumeDescriptor.allocatedBlockCount / 0xAA) + ((
-                metaData->stfsVolumeDescriptor.allocatedBlockCount % 0xAA != 0) ? 1 : 0);
+        metaData->stfsVolumeDescriptor.allocatedBlockCount % 0xAA != 0) ? 1 : 0);
     tablesPerLevel[1] = (tablesPerLevel[0] / 0xAA) + ((tablesPerLevel[0] % 0xAA != 0 &&
-            metaData->stfsVolumeDescriptor.allocatedBlockCount > 0xAA) ? 1 : 0);
+        metaData->stfsVolumeDescriptor.allocatedBlockCount > 0xAA) ? 1 : 0);
     tablesPerLevel[2] = (tablesPerLevel[1] / 0xAA) + ((tablesPerLevel[1] % 0xAA != 0 &&
-            metaData->stfsVolumeDescriptor.allocatedBlockCount > 0x70E4) ? 1 : 0);
+        metaData->stfsVolumeDescriptor.allocatedBlockCount > 0x70E4) ? 1 : 0);
 
     // calculate the level of the top table
     topLevel = CalcualateTopLevel();
@@ -176,19 +176,19 @@ void StfsPackage::Parse()
 
     DWORD baseAddress = (topTable.trueBlockNumber << 0xC) + firstHashTableAddress;
     topTable.addressInFile = baseAddress + ((metaData->stfsVolumeDescriptor.blockSeperation & 2) <<
-            0xB);
+        0xB);
     io->SetPosition(topTable.addressInFile);
 
     DWORD dataBlocksPerHashTreeLevel[3] = { 1, 0xAA, 0x70E4 };
 
     // load the information
     topTable.entryCount = metaData->stfsVolumeDescriptor.allocatedBlockCount /
-            dataBlocksPerHashTreeLevel[topLevel];
+        dataBlocksPerHashTreeLevel[topLevel];
     if (metaData->stfsVolumeDescriptor.allocatedBlockCount > 0x70E4 &&
-            (metaData->stfsVolumeDescriptor.allocatedBlockCount % 0x70E4 != 0))
+        (metaData->stfsVolumeDescriptor.allocatedBlockCount % 0x70E4 != 0))
         topTable.entryCount++;
     else if (metaData->stfsVolumeDescriptor.allocatedBlockCount > 0xAA &&
-             (metaData->stfsVolumeDescriptor.allocatedBlockCount % 0xAA != 0))
+        (metaData->stfsVolumeDescriptor.allocatedBlockCount % 0xAA != 0))
         topTable.entryCount++;
 
     for (DWORD i = 0; i < topTable.entryCount; i++)
@@ -234,7 +234,7 @@ DWORD StfsPackage::ComputeBackingDataBlockNumber(DWORD blockNum)
 DWORD StfsPackage::BlockToAddress(DWORD blockNum)
 {
     // check for invalid block number
-    if(blockNum >= INT24_MAX)
+    if (blockNum > UINT24_MAX)
         throw string("STFS: Block number must be less than 0xFFFFFF.\n");
     return (ComputeBackingDataBlockNumber(blockNum) << 0x0C) + firstHashTableAddress;
 }
@@ -248,17 +248,17 @@ DWORD StfsPackage::ComputeLevelNBackingHashBlockNumber(DWORD blockNum, Level lev
 {
     switch (level)
     {
-        case Zero:
-            return ComputeLevel0BackingHashBlockNumber(blockNum);
+    case Zero:
+        return ComputeLevel0BackingHashBlockNumber(blockNum);
 
-        case One:
-            return ComputeLevel1BackingHashBlockNumber(blockNum);
+    case One:
+        return ComputeLevel1BackingHashBlockNumber(blockNum);
 
-        case Two:
-            return ComputeLevel2BackingHashBlockNumber(blockNum);
+    case Two:
+        return ComputeLevel2BackingHashBlockNumber(blockNum);
 
-        default:
-            throw string("STFS: Invalid level.\n");
+    default:
+        throw string("STFS: Invalid level.\n");
     }
 }
 
@@ -298,19 +298,19 @@ DWORD StfsPackage::GetHashAddressOfBlock(DWORD blockNum)
 
     switch (topLevel)
     {
-        case 0:
-            hashAddr += ((metaData->stfsVolumeDescriptor.blockSeperation & 2) << 0xB);
-            break;
-        case 1:
-            hashAddr += ((topTable.entries[blockNum / 0xAA].status & 0x40) << 6);
-            break;
-        case 2:
-            DWORD level1Off = ((topTable.entries[blockNum / 0x70E4].status & 0x40) << 6);
-            DWORD pos = ((ComputeLevel1BackingHashBlockNumber(blockNum) << 0xC) + firstHashTableAddress +
-                        level1Off) +( (blockNum % 0xAA) * 0x18);
-            io->SetPosition(pos + 0x14);
-            hashAddr += ((io->ReadByte() & 0x40) << 6);
-            break;
+    case 0:
+        hashAddr += ((metaData->stfsVolumeDescriptor.blockSeperation & 2) << 0xB);
+        break;
+    case 1:
+        hashAddr += ((topTable.entries[blockNum / 0xAA].status & 0x40) << 6);
+        break;
+    case 2:
+        DWORD level1Off = ((topTable.entries[blockNum / 0x70E4].status & 0x40) << 6);
+        DWORD pos = ((ComputeLevel1BackingHashBlockNumber(blockNum) << 0xC) + firstHashTableAddress +
+            level1Off) + ((blockNum % 0xAA) * 0x18);
+        io->SetPosition(pos + 0x14);
+        hashAddr += ((io->ReadByte() & 0x40) << 6);
+        break;
     }
     return hashAddr;
 }
@@ -332,7 +332,7 @@ HashEntry StfsPackage::GetBlockHashEntry(DWORD blockNum)
     return he;
 }
 
-void StfsPackage::ExtractBlock(DWORD blockNum, BYTE *data, DWORD length)
+void StfsPackage::ExtractBlock(DWORD blockNum, BYTE* data, DWORD length)
 {
     if (blockNum >= metaData->stfsVolumeDescriptor.allocatedBlockCount)
         throw string("STFS: Reference to illegal block number.\n");
@@ -363,12 +363,12 @@ void StfsPackage::ReadFileListing()
 
     StfsFileListing fl;
     DWORD currentAddr;
-    for(DWORD x = 0; x < metaData->stfsVolumeDescriptor.fileTableBlockCount; x++)
+    for (DWORD x = 0; x < metaData->stfsVolumeDescriptor.fileTableBlockCount; x++)
     {
         currentAddr = BlockToAddress(block);
         io->SetPosition(currentAddr);
 
-        for(DWORD i = 0; i < 0x40; i++)
+        for (DWORD i = 0; i < 0x40; i++)
         {
             StfsFileEntry fe;
 
@@ -422,7 +422,7 @@ void StfsPackage::ReadFileListing()
 StfsFileListing StfsPackage::GetFileListing(bool forceUpdate)
 {
     // update the file listing from file if requested
-    if(forceUpdate)
+    if (forceUpdate)
         ReadFileListing();
 
     return fileListing;
@@ -448,7 +448,7 @@ DWORD StfsPackage::GetFileMagic(StfsFileEntry entry)
 }
 
 void StfsPackage::ExtractFile(string pathInPackage, string outPath, void (*extractProgress)(void*,
-        DWORD, DWORD), void *arg)
+    DWORD, DWORD), void* arg)
 {
     // get the given path's file entry
     StfsFileEntry entry = GetFileEntry(pathInPackage);
@@ -457,8 +457,8 @@ void StfsPackage::ExtractFile(string pathInPackage, string outPath, void (*extra
     ExtractFile(&entry, outPath, extractProgress, arg);
 }
 
-void StfsPackage::ExtractFile(StfsFileEntry *entry, string outPath, void (*extractProgress)(void*,
-        DWORD, DWORD), void *arg)
+void StfsPackage::ExtractFile(StfsFileEntry* entry, string outPath, void (*extractProgress)(void*,
+    DWORD, DWORD), void* arg)
 {
     if (entry->nameLen == 0)
     {
@@ -489,7 +489,7 @@ void StfsPackage::ExtractFile(StfsFileEntry *entry, string outPath, void (*extra
     if (entry->flags & 1)
     {
         // allocate 0xAA blocks of memory, for maximum efficiency, yo
-        BYTE *buffer = new BYTE[0xAA000];
+        BYTE* buffer = new BYTE[0xAA000];
 
         // seek to the begining of the file
         DWORD startAddress = BlockToAddress(entry->startingBlockNum);
@@ -497,7 +497,7 @@ void StfsPackage::ExtractFile(StfsFileEntry *entry, string outPath, void (*extra
 
         // calculate the number of blocks to read before we hit a table
         DWORD blockCount = (ComputeLevel0BackingHashBlockNumber(entry->startingBlockNum) + blockStep[0])
-                - ((startAddress - firstHashTableAddress) >> 0xC);
+            - ((startAddress - firstHashTableAddress) >> 0xC);
 
         // pick up the change at the begining, until we hit a hash table
         if ((DWORD)entry->blocksForFile <= blockCount)
@@ -581,7 +581,7 @@ void StfsPackage::ExtractFile(StfsFileEntry *entry, string outPath, void (*extra
         BYTE data[0x1000];
 
         // read all the full blocks the file allocates
-        for(DWORD i = 0; i < fullReadCounts; i++)
+        for (DWORD i = 0; i < fullReadCounts; i++)
         {
             ExtractBlock(block, data);
             outFile.Write(data, 0x1000);
@@ -633,11 +633,11 @@ DWORD StfsPackage::GetHashTableSkipSize(DWORD tableAddress)
 }
 
 StfsFileEntry StfsPackage::GetFileEntry(string pathInPackage, bool checkFolders,
-        StfsFileEntry *newEntry)
+    StfsFileEntry* newEntry)
 {
     StfsFileEntry entry;
     GetFileEntry(SplitString(pathInPackage, "\\"), &fileListing, &entry, newEntry, (newEntry != NULL),
-            checkFolders);
+        checkFolders);
 
     if (entry.nameLen == 0)
     {
@@ -656,8 +656,8 @@ bool StfsPackage::FileExists(string pathInPackage)
     return (entry.nameLen != 0);
 }
 
-void StfsPackage::GetFileEntry(vector<string> locationOfFile, StfsFileListing *start,
-        StfsFileEntry *out, StfsFileEntry *newEntry, bool updateEntry, bool checkFolders)
+void StfsPackage::GetFileEntry(vector<string> locationOfFile, StfsFileListing* start,
+    StfsFileEntry* out, StfsFileEntry* newEntry, bool updateEntry, bool checkFolders)
 {
     bool found = false;
 
@@ -750,7 +750,7 @@ vector<string> StfsPackage::SplitString(string str, string delimeter)
     return splits;
 }
 
-void StfsPackage::AddToListing(StfsFileListing *fullListing, StfsFileListing *out)
+void StfsPackage::AddToListing(StfsFileListing* fullListing, StfsFileListing* out)
 {
     for (DWORD i = 0; i < fullListing->fileEntries.size(); i++)
     {
@@ -785,7 +785,7 @@ HashTable StfsPackage::GetLevelNHashTable(DWORD index, Level lvl)
 
     // compute base address of the hash table
     toReturn.trueBlockNumber = ComputeLevelNBackingHashBlockNumber(index *
-            dataBlocksPerHashTreeLevel[lvl], lvl);
+        dataBlocksPerHashTreeLevel[lvl], lvl);
     DWORD baseHashAddress = ((toReturn.trueBlockNumber << 0xC) + firstHashTableAddress);
 
     // adjust the hash address
@@ -801,7 +801,7 @@ HashTable StfsPackage::GetLevelNHashTable(DWORD index, Level lvl)
         // calculate the number of entries in the requested table
         if (index + 1 == tablesPerLevel[lvl])
             toReturn.entryCount = (lvl == Zero) ? metaData->stfsVolumeDescriptor.allocatedBlockCount % 0xAA :
-                    tablesPerLevel[lvl - 1] % 0xAA;
+            tablesPerLevel[lvl - 1] % 0xAA;
         else
             toReturn.entryCount = 0xAA;
     }
@@ -843,7 +843,7 @@ DWORD StfsPackage::GetHashTableEntryCount(DWORD index, Level lvl)
     {
         if (index + 1 == tablesPerLevel[lvl])
             return (lvl == Zero) ? metaData->stfsVolumeDescriptor.allocatedBlockCount % 0xAA :
-                   tablesPerLevel[lvl - 1] % 0xAA;
+            tablesPerLevel[lvl - 1] % 0xAA;
         else
             return 0xAA;
     }
@@ -861,39 +861,77 @@ void StfsPackage::Rehash()
     BYTE blockBuffer[0x1000];
     switch (topLevel)
     {
-        case Zero:
-            // set the position to the first data block in the file
-            io->SetPosition(BlockToAddress(0));
-            // iterate through all of the data blocks
-            for (DWORD i = 0; i < topTable.entryCount; i++)
+    case Zero:
+        // set the position to the first data block in the file
+        io->SetPosition(BlockToAddress(0));
+        // iterate through all of the data blocks
+        for (DWORD i = 0; i < topTable.entryCount; i++)
+        {
+            // read in the current data block
+            io->ReadBytes(blockBuffer, 0x1000);
+
+            // hash the block
+            HashBlock(blockBuffer, topTable.entries[i].blockHash);
+        }
+
+        break;
+
+    case One:
+        // loop through all of the level1 hash blocks
+        for (DWORD i = 0; i < topTable.entryCount; i++)
+        {
+            // get the current level0 hash table
+            HashTable level0Table = GetLevelNHashTable(i, Zero);
+
+            // set the position to the first data block in this table
+            io->SetPosition(BlockToAddress(i * 0xAA));
+
+            // iterate through all of the data blocks this table hashes
+            for (DWORD x = 0; x < level0Table.entryCount; x++)
             {
                 // read in the current data block
                 io->ReadBytes(blockBuffer, 0x1000);
 
                 // hash the block
-                HashBlock(blockBuffer, topTable.entries[i].blockHash);
+                HashBlock(blockBuffer, level0Table.entries[x].blockHash);
             }
 
-            break;
+            // build the table for hashing and writing
+            BuildTableInMemory(&level0Table, blockBuffer);
 
-        case One:
-            // loop through all of the level1 hash blocks
-            for (DWORD i = 0; i < topTable.entryCount; i++)
+            // Write the hash table back to the file
+            io->SetPosition(level0Table.addressInFile);
+            io->Write(blockBuffer, 0x1000);
+
+            // hash the table
+            HashBlock(blockBuffer, topTable.entries[i].blockHash);
+        }
+        break;
+
+    case Two:
+        // iterate through all of the level2 tables
+        for (DWORD i = 0; i < topTable.entryCount; i++)
+        {
+            // get the current level1 hash table
+            HashTable level1Table = GetLevelNHashTable(i, One);
+
+            // iterate through all of the level0 tables hashed in this table
+            for (DWORD x = 0; x < level1Table.entryCount; x++)
             {
                 // get the current level0 hash table
-                HashTable level0Table = GetLevelNHashTable(i, Zero);
+                HashTable level0Table = GetLevelNHashTable((i * 0xAA) + x, Zero);
 
                 // set the position to the first data block in this table
-                io->SetPosition(BlockToAddress(i * 0xAA));
+                io->SetPosition(BlockToAddress((i * 0x70E4) + (x * 0xAA)));
 
-                // iterate through all of the data blocks this table hashes
-                for (DWORD x = 0; x < level0Table.entryCount; x++)
+                // iterate through all of the data blocks hashed in this table
+                for (DWORD y = 0; y < level0Table.entryCount; y++)
                 {
-                    // read in the current data block
+                    // read the current data block
                     io->ReadBytes(blockBuffer, 0x1000);
 
-                    // hash the block
-                    HashBlock(blockBuffer, level0Table.entries[x].blockHash);
+                    // hash the data block
+                    HashBlock(blockBuffer, level0Table.entries[y].blockHash);
                 }
 
                 // build the table for hashing and writing
@@ -904,68 +942,30 @@ void StfsPackage::Rehash()
                 io->Write(blockBuffer, 0x1000);
 
                 // hash the table
-                HashBlock(blockBuffer, topTable.entries[i].blockHash);
+                HashBlock(blockBuffer, level1Table.entries[x].blockHash);
             }
-            break;
 
-        case Two:
-            // iterate through all of the level2 tables
-            for (DWORD i = 0; i < topTable.entryCount; i++)
-            {
-                // get the current level1 hash table
-                HashTable level1Table = GetLevelNHashTable(i, One);
+            // build the table for hashing and writing
+            BuildTableInMemory(&level1Table, blockBuffer);
 
-                // iterate through all of the level0 tables hashed in this table
-                for (DWORD x = 0; x < level1Table.entryCount; x++)
-                {
-                    // get the current level0 hash table
-                    HashTable level0Table = GetLevelNHashTable((i * 0xAA) + x, Zero);
+            // Write the number of blocks hashed by this table at the bottom of the table, MS why?
+            DWORD blocksHashed;
+            if (i + 1 == topTable.entryCount)
+                blocksHashed = (metaData->stfsVolumeDescriptor.allocatedBlockCount % 0x70E4 == 0) ? 0x70E4 :
+                metaData->stfsVolumeDescriptor.allocatedBlockCount % 0x70E4;
+            else
+                blocksHashed = 0x70E4;
+            FileIO::ReverseGenericArray(&blocksHashed, 1, 4);
+            ((DWORD*)&blockBuffer)[0x3FC] = blocksHashed;
 
-                    // set the position to the first data block in this table
-                    io->SetPosition(BlockToAddress((i * 0x70E4) + (x * 0xAA)));
+            // Write the hash table back to the file
+            io->SetPosition(level1Table.addressInFile);
+            io->Write(blockBuffer, 0x1000);
 
-                    // iterate through all of the data blocks hashed in this table
-                    for (DWORD y = 0; y < level0Table.entryCount; y++)
-                    {
-                        // read the current data block
-                        io->ReadBytes(blockBuffer, 0x1000);
-
-                        // hash the data block
-                        HashBlock(blockBuffer, level0Table.entries[y].blockHash);
-                    }
-
-                    // build the table for hashing and writing
-                    BuildTableInMemory(&level0Table, blockBuffer);
-
-                    // Write the hash table back to the file
-                    io->SetPosition(level0Table.addressInFile);
-                    io->Write(blockBuffer, 0x1000);
-
-                    // hash the table
-                    HashBlock(blockBuffer, level1Table.entries[x].blockHash);
-                }
-
-                // build the table for hashing and writing
-                BuildTableInMemory(&level1Table, blockBuffer);
-
-                // Write the number of blocks hashed by this table at the bottom of the table, MS why?
-                DWORD blocksHashed;
-                if (i + 1 == topTable.entryCount)
-                    blocksHashed = (metaData->stfsVolumeDescriptor.allocatedBlockCount % 0x70E4 == 0) ? 0x70E4 :
-                            metaData->stfsVolumeDescriptor.allocatedBlockCount % 0x70E4;
-                else
-                    blocksHashed = 0x70E4;
-                FileIO::ReverseGenericArray(&blocksHashed, 1, 4);
-                ((DWORD*)&blockBuffer)[0x3FC] = blocksHashed;
-
-                // Write the hash table back to the file
-                io->SetPosition(level1Table.addressInFile);
-                io->Write(blockBuffer, 0x1000);
-
-                // hash the table
-                HashBlock(blockBuffer, topTable.entries[i].blockHash);
-            }
-            break;
+            // hash the table
+            HashBlock(blockBuffer, topTable.entries[i].blockHash);
+        }
+        break;
     }
 
     // build table so we can Write it to the file and hash it
@@ -1002,7 +1002,7 @@ void StfsPackage::Rehash()
     DWORD headerSize = calculated - headerStart;
 
     // read the data to hash
-    BYTE *buffer = new BYTE[headerSize];
+    BYTE* buffer = new BYTE[headerSize];
     io->SetPosition(headerStart);
     io->ReadBytes(buffer, headerSize);
 
@@ -1026,7 +1026,7 @@ void StfsPackage::SwapTable(DWORD index, Level lvl)
 
     // read in all the status's so that when we swap tables, the package isn't messed up
     DWORD entryCount = GetHashTableEntryCount(index, lvl);
-    DWORD *tableStatuses = new DWORD[entryCount];
+    DWORD* tableStatuses = new DWORD[entryCount];
 
     // set the io to the beginning of the table
     DWORD tablePos = GetHashTableAddress(index, lvl) + 0x14;
@@ -1099,12 +1099,12 @@ DWORD StfsPackage::GetHashTableAddress(DWORD index, Level lvl)
 DWORD StfsPackage::GetBaseHashTableAddress(DWORD index, Level lvl)
 {
     return ((ComputeLevelNBackingHashBlockNumber(index * dataBlocksPerHashTreeLevel[lvl],
-             lvl) << 0xC) + firstHashTableAddress);
+        lvl) << 0xC) + firstHashTableAddress);
 }
 
 DWORD StfsPackage::GetTableHashAddress(DWORD index, Level lvl)
 {
-    if(lvl >= topTable.level || lvl < Zero)
+    if (lvl >= topTable.level || lvl < Zero)
         throw string("STFS: Level is invalid. No parent hash address accessible.\n");
 
     // compute base address of the hash table
@@ -1139,7 +1139,7 @@ void StfsPackage::SetBlockStatus(DWORD blockNum, BlockStatusLevelZero status)
     io->Write((BYTE)status);
 }
 
-void StfsPackage::HashBlock(BYTE *block, BYTE *outBuffer)
+void StfsPackage::HashBlock(BYTE* block, BYTE* outBuffer)
 {
     // hash the block
     const auto sha1 = Botan::HashFunction::create_or_throw("SHA-1");
@@ -1147,7 +1147,7 @@ void StfsPackage::HashBlock(BYTE *block, BYTE *outBuffer)
     sha1->final(outBuffer);
 }
 
-void StfsPackage::BuildTableInMemory(HashTable *table, BYTE *outBuffer)
+void StfsPackage::BuildTableInMemory(HashTable* table, BYTE* outBuffer)
 {
     memset(outBuffer, 0, 0x1000);
     for (DWORD i = 0; i < table->entryCount; i++)
@@ -1185,7 +1185,7 @@ void StfsPackage::RemoveFile(StfsFileEntry entry)
 
     // set the status of every allocated block to unallocated
     DWORD blockToDeallocate = entry.startingBlockNum;
-    while (blockToDeallocate != INT24_MAX)
+    while (blockToDeallocate != BLOCK_CHAIN_TERMINATOR)
     {
         SetBlockStatus(blockToDeallocate, Unallocated);
         blockToDeallocate = GetBlockHashEntry(blockToDeallocate).nextBlock;
@@ -1195,8 +1195,8 @@ void StfsPackage::RemoveFile(StfsFileEntry entry)
     WriteFileListing(true, &files, &folders);
 }
 
-void StfsPackage::WriteFileListing(bool usePassed, vector<StfsFileEntry> *outFis,
-        vector<StfsFileEntry> *outFos)
+void StfsPackage::WriteFileListing(bool usePassed, vector<StfsFileEntry>* outFis,
+    vector<StfsFileEntry>* outFos)
 {
     // get the raw file listing
     vector<StfsFileEntry> outFiles, outFolders;
@@ -1251,7 +1251,7 @@ void StfsPackage::WriteFileListing(bool usePassed, vector<StfsFileEntry> *outFis
                 nextBlock = GetBlockHashEntry(block).nextBlock;
 
                 // if not, allocate one and make it so it always allocates
-                if (nextBlock == INT24_MAX)
+                if (nextBlock == BLOCK_CHAIN_TERMINATOR)
                 {
                     nextBlock = AllocateBlock();
                     SetNextBlock(block, nextBlock);
@@ -1273,7 +1273,7 @@ void StfsPackage::WriteFileListing(bool usePassed, vector<StfsFileEntry> *outFis
 
     // same as above
     int outFoldersAndFilesSize = outFileSize + outFiles.size();
-    for(int i = outFileSize; i < outFoldersAndFilesSize; i++)
+    for (int i = outFileSize; i < outFoldersAndFilesSize; i++)
     {
         if (firstCheck)
             firstCheck = false;
@@ -1288,7 +1288,7 @@ void StfsPackage::WriteFileListing(bool usePassed, vector<StfsFileEntry> *outFis
             else
             {
                 nextBlock = GetBlockHashEntry(block).nextBlock;
-                if (nextBlock == INT24_MAX)
+                if (nextBlock == BLOCK_CHAIN_TERMINATOR)
                 {
                     nextBlock = AllocateBlock();
                     SetNextBlock(block, nextBlock);
@@ -1309,7 +1309,7 @@ void StfsPackage::WriteFileListing(bool usePassed, vector<StfsFileEntry> *outFis
     int remainer = 0;
     if (remainingEntries > 0)
         remainer = (0x40 - remainingEntries) * 0x40;
-    BYTE *nullBytes = new BYTE[remainer];
+    BYTE* nullBytes = new BYTE[remainer];
     memset(nullBytes, 0, remainer);
     io->Write(nullBytes, remainer);
 
@@ -1337,7 +1337,7 @@ void StfsPackage::SetNextBlock(DWORD blockNum, INT24 nextBlockNum)
     io->Flush();
 }
 
-void StfsPackage::WriteFileEntry(StfsFileEntry *entry)
+void StfsPackage::WriteFileEntry(StfsFileEntry* entry)
 {
     // update the name length so it matches the string
     entry->nameLen = entry->name.length();
@@ -1365,7 +1365,7 @@ void StfsPackage::RemoveFile(string pathInPackage)
     RemoveFile(GetFileEntry(pathInPackage));
 }
 
-INT24 StfsPackage::AllocateBlock()
+UINT24 StfsPackage::AllocateBlock()
 {
     // reset the cached table
     cached.addressInFile = 0;
@@ -1381,11 +1381,11 @@ INT24 StfsPackage::AllocateBlock()
     // recalculate the hash table counts to see if we need to make any new tables
     DWORD recalcTablesPerLevel[3];
     recalcTablesPerLevel[0] = (metaData->stfsVolumeDescriptor.allocatedBlockCount / 0xAA) + ((
-                metaData->stfsVolumeDescriptor.allocatedBlockCount % 0xAA != 0) ? 1 : 0);
+        metaData->stfsVolumeDescriptor.allocatedBlockCount % 0xAA != 0) ? 1 : 0);
     recalcTablesPerLevel[1] = (recalcTablesPerLevel[0] / 0xAA) + ((recalcTablesPerLevel[0] % 0xAA != 0
-            && metaData->stfsVolumeDescriptor.allocatedBlockCount > 0xAA) ? 1 : 0);
+        && metaData->stfsVolumeDescriptor.allocatedBlockCount > 0xAA) ? 1 : 0);
     recalcTablesPerLevel[2] = (recalcTablesPerLevel[1] / 0xAA) + ((recalcTablesPerLevel[1] % 0xAA != 0
-            && metaData->stfsVolumeDescriptor.allocatedBlockCount > 0x70E4) ? 1 : 0);
+        && metaData->stfsVolumeDescriptor.allocatedBlockCount > 0x70E4) ? 1 : 0);
 
     // allocate memory for hash tables if needed
     for (int i = 2; i >= 0; i--)
@@ -1404,7 +1404,7 @@ INT24 StfsPackage::AllocateBlock()
 
                 // Write it to the file
                 io->SetPosition(topTable.addressInFile + ((tablesPerLevel[i] - 1) * 0x18) + 0x15);
-                io->Write((INT24)INT24_MAX);
+                io->Write((INT24)BLOCK_CHAIN_TERMINATOR);
             }
         }
     }
@@ -1440,36 +1440,36 @@ INT24 StfsPackage::AllocateBlock()
 
     // Write the block status
     io->SetPosition(GetHashAddressOfBlock(metaData->stfsVolumeDescriptor.allocatedBlockCount - 1) +
-            0x14);
+        0x14);
     io->Write((BYTE)Allocated);
 
     if (topLevel == Zero)
     {
         topTable.entryCount++;
         topTable.entries[metaData->stfsVolumeDescriptor.allocatedBlockCount - 1].status = (BYTE)Allocated;
-        topTable.entries[metaData->stfsVolumeDescriptor.allocatedBlockCount - 1].nextBlock = INT24_MAX;
+        topTable.entries[metaData->stfsVolumeDescriptor.allocatedBlockCount - 1].nextBlock = BLOCK_CHAIN_TERMINATOR;
     }
 
     // terminate the chain
-    io->Write((INT24)0xFFFFFF);
+    io->Write((INT24)BLOCK_CHAIN_TERMINATOR);
 
     metaData->WriteVolumeDescriptor();
-    return metaData->stfsVolumeDescriptor.allocatedBlockCount - 1;
+    return static_cast<UINT24>(metaData->stfsVolumeDescriptor.allocatedBlockCount - 1);
 }
 
 DWORD StfsPackage::GetBlocksUntilNextHashTable(DWORD currentBlock)
 {
     return (ComputeLevel0BackingHashBlockNumber(currentBlock) + blockStep[0]) - ((BlockToAddress(
-                currentBlock) - firstHashTableAddress) >> 0xC);
+        currentBlock) - firstHashTableAddress) >> 0xC);
 }
 
-INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
+UINT24 StfsPackage::AllocateBlocks(DWORD blockCount)
 {
-    INT24 returnValue = metaData->stfsVolumeDescriptor.allocatedBlockCount;
+    UINT24 returnValue = static_cast<UINT24>(metaData->stfsVolumeDescriptor.allocatedBlockCount);
 
     // figure out how far away the next hash table set is
     DWORD blocksUntilTable = GetBlocksUntilNextHashTable(
-                metaData->stfsVolumeDescriptor.allocatedBlockCount);
+        metaData->stfsVolumeDescriptor.allocatedBlockCount);
 
     // create a hash block of all statuses set to allocated, for fast writing
     BYTE allocatedHashBlock[0x1000];
@@ -1480,22 +1480,22 @@ INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
 
     // allocate the memory in the file
     io->SetPosition((((blockCount <= blocksUntilTable) ? blockCount : blocksUntilTable) << 0xC) - 1,
-            ios_base::end);
+        ios_base::end);
     io->Write((BYTE)0);
 
     // set blocks to allocated in hash table
     io->SetPosition(BlockToAddress((metaData->stfsVolumeDescriptor.allocatedBlockCount -
-            (0xAA - blocksUntilTable))) - (0x1000 << packageSex) +
-            (metaData->stfsVolumeDescriptor.allocatedBlockCount * 0x18));
+        (0xAA - blocksUntilTable))) - (0x1000 << packageSex) +
+        (metaData->stfsVolumeDescriptor.allocatedBlockCount * 0x18));
     io->Write(allocatedHashBlock, blocksUntilTable * 0x18);
 
     // update the allocated block count
     metaData->stfsVolumeDescriptor.allocatedBlockCount += ((blockCount <= blocksUntilTable) ?
-            blockCount : blocksUntilTable);
+        blockCount : blocksUntilTable);
 
     // allocate memory the hash table
     io->SetPosition(GetHashTableSkipSize(metaData->stfsVolumeDescriptor.allocatedBlockCount) - 1,
-            ios_base::end);
+        ios_base::end);
     io->Write((BYTE)0);
 
     blockCount -= blocksUntilTable;
@@ -1505,12 +1505,12 @@ INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
     {
         // allocate the memory in the file
         io->SetPosition(0xAA000 + GetHashTableSkipSize(metaData->stfsVolumeDescriptor.allocatedBlockCount +
-                0xAA) - 1, ios_base::end);
+            0xAA) - 1, ios_base::end);
         io->Write((BYTE)0);
 
         // set all the blocks to allocated
         io->SetPosition(BlockToAddress(metaData->stfsVolumeDescriptor.allocatedBlockCount) -
-                (0x1000 << packageSex));
+            (0x1000 << packageSex));
         io->Write(allocatedHashBlock, 0x1000);
 
         // update the values
@@ -1522,12 +1522,12 @@ INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
     {
         // allocate the extra
         io->SetPosition(GetHashTableSkipSize(metaData->stfsVolumeDescriptor.allocatedBlockCount + 0xAA) +
-                (blockCount << 0xC) - 1, ios_base::end);
+            (blockCount << 0xC) - 1, ios_base::end);
         io->Write((BYTE)0);
 
         // set all the blocks to allocated
         io->SetPosition(BlockToAddress(metaData->stfsVolumeDescriptor.allocatedBlockCount) -
-                (0x1000 << packageSex));
+            (0x1000 << packageSex));
         io->Write(allocatedHashBlock, blockCount * 0x18);
     }
 
@@ -1560,10 +1560,10 @@ INT24 StfsPackage::AllocateBlocks(DWORD blockCount)
     return returnValue;
 }
 
-void StfsPackage::FindDirectoryListing(vector<string> locationOfDirectory, StfsFileListing *start,
-        StfsFileListing **out)
+void StfsPackage::FindDirectoryListing(vector<string> locationOfDirectory, StfsFileListing* start,
+    StfsFileListing** out)
 {
-    if(locationOfDirectory.size() == 0)
+    if (locationOfDirectory.size() == 0)
         *out = start;
 
     bool finalLoop = (locationOfDirectory.size() == 1);
@@ -1576,7 +1576,7 @@ void StfsPackage::FindDirectoryListing(vector<string> locationOfDirectory, StfsF
                 *out = &start->folderEntries.at(i);
             else
                 for (DWORD i = 0; i < start->folderEntries.size(); i++)
-                    if(*out == NULL)
+                    if (*out == NULL)
                         FindDirectoryListing(locationOfDirectory, &start->folderEntries.at(i), out);
                     else
                         break;
@@ -1592,18 +1592,18 @@ void StfsPackage::UpdateEntry(string pathInPackage, StfsFileEntry entry)
 }
 
 StfsFileEntry StfsPackage::InjectFile(string path, string pathInPackage,
-        void(*injectProgress)(void*, DWORD, DWORD), void *arg)
+    void(*injectProgress)(void*, DWORD, DWORD), void* arg)
 {
-    if(FileExists(pathInPackage))
+    if (FileExists(pathInPackage))
         throw string("STFS: File already exists in the package.\n");
 
     // split the string and open a io
     vector<string> split = SplitString(pathInPackage, "\\");
-    StfsFileListing *folder = NULL;
+    StfsFileListing* folder = NULL;
 
     int size = split.size();
     string fileName;
-    if(size > 1)
+    if (size > 1)
     {
         // get the name
         fileName = split.at(size - 1);
@@ -1611,7 +1611,7 @@ StfsFileEntry StfsPackage::InjectFile(string path, string pathInPackage,
 
         // find the directory we'd like to inject to
         FindDirectoryListing(split, &fileListing, &folder);
-        if(folder == NULL)
+        if (folder == NULL)
             throw string("STFS: The given folder could not be found.\n");
     }
     else
@@ -1636,7 +1636,7 @@ StfsFileEntry StfsPackage::InjectFile(string path, string pathInPackage,
     entry.fileSize = fileSize;
     entry.flags = ConsecutiveBlocks;
     entry.pathIndicator = folder->folder.entryIndex;
-    entry.startingBlockNum = INT24_MAX;
+    entry.startingBlockNum = BLOCK_CHAIN_TERMINATOR;
     entry.blocksForFile = ((fileSize + 0xFFF) & 0xFFFFFFF000) >> 0xC;
     entry.createdTimeStamp = MSTimeToDWORD(TimetToMSTime(time(NULL)));
     entry.accessTimeStamp = entry.createdTimeStamp;
@@ -1645,19 +1645,18 @@ StfsFileEntry StfsPackage::InjectFile(string path, string pathInPackage,
     if (injectProgress != NULL)
         injectProgress(arg, 0, entry.blocksForFile);
 
-    INT24 block = 0;
-    INT24 prevBlock = INT24_MAX;
+    UINT24 block = 0;
+    UINT24 prevBlock = BLOCK_CHAIN_TERMINATOR;
     DWORD counter = 0;
     BYTE data[0x1000];
-    while(fileSize >= 0x1000)
+    while (fileSize >= 0x1000)
     {
         block = AllocateBlock();
 
-
-        if (entry.startingBlockNum == INT24_MAX)
+        if (entry.startingBlockNum == BLOCK_CHAIN_TERMINATOR)
             entry.startingBlockNum = block;
 
-        if (prevBlock != INT24_MAX)
+        if (prevBlock != BLOCK_CHAIN_TERMINATOR)
             SetNextBlock(prevBlock, block);
 
         prevBlock = block;
@@ -1675,17 +1674,17 @@ StfsFileEntry StfsPackage::InjectFile(string path, string pathInPackage,
             injectProgress(arg, ++counter, entry.blocksForFile);
     }
 
-    if(fileSize != 0)
+    if (fileSize != 0)
     {
         block = AllocateBlock();
 
-        if (entry.startingBlockNum == INT24_MAX)
+        if (entry.startingBlockNum == BLOCK_CHAIN_TERMINATOR)
             entry.startingBlockNum = block;
 
-        if (prevBlock != INT24_MAX)
+        if (prevBlock != BLOCK_CHAIN_TERMINATOR)
             SetNextBlock(prevBlock, block);
 
-        BYTE *data = new BYTE[fileSize];
+        BYTE* data = new BYTE[fileSize];
         fileIn.ReadBytes(data, fileSize);
         io->SetPosition(BlockToAddress(block));
         io->Write(data, fileSize);
@@ -1701,7 +1700,7 @@ StfsFileEntry StfsPackage::InjectFile(string path, string pathInPackage,
     }
     fileIn.Close();
 
-    SetNextBlock(block, INT24_MAX);
+    SetNextBlock(block, BLOCK_CHAIN_TERMINATOR);
 
     folder->fileEntries.push_back(entry);
     WriteFileListing();
@@ -1722,19 +1721,19 @@ StfsFileEntry StfsPackage::InjectFile(string path, string pathInPackage,
     return entry;
 }
 
-StfsFileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPackage,
-        void (*injectProgress)(void *, DWORD, DWORD), void *arg)
+StfsFileEntry StfsPackage::InjectData(BYTE* data, DWORD length, string pathInPackage,
+    void (*injectProgress)(void*, DWORD, DWORD), void* arg)
 {
-    if(FileExists(pathInPackage))
+    if (FileExists(pathInPackage))
         throw string("STFS: File already exists in the package.\n");
 
     // split the string and open a io
     vector<string> split = SplitString(pathInPackage, "\\");
-    StfsFileListing *folder = NULL;
+    StfsFileListing* folder = NULL;
 
     int size = split.size();
     string fileName;
-    if(size > 1)
+    if (size > 1)
     {
         // get the name
         fileName = split.at(size - 1);
@@ -1742,7 +1741,7 @@ StfsFileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPac
 
         // find the directory we'd like to inject to
         FindDirectoryListing(split, &fileListing, &folder);
-        if(folder == NULL)
+        if (folder == NULL)
             throw string("STFS: The given folder could not be found.\n");
     }
     else
@@ -1759,26 +1758,26 @@ StfsFileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPac
     entry.fileSize = fileSize;
     entry.flags = ConsecutiveBlocks;
     entry.pathIndicator = folder->folder.entryIndex;
-    entry.startingBlockNum = INT24_MAX;
+    entry.startingBlockNum = BLOCK_CHAIN_TERMINATOR;
     entry.blocksForFile = ((fileSize + 0xFFF) & 0xFFFFFFF000) >> 0xC;
 
-    INT24 block = 0;
-    INT24 prevBlock = INT24_MAX;
+    UINT24 block = 0;
+    UINT24 prevBlock = BLOCK_CHAIN_TERMINATOR;
     DWORD counter = 0;
-    while(fileSize >= 0x1000)
+    while (fileSize >= 0x1000)
     {
         block = AllocateBlock();
 
-        if (entry.startingBlockNum == INT24_MAX)
+        if (entry.startingBlockNum == BLOCK_CHAIN_TERMINATOR)
             entry.startingBlockNum = block;
 
-        if (prevBlock != INT24_MAX)
+        if (prevBlock != BLOCK_CHAIN_TERMINATOR)
             SetNextBlock(prevBlock, block);
 
         prevBlock = block;
 
         // read the data
-        BYTE *dataBlock = data + (counter++ * 0x1000);
+        BYTE* dataBlock = data + (counter++ * 0x1000);
 
         io->SetPosition(BlockToAddress(block));
         io->Write(dataBlock, 0x1000);
@@ -1790,17 +1789,17 @@ StfsFileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPac
             injectProgress(arg, counter, entry.blocksForFile);
     }
 
-    if(fileSize != 0)
+    if (fileSize != 0)
     {
         block = AllocateBlock();
 
-        if (entry.startingBlockNum == INT24_MAX)
+        if (entry.startingBlockNum == BLOCK_CHAIN_TERMINATOR)
             entry.startingBlockNum = block;
 
-        if (prevBlock != INT24_MAX)
+        if (prevBlock != BLOCK_CHAIN_TERMINATOR)
             SetNextBlock(prevBlock, block);
 
-        BYTE *blockData = data + (length - fileSize);
+        BYTE* blockData = data + (length - fileSize);
         io->SetPosition(BlockToAddress(block));
         io->Write(blockData, fileSize);
 
@@ -1811,7 +1810,7 @@ StfsFileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPac
             injectProgress(arg, entry.blocksForFile, entry.blocksForFile);
     }
 
-    SetNextBlock(block, INT24_MAX);
+    SetNextBlock(block, BLOCK_CHAIN_TERMINATOR);
 
     folder->fileEntries.push_back(entry);
     WriteFileListing();
@@ -1833,8 +1832,8 @@ StfsFileEntry StfsPackage::InjectData(BYTE *data, DWORD length, string pathInPac
     return entry;
 }
 
-void StfsPackage::ReplaceFile(string path, StfsFileEntry *entry, string pathInPackage,
-        void (*replaceProgress)(void *, DWORD, DWORD), void *arg)
+void StfsPackage::ReplaceFile(string path, StfsFileEntry* entry, string pathInPackage,
+    void (*replaceProgress)(void*, DWORD, DWORD), void* arg)
 {
     if (entry->nameLen == 0)
         throw string("STFS: File doesn't exists in the package.\n");
@@ -1849,7 +1848,7 @@ void StfsPackage::ReplaceFile(string path, StfsFileEntry *entry, string pathInPa
     entry->fileSize = fileSize;
     entry->blocksForFile = ((fileSize + 0xFFF) & 0xFFFFFFF000) >> 0xC;
 
-    DWORD block = entry->startingBlockNum;
+    UINT24 block = entry->startingBlockNum;
     io->SetPosition(BlockToAddress(block));
 
     DWORD fullReads = fileSize / 0x1000;
@@ -1861,7 +1860,7 @@ void StfsPackage::ReplaceFile(string path, StfsFileEntry *entry, string pathInPa
         if (!first)
         {
             // check if we need to allocate a new block
-            INT24 nextBlock;
+            UINT24 nextBlock;
             if (alwaysAllocate)
             {
                 nextBlock = AllocateBlock();
@@ -1875,7 +1874,7 @@ void StfsPackage::ReplaceFile(string path, StfsFileEntry *entry, string pathInPa
                 nextBlock = GetBlockHashEntry(block).nextBlock;
 
                 // if not, allocate one and make it so it always allocates
-                if (nextBlock == INT24_MAX)
+                if (nextBlock == BLOCK_CHAIN_TERMINATOR)
                 {
                     nextBlock = AllocateBlock();
                     SetNextBlock(block, nextBlock);
@@ -1905,8 +1904,8 @@ void StfsPackage::ReplaceFile(string path, StfsFileEntry *entry, string pathInPa
     DWORD remainder = fileSize % 0x1000;
     if (remainder != 0)
     {
-        INT24 nextBlock;
-        if(!first)
+        UINT24 nextBlock;
+        if (!first)
         {
             // check if we need to allocate a new block
             if (alwaysAllocate)
@@ -1922,7 +1921,7 @@ void StfsPackage::ReplaceFile(string path, StfsFileEntry *entry, string pathInPa
                 nextBlock = GetBlockHashEntry(block).nextBlock;
 
                 // if not, allocate one and make it so it always allocates
-                if (nextBlock == INT24_MAX)
+                if (nextBlock == BLOCK_CHAIN_TERMINATOR)
                 {
                     nextBlock = AllocateBlock();
                     SetNextBlock(block, nextBlock);
@@ -1935,7 +1934,7 @@ void StfsPackage::ReplaceFile(string path, StfsFileEntry *entry, string pathInPa
         // go to the next block position
         io->SetPosition(BlockToAddress(block));
 
-        BYTE *toWrite = new BYTE[remainder];
+        BYTE* toWrite = new BYTE[remainder];
         fileIn.ReadBytes(toWrite, remainder);
 
         io->Write(toWrite, remainder);
@@ -1947,7 +1946,7 @@ void StfsPackage::ReplaceFile(string path, StfsFileEntry *entry, string pathInPa
     if (replaceProgress != NULL)
         replaceProgress(arg, entry->blocksForFile, entry->blocksForFile);
 
-    SetNextBlock(block, INT24_MAX);
+    SetNextBlock(block, BLOCK_CHAIN_TERMINATOR);
 
     entry->flags &= 0x2;
 
@@ -1973,8 +1972,8 @@ void StfsPackage::ReplaceFile(string path, StfsFileEntry *entry, string pathInPa
     }
 }
 
-void StfsPackage::ReplaceFile(string path, string pathInPackage, void (*replaceProgress)(void *,
-        DWORD, DWORD), void *arg)
+void StfsPackage::ReplaceFile(string path, string pathInPackage, void (*replaceProgress)(void*,
+    DWORD, DWORD), void* arg)
 {
     StfsFileEntry entry = GetFileEntry(pathInPackage);
     ReplaceFile(path, &entry, pathInPackage, replaceProgress, arg);
@@ -2002,14 +2001,14 @@ void StfsPackage::CreateFolder(string pathInPackage)
     // split the string and open a io
     vector<string> split = SplitString(pathInPackage, "\\");
 
-    StfsFileListing *folder = NULL;
+    StfsFileListing* folder = NULL;
     FindDirectoryListing(split, &fileListing, &folder);
     if (folder != NULL)
         throw string("STFS: Directory already exists in the package.\n");
 
     int size = split.size();
     string fileName;
-    if(size > 1)
+    if (size > 1)
     {
         // get the name
         fileName = split.at(size - 1);
@@ -2017,7 +2016,7 @@ void StfsPackage::CreateFolder(string pathInPackage)
 
         // find the directory we'd like to inject to
         FindDirectoryListing(split, &fileListing, &folder);
-        if(folder == NULL)
+        if (folder == NULL)
             throw string("STFS: The given folder could not be found.\n");
     }
     else
@@ -2050,8 +2049,8 @@ void StfsPackage::CreateFolder(string pathInPackage)
     WriteFileListing();
 }
 
-void StfsPackage::GenerateRawFileListing(StfsFileListing *in, vector<StfsFileEntry> *outFiles,
-        vector<StfsFileEntry> *outFolders)
+void StfsPackage::GenerateRawFileListing(StfsFileListing* in, vector<StfsFileEntry>* outFiles,
+    vector<StfsFileEntry>* outFolders)
 {
     int fiEntries = in->fileEntries.size();
     int foEntries = in->folderEntries.size();

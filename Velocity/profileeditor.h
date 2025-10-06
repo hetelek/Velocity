@@ -22,7 +22,7 @@
 #include "Gpd/DashboardGpd.h"
 #include "Gpd/GameGpd.h"
 #include "Gpd/AvatarAwardGpd.h"
-#include "AvatarAsset/AvatarAssetDefinintions.h"
+#include "AvatarAsset/AvatarAssetDefinitions.h"
 #include "Account/Account.h"
 #include "Account/AccountHelpers.h"
 
@@ -186,7 +186,7 @@ enum State
     StateUnlockedOnline
 };
 
-Q_DECLARE_METATYPE( struct AvatarAward* )
+Q_DECLARE_METATYPE( AvatarAwardData* )
 
 class ProfileEditor : public QDialog
 {
@@ -291,7 +291,7 @@ private:
     QString assetSavePath;
 
     void addToDashGpd(SettingEntry *entry, SettingEntryType type, UINT64 id);
-    void updateAvatarAward(TitleEntry *entry, AvatarAwardGpd *gpd, struct AvatarAward *award,
+    void updateAvatarAward(TitleEntry *entry, AvatarAwardGpd *gpd, AvatarAwardData *award,
             State toSet);
     void updateAchievement(TitleEntry *entry, AchievementEntry *chiev, State toSet, GameGpd *gpd);
     State getStateFromFlags(DWORD flags);

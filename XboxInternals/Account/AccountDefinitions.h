@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include "winnames.h"
+#include "TypeDefinitions.h"
 
 using std::string;
 using std::wstring;

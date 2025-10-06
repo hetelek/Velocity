@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include "Xdbf.h"
-#include "XdbfDefininitions.h"
+#include "XdbfDefinitions.h"
 #include <vector>
 
 #include "XboxInternals_global.h"

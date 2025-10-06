@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
     qRegisterMetaType<TitleEntry>("TitleEntry");
     qRegisterMetaType<StfsPackage*>("StfsPackage*");
     qRegisterMetaType<StfsFileEntry*>("StfsFileEntry*");
-    qRegisterMetaType<struct AvatarAward*>("AvatarAward*");
+    qRegisterMetaType<AvatarAwardData*>("AvatarAwardData*");
 
     // Quick Windows hack to enforce light mode until dark mode is properly implemented to aid in text visibility issues
     a.setStyle("Fusion");

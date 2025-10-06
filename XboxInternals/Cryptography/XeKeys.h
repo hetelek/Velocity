@@ -1,7 +1,7 @@
 #ifndef XEKEYS_H
 #define XEKEYS_H
 
-#include "winnames.h"
+#include "TypeDefinitions.h"
 #include "XeCrypt.h"
 #include "IO/FileIO.h"
 

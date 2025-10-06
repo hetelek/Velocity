@@ -1,7 +1,7 @@
 #ifndef STFSDEFINITIONS_H
 #define STFSDEFINITIONS_H
 
-#include "winnames.h"
+#include "TypeDefinitions.h"
 #include "StfsConstants.h"
 #include "IO/FileIO.h"
 #include <iostream>
