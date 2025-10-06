@@ -1,5 +1,9 @@
 Velocity
 ========
+
+**This repository is not regularly monitored and active development ceased quite some time ago. Please do not expect issues or PRs to be actioned on.**
+
+
 About
 -----
 Developed mainly by Stevie Hetelekides(Hetelek) and Adam Spindler(Experiment5X). For a full list of the contributors of Velocity, view the [contributors graph](https://github.com/hetelek/Velocity/graphs/contributors).
