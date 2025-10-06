@@ -48,7 +48,7 @@
          <item>
           <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>Adressable Sectors:</string>
+            <string>Addressable Sectors:</string>
            </property>
           </widget>
          </item>

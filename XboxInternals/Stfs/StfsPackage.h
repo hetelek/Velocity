@@ -10,7 +10,7 @@
 #include "IO/FileIO.h"
 #include "XContentHeader.h"
 
-#include <botan/hash.h>
+#include <botan_all.h>
 
 #include "XboxInternals_global.h"
 

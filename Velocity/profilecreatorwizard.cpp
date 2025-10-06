@@ -199,7 +199,7 @@ void ProfileCreatorWizard::onFinished(int status)
     catch (string error)
     {
         QMessageBox::critical(this, "Error",
-                "An error occured while creating the profile.\n\n" + QString::fromStdString(error));
+                "An error occurred while creating the profile.\n\n" + QString::fromStdString(error));
     }
 }
 
