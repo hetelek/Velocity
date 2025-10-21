@@ -16,10 +16,12 @@ class XBOXINTERNALSSHARED_EXPORT AccountHelpers
 public:
     static string CountryToString(XboxLiveCountry country);
 
-    static string SubscriptionTeirToString(SubscriptionTeir teir);
+    static string SubscriptionTierToString(SubscriptionTier tier);
 
     static string ConsoleLanguageToString(ConsoleLanguage language);
 
     static string XboxLiveServiceProviderToString(XboxLiveServiceProvider provider);
 };
+
+
 

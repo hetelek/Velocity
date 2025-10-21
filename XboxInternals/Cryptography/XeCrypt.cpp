@@ -25,3 +25,5 @@ bool XeCrypt::Pkcs1Verify(BYTE *pbMessage, DWORD cbMessage, BYTE *pbSignature, D
     Botan::PK_Verifier verifier(pubKey, "EMSA3(SHA-1)");
     return verifier.verify_message(pbMessage, cbMessage, pbSignature, cbSignature);
 }
+
+

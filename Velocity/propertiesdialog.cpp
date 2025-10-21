@@ -162,3 +162,5 @@ void PropertiesDialog::on_btnApply_clicked()
     updateEntry();
     ui->btnApply->setEnabled(false);
 }
+
+

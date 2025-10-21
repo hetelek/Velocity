@@ -214,3 +214,5 @@ AvatarAwardGpd::~AvatarAwardGpd(void)
     if (!ioPassedIn)
         io->Close();
 }
+
+

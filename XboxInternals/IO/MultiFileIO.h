@@ -41,7 +41,9 @@ private:
     DWORD currentIOIndex;
     std::vector<BaseIO*> files;
 
-    void calcualteLengthOfAllFiles();
+    void calculateLengthOfAllFiles();
 };
 
 #endif // MULTIFILEIO_H
+
+

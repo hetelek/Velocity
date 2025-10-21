@@ -39,3 +39,5 @@ private:
 };
 
 #endif // PARTITIONDIALOG_H
+
+

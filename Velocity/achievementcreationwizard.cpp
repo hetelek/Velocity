@@ -130,3 +130,5 @@ void AchievementCreationWizard::on_txtUnlockDesc_textChanged()
     button(QWizard::NextButton)->setEnabled(ui->txtName->text() != "" &&
             ui->txtLockDesc->toPlainText() != "" && ui->txtUnlockDesc->toPlainText() != "");
 }
+
+

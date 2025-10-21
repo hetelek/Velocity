@@ -203,8 +203,9 @@ void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, [[maybe_
     {
         svod->GetSvodIO(*entry).SaveFile(tempName.toStdString());
 
-        ImageDialog dialog(QImage(tempName), this);
-        dialog.exec();
+        ImageDialog *dialog = new ImageDialog(QImage(tempName), item->text(0), this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->show();
 
         QFile::remove(tempName);
     }
@@ -276,3 +277,5 @@ void SvodDialog::on_btnResign_clicked()
                 "An error occurred while resigning the system.\n\n" + QString::fromStdString(error));
     }
 }
+
+

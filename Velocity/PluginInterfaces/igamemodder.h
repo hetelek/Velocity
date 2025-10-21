@@ -30,3 +30,5 @@ public:
 Q_DECLARE_INTERFACE (IGameModder, "com.exetelek.Veloctiy.IGameModder/0.1")
 
 #endif
+
+

@@ -265,3 +265,5 @@ int compareFileEntries(GdfxFileEntry a, [[maybe_unused]] GdfxFileEntry b)
 {
     return !(a.attributes & GdfxDirectory);
 }
+
+

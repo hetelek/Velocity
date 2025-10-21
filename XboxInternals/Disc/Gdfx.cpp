@@ -56,3 +56,5 @@ void GdfxWriteFileEntry(SvodMultiFileIO *io, GdfxFileEntry *entry)
     io->Write(entry->nameLen);
     io->Write(entry->name);
 }
+
+

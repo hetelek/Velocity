@@ -62,3 +62,5 @@ void GpdDownloader::onRequestFinished(QNetworkReply *reply) {
 
     reply->deleteLater();  // Clean up the network reply object
 }
+
+

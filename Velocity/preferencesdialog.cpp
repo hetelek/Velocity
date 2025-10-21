@@ -68,3 +68,5 @@ void PreferencesDialog::on_pushButton_3_clicked()
     ui->comboBox_2->setCurrentIndex(0);
     ui->lineEdit->setText(QtHelpers::ExecutingDirectory() + "plugins");
 }
+
+

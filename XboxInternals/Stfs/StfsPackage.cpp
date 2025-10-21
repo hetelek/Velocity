@@ -108,7 +108,7 @@ void StfsPackage::Parse()
 
         // volume descriptor
         metaData->stfsVolumeDescriptor.size = 0x24;
-        metaData->stfsVolumeDescriptor.blockSeperation = ((flags & StfsPackageFemale) >> 2);
+        metaData->stfsVolumeDescriptor.blockSeparation = ((flags & StfsPackageFemale) >> 2);
         metaData->stfsVolumeDescriptor.fileTableBlockCount = 1;
         metaData->stfsVolumeDescriptor.fileTableBlockNum = 0;
         metaData->stfsVolumeDescriptor.allocatedBlockCount = 1;
@@ -143,7 +143,7 @@ void StfsPackage::Parse()
     if (metaData->fileSystem != FileSystemSTFS && (flags & StfsPackagePEC) == 0)
         throw string("STFS: Invalid file system header.\n");
 
-    packageSex = (Sex)((~metaData->stfsVolumeDescriptor.blockSeperation) & 1);
+    packageSex = (Sex)((~metaData->stfsVolumeDescriptor.blockSeparation) & 1);
 
     if (packageSex == StfsFemale)
     {
@@ -175,7 +175,7 @@ void StfsPackage::Parse()
     topTable.level = topLevel;
 
     DWORD baseAddress = (topTable.trueBlockNumber << 0xC) + firstHashTableAddress;
-    topTable.addressInFile = baseAddress + ((metaData->stfsVolumeDescriptor.blockSeperation & 2) <<
+    topTable.addressInFile = baseAddress + ((metaData->stfsVolumeDescriptor.blockSeparation & 2) <<
         0xB);
     io->SetPosition(topTable.addressInFile);
 
@@ -299,7 +299,7 @@ DWORD StfsPackage::GetHashAddressOfBlock(DWORD blockNum)
     switch (topLevel)
     {
     case 0:
-        hashAddr += ((metaData->stfsVolumeDescriptor.blockSeperation & 2) << 0xB);
+        hashAddr += ((metaData->stfsVolumeDescriptor.blockSeparation & 2) << 0xB);
         break;
     case 1:
         hashAddr += ((topTable.entries[blockNum / 0xAA].status & 0x40) << 6);
@@ -440,7 +440,7 @@ DWORD StfsPackage::GetFileMagic(StfsFileEntry entry)
     if (entry.fileSize < 4)
         return 0;
 
-    // seek to the begining of the file in the package
+    // seek to the beginning of the file in the package
     io->SetPosition(BlockToAddress(entry.startingBlockNum));
 
     // read the magic
@@ -491,7 +491,7 @@ void StfsPackage::ExtractFile(StfsFileEntry* entry, string outPath, void (*extra
         // allocate 0xAA blocks of memory, for maximum efficiency, yo
         BYTE* buffer = new BYTE[0xAA000];
 
-        // seek to the begining of the file
+        // seek to the beginning of the file
         DWORD startAddress = BlockToAddress(entry->startingBlockNum);
         io->SetPosition(startAddress);
 
@@ -499,7 +499,7 @@ void StfsPackage::ExtractFile(StfsFileEntry* entry, string outPath, void (*extra
         DWORD blockCount = (ComputeLevel0BackingHashBlockNumber(entry->startingBlockNum) + blockStep[0])
             - ((startAddress - firstHashTableAddress) >> 0xC);
 
-        // pick up the change at the begining, until we hit a hash table
+        // pick up the change at the beginning, until we hit a hash table
         if ((DWORD)entry->blocksForFile <= blockCount)
         {
             io->ReadBytes(buffer, entry->fileSize);
@@ -1041,7 +1041,7 @@ void StfsPackage::SwapTable(DWORD index, Level lvl)
     // if the level requested to be swapped is the top level, we need to invert the '2' bit of the block seperation
     if (lvl == topTable.level)
     {
-        metaData->stfsVolumeDescriptor.blockSeperation ^= 2;
+        metaData->stfsVolumeDescriptor.blockSeparation ^= 2;
         metaData->WriteVolumeDescriptor();
     }
     else
@@ -1087,7 +1087,7 @@ DWORD StfsPackage::GetHashTableAddress(DWORD index, Level lvl)
 
     // if the level requested is the top, then we need to reference the '2' bit of the block seperation
     else if (lvl == topTable.level)
-        return baseAddress + ((metaData->stfsVolumeDescriptor.blockSeperation & 2) << 0xB);
+        return baseAddress + ((metaData->stfsVolumeDescriptor.blockSeparation & 2) << 0xB);
     // otherwise, go to the table's hash to figure out which table to use
     else
     {
@@ -1112,7 +1112,7 @@ DWORD StfsPackage::GetTableHashAddress(DWORD index, Level lvl)
 
     // add the hash offset to the base address so we use the correct table
     if (lvl + 1 == topLevel)
-        baseHashAddress += ((metaData->stfsVolumeDescriptor.blockSeperation & 2) << 0xB);
+        baseHashAddress += ((metaData->stfsVolumeDescriptor.blockSeparation & 2) << 0xB);
     else
         baseHashAddress += ((topTable.entries[index].status & 0x40) << 6);
 
@@ -1420,8 +1420,8 @@ UINT24 StfsPackage::AllocateBlock()
         topLevel = newTop;
         topTable.level = topLevel;
 
-        DWORD blockOffset = metaData->stfsVolumeDescriptor.blockSeperation & 2;
-        metaData->stfsVolumeDescriptor.blockSeperation &= 0xFD;
+        DWORD blockOffset = metaData->stfsVolumeDescriptor.blockSeparation & 2;
+        metaData->stfsVolumeDescriptor.blockSeparation &= 0xFD;
         topTable.addressInFile = GetHashTableAddress(0, topLevel);
         topTable.entryCount = 2;
         topTable.trueBlockNumber = ComputeLevelNBackingHashBlockNumber(0, topLevel);
@@ -1434,7 +1434,7 @@ UINT24 StfsPackage::AllocateBlock()
         io->Write((BYTE)topTable.entries[0].status);
 
         // clear the top hash offset
-        metaData->stfsVolumeDescriptor.blockSeperation &= 0xFD;
+        metaData->stfsVolumeDescriptor.blockSeparation &= 0xFD;
 
     }
 
@@ -1540,8 +1540,8 @@ UINT24 StfsPackage::AllocateBlocks(DWORD blockCount)
         topLevel = newTop;
         topTable.level = topLevel;
 
-        DWORD blockOffset = metaData->stfsVolumeDescriptor.blockSeperation & 2;
-        metaData->stfsVolumeDescriptor.blockSeperation &= 0xFD;
+        DWORD blockOffset = metaData->stfsVolumeDescriptor.blockSeparation & 2;
+        metaData->stfsVolumeDescriptor.blockSeparation &= 0xFD;
         topTable.addressInFile = GetHashTableAddress(0, topLevel);
         topTable.entryCount = 2;
 
@@ -1553,7 +1553,7 @@ UINT24 StfsPackage::AllocateBlocks(DWORD blockCount)
         io->Write((BYTE)topTable.entries[0].status);
 
         // clear the top hash offset
-        metaData->stfsVolumeDescriptor.blockSeperation &= 0xFD;
+        metaData->stfsVolumeDescriptor.blockSeparation &= 0xFD;
 
     }
 
@@ -2068,3 +2068,5 @@ StfsPackage::~StfsPackage(void)
 {
     Cleanup();
 }
+
+

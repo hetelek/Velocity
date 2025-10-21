@@ -25,7 +25,7 @@ AvatarAsset::AvatarAsset(FileIO *io) : io(io), ioPassedIn(true)
 
 void AvatarAsset::readHeader()
 {
-    // seek to the begining of the file
+    // seek to the beginning of the file
     io->SetPosition(0);
 
     // read in the magic to verify the file
@@ -274,3 +274,5 @@ AvatarAsset::~AvatarAsset(void)
         if (blocks.at(i).data != NULL)
             delete blocks.at(i).data;
 }
+
+

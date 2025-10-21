@@ -318,3 +318,5 @@ void ProfileCleanerWizard::on_radioButton_3_toggled(bool checked)
     if (checked)
         op = Purify;
 }
+
+

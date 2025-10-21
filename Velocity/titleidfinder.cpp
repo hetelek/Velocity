@@ -42,3 +42,5 @@ void TitleIdFinder::replyFinished(QNetworkReply* reply) {
 void TitleIdFinder::SetGameName(QString newGameName) {
     gameName = newGameName;
 }
+
+

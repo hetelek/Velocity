@@ -3,6 +3,16 @@ Velocity
 
 **This repository is not regularly monitored and active development ceased quite some time ago. Please do not expect issues or PRs to be actioned on.**
 
+## Important: Administrator Privileges Required (Windows)
+
+On **Windows**, Velocity requires **Administrator privileges** to access Xbox 360 drives:
+
+- **Right-click** `Velocity.exe` → Select **"Run as administrator"**
+- This is necessary for detecting and browsing Xbox 360 hard drives and USB devices
+- Without Administrator rights, drives will **not be detected** in the Device Viewer
+
+See [BUILD.md](BUILD.md#running-velocity) for Linux/macOS requirements and more details.
+
 
 About
 -----

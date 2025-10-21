@@ -74,3 +74,5 @@ void TitleIdFinderDialog::showContextMenu(QPoint p)
                 ui->treeWidget->selectedItems().at(0)->text(1).toLower()));
     }
 }
+
+

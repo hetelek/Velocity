@@ -26,3 +26,5 @@ void DragDropTreeWidget::dragLeaveEvent(QDragLeaveEvent *event)
 {
     emit dragLeft(event);
 }
+
+

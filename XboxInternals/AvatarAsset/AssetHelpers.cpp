@@ -216,3 +216,5 @@ string AssetHelpers::BinaryAssetTypeToString(BinaryAssetType type)
             throw string("Asset: Invalid 'BinaryAssetType' value.\n");
     }
 }
+
+

@@ -8,12 +8,12 @@ MultiFileIO::MultiFileIO(std::vector<std::string> filePaths) : pos(0), currentIO
         files.push_back(io);
     }
 
-    calcualteLengthOfAllFiles();
+    calculateLengthOfAllFiles();
 }
 
 MultiFileIO::MultiFileIO(std::vector<BaseIO*> files) : pos(0), currentIOIndex(0), files(files)
 {
-    calcualteLengthOfAllFiles();
+    calculateLengthOfAllFiles();
 }
 
 MultiFileIO::~MultiFileIO()
@@ -125,7 +125,7 @@ void MultiFileIO::Close()
     isClosed = true;
 }
 
-void MultiFileIO::calcualteLengthOfAllFiles()
+void MultiFileIO::calculateLengthOfAllFiles()
 {
     isClosed = false;
     lengthOfFiles = 0;
@@ -133,3 +133,5 @@ void MultiFileIO::calcualteLengthOfAllFiles()
     for (size_t i = 0; i < files.size(); i++)
         lengthOfFiles += files.at(i)->Length();
 }
+
+

@@ -1,5 +1,6 @@
 #include "profileeditor.h"
 #include "ui_profileeditor.h"
+#include <QCloseEvent>
 
 ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool dispose,
         QWidget *parent) :
@@ -114,8 +115,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         ui->txtGamertag->setText(QString::fromStdWString(account->GetGamertag()));
         ui->lblLanguage->setText(QString::fromStdString(AccountHelpers::ConsoleLanguageToString(
                     account->GetLanguage())));
-        ui->lblSubscriptionTeir->setText(QString::fromStdString(AccountHelpers::SubscriptionTeirToString(
-                    account->GetSubscriptionTeir())));
+        ui->lblSubscriptionTier->setText(QString::fromStdString(AccountHelpers::SubscriptionTierToString(
+                    account->GetSubscriptionTier())));
         ui->lblParentalControlled->setText(((account->IsParentalControlled()) ? "Yes" : "No"));
         ui->lblCreditCard->setText(((account->IsPaymentInstrumentCreditCard()) ? "Yes" : "No"));
         ui->lblXUID->setText(QString::number(account->GetXUID(), 16).toUpper());
@@ -633,7 +634,7 @@ void ProfileEditor::addToDashGpd(SettingEntry *entry, SettingEntryType type, UIN
     dashGpd->CreateSettingEntry(entry, id);
 }
 
-ProfileEditor::~ProfileEditor()
+void ProfileEditor::closeEvent(QCloseEvent *event)
 {
     if (ok)
     {
@@ -641,13 +642,25 @@ ProfileEditor::~ProfileEditor()
         {
             saveAll();
             statusBar->showMessage("Saved all changes", 3000);
+            event->accept();
         }
         catch (string error)
         {
             QMessageBox::critical(this, "Error",
                     "An error occurred while saving the profile.\n\n" + QString::fromStdString(error));
+            event->accept(); // Accept even on error to allow closing
         }
     }
+    else
+    {
+        event->accept();
+    }
+}
+
+ProfileEditor::~ProfileEditor()
+{
+    // Note: saveAll() is now called in closeEvent(), not here
+    // This ensures the KV file dialog appears while the window is still visible
 
     // free all the game gpd memory
     for (DWORD i = 0; i < games.size(); i++)
@@ -1330,6 +1343,13 @@ void ProfileEditor::saveAll()
     }
 
     string path = QtHelpers::GetKVPath(profile->metaData->certificate.ownerConsoleType, this);
+    
+    // Warn user if no KV was provided
+    if (path == "")
+    {
+        QMessageBox::warning(this, "Warning",
+                "No KV supplied. Profile not resigned.\n\nTo resign, close and reopen the profile with a KV file.");
+    }
 
     // save the avatar awards
     if (PEC != nullptr)
@@ -1921,3 +1941,5 @@ bool ProfileEditor::isOk()
 {
     return ok;
 }
+
+

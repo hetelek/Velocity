@@ -903,3 +903,5 @@ void MainWindow::on_actionYTGR_triggered()
                 "An error has occurred while parsing a Ytgr header.\n\n" + QString::fromStdString(error));
     }
 }
+
+

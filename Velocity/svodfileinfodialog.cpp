@@ -105,3 +105,5 @@ void SvodFileInfoDialog::on_pushButton_3_clicked()
     svod->WriteFileEntry(entry);
     close();
 }
+
+

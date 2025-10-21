@@ -35,3 +35,5 @@ private:
 };
 
 #endif // PREFERENCESDIALOG_H
+
+

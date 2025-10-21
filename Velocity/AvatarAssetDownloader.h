@@ -50,3 +50,5 @@ private:
 };
 
 #endif // AVATARASSETDOWNLOADER_H
+
+

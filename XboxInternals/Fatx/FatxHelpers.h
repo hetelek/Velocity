@@ -15,3 +15,5 @@ class XBOXINTERNALSSHARED_EXPORT FATXHelpers
 };
 
 #endif // FATXHELPERS_H
+
+

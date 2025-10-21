@@ -39,3 +39,5 @@ public:
 
     static string GetAchievementState(AchievementEntry *entry);
 };
+
+

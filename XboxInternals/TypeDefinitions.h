@@ -57,3 +57,4 @@ static_assert(sizeof(UINT64) == 8, "UINT64 must be 8 bytes");
 static_assert(sizeof(WINFILETIME) == 8, "WINFILETIME must be 8 bytes");
 
 #endif // WINNAMES_H
+

@@ -5,20 +5,20 @@ string AccountHelpers::CountryToString(XboxLiveCountry country)
     return XdbfHelpers::RegionIDtoString(country);
 }
 
-string AccountHelpers::SubscriptionTeirToString(SubscriptionTeir teir)
+string AccountHelpers::SubscriptionTierToString(SubscriptionTier tier)
 {
-    switch (teir)
+    switch (tier)
     {
-        case NoSubcription:
-            return string("No Subcription");
+        case NoSubscription:
+            return string("No Subscription");
         case Silver:
             return string("Silver");
         case Gold:
             return string("Gold");
         case FamilyGold:
-            return string("FamilyGold");
+            return string("Family Gold");
         default:
-            throw string("Account: Invalid 'Subscription Teir' value.\n");
+            throw string("Account: Invalid 'Subscription Tier' value.\n");
     }
 }
 
@@ -76,3 +76,5 @@ string AccountHelpers::ConsoleLanguageToString(ConsoleLanguage language)
             return string("Unknown Language");
     }
 }
+
+

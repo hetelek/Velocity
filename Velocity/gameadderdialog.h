@@ -82,3 +82,5 @@ private:
 };
 
 #endif // GAMEADDERDIALOG_H
+
+

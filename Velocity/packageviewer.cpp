@@ -789,11 +789,159 @@ void PackageViewer::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int /
         if (image.isNull())
             return;
 
-        ImageDialog dialog(image, this);
-        dialog.exec();
+        ImageDialog *dialog = new ImageDialog(image, item->text(0), this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->show();
 
         // delete the temp file
         QFile::remove(QString::fromStdString(tempName));
+    }
+    else if (item->data(1, Qt::UserRole).toString() == "XML")
+    {
+        // get a temporary file name
+        string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{",
+                "").replace("}", "").replace("-", "")).toStdString();
+
+        // extract the file to a temporary location
+        QString xmlPath;
+        GetPackagePath(item, &xmlPath);
+
+        package->ExtractFile(xmlPath.toStdString(), tempName);
+
+        // Read XML file with proper encoding detection (Xbox 360 uses Windows encodings)
+        QFile file(QString::fromStdString(tempName));
+        if (file.open(QIODevice::ReadOnly))
+        {
+            QByteArray data = file.readAll();
+            file.close();
+            
+            QString xmlContent;
+            
+            // Check for BOM (Byte Order Mark) to detect encoding
+            if (data.size() >= 3 && (unsigned char)data[0] == 0xEF && 
+                (unsigned char)data[1] == 0xBB && (unsigned char)data[2] == 0xBF)
+            {
+                // UTF-8 with BOM
+                auto toUtf8 = QStringDecoder(QStringDecoder::Utf8);
+                xmlContent = toUtf8(data.mid(3)); // Skip BOM
+            }
+            else if (data.size() >= 2 && (unsigned char)data[0] == 0xFF && (unsigned char)data[1] == 0xFE)
+            {
+                // UTF-16 LE with BOM
+                auto toUtf16 = QStringDecoder(QStringDecoder::Utf16LE);
+                xmlContent = toUtf16(data.mid(2)); // Skip BOM
+            }
+            else if (data.size() >= 2 && (unsigned char)data[0] == 0xFE && (unsigned char)data[1] == 0xFF)
+            {
+                // UTF-16 BE with BOM
+                auto toUtf16 = QStringDecoder(QStringDecoder::Utf16BE);
+                xmlContent = toUtf16(data.mid(2)); // Skip BOM
+            }
+            else
+            {
+                // No BOM, try UTF-8 first (most common for Xbox 360 config files)
+                auto toUtf8 = QStringDecoder(QStringDecoder::Utf8);
+                xmlContent = toUtf8(data);
+                
+                // If UTF-8 failed, try Windows-1252/Latin1
+                if (xmlContent.contains(QChar::ReplacementCharacter))
+                {
+                    auto toLatin1 = QStringDecoder(QStringDecoder::Latin1);
+                    xmlContent = toLatin1(data);
+                }
+            }
+
+            // Display in XML viewer dialog
+            XmlDialog *dialog = new XmlDialog(xmlContent, item->text(0), this);
+            dialog->setAttribute(Qt::WA_DeleteOnClose);
+            dialog->show();
+        }
+
+        // delete the temp file
+        QFile::remove(QString::fromStdString(tempName));
+    }
+    else if (item->data(1, Qt::UserRole).toString() == "Text")
+    {
+        // get a temporary file name
+        string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{",
+                "").replace("}", "").replace("-", "")).toStdString();
+
+        // extract the file to a temporary location
+        QString textPath;
+        GetPackagePath(item, &textPath);
+
+        package->ExtractFile(textPath.toStdString(), tempName);
+
+        // Read text file with proper encoding detection (Xbox 360 uses Windows encodings)
+        QFile file(QString::fromStdString(tempName));
+        if (file.open(QIODevice::ReadOnly))
+        {
+            QByteArray data = file.readAll();
+            file.close();
+            
+            QString textContent;
+            
+            // Check for BOM (Byte Order Mark) to detect encoding
+            if (data.size() >= 3 && (unsigned char)data[0] == 0xEF && 
+                (unsigned char)data[1] == 0xBB && (unsigned char)data[2] == 0xBF)
+            {
+                // UTF-8 with BOM
+                auto toUtf8 = QStringDecoder(QStringDecoder::Utf8);
+                textContent = toUtf8(data.mid(3)); // Skip BOM
+            }
+            else if (data.size() >= 2 && (unsigned char)data[0] == 0xFF && (unsigned char)data[1] == 0xFE)
+            {
+                // UTF-16 LE with BOM
+                auto toUtf16 = QStringDecoder(QStringDecoder::Utf16LE);
+                textContent = toUtf16(data.mid(2)); // Skip BOM
+            }
+            else if (data.size() >= 2 && (unsigned char)data[0] == 0xFE && (unsigned char)data[1] == 0xFF)
+            {
+                // UTF-16 BE with BOM
+                auto toUtf16 = QStringDecoder(QStringDecoder::Utf16BE);
+                textContent = toUtf16(data.mid(2)); // Skip BOM
+            }
+            else
+            {
+                // No BOM, try UTF-8 first (most common)
+                auto toUtf8 = QStringDecoder(QStringDecoder::Utf8);
+                textContent = toUtf8(data);
+                
+                // If UTF-8 failed, try Windows-1252/Latin1
+                if (textContent.contains(QChar::ReplacementCharacter))
+                {
+                    auto toLatin1 = QStringDecoder(QStringDecoder::Latin1);
+                    textContent = toLatin1(data);
+                }
+            }
+
+            // Display in text viewer dialog
+            TextDialog *dialog = new TextDialog(textContent, item->text(0), this);
+            dialog->setAttribute(Qt::WA_DeleteOnClose);
+            dialog->show();
+        }
+
+        // delete the temp file
+        QFile::remove(QString::fromStdString(tempName));
+    }
+    else if (item->data(1, Qt::UserRole).toString() == "ZIP")
+    {
+        // get a temporary file name
+        string tempName = (QDir::tempPath() + "/" + QUuid::createUuid().toString().replace("{",
+                "").replace("}", "").replace("-", "")).toStdString();
+
+        // extract the ZIP file to a temporary location
+        QString zipPath;
+        GetPackagePath(item, &zipPath);
+
+        package->ExtractFile(zipPath.toStdString(), tempName);
+
+        // Open ZIP viewer dialog
+        ZipViewer *dialog = new ZipViewer(QString::fromStdString(tempName), item->text(0), this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->show();
+        
+        // Note: temp file will be cleaned up when dialog closes
     }
     else if (item->data(1, Qt::UserRole).toString() == "PEC")
     {
@@ -873,3 +1021,5 @@ void PackageViewer::on_btnShowAll_clicked()
     for (int i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
         QtHelpers::ShowAllItems(ui->treeWidget->topLevelItem(i));
 }
+
+

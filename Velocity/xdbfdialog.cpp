@@ -220,8 +220,9 @@ void XdbfDialog::showContextMenu(QPoint p)
     }
     else if (selectedItem->text() == "Address Converter")
     {
-        AddressConverterDialog dialog(gpd->xdbf, this);
-        dialog.exec();
+        AddressConverterDialog *dialog = new AddressConverterDialog(gpd->xdbf, this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->show();
     }
     else if (selectedItem->text() == "Clean")
     {
@@ -367,8 +368,9 @@ void XdbfDialog::on_treeWidget_doubleClicked(const QModelIndex &index)
         {
             QByteArray imageBuff((char*)gpd->images.at(e.index).image, (size_t)gpd->images.at(e.index).length);
 
-            ImageDialog dialog(QImage::fromData(imageBuff), this);
-            dialog.exec();
+            ImageDialog *dialog = new ImageDialog(QImage::fromData(imageBuff), "", this);
+            dialog->setAttribute(Qt::WA_DeleteOnClose);
+            dialog->show();
             break;
         }
         default:
@@ -376,3 +378,5 @@ void XdbfDialog::on_treeWidget_doubleClicked(const QModelIndex &index)
             break;
     }
 }
+
+

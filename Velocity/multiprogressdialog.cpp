@@ -281,3 +281,5 @@ void updateProgress(void *form, DWORD curProgress, DWORD total)
 
     QApplication::processEvents();
 }
+
+

@@ -136,3 +136,5 @@ void UpdateProgress(void *arg, DWORD cur, DWORD total)
 
     QApplication::processEvents();
 }
+
+

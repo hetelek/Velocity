@@ -49,3 +49,5 @@ bool XeKeys::VerifyRSASignature(XeKeysRsaKeys key, BYTE *pbMessage, DWORD cbMess
     // check with the second key
     return XeCrypt::Pkcs1Verify(pbMessage, cbMessage, signature, 0x100, exponent2, modulus2);
 }
+
+

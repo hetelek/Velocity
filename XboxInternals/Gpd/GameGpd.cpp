@@ -26,7 +26,7 @@ AchievementEntry GameGpd::readAchievementEntry(XdbfEntry entry)
     if (entry.type != Achievement)
         throw string("Gpd: Error reading achievement entry. Specified entry isn't an achievement.\n");
 
-    // seek to the begining of the achievement entry
+    // seek to the beginning of the achievement entry
     io->SetPosition(xdbf->GetRealAddress(entry.addressSpecifier));
 
     // read the entry
@@ -67,7 +67,7 @@ void GameGpd::WriteAchievementEntry(AchievementEntry *entry)
 
     io->Flush();
 
-    // seek to the begining of the entry
+    // seek to the beginning of the entry
     io->SetPosition(xdbf->GetRealAddress(entry->entry.addressSpecifier));
 
     // Write the entry
@@ -252,3 +252,5 @@ GameGpd::~GameGpd(void)
     if (!ioPassedIn && io)
         io->Close();
 }
+
+

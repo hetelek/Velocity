@@ -282,7 +282,7 @@ Metadata::Metadata(QStatusBar *statusBar, XContentHeader *header, bool pec, QWid
 
                 // base version
                 ui->tableWidget->insertRow(28 + offset);
-                ui->tableWidget->setVerticalHeaderItem(28 + offset, new QTableWidgetItem("Installer Base Verison"));
+                ui->tableWidget->setVerticalHeaderItem(28 + offset, new QTableWidgetItem("Installer Base Version"));
                 QString baseVersion = QString::number(header->installerBaseVersion.major) + "." +
                         QString::number(header->installerBaseVersion.minor) + "." +
                         QString::number(header->installerBaseVersion.build) + "." +
@@ -291,7 +291,7 @@ Metadata::Metadata(QStatusBar *statusBar, XContentHeader *header, bool pec, QWid
 
                 // version
                 ui->tableWidget->insertRow(29 + offset);
-                ui->tableWidget->setVerticalHeaderItem(29 + offset, new QTableWidgetItem("Installer Verison"));
+                ui->tableWidget->setVerticalHeaderItem(29 + offset, new QTableWidgetItem("Installer Version"));
                 QString version = QString::number(header->installerVersion.major) + "." +
                         QString::number(header->installerVersion.minor) + "." +
                         QString::number(header->installerVersion.build) + "." +
@@ -675,3 +675,5 @@ void Metadata::on_pushButton_2_clicked()
 {
     this->close();
 }
+
+

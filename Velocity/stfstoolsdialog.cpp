@@ -31,3 +31,5 @@ void StfsToolsDialog::on_spnBlock_valueChanged(int arg1)
     ui->lblHashAddr->setText(QString::number(hashAddr) + " (0x" + QString::number(hashAddr,
             16).toUpper() + ")");
 }
+
+

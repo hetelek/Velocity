@@ -519,3 +519,5 @@ void GamerPicturePackDialog::on_btnStopSearch_clicked()
     statusBar->showMessage("Search stopped", 3000);
     ui->btnStopSearch->setEnabled(false);
 }
+
+

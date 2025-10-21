@@ -194,4 +194,64 @@ Build outputs are organized in:
 - `out/build/linux-release/` - Linux Release
 - `out/build/linux-debug/` - Linux Debug
 
+## Running Velocity
+
+### Windows - Administrator Privileges Required
+
+**Important**: On Windows, Velocity requires **Administrator privileges** to access physical drives (Xbox 360 hard drives and USB devices).
+
+**To run Velocity with the necessary permissions:**
+
+1. Navigate to the Velocity executable:
+   - Release: `out/build/windows-mingw-release/Velocity/Velocity.exe`
+   - Debug: `out/build/windows-mingw-debug/Velocity/Velocity.exe`
+
+2. **Right-click** on `Velocity.exe` → Select **"Run as administrator"**
+
+**Why Administrator access is needed:**
+- Windows requires elevated privileges to open raw physical disk devices (`\\.\PHYSICALDRIVE#`)
+- This is necessary for the Device Viewer to detect and access Xbox 360 drives connected via USB (using SATA-to-USB adapters, etc.)
+- Without Administrator rights, Xbox 360 drives will **not be detected** in the Device Viewer
+
+**Alternative - Create Administrator Shortcut:**
+1. Right-click `Velocity.exe` → **"Create shortcut"**
+2. Right-click the shortcut → **"Properties"**
+3. Click **"Advanced..."** button
+4. Check **"Run as administrator"**
+5. Click **OK** → **OK**
+
+Now you can use this shortcut to always launch Velocity with proper permissions.
+
+### Linux
+
+On Linux, access to raw block devices requires root privileges or membership in the `disk` group.
+
+**Option 1: Run with sudo** (recommended for testing)
+```bash
+sudo ./out/build/linux-release/Velocity/Velocity
+```
+
+**Option 2: Add user to disk group** (for regular use)
+```bash
+# Add your user to the disk group
+sudo usermod -a -G disk $USER
+
+# Log out and log back in for changes to take effect
+```
+
+**Note**: Xbox 360 drives connected via USB should appear as `/dev/sd*` devices (e.g., `/dev/sdb`).
+
+### macOS
+
+On macOS, access to raw disk devices typically requires administrator privileges.
+
+**Run with sudo:**
+```bash
+sudo ./out/build/macos-release/Velocity.app/Contents/MacOS/Velocity
+```
+
+**Note**: Xbox 360 drives should appear as `/dev/disk*` or `/dev/rdisk*` devices.
+
+---
+
 For more details, see the project documentation or check the CMakeLists.txt files for advanced configuration options.

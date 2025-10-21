@@ -588,3 +588,5 @@ void GameAdderDialog::on_btnShowAll_2_clicked(bool checked) {
         ui->treeWidgetAllGames->topLevelItem(i)->setHidden(checked && entry.avatarAwardCount == 0);
     }
 }
+
+

@@ -301,3 +301,5 @@ void CreationWizard::on_radioButton_5_clicked(bool checked)
     if (checked)
         magic = PIRS;
 }
+
+

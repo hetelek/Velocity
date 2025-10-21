@@ -75,9 +75,11 @@ std::string QtHelpers::GetKVPath(ConsoleType type, QWidget *parent)
 
     if (!QFile::exists(QString::fromStdString(kvName)))
     {
-        QFileDialog dialog(parent, "KV Location", DefaultLocation() + "/KV.bin");
+        // Use nullptr as parent to prevent dialog from closing when parent closes
+        QFileDialog dialog(nullptr, "KV Location", DefaultLocation() + "/KV.bin");
         dialog.setFileMode(QFileDialog::ExistingFile);
         dialog.setViewMode(QFileDialog::Detail);
+        dialog.setWindowModality(Qt::ApplicationModal);
 
         if (dialog.exec() == QFileDialog::Accepted)
         {
@@ -330,15 +332,21 @@ void QtHelpers::GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWid
             icon = QIcon(":/Images/XEXFileIcon.png");
             item.setData(1, Qt::UserRole, "XEX");
             break;
-        case 0x89504E47:    // PNG
+        case 0x89504E47:    // PNG
             icon = QIcon(":/Images/ImageFileIcon.png");
             item.setData(1, Qt::UserRole, "Image");
+            break;
+        case 0x504B0304:    // ZIP (PK..)
+        case 0x504B0506:    // ZIP (empty archive)
+        case 0x504B0708:    // ZIP (spanned archive)
+            icon = QIcon(":/Images/DefaultFileIcon.png");
+            item.setData(1, Qt::UserRole, "ZIP");
             break;
         default:
             int index = fileName.lastIndexOf(".");
             QString extension = "";
             if (index != -1)
-                extension = fileName.mid(index);
+                extension = fileName.mid(index).toLower();
 
             if (fileName == "Account")
                 icon = QIcon(":/Images/AccountFileIcon.png");
@@ -351,6 +359,17 @@ void QtHelpers::GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWid
             {
                 icon = QIcon(":/Images/ImageFileIcon.png");
                 item.setData(1, Qt::UserRole, "Image");
+            }
+            else if (extension == ".xml")
+            {
+                icon = QIcon(":/Images/DefaultFileIcon.png");
+                item.setData(1, Qt::UserRole, "XML");
+            }
+            else if (extension == ".txt" || extension == ".ini" || extension == ".cfg" || 
+                     extension == ".json" || extension == ".log" || extension == ".toc")
+            {
+                icon = QIcon(":/Images/DefaultFileIcon.png");
+                item.setData(1, Qt::UserRole, "Text");
             }
             else
                 icon = QIcon(":/Images/DefaultFileIcon.png");
@@ -378,3 +397,5 @@ bool QtHelpers::SubWindowEvents::eventFilter(QObject *obj, QEvent *event)
 
     return QObject::eventFilter(obj, event);
 }
+
+

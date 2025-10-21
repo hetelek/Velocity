@@ -10,7 +10,7 @@ void ReadStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, BaseIO *io, DW
     // read the descriptor
     descriptor->size = io->ReadByte();
     descriptor->reserved = io->ReadByte();
-    descriptor->blockSeperation = io->ReadByte();
+    descriptor->blockSeparation = io->ReadByte();
 
     io->SetEndian(LittleEndian);
 
@@ -139,9 +139,9 @@ void WriteStfsVolumeDescriptorEx(StfsVolumeDescriptor *descriptor, BaseIO *io, D
     // volume descriptor position
     io->SetPosition(address);
 
-    // Write size, padding and block seperation
+    // Write size, padding and block separation
     INT24 start = 0x240000;
-    start |= descriptor->blockSeperation;
+    start |= descriptor->blockSeparation;
     io->Write(start);
 
     // Write the rest of the descriptor
@@ -322,3 +322,5 @@ XBOXINTERNALSSHARED_EXPORT string ContentTypeToString(ContentType type)
             throw string("STFS: Invalid 'ContentType' value.\n");
     }
 }
+
+

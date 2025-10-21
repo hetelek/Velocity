@@ -37,19 +37,6 @@ public:
 #endif
 };
 
-#ifdef _WIN32
-DeviceIO::DeviceIO(void* deviceHandle) :
-    impl(new Impl), lastReadOffset(-1)
-{
-    pos = 0;
-    if ((HANDLE)deviceHandle == INVALID_HANDLE_VALUE)
-        throw std::string("DeviceIO: Invalid device handle.\n");
-
-    this->impl->deviceHandle = (HANDLE)deviceHandle;
-    memset(&impl->offset, 0, sizeof(OVERLAPPED));
-}
-#endif
-
 DeviceIO::DeviceIO(std::string devicePath) :
     impl(new Impl), lastReadOffset(-1)
 {
@@ -413,3 +400,5 @@ void DeviceIO::Flush()
     FlushFileBuffers(impl->deviceHandle);
 #endif
 }
+
+

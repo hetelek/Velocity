@@ -258,6 +258,9 @@ private slots:
 
     void on_cmbxConsoleType_currentIndexChanged(int index);
 
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
 private:
     Ui::ProfileEditor *ui;
     StfsPackage *profile;
@@ -308,3 +311,5 @@ private:
 };
 
 #endif // PROFILEEDITOR_H
+
+

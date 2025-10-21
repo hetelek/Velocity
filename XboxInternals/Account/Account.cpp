@@ -19,7 +19,7 @@ Account::Account(std::string path, bool decrypt, ConsoleType type) : ioPassedIn(
 
 void Account::parseFile()
 {
-    // seek to the begining of the file
+    // seek to the beginning of the file
     io->SetPosition(0);
 
     // read the data
@@ -40,7 +40,7 @@ void Account::parseFile()
 
     account.onlineDomain = io->ReadString(20);
     io->SetPosition(0x50);
-    account.kerbrosRealm = io->ReadString(24);
+    account.kerberosRealm = io->ReadString(24);
 
     io->ReadBytes(account.onlineKey, 0x10);
 }
@@ -153,10 +153,10 @@ void Account::SetXUID(UINT64 xuid)
     account.xuid = xuid;
 }
 
-void Account::SetSubscriptionTeir(SubscriptionTeir teir)
+void Account::SetSubscriptionTier(SubscriptionTier tier)
 {
     account.cachedUserFlags &= (~0xF0000);
-    account.cachedUserFlags |= (teir << 16);
+    account.cachedUserFlags |= (tier << 16);
 }
 
 void Account::SetCountry(XboxLiveCountry country)
@@ -366,15 +366,15 @@ void Account::WriteFile()
     io->Write(account.onlineDomain);
 
     io->SetPosition(0x50);
-    io->Write(account.kerbrosRealm);
+    io->Write(account.kerberosRealm);
 
     io->SetPosition(0x68);
     io->Write(account.onlineKey, 0x10);
 }
 
-SubscriptionTeir Account::GetSubscriptionTeir()
+SubscriptionTier Account::GetSubscriptionTier()
 {
-    return (SubscriptionTeir)((account.cachedUserFlags & 0xF0000) >> 16);
+    return (SubscriptionTier)((account.cachedUserFlags & 0xF0000) >> 16);
 }
 
 XboxLiveCountry Account::GetCountry()
@@ -407,9 +407,9 @@ string Account::GetOnlineDomain()
     return account.onlineDomain;
 }
 
-string Account::GetKerbrosRealm()
+string Account::GetKerberosRealm()
 {
-    return account.kerbrosRealm;
+    return account.kerberosRealm;
 }
 
 void Account::GetOnlineKey(BYTE *outKey)
@@ -428,3 +428,5 @@ Account::~Account(void)
     delete io;
     remove(outPath.c_str());
 }
+
+

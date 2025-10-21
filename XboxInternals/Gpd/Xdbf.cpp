@@ -1,5 +1,7 @@
 #include "Xdbf.h"
 #include <stdio.h>
+#include <filesystem>
+#include <random>
 
 Xdbf::Xdbf(string gpdPath) : ioPassedIn(false)
 {
@@ -21,24 +23,17 @@ Xdbf::Xdbf(FileIO *io) : io(io), ioPassedIn(true)
 
 void Xdbf::Clean()
 {
-    // create a temporary file to Write the old Gpd's used memory to
-    string tempFileName;
-
-#ifdef _WIN32
-    // Opening a file using the path returned by tmpnam() may result in a "permission denied" error on Windows.
-    // Not sure why it happens but tweaking the manifest/UAC properties makes a difference.
-    char *tempFileName_c = _tempnam(NULL, NULL);
-    if (!tempFileName_c)
-        throw string("Xdbf: Failed to generate temporary file name.\n");
-    tempFileName = string(tempFileName_c);
-    free(tempFileName_c);
-    tempFileName_c = NULL;
-#else
-    char tempFileName_c[L_tmpnam];
-    if (!tmpnam(tempFileName_c))
-        throw string("Xdbf: Failed to generate temporary file name.\n");
-    tempFileName = string(tempFileName_c);
-#endif
+    // Create a temporary file using C++17 filesystem (cross-platform)
+    std::filesystem::path tempDir = std::filesystem::temp_directory_path();
+    
+    // Generate unique filename
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(100000, 999999);
+    std::string uniqueId = "xdbf_" + std::to_string(dis(gen)) + ".tmp";
+    
+    std::filesystem::path tempFilePath = tempDir / uniqueId;
+    string tempFileName = tempFilePath.string();
 
     FileIO tempFile(tempFileName.c_str(), true);
 
@@ -172,7 +167,7 @@ Xdbf::~Xdbf()
 
 void Xdbf::readHeader()
 {
-    // seek to the begining of the file
+    // seek to the beginning of the file
     io->SetPosition(0);
 
     // ensure the magic is correct
@@ -197,7 +192,7 @@ void Xdbf::readHeader()
 
 void Xdbf::readEntryTable()
 {
-    // seek to the begining of the entry table
+    // seek to the beginning of the entry table
     io->SetPosition(0x18);
 
     // read achievement table entries
@@ -272,7 +267,7 @@ SyncList Xdbf::readSyncList(XdbfEntry entry)
     SyncList toReturn;
     toReturn.entry = entry;
 
-    // seek to the begining of the entry
+    // seek to the beginning of the entry
     io->SetPosition(GetRealAddress(entry.addressSpecifier));
 
     // iterate through all the syncs
@@ -329,7 +324,7 @@ void Xdbf::WriteSyncList(SyncList *syncs)
 
 void Xdbf::readFreeMemoryTable()
 {
-    // seek to the begining of the free memory table
+    // seek to the beginning of the free memory table
     DWORD tableStartAddr = 0x18 + (header.entryTableLength * 0x12);
     io->SetPosition(tableStartAddr);
 
@@ -612,7 +607,7 @@ void Xdbf::readEntryGroup(vector<XdbfEntry> *group, EntryType type)
 
 void Xdbf::WriteEntryListing()
 {
-    // seek to the begining of the entry table
+    // seek to the beginning of the entry table
     io->SetPosition(0x18);
 
     // clear the current table
@@ -981,7 +976,7 @@ WriteSyncs:
 
 void Xdbf::ExtractEntry(XdbfEntry entry, BYTE *outBuffer)
 {
-    // seek to the begining of the entry
+    // seek to the beginning of the entry
     io->SetPosition((UINT64)GetRealAddress(entry.addressSpecifier));
 
     // read the bytes of the entry
@@ -995,3 +990,5 @@ bool compareEntries(XdbfEntry a, XdbfEntry b)
     else
         return a.id < b.id;
 }
+
+

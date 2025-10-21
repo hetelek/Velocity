@@ -1,12 +1,13 @@
 #include "FatxDriveDetection.h"
+#include <filesystem>
+#include <algorithm>
+
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #else
-#include <dirent.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <sys/stat.h>
 
 #ifdef __APPLE__
 #include <sys/disk.h>
@@ -49,56 +50,41 @@ std::vector<FatxDrive*> FatxDriveDetection::GetAllFatxDrives()
         std::string directory;
         directory.assign(logicalDrivePaths.at(i).begin(), logicalDrivePaths.at(i).end());
 
-
-#ifdef _WIN32
-        WIN32_FIND_DATA fi;
-
-        HANDLE h = FindFirstFile((logicalDrivePaths.at(i) + L"\\Data*").c_str(), &fi);
-        if (h != INVALID_HANDLE_VALUE)
+        // Modern C++20: Use std::filesystem instead of FindFirstFile/readdir
+        std::filesystem::path dirPath(directory);
+        
+        try
         {
-            do
+            if (std::filesystem::exists(dirPath) && std::filesystem::is_directory(dirPath))
             {
-                char path[9];
-                wcstombs(path, fi.cFileName, wcslen(fi.cFileName) + 1);
-                dataFiles.push_back(directory + "\\" + std::string(path));
-            }
-            while (FindNextFile(h, &fi));
+                for (const auto& entry : std::filesystem::directory_iterator(dirPath))
+                {
+                    if (entry.is_regular_file())
+                    {
+                        std::string filename = entry.path().filename().string();
+                        // Check if filename starts with "Data"
+                        if (filename.size() >= 4 && filename.substr(0, 4) == "Data")
+                        {
+                            dataFiles.push_back(entry.path().string());
+                        }
+                    }
+                }
 
-            FindClose(h);
-
-            if (dataFiles.size() >= 3)
-            {
-                // make sure the data files are loaded in the right order
-                std::sort(dataFiles.begin(), dataFiles.end());
-                MultiFileIO *io = new MultiFileIO(dataFiles);
-                FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
-                drives.push_back(usbDrive);
+                if (dataFiles.size() >= 3)
+                {
+                    // make sure the data files are loaded in the right order
+                    std::sort(dataFiles.begin(), dataFiles.end());
+                    MultiFileIO *io = new MultiFileIO(dataFiles);
+                    FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
+                    drives.push_back(usbDrive);
+                }
             }
         }
-#else
-        DIR *dir = NULL;
-        dirent *ent = NULL;
-        dir = opendir(directory.c_str());
-        if (dir != NULL)
+        catch (const std::filesystem::filesystem_error&)
         {
-            // search for valid data files
-            while ((ent = readdir(dir)) != NULL)
-            {
-                // the disks start with 'data'
-                if (std::string(ent->d_name).substr(0, 4) == "Data")
-                    dataFiles.push_back(directory + std::string(ent->d_name));
-            }
-
-            if (dataFiles.size() >= 3)
-            {
-                // make sure the data files are loaded in the right order
-                std::sort(dataFiles.begin(), dataFiles.end());
-                MultiFileIO *io = new MultiFileIO(dataFiles);
-                FatxDrive *usbDrive = new FatxDrive(io, FatxFlashDrive);
-                drives.push_back(usbDrive);
-            }
+            // Directory doesn't exist or can't be accessed, skip it
+            continue;
         }
-#endif
     }
 
     return drives;
@@ -127,46 +113,53 @@ std::vector<DeviceIO*> FatxDriveDetection::getPhysicalDisks()
         ss.str(std::wstring());
     }
 #else
-    DIR *dir = NULL;
-    dirent *ent = NULL;
-    dir = opendir("/dev/");
-    if (dir != NULL)
+    // Modern C++20: Use std::filesystem for /dev/ enumeration
+    std::filesystem::path devPath("/dev/");
+    
+    try
     {
-        // search for valid drives
-        while ((ent = readdir(dir)) != NULL)
+        if (std::filesystem::exists(devPath) && std::filesystem::is_directory(devPath))
         {
-#ifdef __APPLE__
-            // the disks start with 'disk'
-            if (std::string(ent->d_name).substr(0, 4) == "disk")
-#elif __linux__
-            // the disks start with 'sd'
-            if (std::string(ent->d_name).substr(0, 2) == "sd")
-#endif
+            for (const auto& entry : std::filesystem::directory_iterator(devPath))
             {
-                std::ostringstream ss;
+                std::string deviceName = entry.path().filename().string();
+                bool isValidDevice = false;
+                std::string devicePath;
+
 #ifdef __APPLE__
-                ss << "/dev/r";
-#elif __linux__
-                ss << "/dev/";
-#endif
-                ss << ent->d_name;
-                std::string diskPath = ss.str();
-
-                int device;
-                if ((device = open(diskPath.c_str(), O_RDWR)) > 0)
+                // macOS: Look for disk* devices (use raw device rdisk*)
+                if (deviceName.size() >= 4 && deviceName.substr(0, 4) == "disk")
                 {
-                    close(device);
+                    devicePath = "/dev/r" + deviceName;  // Use raw device
+                    isValidDevice = true;
+                }
+#elif __linux__
+                // Linux: Look for sd* devices (sda, sdb, etc.)
+                if (deviceName.size() >= 2 && deviceName.substr(0, 2) == "sd")
+                {
+                    devicePath = entry.path().string();
+                    isValidDevice = true;
+                }
+#endif
 
-                    DeviceIO *io = new DeviceIO(diskPath);
-                    physicalDiskPaths.push_back(io);
+                if (isValidDevice)
+                {
+                    // Try to open the device to verify access
+                    int device = open(devicePath.c_str(), O_RDWR);
+                    if (device > 0)
+                    {
+                        close(device);
+                        DeviceIO *io = new DeviceIO(devicePath);
+                        physicalDiskPaths.push_back(io);
+                    }
                 }
             }
         }
     }
-    if (dir)
-        closedir(dir);
-    if (ent)
-        delete ent;
+    catch (const std::filesystem::filesystem_error&)
+    {
+        // /dev/ not accessible, return empty list
+    }
 #endif
 
     return physicalDiskPaths;
@@ -194,82 +187,76 @@ std::vector<std::wstring> FatxDriveDetection::getLogicalDrives()
         currentChar++;
     }
 #elif __APPLE__
-    DIR *dir = NULL;
-    dirent *ent = NULL;
-    dir = opendir("/Volumes/");
-    if (dir != NULL)
+    // Modern C++20: Use std::filesystem for /Volumes/ enumeration
+    std::filesystem::path volumesPath("/Volumes/");
+    
+    try
     {
-        std::stringstream path;
-
-        // search for valid flash drives
-        while ((ent = readdir(dir)) != NULL)
+        if (std::filesystem::exists(volumesPath) && std::filesystem::is_directory(volumesPath))
         {
-            try
+            for (const auto& entry : std::filesystem::directory_iterator(volumesPath))
             {
-                // initialize the path
-                path << "/Volumes/";
-                path << ent->d_name;
-                path << "/Xbox360/";
-
-                // get the xbox360 folder path
-                std::string xboxDirPath = path.str();
-
-                // add it to our list of drives
-                std::wstring widePathStr;
-                widePathStr.assign(xboxDirPath.begin(), xboxDirPath.end());
-                driveStrings.push_back(widePathStr);
+                if (entry.is_directory())
+                {
+                    try
+                    {
+                        // Check for Xbox360 subdirectory
+                        std::filesystem::path xboxPath = entry.path() / "Xbox360";
+                        
+                        if (std::filesystem::exists(xboxPath) && std::filesystem::is_directory(xboxPath))
+                        {
+                            std::string xboxDirPath = xboxPath.string() + "/";
+                            std::wstring widePathStr;
+                            widePathStr.assign(xboxDirPath.begin(), xboxDirPath.end());
+                            driveStrings.push_back(widePathStr);
+                        }
+                    }
+                    catch (const std::filesystem::filesystem_error&)
+                    {
+                        // This volume doesn't have Xbox360 folder or can't be accessed, skip it
+                        continue;
+                    }
+                }
             }
-            catch(...)
-            {
-                // something bad happened
-                // skip this device, and try the next one
-            }
-
-            // clear the stringstream
-            path.str(std::string());
         }
-        if (dir)
-            closedir(dir);
-        if (ent)
-            delete ent;
+    }
+    catch (const std::filesystem::filesystem_error&)
+    {
+        // /Volumes/ not accessible
     }
 #elif __linux__
-    DIR *dir;
+    // Linux: Parse /proc/mounts (must use platform API)
     struct mntent *ent;
-    std::stringstream path;
-
     FILE *mounts = setmntent("/proc/mounts", "r");
 
     if (mounts != NULL)
     {
         while ((ent = getmntent(mounts)) != NULL)
         {
-            path.str(std::string());
-            path << ent->mnt_dir << "/Xbox360/";
-
             try
             {
-                std::string xboxDirPath = path.str();
-
-                if((dir = opendir(xboxDirPath.c_str())) != NULL)
+                // Check for Xbox360 subdirectory in this mount point
+                std::filesystem::path xboxPath = std::filesystem::path(ent->mnt_dir) / "Xbox360";
+                
+                if (std::filesystem::exists(xboxPath) && std::filesystem::is_directory(xboxPath))
                 {
+                    std::string xboxDirPath = xboxPath.string() + "/";
                     std::wstring widePathStr;
                     widePathStr.assign(xboxDirPath.begin(), xboxDirPath.end());
                     driveStrings.push_back(widePathStr);
-
-                    closedir(dir);
                 }
             }
-            catch(...)
+            catch (const std::filesystem::filesystem_error&)
             {
+                // This mount point doesn't have Xbox360 or can't be accessed, skip it
+                continue;
             }
         }
 
         endmntent(mounts);
-
-        if(ent)
-            delete ent;
     }
 #endif
     return driveStrings;
 }
+
+

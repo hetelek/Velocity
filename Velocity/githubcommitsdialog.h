@@ -52,3 +52,5 @@ private:
 bool commitCompare(Commit a, Commit b);
 
 #endif // GITHUBCOMMITSDIALOG_H
+
+

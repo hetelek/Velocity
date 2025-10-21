@@ -5,7 +5,7 @@ SvodIO::SvodIO(XContentHeader *metadata, GdfxFileEntry entry, SvodMultiFileIO *i
 {
     offset = ((metadata->svodVolumeDescriptor.flags & EnhancedGDFLayout) ? 0x2000 : 0x1000);
 
-    // seek to the file's begining
+    // seek to the file's beginning
     DWORD addr, index;
     SectorToAddress(entry.sector, &addr, &index);
     io->SetPosition(addr, index);
@@ -251,3 +251,5 @@ void SvodIO::Flush()
 {
     io->Flush();
 }
+
+

@@ -1,9 +1,5 @@
 #include "SvodMultiFileIO.h"
-#if defined(_WIN32)
-#include <windows.h>
-#else
-#include <dirent.h>
-#endif
+#include <filesystem>
 
 using namespace std;
 
@@ -29,38 +25,29 @@ SvodMultiFileIO::~SvodMultiFileIO()
 void SvodMultiFileIO::loadDirectories(string path)
 {
     files.clear();
-#if defined(_WIN32)
-    WIN32_FIND_DATAA findFileData;
-    HANDLE hFind;
-    std::string searchPath = path + "\\*";
-    hFind = FindFirstFileA(searchPath.c_str(), &findFileData);
-    if (hFind == INVALID_HANDLE_VALUE) {
-        throw string("MultiFileIO: Error opening directory\n");
-    }
-    do {
-        if (!(findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-            files.push_back(path + "\\" + findFileData.cFileName);
-        }
-    } while (FindNextFileA(hFind, &findFileData) != 0);
-    FindClose(hFind);
-#else
-    DIR *dir;
-    struct dirent *ent;
-    dir = opendir(path.c_str());
-    if (dir != NULL)
+    
+    // Modern C++20 cross-platform directory iteration
+    std::filesystem::path dirPath(path);
+    
+    if (!std::filesystem::exists(dirPath) || !std::filesystem::is_directory(dirPath))
     {
-        while ((ent = readdir(dir)) != NULL)
-        {
-            string fullName(path);
-            fullName += ent->d_name;
-            if (opendir(fullName.c_str()) == NULL)
-                files.push_back(fullName);
-        }
-        closedir(dir);
-    }
-    else
         throw string("MultiFileIO: Error opening directory\n");
-#endif
+    }
+    
+    try
+    {
+        for (const auto& entry : std::filesystem::directory_iterator(dirPath))
+        {
+            if (entry.is_regular_file())
+            {
+                files.push_back(entry.path().string());
+            }
+        }
+    }
+    catch (const std::filesystem::filesystem_error& e)
+    {
+        throw string("MultiFileIO: Error reading directory - ") + e.what();
+    }
 }
 
 void SvodMultiFileIO::SetPosition(DWORD addressInFile, DWORD fileIndex)
@@ -181,3 +168,5 @@ UINT64 SvodMultiFileIO::Length()
 {
     return currentIO->Length();
 }
+
+

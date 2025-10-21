@@ -29,3 +29,5 @@ private:
 };
 
 #endif // STFSTOOLSDIALOG_H
+
+

@@ -52,3 +52,5 @@ private:
 };
 
 #endif // TRANSFERFLAGSDIALOG_H
+
+

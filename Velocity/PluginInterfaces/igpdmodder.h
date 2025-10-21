@@ -30,3 +30,5 @@ public:
 Q_DECLARE_INTERFACE (IGPDModder, "com.exetelek.Veloctiy.IGPDModder/0.1")
 
 #endif
+
+

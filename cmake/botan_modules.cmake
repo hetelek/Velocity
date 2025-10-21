@@ -15,4 +15,5 @@ set(VELOCITY_BOTAN_MODULES
     hex
     pem
     pk_pad
+    emsa_pkcs1 # EMSA-PKCS1-v1_5 padding (aka EMSA3) for RSA signing (used in XContentHeader::ResignHeader)
 )

@@ -254,3 +254,5 @@ void ProfileCreatorWizard::on_radioButton_2_clicked(bool checked)
     if (checked)
         consoleType = DevKit;
 }
+
+

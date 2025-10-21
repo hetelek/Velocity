@@ -45,11 +45,15 @@ set(SOURCES
   svodfileinfodialog.cpp
   svodtooldialog.cpp
   svodvolumedescriptordialog.cpp
+  stfsvolumedescriptordialog.cpp
   themecreationwizard.cpp
+  textdialog.cpp
   titleidfinder.cpp
   titleidfinderdialog.cpp
   transferflagsdialog.cpp
   xdbfdialog.cpp
+  xmldialog.cpp
+  zipviewer.cpp
   ytgrdialog.cpp
 )
 
@@ -94,6 +98,9 @@ set(UI_FORMS
   partitiondialog.ui
   securitysectordialog.ui
   flashdriveconfigdatadialog.ui
+  xmldialog.ui
+  textdialog.ui
+  zipviewer.ui
 )
 
 # Platform-specific executable properties
@@ -122,6 +129,7 @@ target_include_directories(Velocity
   PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
     ${CMAKE_CURRENT_LIST_DIR}/..
+    ${Qt6Core_PRIVATE_INCLUDE_DIRS}
 )
 
 # Common linking for all platforms - ALWAYS use our BotanAmalgamation

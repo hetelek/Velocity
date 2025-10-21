@@ -716,13 +716,15 @@ void DeviceViewer::on_btnSecurityBlob_clicked()
 {
     if (currentDrive->GetFatxDriveType() == FatxHarddrive)
     {
-        SecuritySectorDialog dialog(currentDrive, this);
-        dialog.exec();
+        SecuritySectorDialog *dialog = new SecuritySectorDialog(currentDrive, this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->show();
     }
     else
     {
-        FlashDriveConfigDataDialog dialog(&currentDrive->configurationData, statusBar, this);
-        dialog.exec();
+        FlashDriveConfigDataDialog *dialog = new FlashDriveConfigDataDialog(&currentDrive->configurationData, statusBar, this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->show();
     }
 }
 
@@ -730,8 +732,9 @@ void DeviceViewer::on_btnPartitions_clicked()
 {
     std::vector<Partition*> partitions = currentDrive->GetPartitions();
 
-    PartitionDialog dialog(partitions, this);
-    dialog.exec();
+    PartitionDialog *dialog = new PartitionDialog(partitions, this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->show();
 }
 
 void DeviceViewer::onDragEntered(QDragEnterEvent *event)
@@ -891,3 +894,5 @@ void DeviceViewer::on_txtDriveName_editingFinished()
                 "The drive could not be renamed.\n\n" + QString::fromStdString(error));
     }
 }
+
+

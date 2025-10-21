@@ -131,3 +131,5 @@ void TransferFlagsDialog::on_pushButton_3_clicked()
     statusBar->showMessage("Transfer flags saved successfully", 3000);
     this->close();
 }
+
+

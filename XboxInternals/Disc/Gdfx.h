@@ -57,3 +57,5 @@ bool GdfxReadFileEntry(SvodMultiFileIO *io, GdfxFileEntry *entry);
 void GdfxWriteFileEntry(SvodMultiFileIO *io, GdfxFileEntry *entry);
 
 #endif // GDFX_H
+
+

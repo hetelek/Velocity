@@ -10,6 +10,9 @@
 #include "renamedialog.h"
 #include "certificatedialog.h"
 #include "imagedialog.h"
+#include "xmldialog.h"
+#include "textdialog.h"
+#include "zipviewer.h"
 #include "propertiesdialog.h"
 #include "stfstoolsdialog.h"
 #include "singleprogressdialog.h"
@@ -24,6 +27,7 @@
 #include <QUuid>
 #include <QWidgetAction>
 #include <QDebug>
+#include <QStringDecoder>
 
 // xbox libs
 #include "Stfs/StfsPackage.h"
@@ -89,3 +93,5 @@ private:
 };
 
 #endif // PACKAGEVIEWER_H
+
+

@@ -35,3 +35,5 @@ void About::on_pushButton_clicked()
 {
     QDesktopServices::openUrl(QUrl("https://free60.org"));
 }
+
+

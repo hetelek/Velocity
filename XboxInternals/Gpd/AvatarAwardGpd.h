@@ -61,3 +61,5 @@ private:
     // Description: get the next award index, for the id of a new entry
     WORD getNextAwardIndex();
 };
+
+

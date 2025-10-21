@@ -21,3 +21,5 @@ void ClusterToolDialog::on_spinBox_valueChanged(int cluster)
     ui->lblAddress->setText("0x" + QString::number(FatxIO::ClusterToOffset(&part, cluster),
             16).toUpper());
 }
+
+

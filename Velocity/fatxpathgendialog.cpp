@@ -28,3 +28,5 @@ void FATXPathGenDialog::on_pushButton_clicked()
 
     close();
 }
+
+

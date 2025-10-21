@@ -40,3 +40,4 @@ static_assert(sizeof(INT64) == 8, "INT64 must be 8 bytes");
 static_assert(sizeof(WINFILETIME) == 8, "WINFILETIME must be 8 bytes");
 
 #endif // TYPEDEFINITIONS_H
+

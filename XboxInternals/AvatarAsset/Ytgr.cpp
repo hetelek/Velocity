@@ -82,3 +82,5 @@ void Ytgr::Parse()
     // make sure both the signature and hash are valid
     valid = valid && !memcmp(contentHash, calculatedHash, 0x14);
 }
+
+
