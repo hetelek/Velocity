@@ -205,6 +205,9 @@ Checkpoint: Utilities functional and settings persist.
 - [ ] T074 [P] Update error dialogs to include "View Logs" button and guidance to export Support Bundle when reporting issues (FR-011) in `Velocity/` — **Required to complete FR-011 integration; must be done alongside T017-T018**
 - [ ] T075 [P] Implement backup location preference in Preferences dialog with path picker and validation; add "Open Backup Folder" action to Tools menu; persist via QSettings (FR-039) in `Velocity/preferencesdialog.*` — **Note: Consider moving to Phase 2 or earlier since backup location affects US3 write operations (Phase 5)**
 - [ ] T076 Verify Botan artifacts present for runtime crypto features in `out/build/<preset>/` (release checklist)
+- [ ] T079 [P] [FE-006] Create `.github/workflows/build.yml` workflow for automated Windows builds with MinGW and Qt 6.8.0
+- [ ] T080 [P] [FE-006] Configure build workflow to upload artifacts (Velocity.exe, XboxInternals.dll, Botan artifacts) after successful builds
+- [ ] T081 [FE-006] Optional: Create `.github/workflows/release.yml` for automated GitHub Releases on version tags; document CI/CD setup in BUILD.md
 
 ---
 

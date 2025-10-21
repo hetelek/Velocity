@@ -619,3 +619,51 @@ These features are identified but not scheduled for the baseline implementation.
 
 **Deferred Reason**: Current file viewers cover the most common file types (.xml, .txt, .cfg, .ini, .json, .log, .toc, images, GPD, STRB). Hex viewing is valuable but serves a smaller audience (advanced users doing format research).
 
+---
+
+### FE-006: GitHub Actions CI/CD Pipeline
+
+**Priority**: Medium (developer productivity, quality assurance)  
+**Effort**: 4-6 hours  
+**Description**: Set up automated GitHub Actions workflows to build, test, and release Velocity binaries for every commit and PR.
+
+**Functionality**:
+- Automated Windows builds using MinGW 13.1.0+ toolchain
+- Automatic Qt 6.8.0 installation via aqtinstall
+- Automatic Botan 3.x download and compilation
+- Build both Debug and Release configurations using CMake presets
+- Run CTest test suites (when available)
+- Upload build artifacts (Velocity.exe, XboxInternals.dll, Botan artifacts)
+- Optional: Automatic GitHub Releases on version tags
+
+**Use Cases**:
+- Verify builds don't break before merging PRs
+- Download pre-built binaries for testing without local compilation
+- Automated release distribution for users
+- Continuous integration for multi-contributor development
+- Regression detection via automated test runs
+
+**Implementation**:
+1. Create `.github/workflows/build.yml` workflow file
+2. Configure Windows runner with MinGW and Qt installation steps
+3. Run `cmake --preset windows-mingw-debug` and `cmake --build`
+4. Run `ctest --preset windows-mingw-debug` (when tests exist)
+5. Upload artifacts using `actions/upload-artifact`
+6. Optional: Create `.github/workflows/release.yml` for tagged releases
+7. Document CI/CD setup in BUILD.md
+
+**Benefits**:
+- Automated quality assurance on every commit
+- Pre-built binaries available for testing and distribution
+- Faster feedback loop for contributors
+- Professional development workflow
+- Reduced manual release process
+
+**Technical Requirements**:
+- GitHub Actions free tier provides 2,000 minutes/month for private repos (unlimited for public)
+- Build time estimated at ~5-10 minutes per run
+- Artifact storage: ~50-100MB per build (90-day retention)
+- Requires proper CMakePresets.json configuration (already exists)
+
+**Deferred Reason**: Current development workflow works with local builds. CI/CD enhances productivity but is not blocking for single-developer workflow. Should be implemented before accepting external contributions.
+
