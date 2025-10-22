@@ -503,7 +503,7 @@ void ProfileEditor::showAvatarContextMenu(QPoint point)
     else if (selectedItem->text() == "Download Award")
     {
         int button = QMessageBox::question(this, "Warning",
-                "You are about to download an avatar award file. Unfortunatly the awards downloaded like this will only work on a JTAG/RGH/Dev.\n\nDo you want to continue?",
+                "You are about to download an avatar award file. Unfortunately the awards downloaded like this will only work on a JTAG/RGH/Dev.\n\nDo you want to continue?",
                 QMessageBox::Yes, QMessageBox::No);
 
         if (button != QMessageBox::Yes)

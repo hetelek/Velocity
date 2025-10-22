@@ -1,5 +1,7 @@
 #include "gameadderdialog.h"
 #include "ui_gameadderdialog.h"
+#include <QSettings>
+#include "Gpd/GameGpd.h"
 
 GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dispose, bool *ok)
     : QDialog(parent), ui(std::make_unique<Ui::GameAdderDialog>()), package(package), dispose(dispose) {
@@ -68,13 +70,35 @@ GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dis
     imageManager = std::make_unique<QNetworkAccessManager>(this);
     connect(imageManager.get(), &QNetworkAccessManager::finished, this, &GameAdderDialog::thumbnailReplyFinished);
 
+    // Set up the thumbnail injection manager for async thumbnail downloads during GPD injection
+    thumbnailInjectionManager = std::make_unique<QNetworkAccessManager>(this);
+    connect(thumbnailInjectionManager.get(), &QNetworkAccessManager::finished, this, &GameAdderDialog::gpdThumbnailDownloadFinished);
+
     // Connect custom context menu signals to their respective slots
     connect(ui->treeWidgetAllGames, &QWidget::customContextMenuRequested, this, &GameAdderDialog::showRemoveContextMenu_AllGames);
     connect(ui->treeWidgetQueue, &QWidget::customContextMenuRequested, this, &GameAdderDialog::showRemoveContextMenu_QueuedGames);
 
     *ok = true;
 }
-GameAdderDialog::~GameAdderDialog() = default;
+
+GameAdderDialog::~GameAdderDialog() {
+    // Clean up dashGpd if it's still open
+    if (dashGpd) {
+        try {
+            dashGpd->Close();
+        } catch (...) {
+            // Ignore close errors during cleanup
+        }
+    }
+    
+    // Clean up temp files
+    if (!dashGpdTempPath.isEmpty()) {
+        QFile::remove(dashGpdTempPath);
+    }
+    if (!pecTempPath.isEmpty()) {
+        QFile::remove(pecTempPath);
+    }
+}
 
 void GameAdderDialog::gameReplyFinished(QNetworkReply *aReply) {
     // Check for network errors
@@ -230,67 +254,198 @@ void GameAdderDialog::showRemoveContextMenu_AllGames(QPoint point) {
     ui->imgThumbnail->setPixmap(QPixmap(":/Images/watermark.png"));
 }
 
-void GameAdderDialog::finishedDownloadingGpd(QString gamePath, QString awardPath, TitleEntry entry, bool error) {
+void GameAdderDialog::on_treeWidgetAllGames_itemDoubleClicked(QTreeWidgetItem* item, int column) {
+    Q_UNUSED(column);
+    if (!item) return;
+
+    // Add the double-clicked item to the queue
+    auto queueItem = std::make_unique<QTreeWidgetItem>(ui->treeWidgetQueue);
+    queueItem->setText(0, item->text(0));
+    queueItem->setText(1, item->text(1));
+    queueItem->setText(2, item->text(2));
+    queueItem->setData(0, Qt::UserRole, item->data(0, Qt::UserRole));
+    ui->treeWidgetQueue->addTopLevelItem(queueItem.release());
+
+    allowInjection = true;
+    delete item;
+
+    // Clear selection details
+    ui->lblAchievements->setText("N/A");
+    ui->lblAvatarAwards->setText("N/A");
+    ui->lblGameName->setText("");
+    ui->lblGamerscore->setText("N/A");
+    ui->lblTitleID->setText("");
+    ui->imgThumbnail->setPixmap(QPixmap(":/Images/watermark.png"));
+}
+
+void GameAdderDialog::on_btnAddToQueue_clicked() {
+    if (ui->treeWidgetAllGames->selectedItems().isEmpty()) {
+        QMessageBox::information(this, "No Selection", "Please select one or more games to add to the queue.");
+        return;
+    }
+
+    for (auto *item : ui->treeWidgetAllGames->selectedItems()) {
+        auto queueItem = std::make_unique<QTreeWidgetItem>(ui->treeWidgetQueue);
+        queueItem->setText(0, item->text(0));
+        queueItem->setText(1, item->text(1));
+        queueItem->setText(2, item->text(2));
+        queueItem->setData(0, Qt::UserRole, item->data(0, Qt::UserRole));
+        ui->treeWidgetQueue->addTopLevelItem(queueItem.release());
+
+        allowInjection = true;
+        delete item;
+    }
+
+    ui->lblAchievements->setText("N/A");
+    ui->lblAvatarAwards->setText("N/A");
+    ui->lblGameName->setText("");
+    ui->lblGamerscore->setText("N/A");
+    ui->lblTitleID->setText("");
+    ui->imgThumbnail->setPixmap(QPixmap(":/Images/watermark.png"));
+}
+
+void GameAdderDialog::on_btnRemoveFromQueue_clicked() {
+    if (ui->treeWidgetQueue->selectedItems().isEmpty()) {
+        QMessageBox::information(this, "No Selection", "Please select one or more games to remove from the queue.");
+        return;
+    }
+
+    for (auto *item : ui->treeWidgetQueue->selectedItems()) {
+        delete item;
+    }
+
+    if (ui->treeWidgetQueue->topLevelItemCount() == 0) {
+        allowInjection = false;
+    }
+}
+
+void GameAdderDialog::finishedDownloadingGpd(QString gamePath, QString awardPath, TitleEntry entry, bool error, DownloadError errorDetails) {
     auto *downloader = qobject_cast<GpdDownloader *>(sender());
     int index = downloader ? downloader->index() : -1;
-    delete downloader;
-
-    // Update the progress bar safely using QMetaObject::invokeMethod
-    QMetaObject::invokeMethod(ui->progressBar, "setValue", Qt::QueuedConnection,
-                              Q_ARG(int, static_cast<int>(((double)++downloadedCount / totalDownloadCount) * 100)));
+    if (downloader) {
+        downloader->deleteLater();  // CRITICAL: Use deleteLater() instead of delete
+    }
 
     if (error || !allowInjection) {
+        // Update progress bar for failed/skipped downloads
+        QMetaObject::invokeMethod(ui->progressBar, "setValue", Qt::QueuedConnection,
+                                  Q_ARG(int, static_cast<int>(((double)++downloadedCount / totalDownloadCount) * 100)));
+        
         if (!error) QFile::remove(gamePath);
         if (!error && !awardPath.isEmpty()) QFile::remove(awardPath);
-        if (error) notSuccessful.append(QString::fromStdWString(entry.gameName));
+        if (error) {
+            FailedDownload failure;
+            failure.gameName = QString::fromStdWString(entry.gameName);
+            failure.error = errorDetails;
+            failedDownloads.append(failure);
+        }
     } else {
-        try {
-            QMutexLocker locker(&m);
-            package->InjectFile(gamePath.toStdString(), QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd");
-            QFile::remove(gamePath);
-
-            if (!awardPath.isEmpty()) {
-                if (!pecPackage) initializePecPackage();
-                pecPackage->InjectFile(awardPath.toStdString(), QString::number(entry.titleID, 16).toUpper().toStdString() + ".gpd");
-                QFile::remove(awardPath);
-            }
-
-            dashGpd->CreateTitleEntry(&entry);
-            dashGpd->gamePlayedCount.int32++;
-
-            // Update the tree widget safely using QMetaObject::invokeMethod
-            if (index >= 0) {
-                QMetaObject::invokeMethod(ui->treeWidgetQueue, [this, index, entry]() {
-                    ui->treeWidgetQueue->topLevelItem(index)->setData(0, Qt::UserRole, QVariant::fromValue(entry));
-                }, Qt::QueuedConnection);
-            }
-        }
-        catch (const std::ios_base::failure &e) {
-            QMessageBox::critical(this, "File I/O Error", QString("I/O Error: %1").arg(e.what()));
-        }
-        catch (const std::out_of_range &e) {
-            QMessageBox::critical(this, "Out of Range Error", "A data block or memory access was out of range.");
-        }
-        catch (const std::runtime_error &e) {
-            QMessageBox::critical(this, "Runtime Error", QString("Runtime Error: %1").arg(e.what()));
-        }
-        catch (const std::invalid_argument &e) {
-            QMessageBox::critical(this, "Invalid Argument Error", QString("Invalid Argument: %1").arg(e.what()));
-        }
-        catch (const std::string &error) {
-            QMessageBox::critical(this, "String Error", QString::fromStdString(error));
-        }
-        catch (const std::exception &e) {
-            QMessageBox::critical(this, "Standard Exception", QString("Error: %1").arg(e.what()));
-        }
-        catch (...) {
-            QMessageBox::critical(this, "Unknown Error", "An unknown error occurred during the file injection process.");
-        }
+        // Start asynchronous thumbnail download
+        // When it completes, gpdThumbnailDownloadFinished() will inject both thumbnail and GPD
+        QString thumbnailUrl = QString("http://image.xboxlive.com/global/t.%1/icon/0/8000")
+            .arg(QString::number(entry.titleID, 16));
+        
+        PendingGpdInjection pending;
+        pending.gpdPath = gamePath;
+        pending.awardPath = awardPath;
+        pending.entry = entry;
+        pending.treeIndex = index;
+        
+        QNetworkReply *thumbnailReply = thumbnailInjectionManager->get(QNetworkRequest(QUrl(thumbnailUrl)));
+        pendingInjections[thumbnailReply] = pending;
+        
+        // Don't increment downloadedCount yet - will do it in gpdThumbnailDownloadFinished
+        return; // Exit early, processing continues in gpdThumbnailDownloadFinished
     }
 
     if (downloadedCount == totalDownloadCount) {
         finalizeInjection();
     }
+}
+
+void GameAdderDialog::gpdThumbnailDownloadFinished(QNetworkReply* reply) {
+    // Find the pending injection for this reply
+    if (!pendingInjections.contains(reply)) {
+        reply->deleteLater();
+        return;
+    }
+    
+    PendingGpdInjection pending = pendingInjections.take(reply);
+    QByteArray thumbnailData = reply->readAll();
+    reply->deleteLater();
+    
+    // Try to inject thumbnail into GPD if download succeeded
+    if (!thumbnailData.isEmpty() && !thumbnailData.contains("File not found.")) {
+        try {
+            GameGpd gameGpd(pending.gpdPath.toStdString());
+            
+            // Allocate persistent memory for the thumbnail
+            BYTE *thumbnailCopy = new BYTE[thumbnailData.size()];
+            memcpy(thumbnailCopy, thumbnailData.data(), thumbnailData.size());
+            
+            ImageEntry thumbnailEntry;
+            thumbnailEntry.image = thumbnailCopy;
+            thumbnailEntry.length = thumbnailData.size();
+            
+            gameGpd.StartWriting();
+            gameGpd.CreateImageEntry(&thumbnailEntry, 0x8000);
+            gameGpd.StopWriting();
+            gameGpd.Close();
+            
+            // Don't delete thumbnailCopy - it's now owned by the GPD structure
+        } catch (...) {
+            // Continue without thumbnail if injection fails
+        }
+    }
+    
+    // Now inject the GPD into the package
+    try {
+        QMutexLocker locker(&m);
+        QString gpdFilename = QString::number(pending.entry.titleID, 16).toUpper() + ".gpd";
+        
+        if (package->FileExists(gpdFilename.toStdString())) {
+            try {
+                package->RemoveFile(gpdFilename.toStdString());
+            } catch (...) {
+                // Ignore removal errors
+            }
+        }
+        
+        package->InjectFile(pending.gpdPath.toStdString(), gpdFilename.toStdString());
+        QFile::remove(pending.gpdPath);
+        
+        if (!pending.awardPath.isEmpty()) {
+            if (!pecPackage) initializePecPackage();
+            pecPackage->InjectFile(pending.awardPath.toStdString(), gpdFilename.toStdString());
+            QFile::remove(pending.awardPath);
+        }
+        
+        dashGpd->CreateTitleEntry(&pending.entry);
+        dashGpd->gamePlayedCount.int32++;
+        
+        if (pending.treeIndex >= 0) {
+            ui->treeWidgetQueue->topLevelItem(pending.treeIndex)->setData(0, Qt::UserRole, QVariant::fromValue(pending.entry));
+        }
+        
+    } catch (const std::exception &e) {
+        QMessageBox::critical(this, "Injection Error", QString("Failed to inject GPD: %1").arg(e.what()));
+    } catch (...) {
+        QMessageBox::critical(this, "Unknown Error", "An unknown error occurred during GPD injection.");
+    }
+    
+    // Update progress
+    QMetaObject::invokeMethod(ui->progressBar, "setValue", Qt::QueuedConnection,
+                              Q_ARG(int, static_cast<int>(((double)++downloadedCount / totalDownloadCount) * 100)));
+    
+    // Check if all downloads are complete
+    if (downloadedCount == totalDownloadCount) {
+        finalizeInjection();
+    }
+}
+
+void GameAdderDialog::closeEvent(QCloseEvent *event)
+{
+    QDialog::closeEvent(event);
 }
 
 void GameAdderDialog::initializePecPackage() {
@@ -346,8 +501,29 @@ void GameAdderDialog::initializePecPackage() {
 
 void GameAdderDialog::finalizeInjection() {
     try {
-        if (!notSuccessful.isEmpty()) {
-            QMessageBox::warning(this, "Warning", "Some games failed to add:\n" + notSuccessful.join("\n"));
+        
+        if (!failedDownloads.isEmpty()) {
+            QString errorMessage = "The following games failed to download:\n\n";
+            
+            for (const auto& failure : failedDownloads) {
+                errorMessage += QString("• %1\n").arg(failure.gameName);
+                if (failure.error.hasError()) {
+                    errorMessage += QString("  Error: %1\n").arg(failure.error.userFriendlyDescription);
+                    if (failure.error.httpStatusCode > 0) {
+                        errorMessage += QString("  HTTP Status: %1\n").arg(failure.error.httpStatusCode);
+                    }
+                }
+                errorMessage += "\n";
+            }
+            
+            errorMessage += "\nTip: Check your internet connection and try again. Some games may not be available in the repository.";
+            
+            QMessageBox msgBox(this);
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.setWindowTitle("Download Errors");
+            msgBox.setText(errorMessage);
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.exec();
         }
 
         // Ensure the settings entry is written to the GPD
@@ -356,6 +532,25 @@ void GameAdderDialog::finalizeInjection() {
         }
         catch (const std::string &error) {
             QMessageBox::critical(this, "GPD Write Error", "Error writing setting entry to GPD:\n" + QString::fromStdString(error));
+        }
+
+        // Close the dashboard GPD to flush changes to disk
+        dashGpd->Close();
+        
+        // Re-inject the updated dashboard GPD back into the package
+        try {
+            // Remove the old dashboard GPD first
+            if (package->FileExists("FFFE07D1.gpd")) {
+                package->RemoveFile("FFFE07D1.gpd");
+            }
+            // Inject the updated one
+            package->InjectFile(dashGpdTempPath.toStdString(), "FFFE07D1.gpd");
+        }
+        catch (const std::exception &e) {
+            QMessageBox::critical(this, "Dashboard GPD Error", QString("Failed to update dashboard GPD in package: %1").arg(e.what()));
+        }
+        catch (const std::string &error) {
+            QMessageBox::critical(this, "Dashboard GPD Error", QString("Failed to update dashboard GPD in package: %1").arg(QString::fromStdString(error)));
         }
 
         // Rehash and resign the package
@@ -392,7 +587,24 @@ void GameAdderDialog::finalizeInjection() {
             }
         }
 
-        close();
+        if (dispose) {
+            close();
+        } else {
+            // Emit signal to allow parent to refresh tree view
+            emit operationsComplete();
+            
+            // Show success message
+            QMessageBox msgBox;
+            msgBox.setIcon(QMessageBox::Information);
+            msgBox.setWindowTitle("Success");
+            msgBox.setText("Games have been successfully added to the package!\n\n"
+                           "The package has been rehashed and resigned.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.exec();
+            
+            // Close dialog after success
+            done(QDialog::Accepted);
+        }
     }
     catch (const std::ios_base::failure &e) {
         QMessageBox::critical(this, "File I/O Error", QString("I/O Error: %1").arg(e.what()));
@@ -469,13 +681,18 @@ void GameAdderDialog::on_pushButton_clicked() {
         QFile::remove(pecTempPath);
     }
 
-    dashGpd->Close();
+    // Don't close dashGpd here - it's closed in finalizeInjection or destructor
     QFile::remove(dashGpdTempPath);
     close();
 }
 
 void GameAdderDialog::on_pushButton_2_clicked() {
+    qDebug() << "GameAdderDialog::on_pushButton_2_clicked() - Add Game button clicked";
+    
     int totalCount = ui->treeWidgetQueue->topLevelItemCount();
+    QString msg = QString("Total games in queue: %1").arg(totalCount);
+    qDebug() << msg;
+    
     if (totalCount < 1) {
         QMessageBox::warning(this, "No Games", "You have selected no games to add.");
         return;
@@ -496,25 +713,74 @@ void GameAdderDialog::on_pushButton_2_clicked() {
         return;  // Exit the function if an error occurs
     }
 
+    // Temporary test hook: if settings.network/forceDownload is true (default true), always download
+    QSettings settings;
+    bool forceDownload = settings.value("network/forceDownload", false).toBool();
+
     for (int i = 0; i < totalCount; ++i) {
         TitleEntry entry = ui->treeWidgetQueue->topLevelItem(i)->data(0, Qt::UserRole).value<TitleEntry>();
         QString gpdName = QString::number(entry.titleID, 16).toUpper() + ".gpd";
+        
+        QString msg1 = QString("Processing game %1 - Title ID: %2 - GPD: %3").arg(i).arg(QString::number(entry.titleID, 16).toUpper()).arg(gpdName);
+            qDebug() << msg1;
 
-        if (!package->FileExists(gpdName.toStdString())) {
-            try {
+        // Check if GPD already exists in package
+        bool fileExists = package->FileExists(gpdName.toStdString());
+        
+        if (fileExists && !forceDownload) {
+                    
+            QString gameName = QString::fromStdWString(entry.gameName);
+            QMessageBox msgBox(this);
+            msgBox.setIcon(QMessageBox::Question);
+            msgBox.setWindowTitle("Game Already Exists");
+            msgBox.setText(QString("The game '%1' already exists in this profile.").arg(gameName));
+            msgBox.setInformativeText("Do you want to replace it with a fresh download?");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+            msgBox.setDefaultButton(QMessageBox::No);
+            
+            int ret = msgBox.exec();
+            
+            if (ret == QMessageBox::Cancel) {
+                            // Cancel the entire operation
+                totalDownloadCount = 0;
+                downloadedCount = 0;
+                return;
+            } else if (ret == QMessageBox::No) {
+                // Skip this game but continue
+                ++downloadedCount;
+                continue;
+            } else {
+                // User chose Yes - remove the existing file first
+                try {
+                    package->RemoveFile(gpdName.toStdString());
+                                } catch (const std::exception &e) {
+                    QString errMsg = QString("  Failed to remove existing file: %1").arg(e.what());
+                                    QMessageBox::critical(this, "Remove Error", QString("Could not remove existing file: %1").arg(e.what()));
+                    ++downloadedCount;
+                    continue;
+                }
+            }
+        }
+        
+        // File doesn't exist (or was removed, or force download), proceed with download
+            qDebug() << "  Starting download...";
+        try {
                 auto *downloader = new GpdDownloader(entry, i, entry.avatarAwardCount != 0, this);
-                connect(downloader, &GpdDownloader::FinishedDownloading, this, &GameAdderDialog::finishedDownloadingGpd);
+                            connect(downloader, &GpdDownloader::FinishedDownloading, this, &GameAdderDialog::finishedDownloadingGpd);
                 downloader->BeginDownload();
             }
             catch (const std::exception &e) {
+                QString errMsg = QString("  EXCEPTION starting download: %1").arg(e.what());
+                            qDebug() << errMsg;
                 QMessageBox::critical(this, "Download Error", QString("Error starting download: %1").arg(e.what()));
             }
-        } else {
-            ++downloadedCount;
-        }
     }
 
+    qDebug() << "After loop - Downloaded:" << downloadedCount << "/ Total:" << totalDownloadCount;
+    
     if (downloadedCount == totalDownloadCount) {
+        qDebug() << "All files already exist or no downloads needed, calling close()";
+
         if (dispose) {
             package->Close();
             delete package;

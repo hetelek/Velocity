@@ -37,22 +37,32 @@ class GameAdderDialog;
 class GameAdderDialog : public QDialog {
     Q_OBJECT
 
+signals:
+    void operationsComplete();  // Emitted after Rehash/Resign, before closing
+
 public:
     explicit GameAdderDialog(StfsPackage* package, QWidget* parent = nullptr, bool dispose = true, bool* ok = nullptr);
     ~GameAdderDialog();
 
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
 private slots:
     void on_treeWidgetAllGames_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+    void on_treeWidgetAllGames_itemDoubleClicked(QTreeWidgetItem* item, int column);
     void gameReplyFinished(QNetworkReply* reply);
     void showRemoveContextMenu_QueuedGames(QPoint point);
     void showRemoveContextMenu_AllGames(QPoint point);
-    void finishedDownloadingGpd(QString gamePath, QString awardPath, TitleEntry entry, bool error);
+    void finishedDownloadingGpd(QString gamePath, QString awardPath, TitleEntry entry, bool error, DownloadError errorDetails = DownloadError());
     void thumbnailReplyFinished(QNetworkReply* reply);
+    void gpdThumbnailDownloadFinished(QNetworkReply* reply);
     void on_pushButton_2_clicked();
     void on_pushButton_clicked();
     void on_btnShowAll_clicked();
     void on_txtSearch_textChanged(const QString& arg1);
     void on_btnShowAll_2_clicked(bool checked);
+    void on_btnAddToQueue_clicked();
+    void on_btnRemoveFromQueue_clicked();
 
 private:
     void initializePecPackage();
@@ -63,12 +73,26 @@ private:
     std::unique_ptr<Ui::GameAdderDialog> ui;
     std::unique_ptr<QNetworkAccessManager> manager;
     std::unique_ptr<QNetworkAccessManager> imageManager;
+    std::unique_ptr<QNetworkAccessManager> thumbnailInjectionManager;
     std::unique_ptr<DashboardGpd> dashGpd;
     std::unique_ptr<StfsPackage> pecPackage;
 
     QString dashGpdTempPath;
     QString pecTempPath;
-    QStringList notSuccessful;
+    
+    struct PendingGpdInjection {
+        QString gpdPath;
+        QString awardPath;
+        TitleEntry entry;
+        int treeIndex;
+    };
+    QMap<QNetworkReply*, PendingGpdInjection> pendingInjections;
+    
+    struct FailedDownload {
+        QString gameName;
+        DownloadError error;
+    };
+    QList<FailedDownload> failedDownloads;
 
     StfsPackage* package;
     bool existed = false;

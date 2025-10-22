@@ -84,6 +84,7 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *);
+    void closeEvent(QCloseEvent *event) override;
 
 private slots:
     void on_actionAbout_triggered();

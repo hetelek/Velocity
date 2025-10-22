@@ -339,6 +339,11 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QMainWindow::closeEvent(event);
+}
+
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
     if (event->mimeData()->hasFormat("text/uri-list"))
@@ -677,13 +682,22 @@ void MainWindow::on_actionGame_Adder_triggered()
 
     StfsPackage *package = new StfsPackage(fileName.toStdString());
 
+
     bool ok;
     GameAdderDialog dialog(package, this, false, &ok);
     if (ok)
         dialog.exec();
 
-    package->Close();
-    delete package;
+    try {
+        package->Close();
+        delete package;
+    }
+    catch (const std::exception &e) {
+        QMessageBox::critical(this, "Cleanup Error", QString("Error during cleanup: %1").arg(e.what()));
+    }
+    catch (...) {
+        QMessageBox::critical(this, "Cleanup Error", "Unknown error during cleanup");
+    }
 }
 
 void MainWindow::on_actionGamer_Picture_Pack_Creator_triggered()

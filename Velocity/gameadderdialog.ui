@@ -44,6 +44,9 @@
            <property name="selectionMode">
             <enum>QAbstractItemView::SelectionMode::ExtendedSelection</enum>
            </property>
+           <property name="sortingEnabled">
+            <bool>true</bool>
+           </property>
            <attribute name="headerDefaultSectionSize">
             <number>100</number>
            </attribute>
@@ -267,6 +270,17 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QPushButton" name="btnAddToQueue">
+             <property name="text">
+              <string>Add to Queue</string>
+             </property>
+             <property name="icon">
+              <iconset resource="Resources.qrc">
+               <normaloff>:/Images/add.png</normaloff>:/Images/add.png</iconset>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
         </layout>
@@ -291,6 +305,9 @@
            <property name="selectionMode">
             <enum>QAbstractItemView::SelectionMode::ExtendedSelection</enum>
            </property>
+           <property name="sortingEnabled">
+            <bool>true</bool>
+           </property>
            <attribute name="headerDefaultSectionSize">
             <number>100</number>
            </attribute>
@@ -313,6 +330,17 @@
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QPushButton" name="btnRemoveFromQueue">
+             <property name="text">
+              <string>Remove from Queue</string>
+             </property>
+             <property name="icon">
+              <iconset resource="Resources.qrc">
+               <normaloff>:/Images/cancel.png</normaloff>:/Images/cancel.png</iconset>
+             </property>
+            </widget>
+           </item>
            <item>
             <widget class="QProgressBar" name="progressBar">
              <property name="value">

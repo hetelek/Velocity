@@ -122,6 +122,7 @@ PackageViewer::PackageViewer(QStatusBar *statusBar, StfsPackage *package,
 
 PackageViewer::~PackageViewer()
 {
+    
     for (int i = 0; i < gpdActions.size(); i++)
         if (gpdActions.at(i)->property("package").isValid())
             gpdActions.at(i)->setProperty("package", QVariant::Invalid);
@@ -341,14 +342,46 @@ void PackageViewer::onOpenInSelected(QAction *action)
         if (action == gameAdder)
         {
             bool ok;
-            GameAdderDialog dialog(package, this, false, &ok);
+            GameAdderDialog *dialog = new GameAdderDialog(package, this, false, &ok);
             if (ok)
             {
-                dialog.exec();
-
-                ui->treeWidget->clear();
-                listing = package->GetFileListing();
-                PopulateTreeWidget(&listing);
+                dialog->setAttribute(Qt::WA_DeleteOnClose);
+                
+                // Handle the custom operationsComplete signal emitted after Rehash/Resign
+                connect(dialog, &GameAdderDialog::operationsComplete, this, [this, dialog]() {
+                    // CRITICAL: Defer tree refresh with QTimer to avoid event loop issues
+                    QTimer::singleShot(0, this, [this, dialog]() {
+                        try {
+                            listing = package->GetFileListing(true);  // Force update after Rehash/Resign
+                            PopulateTreeWidget(&listing);
+                        } catch (const std::exception &e) {
+                            QMessageBox::warning(this, "Refresh Error", QString("Failed to refresh package view: %1").arg(e.what()));
+                        } catch (const std::string &error) {
+                            QMessageBox::warning(this, "Refresh Error", QString("Failed to refresh package view: %1").arg(QString::fromStdString(error)));
+                        } catch (...) {
+                            QMessageBox::warning(this, "Refresh Error", "Failed to refresh package view.");
+                        }
+                    });
+                });
+                
+                // Handle normal dialog closure (finished signal for Cancel/X button)
+                connect(dialog, &QDialog::finished, this, [this, dialog](int result) {
+                    Q_UNUSED(result);
+                    try {
+                        listing = package->GetFileListing(true);  // Force update after Rehash/Resign
+                        PopulateTreeWidget(&listing);
+                    } catch (const std::exception &e) {
+                        QMessageBox::warning(this, "Refresh Error", QString("Failed to refresh package view: %1").arg(e.what()));
+                    } catch (const std::string &error) {
+                        QMessageBox::warning(this, "Refresh Error", QString("Failed to refresh package view: %1").arg(QString::fromStdString(error)));
+                    } catch (...) {
+                        QMessageBox::warning(this, "Refresh Error", "Failed to refresh package view.");
+                    }
+                });
+                dialog->show();
+            } else {
+                // If dialog construction failed, delete allocated pointer
+                delete dialog;
             }
         }
         else if (action == profileEditor)
