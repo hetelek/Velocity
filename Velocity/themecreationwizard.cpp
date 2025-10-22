@@ -14,7 +14,7 @@ ThemeCreationWizard::ThemeCreationWizard(QStatusBar *statusBar, QWidget *parent)
     ui->label_5->setText("<font size=3>" + ui->label_5->text() + "</font>");
     ui->label_7->setText("<font size=3>" + ui->label_7->text() + "</font>");
     ui->lblSavePath->setText("<font size=3>" + ui->lblSavePath->text() + "</font>");
-#elif __WIN32
+#elif _WIN32
     ui->label_3->setFont(QFont("MS Shell Dlg 2", 10));
 #endif
 
@@ -124,7 +124,7 @@ void ThemeCreationWizard::onFinished(int status)
     catch (string error)
     {
         QMessageBox::critical(this, "Error",
-                "An error occured while creating the theme.\n\n" + QString::fromStdString(error));
+                "An error occurred while creating the theme.\n\n" + QString::fromStdString(error));
     }
 }
 
@@ -255,3 +255,5 @@ void ThemeCreationWizard::on_radioButton_2_clicked(bool checked)
     if (checked)
         consoleType = DevKit;
 }
+
+

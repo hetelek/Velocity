@@ -25,9 +25,12 @@ FatxFileDialog::FatxFileDialog(FatxDrive *drive, FatxFileEntry *entry, DWORD clu
     }
     else
     {
-        // TODO: calcuate the size of directories
-        ui->lblSize->setText("N/A");
-        ui->lblSizeOnDisk->setText("N/A");
+        // Calculate the size of the directory and all its contents
+        UINT64 totalSize = calculateDirectorySize(entry, clusterSize);
+        ui->lblSize->setText(QString::fromStdString(ByteSizeToString(totalSize)));
+        
+        UINT64 sizeOnDisk = (totalSize + (clusterSize - 1)) & ~(clusterSize - 1);
+        ui->lblSizeOnDisk->setText(QString::fromStdString(ByteSizeToString(sizeOnDisk)));
     }
 
     ui->chArchive->setChecked(entry->fileAttributes & FatxArchive);
@@ -140,3 +143,35 @@ void FatxFileDialog::on_btnCancel_clicked()
 {
     close();
 }
+
+UINT64 FatxFileDialog::calculateDirectorySize(FatxFileEntry *directory, DWORD clusterSize)
+{
+    UINT64 totalSize = 0;
+    
+    // Ensure the directory's child entries are loaded
+    if (directory->cachedFiles.empty())
+    {
+        drive->GetChildFileEntries(directory);
+    }
+    
+    // Iterate through all children
+    for (size_t i = 0; i < directory->cachedFiles.size(); i++)
+    {
+        FatxFileEntry *child = &directory->cachedFiles[i];
+        
+        if (child->fileAttributes & FatxDirectory)
+        {
+            // Recursively calculate subdirectory size
+            totalSize += calculateDirectorySize(child, clusterSize);
+        }
+        else
+        {
+            // Add file size (actual size, not size on disk)
+            totalSize += child->fileSize;
+        }
+    }
+    
+    return totalSize;
+}
+
+

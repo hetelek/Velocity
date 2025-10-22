@@ -1,7 +1,7 @@
 #ifndef STFSDEFINITIONS_H
 #define STFSDEFINITIONS_H
 
-#include "winnames.h"
+#include "TypeDefinitions.h"
 #include "StfsConstants.h"
 #include "IO/FileIO.h"
 #include <iostream>
@@ -35,7 +35,7 @@ struct StfsVolumeDescriptor
 {
     BYTE size;
     BYTE reserved;
-    BYTE blockSeperation;
+    BYTE blockSeparation;
     WORD fileTableBlockCount;
     INT24 fileTableBlockNum;
     BYTE topHashTableHash[0x14];
@@ -110,3 +110,5 @@ XBOXINTERNALSSHARED_EXPORT DWORD MSTimeToDWORD(MSTime time);
 XBOXINTERNALSSHARED_EXPORT MSTime TimetToMSTime(time_t time);
 
 #endif // STFSDEFINITIONS_H
+
+

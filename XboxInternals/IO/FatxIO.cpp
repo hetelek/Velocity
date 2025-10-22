@@ -69,7 +69,7 @@ int FatxIO::AllocateMemory(DWORD byteAmount)
     if (wasZero)
         byteAmount++;
 
-    // calcualte how many clusters to allocate
+    // calculate how many clusters to allocate
     DWORD clusterCount = (byteAmount + ((entry->partition->clusterSize - (entry->fileSize %
             entry->partition->clusterSize)) - 1)) / entry->partition->clusterSize;
     bool fileIsNull = (entry->fileSize == 0 || entry->startingCluster == 0);
@@ -661,3 +661,5 @@ bool compareRanges(Range a, Range b)
 {
     return a.len > b.len;
 }
+
+

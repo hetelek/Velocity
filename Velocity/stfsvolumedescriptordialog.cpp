@@ -17,14 +17,14 @@ StfsVolumeDescriptorDialog::StfsVolumeDescriptorDialog(QStatusBar *statusBar,
     cmbxHashTable->addItem("Top Table");
     cmbxHashTable->addItem("Bottom Table");
     ui->tableWidget->setCellWidget(1, 0, cmbxHashTable);
-    cmbxHashTable->setCurrentIndex((desc->blockSeperation >> 1) & 1);
+    cmbxHashTable->setCurrentIndex((desc->blockSeparation >> 1) & 1);
 
     // load package type
     cmbxPackageType = new QComboBox(this);
     cmbxPackageType->addItem("Female");
     cmbxPackageType->addItem("Male");
     ui->tableWidget->setCellWidget(2, 0, cmbxPackageType);
-    cmbxPackageType->setCurrentIndex((~desc->blockSeperation) & 1);
+    cmbxPackageType->setCurrentIndex((~desc->blockSeparation) & 1);
     connect(cmbxPackageType, SIGNAL(currentIndexChanged(int)), this, SLOT(packageTypeChanged(int)));
 
     if (cmbxPackageType->currentIndex() == 0)
@@ -113,7 +113,7 @@ void StfsVolumeDescriptorDialog::on_pushButton_clicked()
     desc->size = QtHelpers::ParseHexString(ui->tableWidget->item(0, 0)->text());
 
     // update the block seperation
-    desc->blockSeperation = (cmbxHashTable->currentIndex() << 1) | ((~cmbxPackageType->currentIndex()) &
+    desc->blockSeparation = (cmbxHashTable->currentIndex() << 1) | ((~cmbxPackageType->currentIndex()) &
             1);
 
     // update the file block stuff
@@ -131,3 +131,6 @@ void StfsVolumeDescriptorDialog::on_pushButton_clicked()
 
     this->close();
 }
+
+
+

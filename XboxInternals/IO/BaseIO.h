@@ -2,7 +2,7 @@
 #define BASEIO_H
 
 #include <iostream>
-#include "winnames.h"
+#include "TypeDefinitions.h"
 
 #include "XboxInternals_global.h"
 
@@ -86,3 +86,5 @@ private:
 };
 
 #endif //BASEIO_H
+
+

@@ -9,7 +9,7 @@
 #include <vector>
 #include "IO/SvodIO.h"
 #include <algorithm>
-#include <botan/hash.h>
+#include <botan_all.h>
 
 #include "XboxInternals_global.h"
 
@@ -67,3 +67,5 @@ private:
 int compareFileEntries(GdfxFileEntry a, GdfxFileEntry b);
 
 #endif // SVOD_H
+
+

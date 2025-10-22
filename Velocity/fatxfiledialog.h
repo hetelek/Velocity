@@ -37,6 +37,9 @@ private:
     QString msTimeToString(DWORD time);
     QString getFileType(QString fileName);
     void WriteEntryBack();
+    UINT64 calculateDirectorySize(FatxFileEntry *directory, DWORD clusterSize);
 };
 
 #endif // FATXFILEDIALOG_H
+
+

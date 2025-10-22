@@ -1,5 +1,5 @@
 #include "SvodMultiFileIO.h"
-#include <dirent.h>
+#include <filesystem>
 
 using namespace std;
 
@@ -24,29 +24,30 @@ SvodMultiFileIO::~SvodMultiFileIO()
 
 void SvodMultiFileIO::loadDirectories(string path)
 {
-    DIR *dir;
-    struct dirent *ent;
-    dir = opendir(path.c_str());
-    if (dir != NULL)
+    files.clear();
+    
+    // Modern C++20 cross-platform directory iteration
+    std::filesystem::path dirPath(path);
+    
+    if (!std::filesystem::exists(dirPath) || !std::filesystem::is_directory(dirPath))
     {
-        // load the stuff that's always at the begining . ..
-#ifdef _win32
-        readdir(dir);
-        readdir(dir);
-#endif
-
-        // load only the files, don't want the folders
-        while ((ent = readdir(dir)) != NULL)
-        {
-            string fullName(path);
-            fullName += ent->d_name;
-            if (opendir(fullName.c_str()) == NULL)
-                files.push_back(fullName);
-        }
-        closedir (dir);
-    }
-    else
         throw string("MultiFileIO: Error opening directory\n");
+    }
+    
+    try
+    {
+        for (const auto& entry : std::filesystem::directory_iterator(dirPath))
+        {
+            if (entry.is_regular_file())
+            {
+                files.push_back(entry.path().string());
+            }
+        }
+    }
+    catch (const std::filesystem::filesystem_error& e)
+    {
+        throw string("MultiFileIO: Error reading directory - ") + e.what();
+    }
 }
 
 void SvodMultiFileIO::SetPosition(DWORD addressInFile, DWORD fileIndex)
@@ -167,3 +168,5 @@ UINT64 SvodMultiFileIO::Length()
 {
     return currentIO->Length();
 }
+
+

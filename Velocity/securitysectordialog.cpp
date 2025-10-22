@@ -57,3 +57,5 @@ void SecuritySectorDialog::on_btnReplaceSecuritySector_clicked()
                 "An error occurred while replacing the security blob.\n\n" + QString::fromStdString(error));
     }
 }
+
+

@@ -11,7 +11,7 @@ CreationWizard::CreationWizard(QString *fileName, QWidget *parent) :
 
     magic = CON;
     ui->setupUi(this);
-#ifdef __WIN32
+#ifdef _WIN32
     ui->label_4->setFont(QFont("Arial", 10));
 #elif __APPLE__
     QFont f = ui->label_4->font();
@@ -197,7 +197,7 @@ void CreationWizard::onFinished(int status)
     catch (string error)
     {
         QMessageBox::critical(this, "Error",
-                "An error occured while creating the package.\n\n" + QString::fromStdString(error));
+                "An error occurred while creating the package.\n\n" + QString::fromStdString(error));
         return;
     }
 
@@ -301,3 +301,5 @@ void CreationWizard::on_radioButton_5_clicked(bool checked)
     if (checked)
         magic = PIRS;
 }
+
+

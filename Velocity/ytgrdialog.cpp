@@ -28,3 +28,5 @@ YtgrDialog::~YtgrDialog()
     delete ytgr;
     delete ui;
 }
+
+

@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string.h>
 #include <errno.h>
-#include "winnames.h"
+#include "TypeDefinitions.h"
 #include "IO/BaseIO.h"
 
 using std::string;
@@ -38,4 +38,6 @@ private:
     fstream *fstr;
     const string filePath;
 };
+
+
 

@@ -24,3 +24,5 @@ void SvodToolDialog::on_spinBox_valueChanged(int arg1)
     ui->lblAddress->setText("0x" + QString::number(addr, 16).toUpper());
     ui->lblFileIndex->setText(QString::number(index));
 }
+
+

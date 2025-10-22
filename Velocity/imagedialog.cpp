@@ -1,10 +1,17 @@
 #include "imagedialog.h"
 #include "ui_imagedialog.h"
 
-ImageDialog::ImageDialog(QImage image, QWidget *parent) : QDialog(parent), ui(new Ui::ImageDialog)
+ImageDialog::ImageDialog(QImage image, const QString &fileName, QWidget *parent) : QDialog(parent), ui(new Ui::ImageDialog)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+    
+    // Set window title
+    if (!fileName.isEmpty())
+        setWindowTitle("Image Viewer - " + fileName);
+    else
+        setWindowTitle("Image Viewer");
+    
     ui->label->setPixmap(QPixmap::fromImage(image));
 
     QSize s = sizeHint();
@@ -13,10 +20,13 @@ ImageDialog::ImageDialog(QImage image, QWidget *parent) : QDialog(parent), ui(ne
     if (s.height() < 80)
         s.setHeight(80);
 
-    setFixedSize(s);
+    // Make window resizable and set initial size to fit image
+    resize(s);
 }
 
 ImageDialog::~ImageDialog()
 {
     delete ui;
 }
+
+

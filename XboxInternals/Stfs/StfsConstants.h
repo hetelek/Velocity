@@ -1,9 +1,7 @@
 #ifndef StfsConstants
 #define StfsConstants
 
-#include "winnames.h"
-
-#define INT24_MAX 0xFFFFFF
+#include "TypeDefinitions.h"
 
 const DWORD dataBlocksPerHashTreeLevel[3] = { 0xAA, 0x70E4, 0x4AF768 };
 
@@ -111,3 +109,5 @@ struct Version
 };
 
 #endif
+
+

@@ -9,7 +9,10 @@
 #include <QNetworkReply>
 #include <QDateTime>
 #include <QtAlgorithms>
-#include "json.h"
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QVariantMap>
 
 namespace Ui
 {
@@ -49,3 +52,5 @@ private:
 bool commitCompare(Commit a, Commit b);
 
 #endif // GITHUBCOMMITSDIALOG_H
+
+

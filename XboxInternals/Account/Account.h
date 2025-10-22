@@ -5,12 +5,11 @@
 #include <stdio.h>
 #include "IO/FileIO.h"
 #include "Account/AccountDefinitions.h"
-#include "Gpd/XdbfDefininitions.h"
+#include "Gpd/XdbfDefinitions.h"
 #include "Stfs/StfsConstants.h"
 
 // botan
-#include <botan/mac.h>
-#include <botan/stream_cipher.h>
+#include <botan_all.h>
 
 #include "XboxInternals_global.h"
 
@@ -51,7 +50,7 @@ public:
     bool IsTeamXUID();
 
     // Description: returns the type of subscription the player has
-    SubscriptionTeir GetSubscriptionTeir();
+    SubscriptionTier GetSubscriptionTier();
 
     // Description: returns the country that the player lives in
     XboxLiveCountry GetCountry();
@@ -74,8 +73,8 @@ public:
     // Description: get the onlne domain for XboxLIVE
     string GetOnlineDomain();
 
-    // Description: get the kerbros realm for XboxLIVE
-    string GetKerbrosRealm();
+    // Description: get the kerberos realm for XboxLIVE
+    string GetKerberosRealm();
 
     // Description: get the online key for the player
     void GetOnlineKey(BYTE *outKey);
@@ -95,8 +94,8 @@ public:
     // Description: enable/disable payment method as a credit card
     void SetPaymentInstrumentCreditCard(bool b);
 
-    // Description: set the subscription teir for the player
-    void SetSubscriptionTeir(SubscriptionTeir teir);
+    // Description: set the subscription tier for the player
+    void SetSubscriptionTier(SubscriptionTier tier);
 
     // Description: set the country that the player lives in
     void SetCountry(XboxLiveCountry country);
@@ -139,4 +138,6 @@ private:
     void decryptAccount(std::string encryptedPath, std::string *outPath, ConsoleType type);
     void encryptAccount(std::string decryptedPath, ConsoleType type, std::string *outPath = NULL);
 };
+
+
 

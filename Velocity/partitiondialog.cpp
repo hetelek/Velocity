@@ -57,6 +57,9 @@ void PartitionDialog::on_comboBox_currentIndexChanged(int index)
 void PartitionDialog::on_btnClusterTool_clicked()
 {
     Partition part = *partitions.at(ui->comboBox->currentIndex());
-    ClusterToolDialog dialog(part, this);
-    dialog.exec();
+    ClusterToolDialog *dialog = new ClusterToolDialog(part, this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->show();
 }
+
+

@@ -34,3 +34,5 @@ private:
 };
 
 #endif // SECURITYSECTORDIALOG_H
+
+

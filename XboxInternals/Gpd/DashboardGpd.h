@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Xdbf.h"
-#include "XdbfDefininitions.h"
+#include "XdbfDefinitions.h"
 #include "XdbfHelpers.h"
 #include "GpdBase.h"
 #include <iostream>
@@ -59,4 +59,6 @@ private:
     // read all of the starting stuff
     void init();
 };
+
+
 

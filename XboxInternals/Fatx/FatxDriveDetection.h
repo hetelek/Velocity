@@ -19,3 +19,5 @@ private:
 };
 
 #endif // FATXDRIVEDETECTION_H
+
+

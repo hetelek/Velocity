@@ -29,3 +29,5 @@ private:
 };
 
 #endif // CLUSTERTOOLDIALOG_H
+
+

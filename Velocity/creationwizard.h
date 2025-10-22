@@ -21,7 +21,7 @@ class CreationWizard : public QWizard
     Q_OBJECT
 
 public:
-    explicit CreationWizard(QString *fileName = 0, QWidget *parent = NULL);
+    explicit CreationWizard(QString *fileName = 0, QWidget *parent = nullptr);
     ~CreationWizard();
 
 private slots:
@@ -61,3 +61,5 @@ private:
 };
 
 #endif // CREATIONWIZARD_H
+
+

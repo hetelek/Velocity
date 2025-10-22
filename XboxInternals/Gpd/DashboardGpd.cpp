@@ -245,3 +245,5 @@ void DashboardGpd::CreateTitleEntry(TitleEntry *entry)
 DashboardGpd::~DashboardGpd(void)
 {
 }
+
+

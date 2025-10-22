@@ -10,7 +10,7 @@
 #include "IO/FileIO.h"
 #include "XContentHeader.h"
 
-#include <botan/hash.h>
+#include <botan_all.h>
 
 #include "XboxInternals_global.h"
 
@@ -246,10 +246,10 @@ private:
     void WriteFileEntry(StfsFileEntry *entry);
 
     // Description: allocate a data block in the package, and return a block number
-    INT24 AllocateBlock();
+    UINT24 AllocateBlock();
 
     // Description: allocate 'blockCount' consecutive data blocks
-    INT24 AllocateBlocks(DWORD blockCount);
+    UINT24 AllocateBlocks(DWORD blockCount);
 
     // Description: calculate the level of the topmost hash table
     Level CalcualateTopLevel();
@@ -276,3 +276,5 @@ private:
     // Description: close the io/cleanup resources
     void Cleanup();
 };
+
+

@@ -4,7 +4,7 @@
 #ifndef FATXCONSTANTS_H
 #define FATXCONSTANTS_H
 
-#include "../winnames.h"
+#include "../TypeDefinitions.h"
 
 #include "../Stfs/StfsDefinitions.h"
 
@@ -169,3 +169,5 @@ struct UsbSizes
 };
 
 #endif // FATXCONSTANTS_H
+
+

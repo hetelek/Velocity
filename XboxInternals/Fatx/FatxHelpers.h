@@ -7,7 +7,7 @@
 #define DOWN_TO_NEAREST_SECTOR(x) (0xFFFFFFFFFFFFFE00 & x)
 #define UP_TO_NEAREST_SECTOR(x) ((x + 0x1FF) & 0xFFFFFFFFFFFFFE00)
 
-#include "../winnames.h"
+#include "../TypeDefinitions.h"
 #include "XboxInternals_global.h"
 
 class XBOXINTERNALSSHARED_EXPORT FATXHelpers
@@ -15,3 +15,5 @@ class XBOXINTERNALSSHARED_EXPORT FATXHelpers
 };
 
 #endif // FATXHELPERS_H
+
+

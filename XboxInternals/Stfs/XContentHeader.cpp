@@ -267,7 +267,7 @@ void XContentHeader::FixHeaderHash()
 
 void XContentHeader::WriteMetaData()
 {
-    // seek to the begining of the file
+    // seek to the beginning of the file
     io->SetPosition(0);
 
     if ((flags & MetadataIsPEC) == 0)
@@ -521,55 +521,63 @@ void XContentHeader::ResignHeader(BaseIO& kvIo)
     XeCrypt::BnQw_SwapDwQwLeBe(pData, 0x40);
     XeCrypt::BnQw_SwapDwQwLeBe(qData, 0x40);
 
-    // get the keys ready for signing
-    Botan::BigInt n(nData, 0x80);
-    Botan::BigInt p(pData, 0x40);
-    Botan::BigInt q(qData, 0x40);
+    try
+    {
+        // get the keys ready for signing
+        Botan::BigInt n(nData, 0x80);
+        Botan::BigInt p(pData, 0x40);
+        Botan::BigInt q(qData, 0x40);
 
-    Botan::AutoSeeded_RNG rng;
-    Botan::RSA_PrivateKey pkey(p, q, 0x10001, 0, n);
+        Botan::AutoSeeded_RNG rng;
+        Botan::RSA_PrivateKey pkey(p, q, 0x10001, 0, n);
 
-    // Write the console id
-    io->SetPosition(consoleIDLoc);
-    io->Write(certificate.ownerConsoleID, 5);
+        // Write the console id
+        io->SetPosition(consoleIDLoc);
+        io->Write(certificate.ownerConsoleID, 5);
 
-    // read the data to hash
-    BYTE *buffer = new BYTE[realHeaderSize];
-    io->SetPosition(headerStart);
-    io->ReadBytes(buffer, realHeaderSize);
+        // read the data to hash
+        BYTE *buffer = new BYTE[realHeaderSize];
+        io->SetPosition(headerStart);
+        io->ReadBytes(buffer, realHeaderSize);
 
-    // hash the header
-    const auto sha1 = Botan::HashFunction::create_or_throw("SHA-1");
-    sha1->update(buffer, realHeaderSize);
-    sha1->final(headerHash);
+        // hash the header
+        const auto sha1 = Botan::HashFunction::create_or_throw("SHA-1");
+        sha1->update(buffer, realHeaderSize);
+        sha1->final(headerHash);
 
-    delete[] buffer;
+        delete[] buffer;
 
-    io->SetPosition(hashLoc);
-    io->Write(headerHash, 0x14);
+        io->SetPosition(hashLoc);
+        io->Write(headerHash, 0x14);
 
-    io->SetPosition(toSignLoc);
+        io->SetPosition(toSignLoc);
 
-    BYTE *dataToSign = new BYTE[size];
-    io->ReadBytes(dataToSign, size);
+        BYTE *dataToSign = new BYTE[size];
+        io->ReadBytes(dataToSign, size);
 
-    Botan::PK_Signer signer(pkey, rng, "EMSA3(SHA-1)");
+        Botan::PK_Signer signer(pkey, rng, "EMSA3(SHA-1)");
 
-    auto signature = signer.sign_message((unsigned char*)dataToSign, size,
-            rng);
+        auto signature = signer.sign_message((unsigned char*)dataToSign, size,
+                rng);
 
-    // 8 byte swap the new signature
-    XeCrypt::BnQw_SwapDwQwLeBe(signature.data(), 0x80);
+        // 8 byte swap the new signature
+        XeCrypt::BnQw_SwapDwQwLeBe(signature.data(), 0x80);
 
-    // reverse the new signature every 8 bytes
-    for (int i = 0; i < 0x10; i++)
-        FileIO::ReverseGenericArray(&signature[i * 8], 1, 8);
+        // reverse the new signature every 8 bytes
+        for (int i = 0; i < 0x10; i++)
+            FileIO::ReverseGenericArray(&signature[i * 8], 1, 8);
 
-    // Write the certficate
-    memcpy(certificate.signature, signature.data(), 0x80);
-    WriteCertificate();
+        // Write the certficate
+        memcpy(certificate.signature, signature.data(), 0x80);
+        WriteCertificate();
 
-    delete[] dataToSign;
+        delete[] dataToSign;
+    }
+    catch (const std::exception& e)
+    {
+        // Convert Botan exceptions to XboxInternals string exceptions
+        throw string("XContentHeader: Cryptographic error during resign - ") + e.what() + "\n";
+    }
 }
 
 XContentHeader::~XContentHeader()
@@ -580,3 +588,5 @@ XContentHeader::~XContentHeader()
         delete[] titleThumbnailImage;
     }
 }
+
+

@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include "Xdbf.h"
-#include "XdbfDefininitions.h"
+#include "XdbfDefinitions.h"
 #include <vector>
 
 #include "XboxInternals_global.h"
@@ -64,3 +64,5 @@ private:
     // read in all of the images, settings, and strings
     void init();
 };
+
+

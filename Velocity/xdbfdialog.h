@@ -14,7 +14,7 @@
 
 // xbox360
 #include "Gpd/Xdbf.h"
-#include "Gpd/XdbfDefininitions.h"
+#include "Gpd/XdbfDefinitions.h"
 #include "Gpd/XdbfHelpers.h"
 #include "Gpd/GpdBase.h"
 #include "IO/FileIO.h"
@@ -39,7 +39,7 @@ class XdbfDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit XdbfDialog(QStatusBar *statusBar, GpdBase *gpd, bool *modified = NULL,
+    explicit XdbfDialog(QStatusBar *statusBar, GpdBase *gpd, bool *modified = nullptr,
             QWidget *parent = 0);
     ~XdbfDialog();
 
@@ -62,3 +62,5 @@ private:
 };
 
 #endif // XdbfDIALOG_H
+
+

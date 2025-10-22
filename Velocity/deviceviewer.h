@@ -36,9 +36,9 @@
 #include "nightcharts.h"
 #include "dragdroptreewidget.h"
 
-Q_DECLARE_METATYPE( FatxFileEntry* )
-Q_DECLARE_METATYPE( FatxDrive* )
-Q_DECLARE_METATYPE( Partition* )
+Q_DECLARE_METATYPE(FatxFileEntry*)
+Q_DECLARE_METATYPE(FatxDrive*)
+Q_DECLARE_METATYPE(Partition*)
 
 namespace Ui
 {
@@ -106,3 +106,5 @@ private:
 };
 
 #endif // DEVICEVIEWER_H
+
+

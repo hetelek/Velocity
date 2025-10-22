@@ -70,7 +70,7 @@ void XdbfDialog::showContextMenu(QPoint p)
 
     QAction *selectedItem = contextMenu.exec(globalPos);
 
-    if (selectedItem == NULL)
+    if (selectedItem == nullptr)
         return;
     else if (selectedItem->text() == "Extract Selected")
     {
@@ -187,7 +187,7 @@ void XdbfDialog::showContextMenu(QPoint p)
             // cleanup
             delete[] entryBuff;
             io.Close();
-            if (modified != NULL)
+            if (modified != nullptr)
                 *modified = true;
 
             // get the xdbf entry again so we can update the UI
@@ -220,8 +220,9 @@ void XdbfDialog::showContextMenu(QPoint p)
     }
     else if (selectedItem->text() == "Address Converter")
     {
-        AddressConverterDialog dialog(gpd->xdbf, this);
-        dialog.exec();
+        AddressConverterDialog *dialog = new AddressConverterDialog(gpd->xdbf, this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->show();
     }
     else if (selectedItem->text() == "Clean")
     {
@@ -240,7 +241,7 @@ void XdbfDialog::showContextMenu(QPoint p)
         catch (std::string error)
         {
             QMessageBox::critical(this, "Clean Error",
-                    "An error occured while cleaning the Gpd.\n\n" + QString::fromStdString(error));
+                    "An error occurred while cleaning the Gpd.\n\n" + QString::fromStdString(error));
             return;
         }
 
@@ -248,7 +249,7 @@ void XdbfDialog::showContextMenu(QPoint p)
         ui->treeWidget->clear();
         loadEntries();
 
-        if (modified != NULL)
+        if (modified != nullptr)
             *modified = true;
 
         statusBar->showMessage("Cleaned Gpd successfully", 3000);
@@ -367,8 +368,9 @@ void XdbfDialog::on_treeWidget_doubleClicked(const QModelIndex &index)
         {
             QByteArray imageBuff((char*)gpd->images.at(e.index).image, (size_t)gpd->images.at(e.index).length);
 
-            ImageDialog dialog(QImage::fromData(imageBuff), this);
-            dialog.exec();
+            ImageDialog *dialog = new ImageDialog(QImage::fromData(imageBuff), "", this);
+            dialog->setAttribute(Qt::WA_DeleteOnClose);
+            dialog->show();
             break;
         }
         default:
@@ -376,3 +378,5 @@ void XdbfDialog::on_treeWidget_doubleClicked(const QModelIndex &index)
             break;
     }
 }
+
+

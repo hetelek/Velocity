@@ -8,7 +8,7 @@
 // xbox360
 #include "AvatarAsset/AvatarAsset.h"
 #include "AvatarAsset/AssetHelpers.h"
-#include "AvatarAsset/AvatarAssetDefinintions.h"
+#include "AvatarAsset/AvatarAssetDefinitions.h"
 
 namespace Ui
 {
@@ -29,3 +29,5 @@ private:
 };
 
 #endif // STRBDIALOG_H
+
+

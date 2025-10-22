@@ -276,3 +276,5 @@ void BaseIO::SwapEndian()
     else
         byteOrder = LittleEndian;
 }
+
+

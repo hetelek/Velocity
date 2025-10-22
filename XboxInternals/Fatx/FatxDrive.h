@@ -25,9 +25,6 @@ class XBOXINTERNALSSHARED_EXPORT FatxDrive
 {
 public:
     FatxDrive(BaseIO *io, FatxDriveType type);
-    #ifdef _WIN32
-    FatxDrive(void* deviceHandle, FatxDriveType type = FatxHarddrive);
-    #endif
     FatxDrive(std::string drivePath, FatxDriveType type = FatxHarddrive);
     FatxDrive(std::wstring drivePath, FatxDriveType type = FatxHarddrive);
     ~FatxDrive();
@@ -125,12 +122,7 @@ private:
     // open up a physical drive
     void loadFatxDrive(std::wstring drivePath);
 
-    // open up a physical drive
-    #ifdef _WIN32
-    void loadFatxDrive(void* deviceHandle);
-    #endif
-
-    // open up a physical drive
+    // open up a physical drive (with BaseIO)
     void loadFatxDrive();
 
     // process a partition and load it with calulated information
@@ -155,3 +147,5 @@ private:
 };
 
 #endif // FATXDRIVE_H
+
+

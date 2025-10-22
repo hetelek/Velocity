@@ -1,7 +1,7 @@
 #ifndef MEMORYSTREAM_H
 #define MEMORYSTREAM_H
 
-#include "winnames.h"
+#include "TypeDefinitions.h"
 #include <string.h>
 #include "BaseIO.h"
 
@@ -29,3 +29,5 @@ private:
 };
 
 #endif // MEMORYSTREAM_H
+
+

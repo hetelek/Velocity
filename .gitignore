@@ -197,4 +197,8 @@ $RECYCLE.BIN/
 
 fixqt4headers
 
-botan
+# botan submodule
+botan/
+
+# Visual Studio 2015/2017 cache/options directory
+.vs/

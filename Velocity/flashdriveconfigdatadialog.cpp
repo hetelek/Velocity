@@ -40,3 +40,5 @@ void FlashDriveConfigDataDialog::on_btnCertificate_clicked()
     CertificateDialog dialog(statusBar, &configData->certificate, this, true);
     dialog.exec();
 }
+
+

@@ -10,6 +10,9 @@
 #include "renamedialog.h"
 #include "certificatedialog.h"
 #include "imagedialog.h"
+#include "xmldialog.h"
+#include "textdialog.h"
+#include "zipviewer.h"
 #include "propertiesdialog.h"
 #include "stfstoolsdialog.h"
 #include "singleprogressdialog.h"
@@ -24,6 +27,7 @@
 #include <QUuid>
 #include <QWidgetAction>
 #include <QDebug>
+#include <QStringDecoder>
 
 // xbox libs
 #include "Stfs/StfsPackage.h"
@@ -47,7 +51,7 @@ class PackageViewer : public QDialog
 
 public:
     explicit PackageViewer(QStatusBar *statusBar, StfsPackage *package, QList<QAction*> gpdActions,
-            QList<QAction*> gameActions, QWidget *parent = NULL, bool disposePackage = true);
+            QList<QAction*> gameActions, QWidget *parent = nullptr, bool disposePackage = true);
     ~PackageViewer();
 
 private slots:
@@ -73,7 +77,7 @@ private slots:
 
 private:
     Ui::PackageViewer *ui;
-    void PopulateTreeWidget(StfsFileListing *entry, QTreeWidgetItem *parent = NULL);
+    void PopulateTreeWidget(StfsFileListing *entry, QTreeWidgetItem *parent = nullptr);
     void GetPackagePath(QTreeWidgetItem *item, QString *out, bool folderOnly = false);
     void SetIcon(string name, StfsFileEntry *entry, QTreeWidgetItem *item);
     void GetSubFilesStfs(StfsFileListing *parent, QList<void *> &entries, QString currentPath = "");
@@ -89,3 +93,5 @@ private:
 };
 
 #endif // PACKAGEVIEWER_H
+
+

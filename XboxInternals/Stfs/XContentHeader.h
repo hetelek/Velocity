@@ -1,21 +1,17 @@
 #pragma once
 
-#include "winnames.h"
+#include "TypeDefinitions.h"
 
 #include "StfsConstants.h"
 #include "StfsDefinitions.h"
 #include "IO/FileIO.h"
-#include "../AvatarAsset/AvatarAssetDefinintions.h"
+#include "../AvatarAsset/AvatarAssetDefinitions.h"
 #include "../Gpd/XdbfHelpers.h"
 #include "../Cryptography/XeCrypt.h"
 
 #include <iostream>
 
-#include <botan/hash.h>
-#include <botan/bigint.h>
-#include <botan/auto_rng.h>
-#include <botan/rsa.h>
-#include <botan/pubkey.h>
+#include <botan_all.h>
 
 #include "XboxInternals_global.h"
 
@@ -154,4 +150,6 @@ private:
 
     void readMetadata();
 };
+
+
 

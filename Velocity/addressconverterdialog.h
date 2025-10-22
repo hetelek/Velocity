@@ -30,3 +30,5 @@ private:
 };
 
 #endif // ADDRESSCONVERTERDIALOG_H
+
+

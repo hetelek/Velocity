@@ -61,3 +61,5 @@ StrbDialog::~StrbDialog()
     delete asset;
     delete ui;
 }
+
+

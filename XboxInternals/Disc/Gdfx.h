@@ -1,7 +1,7 @@
 #ifndef GDFX_H
 #define GDFX_H
 
-#include "winnames.h"
+#include "TypeDefinitions.h"
 #include "IO/SvodMultiFileIO.h"
 #include <iostream>
 #include <vector>
@@ -57,3 +57,5 @@ bool GdfxReadFileEntry(SvodMultiFileIO *io, GdfxFileEntry *entry);
 void GdfxWriteFileEntry(SvodMultiFileIO *io, GdfxFileEntry *entry);
 
 #endif // GDFX_H
+
+

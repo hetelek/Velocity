@@ -7,7 +7,7 @@
 #include "../Cryptography/XeKeys.h"
 #include "../Gpd/XdbfHelpers.h"
 #include "../Stfs/StfsConstants.h"
-#include <botan/hash.h>
+#include <botan_all.h>
 
 class XBOXINTERNALSSHARED_EXPORT Ytgr
 {
@@ -35,3 +35,5 @@ private:
 };
 
 #endif // Ytgr_H
+
+

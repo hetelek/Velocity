@@ -69,3 +69,5 @@ private:
 void UpdateProgress(DWORD cur, DWORD total, void *arg);
 
 #endif // SVODDIALOG_H
+
+

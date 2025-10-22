@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IO/FileIO.h"
-#include "AvatarAssetDefinintions.h"
+#include "AvatarAssetDefinitions.h"
 #include <iostream>
 #include <vector>
 
@@ -60,4 +60,6 @@ private:
     // Description: round the number to a block boundry
     DWORD roundUpToBlockAlignment(DWORD valueToRound);
 };
+
+
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include "winnames.h"
+#include "TypeDefinitions.h"
 
 using std::string;
 using std::wstring;
@@ -20,9 +20,9 @@ enum PasscodeKeys
     RB
 };
 
-enum SubscriptionTeir
+enum SubscriptionTier
 {
-    NoSubcription = 0,
+    NoSubscription = 0,
     Silver = 3,
     Gold = 6,
     FamilyGold = 9
@@ -70,10 +70,12 @@ struct AccountInfo
     XboxLiveServiceProvider serviceProvider;
     BYTE passcode[4];
     string onlineDomain;
-    string kerbrosRealm;
+    string kerberosRealm;
     BYTE onlineKey[0x10];
 };
 
 const BYTE RETAIL_KEY[0x10] = { 0xE1, 0xBC, 0x15, 0x9C, 0x73, 0xB1, 0xEA, 0xE9, 0xAB, 0x31, 0x70, 0xF3, 0xAD, 0x47, 0xEB, 0xF3 };
 const BYTE DEVKIT_KEY[0x10] = { 0xDA, 0xB6, 0x9A, 0xD9, 0x8E, 0x28, 0x76, 0x4F, 0x97, 0x7E, 0xE2, 0x48, 0x7E, 0x4F, 0x3F, 0x68 };
 const BYTE CONFOUNDER[8] = { 0x56, 0x65, 0x6C, 0x6F, 0x63, 0x69, 0x74, 0x79 };
+
+

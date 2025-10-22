@@ -1,10 +1,11 @@
 #include "profileeditor.h"
 #include "ui_profileeditor.h"
+#include <QCloseEvent>
 
 ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool dispose,
         QWidget *parent) :
-    QDialog(parent), ui(new Ui::ProfileEditor), profile(profile), PEC(NULL), dashGpd(NULL),
-    account(NULL), downloader(NULL), dispose(dispose), statusBar(statusBar)
+    QDialog(parent), ui(new Ui::ProfileEditor), profile(profile), PEC(nullptr), dashGpd(nullptr),
+    account(nullptr), downloader(nullptr), dispose(dispose), statusBar(statusBar)
 {
     ui->setupUi(this);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -114,8 +115,8 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         ui->txtGamertag->setText(QString::fromStdWString(account->GetGamertag()));
         ui->lblLanguage->setText(QString::fromStdString(AccountHelpers::ConsoleLanguageToString(
                     account->GetLanguage())));
-        ui->lblSubscriptionTeir->setText(QString::fromStdString(AccountHelpers::SubscriptionTeirToString(
-                    account->GetSubscriptionTeir())));
+        ui->lblSubscriptionTier->setText(QString::fromStdString(AccountHelpers::SubscriptionTierToString(
+                    account->GetSubscriptionTier())));
         ui->lblParentalControlled->setText(((account->IsParentalControlled()) ? "Yes" : "No"));
         ui->lblCreditCard->setText(((account->IsPaymentInstrumentCreditCard()) ? "Yes" : "No"));
         ui->lblXUID->setText(QString::number(account->GetXUID(), 16).toUpper());
@@ -322,7 +323,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         // if there are avatar awards then add it to the vector
         if (dashGpd->gamesPlayed.at(i).avatarAwardCount != 0)
         {
-            AvatarAwardGameEntry a = { gpd, &dashGpd->gamesPlayed.at(i), NULL, false, string(""), string("") };
+            AvatarAwardGameEntry a = { gpd, &dashGpd->gamesPlayed.at(i), nullptr, false, string(""), string("") };
             aaGames.push_back(a);
         }
 
@@ -331,7 +332,7 @@ ProfileEditor::ProfileEditor(QStatusBar *statusBar, StfsPackage *profile, bool d
         item->setText(0, QString::fromStdWString(gpd->gameName.ws));
 
         // set the thumbnail
-        if (gpd->thumbnail.image != NULL)
+        if (gpd->thumbnail.image != nullptr)
         {
             QByteArray imageBuff((char*)gpd->thumbnail.image, (size_t)gpd->thumbnail.length);
             item->setIcon(0, QIcon(QPixmap::fromImage(QImage::fromData(imageBuff))));
@@ -497,12 +498,12 @@ void ProfileEditor::showAvatarContextMenu(QPoint point)
     contextMenu.addAction(QPixmap(":/Images/download.png"), "Download Award");
     QAction *selectedItem = contextMenu.exec(globalPos);
 
-    if (selectedItem == NULL)
+    if (selectedItem == nullptr)
         return;
     else if (selectedItem->text() == "Download Award")
     {
         int button = QMessageBox::question(this, "Warning",
-                "You are about to download an avatar award file. Unfortunatly the awards downloaded like this will only work on a JTAG/RGH/Dev.\n\nDo you want to continue?",
+                "You are about to download an avatar award file. Unfortunately the awards downloaded like this will only work on a JTAG/RGH/Dev.\n\nDo you want to continue?",
                 QMessageBox::Yes, QMessageBox::No);
 
         if (button != QMessageBox::Yes)
@@ -534,7 +535,7 @@ void ProfileEditor::onAssetsDoneDownloading()
 {
     try
     {
-        struct AvatarAward *award = &aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(
+        AvatarAwardData *award = &aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(
             ui->avatarAwardsList->currentIndex().row());
 
         StfsPackage newAsset(assetSavePath.toStdString(), StfsPackageCreate | StfsPackageFemale);
@@ -623,7 +624,7 @@ void ProfileEditor::addToDashGpd(SettingEntry *entry, SettingEntryType type, UIN
             break;
         case Binary:
             entry->binaryData.length = 0;
-            entry->binaryData.data = NULL;
+            entry->binaryData.data = nullptr;
             break;
         case UnicodeString:
             entry->str = new wstring(L"");
@@ -633,7 +634,7 @@ void ProfileEditor::addToDashGpd(SettingEntry *entry, SettingEntryType type, UIN
     dashGpd->CreateSettingEntry(entry, id);
 }
 
-ProfileEditor::~ProfileEditor()
+void ProfileEditor::closeEvent(QCloseEvent *event)
 {
     if (ok)
     {
@@ -641,13 +642,25 @@ ProfileEditor::~ProfileEditor()
         {
             saveAll();
             statusBar->showMessage("Saved all changes", 3000);
+            event->accept();
         }
         catch (string error)
         {
             QMessageBox::critical(this, "Error",
                     "An error occurred while saving the profile.\n\n" + QString::fromStdString(error));
+            event->accept(); // Accept even on error to allow closing
         }
     }
+    else
+    {
+        event->accept();
+    }
+}
+
+ProfileEditor::~ProfileEditor()
+{
+    // Note: saveAll() is now called in closeEvent(), not here
+    // This ensures the KV file dialog appears while the window is still visible
 
     // free all the game gpd memory
     for (DWORD i = 0; i < games.size(); i++)
@@ -661,13 +674,13 @@ ProfileEditor::~ProfileEditor()
         delete aaGames.at(i).gpd;
     }
 
-    if (dashGpd != NULL)
+    if (dashGpd != nullptr)
     {
         dashGpd->Close();
         delete dashGpd;
     }
 
-    if (account != NULL)
+    if (account != nullptr)
         delete account;
 
     if (dispose)
@@ -763,7 +776,7 @@ void ProfileEditor::saveImage(QPoint p, QLabel *imgLabel)
     contextMenu.addAction(QPixmap(":/Images/save.png"), "Save Image");
     QAction *selectedItem = contextMenu.exec(globalPos);
 
-    if (selectedItem == NULL)
+    if (selectedItem == nullptr)
         return;
     else if (selectedItem->text() == "Save Image")
     {
@@ -924,7 +937,7 @@ void ProfileEditor::loadAvatarAwardInfo(int gameIndex, unsigned int awardIndex)
         return;
 
     // get the current award
-    struct AvatarAward *award = &aaGames.at(gameIndex).gpd->avatarAwards.at(awardIndex);
+    AvatarAwardData *award = &aaGames.at(gameIndex).gpd->avatarAwards.at(awardIndex);
 
     // update the ui
     ui->lblAwName->setText(QString::fromStdWString(award->name));
@@ -981,8 +994,8 @@ void ProfileEditor::replyFinishedAwImg(QNetworkReply *aReply)
         ui->imgAw->clear();
         ui->imgAw->setPixmap(QPixmap::fromImage(QImage::fromData(img)));
 
-        struct AvatarAward *award = aReply->request().attribute((QNetworkRequest::Attribute)
-                1001).value<struct AvatarAward*>();
+        AvatarAwardData *award = aReply->request().attribute((QNetworkRequest::Attribute)
+                1001).value<AvatarAwardData*>();
 
         // add the avatar image to the gpd if it isn't already there
         if (ok && !ui->imgAw->pixmap().isNull())
@@ -1155,7 +1168,7 @@ void ProfileEditor::on_btnUnlockAllAwards_clicked()
 }
 
 void ProfileEditor::updateAvatarAward(TitleEntry *entry, AvatarAwardGpd *gpd,
-        struct AvatarAward *award, State toSet)
+        AvatarAwardData *award, State toSet)
 {
     AssetGender g = AvatarAwardGpd::GetAssetGender(award);
     State current = getStateFromFlags(award->flags);
@@ -1330,9 +1343,16 @@ void ProfileEditor::saveAll()
     }
 
     string path = QtHelpers::GetKVPath(profile->metaData->certificate.ownerConsoleType, this);
+    
+    // Warn user if no KV was provided
+    if (path == "")
+    {
+        QMessageBox::warning(this, "Warning",
+                "No KV supplied. Profile not resigned.\n\nTo resign, close and reopen the profile with a KV file.");
+    }
 
     // save the avatar awards
-    if (PEC != NULL)
+    if (PEC != nullptr)
     {
         // put all the avatar award gpds back in the PEC
         for (DWORD i = 0; i < aaGames.size(); i++)
@@ -1706,7 +1726,7 @@ void ProfileEditor::on_dteAwTimestamp_dateTimeChanged(const QDateTime &date)
     if (ui->aaGamelist->currentIndex().row() < 0 || ui->avatarAwardsList->currentIndex().row() < 0)
         return;
 
-    struct AvatarAward *entry = &aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(
+    AvatarAwardData *entry = &aaGames.at(ui->aaGamelist->currentIndex().row()).gpd->avatarAwards.at(
                 ui->avatarAwardsList->currentIndex().row());
 
     // make sure the user changed the time
@@ -1921,3 +1941,5 @@ bool ProfileEditor::isOk()
 {
     return ok;
 }
+
+

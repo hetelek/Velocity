@@ -27,3 +27,5 @@ private:
 };
 
 #endif // RENAMEDIALOG_H
+
+

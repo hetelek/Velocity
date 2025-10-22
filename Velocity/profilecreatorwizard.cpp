@@ -20,7 +20,7 @@ ProfileCreatorWizard::ProfileCreatorWizard(QStatusBar *statusBar, QWidget *paren
 
     // generate profile ID
     profileID = 0xE000000000000000;
-    srand(time(NULL));
+    srand(time(nullptr));
     profileID |= ((UINT64)rand() & 0xFFFF) + (((UINT64)rand() & 0xFFFF) + (((
                 UINT64)rand() & 0xFFFF) << 32));
 
@@ -199,7 +199,7 @@ void ProfileCreatorWizard::onFinished(int status)
     catch (string error)
     {
         QMessageBox::critical(this, "Error",
-                "An error occured while creating the profile.\n\n" + QString::fromStdString(error));
+                "An error occurred while creating the profile.\n\n" + QString::fromStdString(error));
     }
 }
 
@@ -254,3 +254,5 @@ void ProfileCreatorWizard::on_radioButton_2_clicked(bool checked)
     if (checked)
         consoleType = DevKit;
 }
+
+

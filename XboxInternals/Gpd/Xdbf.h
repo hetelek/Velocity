@@ -4,7 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include "IO/FileIO.h"
-#include "XdbfDefininitions.h"
+#include "XdbfDefinitions.h"
 #include "XdbfHelpers.h"
 
 #include "XboxInternals_global.h"
@@ -124,3 +124,5 @@ private:
 };
 
 bool compareEntries(XdbfEntry a, XdbfEntry b);
+
+

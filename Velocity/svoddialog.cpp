@@ -8,7 +8,7 @@ SvodDialog::SvodDialog(SVOD *svod, QStatusBar *statusBar, QWidget *parent) :
     ui->setupUi(this);
     QtHelpers::GenAdjustWidgetAppearanceToOS(this);
 
-    loadListing(NULL, &svod->root);
+    loadListing(nullptr, &svod->root);
 
     ui->treeWidget->header()->setDefaultSectionSize(75);
     ui->treeWidget->header()->resizeSection(0, 250);
@@ -47,7 +47,7 @@ void SvodDialog::loadListing(QTreeWidgetItem *parent, vector<GdfxFileEntry> *fil
     for (DWORD i = 0; i < files->size(); i++)
     {
         QTreeWidgetItem *item;
-        if (parent == NULL)
+        if (parent == nullptr)
             item = new QTreeWidgetItem(ui->treeWidget);
         else
             item = new QTreeWidgetItem(parent);
@@ -94,7 +94,7 @@ void SvodDialog::showFileContextMenu(QPoint pos)
     }
 
     QAction *selectedItem = contextMenu.exec(globalPos);
-    if(selectedItem == NULL)
+    if(selectedItem == nullptr)
         return;
 
     if (selectedItem->text() == "View Properties")
@@ -134,7 +134,7 @@ void SvodDialog::showFileContextMenu(QPoint pos)
             return;
 
         SingleProgressDialog *dialog = new SingleProgressDialog(FileSystemSVOD, svod, OpReplace,
-                QString::fromStdString(entry->filePath + entry->name), filePath, NULL, this);
+                QString::fromStdString(entry->filePath + entry->name), filePath, nullptr, this);
         dialog->setModal(true);
         dialog->show();
         dialog->start();
@@ -203,8 +203,9 @@ void SvodDialog::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, [[maybe_
     {
         svod->GetSvodIO(*entry).SaveFile(tempName.toStdString());
 
-        ImageDialog dialog(QImage(tempName), this);
-        dialog.exec();
+        ImageDialog *dialog = new ImageDialog(QImage(tempName), item->text(0), this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->show();
 
         QFile::remove(tempName);
     }
@@ -276,3 +277,5 @@ void SvodDialog::on_btnResign_clicked()
                 "An error occurred while resigning the system.\n\n" + QString::fromStdString(error));
     }
 }
+
+

@@ -13,7 +13,7 @@
 #include <QNetworkReply>
 
 // other
-#include "winnames.h"
+#include "TypeDefinitions.h"
 #include "IO/FileIO.h"
 
 class AvatarAssetDownloader : public QObject
@@ -50,3 +50,5 @@ private:
 };
 
 #endif // AVATARASSETDOWNLOADER_H
+
+

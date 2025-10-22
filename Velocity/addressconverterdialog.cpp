@@ -27,3 +27,5 @@ void AddressConverterDialog::on_spnRealAddr_editingFinished()
 {
     ui->spnSpecifier->setValue(xdbf->GetSpecifier(ui->spnRealAddr->value()));
 }
+
+

@@ -75,9 +75,11 @@ std::string QtHelpers::GetKVPath(ConsoleType type, QWidget *parent)
 
     if (!QFile::exists(QString::fromStdString(kvName)))
     {
-        QFileDialog dialog(parent, "KV Location", DefaultLocation() + "/KV.bin");
+        // Use nullptr as parent to prevent dialog from closing when parent closes
+        QFileDialog dialog(nullptr, "KV Location", DefaultLocation() + "/KV.bin");
         dialog.setFileMode(QFileDialog::ExistingFile);
         dialog.setViewMode(QFileDialog::Detail);
+        dialog.setWindowModality(Qt::ApplicationModal);
 
         if (dialog.exec() == QFileDialog::Accepted)
         {
@@ -146,12 +148,12 @@ QString QtHelpers::ExecutingDirectory()
 
 void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
 {
-    if (rootWidget == NULL)
+    if (rootWidget == nullptr)
         return;
 
-    QObject *child = NULL;
+    QObject *child = nullptr;
     QObjectList Containers;
-    QObject *container  = NULL;
+    QObject *container  = nullptr;
     QStringList DoNotAffect;
 
     // Make an exception list (Objects not to be affected)
@@ -167,7 +169,7 @@ void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
     int cmbxHeight = 30;
     QFont cntrlFont("Myriad Pro", 14);
     QFont txtFont("Myriad Pro", 14);
-#elif _WIN32 // Win XP/7
+#elif _WIN32
     int ButtonHeight = 24;
     int cmbxHeight = 20;
     QFont cntrlFont("MS Shell Dlg 2", 8);
@@ -184,7 +186,7 @@ void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
     while (!Containers.isEmpty())
     {
         container = Containers.takeFirst();
-        if (container != NULL)
+        if (container != nullptr)
         {
             for (int ChIdx=0; ChIdx < container->children().size(); ChIdx++)
             {
@@ -197,7 +199,7 @@ void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
                 else
                 {
                     // Cast child object to button and label
-                    // (if the object is not of the correct type, it will be NULL)
+                    // (if the object is not of the correct type, it will be nullptr)
                     QPushButton *button = qobject_cast<QPushButton *>(child);
                     QLabel *label = qobject_cast<QLabel *>(child);
                     QComboBox *cmbx = qobject_cast<QComboBox *>(child);
@@ -206,30 +208,30 @@ void QtHelpers::GenAdjustWidgetAppearanceToOS(QWidget *rootWidget)
                     QPlainTextEdit *plain = qobject_cast<QPlainTextEdit *>(child);
                     QCheckBox *check = qobject_cast<QCheckBox *>(child);
                     QProgressBar *progress = qobject_cast<QProgressBar *>(child);
-                    if (button != NULL)
+                    if (button != nullptr)
                     {
                         button->setMinimumHeight(ButtonHeight); // Win
                         button->setMaximumHeight(ButtonHeight); // Win
                         button->setFont(cntrlFont);
                     }
-                    else if (cmbx != NULL)
+                    else if (cmbx != nullptr)
                     {
                         cmbx->setFont(cntrlFont);
                         cmbx->setMaximumHeight(cmbxHeight);
                     }
-                    else if (label != NULL)
+                    else if (label != nullptr)
                         label->setFont(txtFont);
-                    else if (ln != NULL)
+                    else if (ln != nullptr)
                         ln->setFont(txtFont);
-                    else if (tree != NULL)
+                    else if (tree != nullptr)
                     {
                         tree->header()->setFont(txtFont);
                     }
-                    else if (plain != NULL)
+                    else if (plain != nullptr)
                         plain->setFont(txtFont);
-                    else if (check != NULL)
+                    else if (check != nullptr)
                         check->setFont(txtFont);
-                    else if (progress != NULL)
+                    else if (progress != nullptr)
                         progress->setMinimumHeight(20);
                 }
             }
@@ -263,7 +265,7 @@ void QtHelpers::SearchTreeWidget(QTreeWidget *widget, QLineEdit *searchWidget, Q
     {
         // show all the item's parents
         QTreeWidgetItem *parent = itemsMatched.at(i)->parent();
-        while (parent != NULL)
+        while (parent != nullptr)
         {
             parent->setHidden(false);
             parent->setExpanded(true);
@@ -330,15 +332,21 @@ void QtHelpers::GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWid
             icon = QIcon(":/Images/XEXFileIcon.png");
             item.setData(1, Qt::UserRole, "XEX");
             break;
-        case 0x89504E47:    // PNG
+        case 0x89504E47:    // PNG
             icon = QIcon(":/Images/ImageFileIcon.png");
             item.setData(1, Qt::UserRole, "Image");
+            break;
+        case 0x504B0304:    // ZIP (PK..)
+        case 0x504B0506:    // ZIP (empty archive)
+        case 0x504B0708:    // ZIP (spanned archive)
+            icon = QIcon(":/Images/DefaultFileIcon.png");
+            item.setData(1, Qt::UserRole, "ZIP");
             break;
         default:
             int index = fileName.lastIndexOf(".");
             QString extension = "";
             if (index != -1)
-                extension = fileName.mid(index);
+                extension = fileName.mid(index).toLower();
 
             if (fileName == "Account")
                 icon = QIcon(":/Images/AccountFileIcon.png");
@@ -351,6 +359,17 @@ void QtHelpers::GetFileIcon(DWORD magic, QString fileName, QIcon &icon, QTreeWid
             {
                 icon = QIcon(":/Images/ImageFileIcon.png");
                 item.setData(1, Qt::UserRole, "Image");
+            }
+            else if (extension == ".xml")
+            {
+                icon = QIcon(":/Images/DefaultFileIcon.png");
+                item.setData(1, Qt::UserRole, "XML");
+            }
+            else if (extension == ".txt" || extension == ".ini" || extension == ".cfg" || 
+                     extension == ".json" || extension == ".log" || extension == ".toc")
+            {
+                icon = QIcon(":/Images/DefaultFileIcon.png");
+                item.setData(1, Qt::UserRole, "Text");
             }
             else
                 icon = QIcon(":/Images/DefaultFileIcon.png");
@@ -378,3 +397,5 @@ bool QtHelpers::SubWindowEvents::eventFilter(QObject *obj, QEvent *event)
 
     return QObject::eventFilter(obj, event);
 }
+
+

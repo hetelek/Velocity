@@ -15,11 +15,11 @@ public:
     IGameModder() { }
     virtual ~IGameModder() { }
 
-    virtual void LoadPackage(StfsPackage * /*package*/, bool * /*ok*/ = NULL,
-            void * /*args*/ = NULL) { }
+    virtual void LoadPackage(StfsPackage * /*package*/, bool * /*ok*/ = nullptr,
+            void * /*args*/ = nullptr) { }
     virtual QWidget* GetDialog()
     {
-        return NULL;
+        return nullptr;
     }
     virtual QString Version() const = 0;
     virtual QString ToolAuthor() const = 0;
@@ -30,3 +30,5 @@ public:
 Q_DECLARE_INTERFACE (IGameModder, "com.exetelek.Veloctiy.IGameModder/0.1")
 
 #endif
+
+

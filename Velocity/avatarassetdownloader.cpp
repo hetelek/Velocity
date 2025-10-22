@@ -108,3 +108,5 @@ void AvatarAssetDownloader::onDone(bool /* error */)
     //if (!error)
     //emit FinishedDownloading();
 }
+
+
