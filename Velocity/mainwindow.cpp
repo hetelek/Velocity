@@ -244,7 +244,7 @@ void MainWindow::on_actionDevice_Viewer_triggered()
 
 void MainWindow::on_actionView_Wiki_triggered()
 {
-    QDesktopServices::openUrl(QUrl("https://github.com/hetelek/Velocity/wiki"));
+    QDesktopServices::openUrl(QUrl("https://github.com/Pandoriaantje/Velocity/wiki"));
 }
 
 void MainWindow::PluginFinished()

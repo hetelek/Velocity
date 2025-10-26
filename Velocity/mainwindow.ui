@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Velocity - Xbox 360 File Manager</string>
+   <string>Velocity-Next - Xbox 360 File Manager</string>
   </property>
   <property name="windowIcon">
    <iconset resource="Resources.qrc">

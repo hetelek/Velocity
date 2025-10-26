@@ -1,0 +1,85 @@
+Velocity-Next
+=============
+
+This project is a continuation of the original Velocity project.
+
+ORIGINAL PROJECT INFORMATION
+-----------------------------
+Project: Velocity
+Repository: https://github.com/hetelek/Velocity
+Primary Authors:
+  - Stevie "Hetelek" Hetelekides
+  - Adam "Experiment5X" Spindler
+
+Contributors:
+  For a full list of contributors to the original Velocity project,
+  see: https://github.com/hetelek/Velocity/graphs/contributors
+
+CONTINUATION INFORMATION
+-------------------------
+Fork Date: October 2025
+Fork Repository: https://github.com/Pandoriaantje/Velocity
+Fork Name: Velocity-Next
+
+Reason for Fork:
+  The original Velocity project ceased active development.
+  Velocity-Next continues the project to provide:
+  - Modern compiler support (MSVC 2022, MinGW 13.1+)
+  - Updated build system (CMake 3.20+, modern patterns)
+  - Standalone XboxInternals library distribution
+  - Bug fixes and feature enhancements
+  - Active maintenance and community support
+
+LICENSE INFORMATION
+-------------------
+Velocity-Next is licensed under the GNU General Public License v3.0,
+continuing the license of the original Velocity project.
+
+Original Copyright: Copyright (C) 2007-2015 Velocity Contributors
+Continuation Copyright: Copyright (C) 2025-present Velocity-Next Contributors
+
+For the complete license text, see the COPYING file in this repository.
+
+THIRD-PARTY COMPONENTS
+----------------------
+Velocity-Next includes the following third-party components:
+
+1. Botan (BSD-2-Clause License)
+   - Copyright (C) 1999-2024 The Botan Authors
+   - See LICENSE-Botan.txt for full license text
+
+2. Qt 6 (LGPL v3 / GPL v3)
+   - The Qt Company Ltd.
+   - Dynamically linked (MSVC) or statically linked (MinGW)
+
+ACKNOWLEDGMENTS
+---------------
+Velocity-Next is built on the foundation laid by the original Velocity
+developers and contributors. We are grateful for their pioneering work
+in Xbox 360 file format reverse engineering and tool development.
+
+Special thanks to the free60.org community for their contributions to
+Xbox 360 research and documentation.
+
+TRADEMARK NOTICE
+----------------
+This application is not affiliated with Microsoft Corporation.
+"Microsoft", "Xbox", "Xbox 360", and "Xbox LIVE" are registered
+trademarks of Microsoft Corporation.
+
+MODIFICATION NOTICE (GPL v3 Requirement)
+-----------------------------------------
+As required by the GNU General Public License v3, Section 5(a):
+
+This software has been modified from the original Velocity project.
+Major changes include:
+- Rebranding to Velocity-Next (October 2025)
+- Addition of MSVC 2022 compiler support (October 2025)
+- Refactoring of XboxInternals to standalone library (October 2025)
+- Modernization of CMake build system (October 2025)
+- License compliance improvements (October 2025)
+
+For detailed change history, see:
+- Git commit history in this repository
+- CHANGELOG.md (if present)
+- GitHub releases and pull requests

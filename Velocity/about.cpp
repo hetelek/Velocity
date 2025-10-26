@@ -28,7 +28,7 @@ void About::on_label_3_linkActivated(const QString &link)
 
 void About::on_pushButton_2_clicked()
 {
-    QDesktopServices::openUrl(QUrl("https://github.com/hetelek/Velocity"));
+    QDesktopServices::openUrl(QUrl("https://github.com/Pandoriaantje/Velocity"));
 }
 
 void About::on_pushButton_clicked()

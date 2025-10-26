@@ -15,6 +15,6 @@
 	<key>CFBundleExecutable</key>
 	<string>@EXECUTABLE@</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.expetelek.Velocity</string>
+	<string>com.velocitynext.Velocity</string>
 </dict>
 </plist>

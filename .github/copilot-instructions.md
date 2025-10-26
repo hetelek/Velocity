@@ -1,6 +1,6 @@
-# Velocity Development Guidelines
+# Velocity-Next Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2025-10-19
+Auto-generated from all feature plans. Last updated: 2025-10-26
 
 ## Active Technologies
 - C++20 (modern C++ with Qt idioms) (001-baseline-capabilities)

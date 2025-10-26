@@ -1,10 +1,10 @@
 ﻿# Repository Guidelines
 ## Project Structure & Module Organization
-Velocity is a CMake superproject: the Qt desktop client lives in `Velocity/`, the shared Xbox file processing library in `XboxInternals/`, and helper macros in `cmake/`. Generated builds land under `out/build/<preset>/`, so clean artifacts by pruning that directory rather than the sources.
+Velocity-Next is a CMake superproject: the Qt desktop client lives in `Velocity/`, the shared Xbox file processing library in `XboxInternals/`, and helper macros in `cmake/`. Generated builds land under `out/build/<preset>/`, so clean artifacts by pruning that directory rather than the sources.
 
 ## Build, Test, and Development Commands
 - `cmake --preset windows-mingw-debug` or `cmake --preset windows-msvc-debug` configures a debug build with Qt 6.7.3+ auto-detection and exports `compile_commands.json` for clangd.
-- `cmake --build --preset windows-mingw-debug` or `cmake --build --preset windows-msvc-debug` compiles Velocity and XboxInternals together; use the matching release preset for distributables.
+- `cmake --build --preset windows-mingw-debug` or `cmake --build --preset windows-msvc-debug` compiles Velocity-Next and XboxInternals together; use the matching release preset for distributables.
 - `ctest --preset windows-mingw-debug` or `ctest --preset windows-msvc-debug` is available once you add tests to CMake; today it returns immediately because no suites are registered.
 - `./out/build/windows-mingw-debug/Velocity.exe` or `./out/build/windows-msvc-debug/Velocity.exe` launches the debug UI; keep Botan artifacts in place so cryptographic features work.
 
