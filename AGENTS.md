@@ -6,7 +6,7 @@ Velocity-Next is a CMake superproject: the Qt desktop client lives in `Velocity/
 - `cmake --preset windows-mingw-debug` or `cmake --preset windows-msvc-debug` configures a debug build with Qt 6.7.3+ auto-detection and exports `compile_commands.json` for clangd.
 - `cmake --build --preset windows-mingw-debug` or `cmake --build --preset windows-msvc-debug` compiles Velocity-Next and XboxInternals together; use the matching release preset for distributables.
 - `ctest --preset windows-mingw-debug` or `ctest --preset windows-msvc-debug` is available once you add tests to CMake; today it returns immediately because no suites are registered.
-- `./out/build/windows-mingw-debug/Velocity.exe` or `./out/build/windows-msvc-debug/Velocity.exe` launches the debug UI; keep Botan artifacts in place so cryptographic features work.
+- `./out/build/windows-mingw-debug/Velocity/VelocityNext.exe` or `./out/build/windows-msvc-debug/Velocity/VelocityNext.exe` launches the debug UI; keep Botan artifacts in place so cryptographic features work.
 
 ## Coding Style & Naming Conventions
 Source is modern C++20 with Qt idioms: four-space indentation, braces on the same line, and `CamelCase` class names with lowerCamelCase methods. Prefer Qt containers and signals/slots, wrap QFile operations in helpers from `Velocity/qthelpers.cpp`, and keep public headers free of using-directives.

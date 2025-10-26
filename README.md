@@ -18,7 +18,9 @@ Original Velocity was developed mainly by Stevie Hetelekides (Hetelek) and Adam 
 
 On **Windows**, Velocity requires **Administrator privileges** to access Xbox 360 drives:
 
-- **Right-click** `Velocity.exe` → Select **"Run as administrator"**
+## Running Velocity-Next
+
+- **Right-click** `VelocityNext.exe` → Select **"Run as administrator"**
 - This is necessary for detecting and browsing Xbox 360 hard drives and USB devices
 - Without Administrator rights, drives will **not be detected** in the Device Viewer
 

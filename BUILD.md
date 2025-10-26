@@ -259,11 +259,11 @@ Build outputs are organized in:
 
 **To run Velocity with the necessary permissions:**
 
-1. Navigate to the Velocity executable:
-   - Release: `out/build/windows-mingw-release/Velocity/Velocity.exe`
-   - Debug: `out/build/windows-mingw-debug/Velocity/Velocity.exe`
+1. Navigate to the VelocityNext executable:
+   - Release: `out/build/windows-mingw-release/Velocity/VelocityNext.exe`
+   - Debug: `out/build/windows-mingw-debug/Velocity/VelocityNext.exe`
 
-2. **Right-click** on `Velocity.exe` → Select **"Run as administrator"**
+2. **Right-click** on `VelocityNext.exe` → Select **"Run as administrator"**
 
 **Why Administrator access is needed:**
 - Windows requires elevated privileges to open raw physical disk devices (`\\.\PHYSICALDRIVE#`)
@@ -271,7 +271,7 @@ Build outputs are organized in:
 - Without Administrator rights, Xbox 360 drives will **not be detected** in the Device Viewer
 
 **Alternative - Create Administrator Shortcut:**
-1. Right-click `Velocity.exe` → **"Create shortcut"**
+1. Right-click `VelocityNext.exe` → **"Create shortcut"**
 2. Right-click the shortcut → **"Properties"**
 3. Click **"Advanced..."** button
 4. Check **"Run as administrator"**
