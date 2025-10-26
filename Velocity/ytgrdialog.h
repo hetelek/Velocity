@@ -8,7 +8,7 @@
 #include "qthelpers.h"
 
 // xbox360
-#include "AvatarAsset/Ytgr.h"
+#include <XboxInternals/AvatarAsset/Ytgr.h>
 
 namespace Ui
 {

@@ -45,14 +45,14 @@
 #include "PluginInterfaces/igamemodder.h"
 #include "PluginInterfaces/igpdmodder.h"
 #include "qthelpers.h"
-#include "IO/FileIO.h"
-#include "Stfs/StfsPackage.h"
-#include "Gpd/GpdBase.h"
-#include "IO/SvodMultiFileIO.h"
-#include "Disc/Svod.h"
-#include "AvatarAsset/Ytgr.h"
-#include "Disc/Svod.h"
-#include "IO/DeviceIO.h"
+#include <XboxInternals/IO/FileIO.h>
+#include <XboxInternals/Stfs/StfsPackage.h>
+#include <XboxInternals/Gpd/GpdBase.h>
+#include <XboxInternals/IO/SvodMultiFileIO.h>
+#include <XboxInternals/Disc/Svod.h>
+#include <XboxInternals/AvatarAsset/Ytgr.h>
+#include <XboxInternals/Disc/Svod.h>
+#include <XboxInternals/IO/DeviceIO.h>
 
 using namespace std;
 

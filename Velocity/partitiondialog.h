@@ -8,8 +8,8 @@
 #include "clustertooldialog.h"
 
 // xbox
-#include "Stfs/StfsDefinitions.h"
-#include "Fatx/FatxConstants.h"
+#include <XboxInternals/Stfs/StfsDefinitions.h>
+#include <XboxInternals/Fatx/FatxConstants.h>
 
 // other
 #include "nightcharts.h"

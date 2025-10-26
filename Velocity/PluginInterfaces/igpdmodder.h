@@ -5,7 +5,7 @@
 #include <QWidget>
 
 // xbox360
-#include "Gpd/GameGpd.h"
+#include <XboxInternals/Gpd/GameGpd.h>
 
 class IGPDModder
 {

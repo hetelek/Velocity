@@ -8,7 +8,7 @@
 #include "qthelpers.h"
 
 // other
-#include "TypeDefinitions.h"
+#include <XboxInternals/TypeDefinitions.h>
 #include <iostream>
 #include <vector>
 

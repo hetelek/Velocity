@@ -4,7 +4,7 @@
 #include <QDialog>
 #include "qthelpers.h"
 
-#include "Stfs/StfsPackage.h"
+#include <XboxInternals/Stfs/StfsPackage.h>
 
 namespace Ui
 {

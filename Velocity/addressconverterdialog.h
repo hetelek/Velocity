@@ -4,7 +4,7 @@
 #include <QDialog>
 #include "qthelpers.h"
 
-#include "Gpd/Xdbf.h"
+#include <XboxInternals/Gpd/Xdbf.h>
 
 namespace Ui
 {

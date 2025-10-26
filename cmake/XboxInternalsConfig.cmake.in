@@ -1,0 +1,39 @@
+@PACKAGE_INIT@
+
+# XboxInternals CMake Package Configuration File
+# 
+# This file allows downstream projects to use find_package(XboxInternals) to locate
+# and link against the XboxInternals library.
+#
+# Usage in downstream CMakeLists.txt:
+#   find_package(XboxInternals REQUIRED)
+#   target_link_libraries(YourTarget PRIVATE XboxInternals::XboxInternals)
+#
+# Dependencies:
+#   - Qt6 (Core, Xml) - Required at runtime
+#   - Botan - Embedded in XboxInternals (no separate installation needed)
+#   - C++20 compiler
+
+# Find required Qt6 components
+# Note: Qt6 must be available in the consumer's environment
+include(CMakeFindDependencyMacro)
+find_dependency(Qt6 REQUIRED COMPONENTS Core Xml)
+
+# Include the exported targets file
+# This defines XboxInternals::XboxInternals and XboxInternals::BotanAmalgamation
+include("${CMAKE_CURRENT_LIST_DIR}/XboxInternalsTargets.cmake")
+
+# Verify the targets were created
+if(NOT TARGET XboxInternals::XboxInternals)
+    message(FATAL_ERROR "XboxInternals::XboxInternals target not found!")
+endif()
+
+# Optional: Check for static variant if it was built
+if(TARGET XboxInternals::XboxInternalsStatic)
+    set(XboxInternals_STATIC_FOUND TRUE)
+else()
+    set(XboxInternals_STATIC_FOUND FALSE)
+endif()
+
+# Set XboxInternals_FOUND to TRUE (handled by find_package)
+check_required_components(XboxInternals)

@@ -8,7 +8,7 @@
 #include "qthelpers.h"
 
 // xbox
-#include "Stfs/XContentHeader.h"
+#include <XboxInternals/Stfs/XContentHeader.h>
 
 namespace Ui
 {

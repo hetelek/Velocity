@@ -12,7 +12,8 @@ Velocity is a desktop application for browsing, editing, and creating Xbox 360 f
 ## Technical Context
 
 **Language/Version**: C++20 (modern C++ with Qt idioms)  
-**Primary Dependencies**: Qt 6.7.3+ (GUI, widgets, core), Botan 3.x (cryptography), MinGW 13.1.0+ (primary Windows compiler)  
+**Primary Dependencies**: Qt 6.7.3+ (GUI, widgets, core), Botan 3.x (cryptography)  
+**Compilers**: MinGW 13.1.0+ or MSVC 2022 (Visual Studio 17.0+) on Windows; Clang (macOS); GCC 11+/Clang 14+ (Linux)  
 **Storage**: Filesystem-based (FATX device images, STFS packages, GPD files, disc images); QSettings for application preferences  
 **Testing**: Manual smoke tests (FATX, STFS, GPD flows); CTest framework available for future test suites; Qt Test or GoogleTest for unit tests  
 **Target Platform**: Windows (primary), cross-platform capable (macOS/Linux via Qt)  
@@ -41,11 +42,12 @@ Velocity is a desktop application for browsing, editing, and creating Xbox 360 f
 ### II. Reproducible Builds via Presets ✅ PASS
 
 **Evidence**:
-- CMakePresets.json defines `windows-mingw-debug` and `windows-mingw-release` presets
+- CMakePresets.json defines `windows-mingw-debug`, `windows-mingw-release`, `windows-msvc-debug`, and `windows-msvc-release` presets
 - Qt 6.7.3+ auto-detection works via `find_package(Qt6 REQUIRED COMPONENTS Core Widgets)`
 - `compile_commands.json` exported for clangd/tooling support
 - Clean builds prune `out/build/<preset>/` without touching sources
 - BUILD.md documents preset usage and Qt validation (`qmake6 --version`)
+- MSVC support includes `/Zc:__cplusplus` flag for proper C++20 compliance
 
 **Assessment**: No violations. Preset-based workflow operational.
 
@@ -102,10 +104,10 @@ Velocity is a desktop application for browsing, editing, and creating Xbox 360 f
 
 ---
 
-### Additional Constraints & Standards ✅ PASS
+**Additional Constraints & Standards ✅ PASS
 
 **Evidence**:
-- **Platform and Tooling**: Windows primary; MinGW 13.1.0; Qt 6.7.3+ baseline
+- **Platform and Tooling**: Windows primary (MinGW 13.1.0+ or MSVC 2022); macOS (Clang); Linux (GCC 11+/Clang 14+); Qt 6.7.3+ baseline
 - **Performance & UX Discipline**: Progress dialogs for long operations (multiprogressdialog), cancelable workflows, 0.5s feedback threshold
 - **Source Organization**: Shared functionality in XboxInternals/ with clear headers; UI helpers in Velocity/
 - **Documentation**: README.md, BUILD.md, AGENTS.md updated; commit messages follow style (present tense, <=72 chars)

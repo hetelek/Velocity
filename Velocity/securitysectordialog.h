@@ -8,7 +8,7 @@
 #include "qthelpers.h"
 
 // xbox
-#include "Fatx/FatxDrive.h"
+#include <XboxInternals/Fatx/FatxDrive.h>
 
 namespace Ui
 {

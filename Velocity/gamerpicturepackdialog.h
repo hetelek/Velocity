@@ -17,7 +17,7 @@
 #include "qthelpers.h"
 
 // xbox360
-#include "Stfs/StfsPackage.h"
+#include <XboxInternals/Stfs/StfsPackage.h>
 
 // other
 #include "titleidfinder.h"

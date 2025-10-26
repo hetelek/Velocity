@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <QDate>
-#include <Stfs/StfsPackage.h>
+#include <XboxInternals/Stfs/StfsPackage.h>
 #include "qthelpers.h"
 
 namespace Ui

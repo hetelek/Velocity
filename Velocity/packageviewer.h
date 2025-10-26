@@ -30,13 +30,13 @@
 #include <QStringDecoder>
 
 // xbox libs
-#include "Stfs/StfsPackage.h"
-#include "Gpd/GpdBase.h"
-#include "AvatarAsset/AvatarAsset.h"
+#include <XboxInternals/Stfs/StfsPackage.h>
+#include <XboxInternals/Gpd/GpdBase.h>
+#include <XboxInternals/AvatarAsset/AvatarAsset.h>
 
 // other
 #include <stdio.h>
-#include "IO/FileIO.h"
+#include <XboxInternals/IO/FileIO.h>
 
 Q_DECLARE_METATYPE( StfsFileEntry* )
 

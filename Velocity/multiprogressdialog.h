@@ -8,12 +8,12 @@
 #include "qthelpers.h"
 
 // xbox
-#include "Stfs/XContentHeader.h"
-#include "Disc/Svod.h"
-#include "IO/SvodIO.h"
-#include "Stfs/StfsPackage.h"
-#include "Fatx/FatxConstants.h"
-#include "Fatx/FatxDrive.h"
+#include <XboxInternals/Stfs/XContentHeader.h>
+#include <XboxInternals/Disc/Svod.h>
+#include <XboxInternals/IO/SvodIO.h>
+#include <XboxInternals/Stfs/StfsPackage.h>
+#include <XboxInternals/Fatx/FatxConstants.h>
+#include <XboxInternals/Fatx/FatxDrive.h>
 
 enum Operation
 {

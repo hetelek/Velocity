@@ -150,14 +150,15 @@ function(botan_generate TARGET_NAME MODULES)
     target_sources(
         ${TARGET}
         PUBLIC
-            ${CMAKE_CURRENT_BINARY_DIR}/botan_all.h
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/botan_all.h>
         PRIVATE
             ${CMAKE_CURRENT_BINARY_DIR}/botan_all.cpp
     )
     target_include_directories(
         ${TARGET}
         INTERFACE
-            ${CMAKE_CURRENT_BINARY_DIR}
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+            $<INSTALL_INTERFACE:include/botan>
     )
     target_link_libraries(
         ${TARGET}

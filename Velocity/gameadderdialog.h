@@ -23,9 +23,9 @@
 #include <QTimer>
 
 // Other includes
-#include "Gpd/DashboardGpd.h"
+#include <XboxInternals/Gpd/DashboardGpd.h>
 #include "gpddownloader.h"
-#include "Stfs/StfsPackage.h"
+#include <XboxInternals/Stfs/StfsPackage.h>
 #include "qthelpers.h"
 
 Q_DECLARE_METATYPE(TitleEntry)

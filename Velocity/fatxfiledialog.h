@@ -5,10 +5,10 @@
 #include <QDialog>
 #include <QDateTime>
 
-#include "Fatx/FatxConstants.h"
-#include "IO/FatxIO.h"
-#include "Fatx/FatxDrive.h"
-#include "Stfs/StfsDefinitions.h"
+#include <XboxInternals/Fatx/FatxConstants.h>
+#include <XboxInternals/IO/FatxIO.h>
+#include <XboxInternals/Fatx/FatxDrive.h>
+#include <XboxInternals/Stfs/StfsDefinitions.h>
 
 namespace Ui
 {

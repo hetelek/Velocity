@@ -11,9 +11,9 @@
 #include "qthelpers.h"
 
 // xbox
-#include "Disc/Svod.h"
-#include "IO/SvodIO.h"
-#include "Stfs/StfsPackage.h"
+#include <XboxInternals/Disc/Svod.h>
+#include <XboxInternals/IO/SvodIO.h>
+#include <XboxInternals/Stfs/StfsPackage.h>
 
 // forms
 #include "svodfileinfodialog.h"

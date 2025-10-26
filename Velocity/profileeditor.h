@@ -18,13 +18,13 @@
 #include "qthelpers.h"
 
 // xbox360
-#include "Stfs/StfsPackage.h"
-#include "Gpd/DashboardGpd.h"
-#include "Gpd/GameGpd.h"
-#include "Gpd/AvatarAwardGpd.h"
-#include "AvatarAsset/AvatarAssetDefinitions.h"
-#include "Account/Account.h"
-#include "Account/AccountHelpers.h"
+#include <XboxInternals/Stfs/StfsPackage.h>
+#include <XboxInternals/Gpd/DashboardGpd.h>
+#include <XboxInternals/Gpd/GameGpd.h>
+#include <XboxInternals/Gpd/AvatarAwardGpd.h>
+#include <XboxInternals/AvatarAsset/AvatarAssetDefinitions.h>
+#include <XboxInternals/Account/Account.h>
+#include <XboxInternals/Account/AccountHelpers.h>
 
 // other
 #include <iostream>

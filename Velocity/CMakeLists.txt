@@ -127,8 +127,9 @@ endif()
 # Common include directories for all platforms
 target_include_directories(Velocity
   PRIVATE
+    # Current directory for header files co-located with source
     ${CMAKE_CURRENT_LIST_DIR}
-    ${CMAKE_CURRENT_LIST_DIR}/..
+    # Qt private headers for advanced features
     ${Qt6Core_PRIVATE_INCLUDE_DIRS}
 )
 
@@ -140,8 +141,9 @@ target_link_libraries(Velocity
     Qt6::Xml
     Qt6::Widgets  
     Qt6::Network
-    XboxInternals
+    XboxInternals::XboxInternals  # Use namespaced target (modern CMake)
     BotanAmalgamation  # Our custom amalgamation on ALL platforms
+    velocity_compiler_flags  # Inherit common compile options
 )
 
 # Define VERSION and platform build name
@@ -153,3 +155,6 @@ target_compile_definitions(Velocity
 
 # App requires C++20
 target_compile_features(Velocity PUBLIC cxx_std_20)
+
+# Organize in IDE (Visual Studio solution explorer)
+set_target_properties(Velocity PROPERTIES FOLDER "Applications")

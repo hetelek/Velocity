@@ -28,9 +28,9 @@
 #include "flashdriveconfigdatadialog.h"
 
 // xbox
-#include "Fatx/FatxDriveDetection.h"
-#include "Fatx/FatxDrive.h"
-#include "Stfs/StfsDefinitions.h"
+#include <XboxInternals/Fatx/FatxDriveDetection.h>
+#include <XboxInternals/Fatx/FatxDrive.h>
+#include <XboxInternals/Stfs/StfsDefinitions.h>
 
 // widgets
 #include "nightcharts.h"

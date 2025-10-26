@@ -10,7 +10,7 @@
 #include "qthelpers.h"
 
 // xbox360
-#include "Stfs/StfsDefinitions.h"
+#include <XboxInternals/Stfs/StfsDefinitions.h>
 
 struct LicenseTypeStruct
 {

@@ -13,11 +13,11 @@
 #include "qthelpers.h"
 
 // xbox360
-#include "Gpd/Xdbf.h"
-#include "Gpd/XdbfDefinitions.h"
-#include "Gpd/XdbfHelpers.h"
-#include "Gpd/GpdBase.h"
-#include "IO/FileIO.h"
+#include <XboxInternals/Gpd/Xdbf.h>
+#include <XboxInternals/Gpd/XdbfDefinitions.h>
+#include <XboxInternals/Gpd/XdbfHelpers.h>
+#include <XboxInternals/Gpd/GpdBase.h>
+#include <XboxInternals/IO/FileIO.h>
 
 // forms
 #include "imagedialog.h"

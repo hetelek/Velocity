@@ -1,7 +1,7 @@
 #include "gameadderdialog.h"
 #include "ui_gameadderdialog.h"
 #include <QSettings>
-#include "Gpd/GameGpd.h"
+#include <XboxInternals/Gpd/GameGpd.h>
 
 GameAdderDialog::GameAdderDialog(StfsPackage *package, QWidget *parent, bool dispose, bool *ok)
     : QDialog(parent), ui(std::make_unique<Ui::GameAdderDialog>()), package(package), dispose(dispose) {

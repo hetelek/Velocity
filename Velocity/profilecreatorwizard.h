@@ -11,10 +11,10 @@
 #include "qthelpers.h"
 
 // xbox360
-#include "Stfs/StfsPackage.h"
-#include "Stfs/XContentHeader.h"
-#include "Gpd/DashboardGpd.h"
-#include "Account/Account.h"
+#include <XboxInternals/Stfs/StfsPackage.h>
+#include <XboxInternals/Stfs/XContentHeader.h>
+#include <XboxInternals/Gpd/DashboardGpd.h>
+#include <XboxInternals/Account/Account.h>
 
 // other
 #include <stdlib.h>

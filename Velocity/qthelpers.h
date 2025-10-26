@@ -21,8 +21,8 @@
 #include <QStandardPaths>
 
 // other
-#include "TypeDefinitions.h"
-#include <Stfs/StfsConstants.h>
+#include <XboxInternals/TypeDefinitions.h>
+#include <XboxInternals/Stfs/StfsConstants.h>
 #include <ctype.h>
 
 #ifdef _WIN32

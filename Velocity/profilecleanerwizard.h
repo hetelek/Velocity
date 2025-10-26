@@ -9,9 +9,9 @@
 #include "qthelpers.h"
 
 // xbox360
-#include "Stfs/StfsPackage.h"
-#include "Gpd/DashboardGpd.h"
-#include "Gpd/GameGpd.h"
+#include <XboxInternals/Stfs/StfsPackage.h>
+#include <XboxInternals/Gpd/DashboardGpd.h>
+#include <XboxInternals/Gpd/GameGpd.h>
 
 enum CleanOperation
 {

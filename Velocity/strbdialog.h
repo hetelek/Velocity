@@ -6,9 +6,9 @@
 #include "qthelpers.h"
 
 // xbox360
-#include "AvatarAsset/AvatarAsset.h"
-#include "AvatarAsset/AssetHelpers.h"
-#include "AvatarAsset/AvatarAssetDefinitions.h"
+#include <XboxInternals/AvatarAsset/AvatarAsset.h>
+#include <XboxInternals/AvatarAsset/AssetHelpers.h>
+#include <XboxInternals/AvatarAsset/AvatarAssetDefinitions.h>
 
 namespace Ui
 {

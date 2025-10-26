@@ -4,8 +4,8 @@
 // qt
 #include <QDialog>
 
-#include "Fatx/FatxConstants.h"
-#include "IO/FatxIO.h"
+#include <XboxInternals/Fatx/FatxConstants.h>
+#include <XboxInternals/IO/FatxIO.h>
 
 namespace Ui
 {

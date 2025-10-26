@@ -15,8 +15,8 @@
 #include <QNetworkReply>
 //
 
-#include "Gpd/GameGpd.h"
-#include "Gpd/AvatarAwardGpd.h"
+#include <XboxInternals/Gpd/GameGpd.h>
+#include <XboxInternals/Gpd/AvatarAwardGpd.h>
 
 struct GpdPaths
 {

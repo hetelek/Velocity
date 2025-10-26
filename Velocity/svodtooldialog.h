@@ -6,7 +6,7 @@
 #include "qthelpers.h"
 
 // xbox
-#include "Disc/Svod.h"
+#include <XboxInternals/Disc/Svod.h>
 
 namespace Ui
 {

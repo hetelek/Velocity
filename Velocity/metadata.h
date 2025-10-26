@@ -17,8 +17,8 @@
 #include "qthelpers.h"
 
 // xbox360
-#include "Stfs/StfsPackage.h"
-#include "Stfs/StfsConstants.h"
+#include <XboxInternals/Stfs/StfsPackage.h>
+#include <XboxInternals/Stfs/StfsConstants.h>
 
 namespace Ui
 {

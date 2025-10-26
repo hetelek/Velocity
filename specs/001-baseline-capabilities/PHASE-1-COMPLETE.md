@@ -48,8 +48,8 @@
 | Component | Version | Location | Status |
 |-----------|---------|----------|--------|
 | **CMake** | (not shown, but working) | System PATH | ✅ Working |
-| **Compiler** | GNU 13.1.0 | C:/Qt/Tools/mingw1310_64/bin/c++.exe | ✅ Detected |
-| **Qt** | 6.8.0 | C:/Qt/6.8.0/mingw_64 | ✅ Exceeds 6.7.3+ |
+| **Compiler** | GNU 13.1.0 / MSVC 2022 | C:/Qt/Tools/mingw1310_64/bin/c++.exe or cl.exe | ✅ Detected |
+| **Qt** | 6.8.0 | C:/Qt/6.8.0/mingw_64 or msvc2022_64 | ✅ Exceeds 6.7.3+ |
 | **Botan** | 3.9.0 | Will auto-download | ✅ Available |
 | **Python** | 3.13.9 | C:/Users/holvo/AppData/Local/Programs/Python/Python313 | ✅ Found |
 | **C++ Standard** | C++20 | Set via CMAKE_CXX_STANDARD | ✅ Configured |

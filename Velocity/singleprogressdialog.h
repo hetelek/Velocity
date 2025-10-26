@@ -7,7 +7,7 @@
 #include "multiprogressdialog.h"
 
 // xbox360
-#include "Stfs/StfsPackage.h"
+#include <XboxInternals/Stfs/StfsPackage.h>
 
 void UpdateProgress(void *arg, DWORD cur, DWORD total);
 

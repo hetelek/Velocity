@@ -38,3 +38,10 @@ Velocity is licensed and distributed under the GNU General Public License (v3).
 Velocity is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 If no copy of the GNU General Public License was received with this program (FILE: COPYING), it is available at <http://www.gnu.org/licenses/>.
+
+### Third-Party Components
+
+Velocity includes and statically links the following third-party libraries:
+
+- **Botan** (BSD-2-Clause): Cryptography library embedded as amalgamation build. See [LICENSE-Botan.txt](LICENSE-Botan.txt) for full license text.
+- **Qt 6**: Cross-platform application framework (LGPL v3 / GPL v3). Qt is dynamically linked (MSVC builds) or statically linked (MinGW builds).

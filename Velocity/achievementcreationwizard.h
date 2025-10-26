@@ -8,7 +8,7 @@
 #include "qthelpers.h"
 
 // xbox360
-#include <Gpd/GameGpd.h>
+#include <XboxInternals/Gpd/GameGpd.h>
 
 // other
 #include <iostream>

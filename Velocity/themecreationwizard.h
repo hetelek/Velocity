@@ -13,7 +13,7 @@
 #include "qthelpers.h"
 
 // xbox 360
-#include "Stfs/StfsPackage.h"
+#include <XboxInternals/Stfs/StfsPackage.h>
 
 // std
 #include <iostream>
