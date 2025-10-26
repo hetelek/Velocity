@@ -106,26 +106,26 @@ set(UI_FORMS
 # Platform-specific executable properties
 if(APPLE)
     # macOS bundle configuration
-    set(MACOSX_BUNDLE_GUI_IDENTIFIER com.velocity.app)
-    set(MACOSX_BUNDLE_BUNDLE_NAME Velocity)
+    set(MACOSX_BUNDLE_GUI_IDENTIFIER com.velocitynext.app)
+    set(MACOSX_BUNDLE_BUNDLE_NAME VelocityNext)
     set(MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION})
     set(MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION})
     set(MACOSX_BUNDLE_ICON_FILE velocity.icns)
     
-    add_executable(Velocity MACOSX_BUNDLE ${SOURCES} ${UI_FORMS} Resources.qrc)
+    add_executable(VelocityNext MACOSX_BUNDLE ${SOURCES} ${UI_FORMS} Resources.qrc)
     
 else()
     # Windows/Linux executable
-    add_executable(Velocity ${SOURCES} ${UI_FORMS} Resources.qrc)
+    add_executable(VelocityNext ${SOURCES} ${UI_FORMS} Resources.qrc)
     
     if(WIN32)
-        set_target_properties(Velocity PROPERTIES WIN32_EXECUTABLE TRUE)
-        target_sources(Velocity PRIVATE velocity.rc)
+        set_target_properties(VelocityNext PROPERTIES WIN32_EXECUTABLE TRUE)
+        target_sources(VelocityNext PRIVATE velocity.rc)
     endif()
 endif()
 
 # Common include directories for all platforms
-target_include_directories(Velocity
+target_include_directories(VelocityNext
   PRIVATE
     # Current directory for header files co-located with source
     ${CMAKE_CURRENT_LIST_DIR}
@@ -134,7 +134,7 @@ target_include_directories(Velocity
 )
 
 # Common linking for all platforms - ALWAYS use our BotanAmalgamation
-target_link_libraries(Velocity
+target_link_libraries(VelocityNext
   PRIVATE
     Qt6::Core
     Qt6::Gui
@@ -147,14 +147,14 @@ target_link_libraries(Velocity
 )
 
 # Define VERSION and platform build name
-target_compile_definitions(Velocity 
+target_compile_definitions(VelocityNext 
   PRIVATE 
     VERSION="\\\"${PROJECT_VERSION}\\\""
     PLATFORM_BUILD_NAME="${PLATFORM_BUILD_NAME}"
 )
 
 # App requires C++20
-target_compile_features(Velocity PUBLIC cxx_std_20)
+target_compile_features(VelocityNext PUBLIC cxx_std_20)
 
 # Organize in IDE (Visual Studio solution explorer)
-set_target_properties(Velocity PROPERTIES FOLDER "Applications")
+set_target_properties(VelocityNext PROPERTIES FOLDER "Applications")
