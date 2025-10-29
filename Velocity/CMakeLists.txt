@@ -2,6 +2,20 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+# TextEncoding module sources
+set(TEXT_ENCODING_SOURCES
+  TextEncoding/TextDecoder.cpp
+  TextEncoding/EncodingDetector.cpp
+  TextEncoding/ShiftJIS/CP932Decoder.cpp
+  TextEncoding/ShiftJIS/CP932Mapping.cpp
+  TextEncoding/GBK/CP936Decoder.cpp
+  TextEncoding/GBK/CP936Mapping.cpp
+  TextEncoding/Big5/CP950Decoder.cpp
+  TextEncoding/Big5/CP950Mapping.cpp
+  TextEncoding/EUCKR/CP949Decoder.cpp
+  TextEncoding/EUCKR/CP949Mapping.cpp
+)
+
 set(SOURCES
   about.cpp
   achievementcreationwizard.cpp
@@ -44,6 +58,7 @@ set(SOURCES
   svoddialog.cpp
   svodfileinfodialog.cpp
   svodtooldialog.cpp
+  isodialog.cpp
   svodvolumedescriptordialog.cpp
   stfsvolumedescriptordialog.cpp
   themecreationwizard.cpp
@@ -55,6 +70,7 @@ set(SOURCES
   xmldialog.cpp
   zipviewer.cpp
   ytgrdialog.cpp
+  ${TEXT_ENCODING_SOURCES}
 )
 
 set(UI_FORMS
@@ -158,3 +174,11 @@ target_compile_features(VelocityNext PUBLIC cxx_std_20)
 
 # Organize in IDE (Visual Studio solution explorer)
 set_target_properties(VelocityNext PROPERTIES FOLDER "Applications")
+
+# Post-build: Copy XboxInternals DLL to Velocity output directory
+add_custom_command(TARGET VelocityNext POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:XboxInternals::XboxInternals>
+        $<TARGET_FILE_DIR:VelocityNext>
+    COMMENT "Copying libXboxInternals.dll to Velocity output directory"
+)

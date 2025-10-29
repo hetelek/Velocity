@@ -242,6 +242,22 @@ void MainWindow::on_actionDevice_Viewer_triggered()
     viewer->LoadDrives();
 }
 
+void MainWindow::on_actionISO_GOD_Viewer_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Xbox 360 ISO"),
+            QtHelpers::DefaultLocation(), 
+            "Xbox 360 ISO Files (*.iso);;All Files (*)");
+    
+    if (fileName.isEmpty())
+        return;
+    
+    IsoDialog *dialog = new IsoDialog(this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    QtHelpers::AddSubWindow(ui->mdiArea, dialog);
+    dialog->show();
+    dialog->loadIsoContents(fileName);
+}
+
 void MainWindow::on_actionView_Wiki_triggered()
 {
     QDesktopServices::openUrl(QUrl("https://github.com/Pandoriaantje/Velocity/wiki"));
@@ -387,6 +403,19 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
         if (!QFile::exists(QString::fromStdString(fileName)))
             continue;
 
+        // Check for ISO files by extension (ISO files have magic at offset, not at start)
+        QString qFileName = QString::fromStdString(fileName);
+        if (qFileName.toLower().endsWith(".iso"))
+        {
+            IsoDialog *dialog = new IsoDialog(this);
+            dialog->setAttribute(Qt::WA_DeleteOnClose);
+            QtHelpers::AddSubWindow(ui->mdiArea, dialog);
+            dialog->show();
+            dialog->loadIsoContents(qFileName);
+            ui->statusBar->showMessage("Xbox 360 ISO loaded successfully.", 3000);
+            continue;
+        }
+
         try
         {
             // read in the file magic
@@ -510,7 +539,7 @@ void MainWindow::LoadFiles(QList<QUrl> &filePaths)
                 }
                 default:
                     QMessageBox::warning(this, "Unknown File Format",
-                            "The following file is an unknown format. Velocity can only read STFS, SVOD, Xdbf, Ytgr, and STRB files.\n\n"
+                            "The following file is an unknown format. Velocity can only read STFS, SVOD, ISO, Xdbf, Ytgr, and STRB files.\n\n"
                             + QString::fromStdString(fileName));
                     break;
             }

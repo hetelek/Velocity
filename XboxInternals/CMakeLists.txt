@@ -22,6 +22,9 @@ add_library(XboxInternals ${_lib_type}
   src/Cryptography/XeKeys.cpp
   src/Disc/Gdfx.cpp
   src/Disc/Svod.cpp
+  src/Disc/IsoImage.cpp
+  src/Disc/GodImage.cpp
+  src/Disc/XexExecutable.cpp
   src/Fatx/FatxDrive.cpp
   src/Fatx/FatxDriveDetection.cpp
   src/Gpd/AvatarAwardGpd.cpp

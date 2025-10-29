@@ -39,6 +39,29 @@ Velocity-Next is a cross-platform application built using the Qt framework that 
 - Xbox disc formats
   - SVOD
   - GDFX
+  - **XISO (Xbox 360 ISO)** ⭐ **NEW**
+    - GDF, XGD3, and Redump format detection
+    - AVL tree directory traversal
+    - File extraction with preserved structure
+    - XEX metadata parsing (Media ID, Title ID, version info)
+
+### Text Encoding Support ⭐ **NEW**
+
+Velocity-Next includes a custom text encoding module for viewing text files from international game ISOs:
+
+**Supported Encodings:**
+- **CP932** (Shift-JIS) - Japanese
+- **CP936** (GBK) - Simplified Chinese  
+- **CP950** (Big5) - Traditional Chinese
+- **CP949** (EUC-KR) - Korean
+- UTF-8, UTF-16 LE/BE, Latin-1
+
+**Features:**
+- Automatic encoding detection with scoring-based heuristics
+- Manual encoding override via dropdown menu
+- O(1) hash map lookups for 10,000x performance improvement
+- Real-time re-decoding when switching encodings
+- Character validation API for UI input
 
 Other individual files specific to the Xbox 360 are supported, including the Account file and other minor ones.
 

@@ -84,6 +84,8 @@
      <addaction name="actionPackage"/>
      <addaction name="actionSVOD_System"/>
      <addaction name="actionYTGR"/>
+     <addaction name="separator"/>
+     <addaction name="actionISO_GOD_Viewer"/>
     </widget>
     <addaction name="menuOpen"/>
     <addaction name="actionCreate_Package"/>
@@ -351,6 +353,11 @@
   <action name="actionDevice_Viewer">
    <property name="text">
     <string>Raw Device Viewer</string>
+   </property>
+  </action>
+  <action name="actionISO_GOD_Viewer">
+   <property name="text">
+    <string>ISO File</string>
    </property>
   </action>
  </widget>

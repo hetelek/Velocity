@@ -15,9 +15,98 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <layout class="QHBoxLayout" name="encodingToolbarLayout">
+     <item>
+      <widget class="QLabel" name="encodingLabel">
+       <property name="text">
+        <string>Encoding:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="encodingComboBox">
+       <property name="toolTip">
+        <string>Select text encoding (or use Auto-detect)</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>Auto-detect</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Shift-JIS (CP932)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>GBK (CP936)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Big5 (CP950)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>EUC-KR (CP949)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>UTF-8</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>UTF-16 LE</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>UTF-16 BE</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Latin-1</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="statusLabel">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: #666; font-style: italic;</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
     <widget class="QTextEdit" name="textEdit">
      <property name="lineWrapMode">
       <enum>QTextEdit::NoWrap</enum>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
